@@ -1,13 +1,69 @@
 <template>
   <v-toolbar>
-    <v-toolbar-side-icon></v-toolbar-side-icon>
+    <v-toolbar-side-icon　@click="iconClicked"></v-toolbar-side-icon>
+    <div class="text-xs-center hidden-sm-and-up">
+      <v-dialog
+        v-model="dropdownMenu"
+        fullscreen
+        transition="dialog-bottom-transition"
+      >
+
+      <v-layout row class="hidden-sm-and-up" fill-height>
+        <v-flex xs12>
+          <v-card style="height: 100%;">
+            <v-toolbar flat color="white">
+              <v-toolbar-side-icon
+                @click="iconClicked"
+                class="ml-2"
+              ></v-toolbar-side-icon>
+            </v-toolbar>
+
+            <v-list>
+              <v-list-tile
+                avatar
+                class="px-3"
+                to="/"
+                @click="dropdownMenu=false"
+              >
+                <v-list-tile-content>
+                  <v-list-tile-title class="textColor">ホーム</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+
+              <v-divider class="mx-4"></v-divider>
+
+              <v-list-tile
+                avatar
+                class="px-3"
+                @click="signUpButtonClicked"
+              >
+                <v-list-tile-content>
+                  <v-list-tile-title class="textColor">登録する</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+
+              <v-list-tile
+                avatar
+                class="px-3"
+                @click="signInButtonClicked"
+              >
+                <v-list-tile-content>
+                  <v-list-tile-title class="textColor">ログイン</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+            </v-list>
+          </v-card>
+        </v-flex>
+      </v-layout>
+      </v-dialog>
+    </div>
     <v-toolbar-title>Title</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items class="hidden-sm-and-down">
       <v-container fill-height>
         <v-layout row wrap align-center>
           <v-flex class="text-xs-center">
-            <!-- ログイン中に表示される画面 -->
+            <!-- ログイン中に表示される -->
             <div v-if="user" class="align-center">
               <div class="text-xs-center">
                 <v-menu offset-y>
@@ -17,7 +73,6 @@
                     icon
                     fab
                   >
-                    <!-- <v-icon>menu</v-icon> -->
                     <v-avatar :size="avatarSize">
                       <img v-if="imageUrl" :src="imageUrl" alt="avatar">
                       <v-icon v-else>person</v-icon>
@@ -31,6 +86,7 @@
                 </v-menu>
               </div>
             </div>
+            <!-- ログインしていない場合に表示される -->
             <div v-else>
               <v-btn flat @click="signUpButtonClicked">
                 <span class="font-weight-bold" style="color: #555555">登録する</span>
@@ -46,7 +102,16 @@
                   width="500"
                 >
                   <v-card class="pt-5 pb-3 px-3">
-                    <v-flex xs12 class="text-xs-center px-2">
+                    <v-toolbar flat color="white hidden-sm-and-up">
+                      <v-toolbar-side-icon
+                        @click="dialog=false"
+                      ></v-toolbar-side-icon>
+                    </v-toolbar>
+                    <v-flex
+                      xs12
+                      class="text-xs-center"
+                      :class="{'px-2': $vuetify.breakpoint.smAndUp, 'px-3 mt-4': $vuetify.breakpoint.xsOnly}"
+                    >
                       <!-- ログインフォーム -->
                       <div v-if="signInDialog">
                         <v-form v-model="valid">
@@ -302,6 +367,11 @@ export default {
     })
   },
   methods: {
+    iconClicked: function() {
+      if (this.$vuetify.breakpoint.name == 'xs') {
+        this.dropdownMenu = !this.dropdownMenu
+      }
+    },
     signUpButtonClicked: function() {
       this.dialog = true
       this.signUpDialog = true
@@ -332,6 +402,7 @@ export default {
       this.signUpDialog = false
       this.signUpForm = false
       this.signInDialog = false
+      this.dropdownMenu = false
       this.firstName = ''
       this.lastName = ''
       this.email = ''
@@ -340,3 +411,9 @@ export default {
   }
 }
 </script>
+
+<style>
+  .textColor {
+    color: #555555;
+  }
+</style>
