@@ -1,5 +1,5 @@
 <template>
-  <v-app dark>
+  <v-app light>
     <v-navigation-drawer
       v-model="drawer"
       :mini-variant="miniVariant"
@@ -24,7 +24,8 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar
+    <toolbar></toolbar>
+    <!-- <v-toolbar
       :clipped-left="clipped"
       fixed
       app
@@ -55,7 +56,7 @@
       >
         <v-icon>menu</v-icon>
       </v-btn>
-    </v-toolbar>
+    </v-toolbar> -->
     <v-content>
       <v-container>
         <nuxt />
@@ -86,7 +87,11 @@
 </template>
 
 <script>
+import Toolbar from '~/components/Toolbar'
 export default {
+  components: {
+    Toolbar
+  },
   data() {
     return {
       clipped: false,
