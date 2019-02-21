@@ -79,6 +79,9 @@
                     </v-avatar>
                   </v-btn>
                   <v-list>
+                    <v-list-tile to="/user/profile">
+                      <v-list-tile-title>プロフィール</v-list-tile-title>
+                    </v-list-tile>
                     <v-list-tile @click="signOut">
                       <v-list-tile-title>ログアウト</v-list-tile-title>
                     </v-list-tile>
@@ -345,12 +348,20 @@ export default {
         firestore.collection('users').doc(user.uid).get()
           .then(function(doc) {
             if (!doc.exists) {
-              firestore.collection('users').doc(user.uid)
-                .set({
-                  firstname: self.firstName,
-                  lastname: self.lastName,
-                  email: user.email
-                })
+              const batch = firestore.batch()
+              const userRef = firestore.collection('users').doc(user.uid)
+              batch.set(userRef, {
+                firstName: self.firstName,
+                lastName: self.lastName,
+              })
+              const profileRef = firestore.collection('users')
+                .doc(user.uid).collection('profile').doc(user.uid)
+              batch.set(profileRef, {
+                firstName: self.firstName,
+                lastName: self.lastName,
+                email: user.email
+              })
+              batch.commit()
                 .then(() => {
                   self.resetData()
                 })
@@ -358,11 +369,19 @@ export default {
                   console.error("Error adding document: ", error)
                 })
             } else {
+              console.log('user doc exists')
+
               self.resetData()
+              if (doc.data()['imageUrl'] != null) {
+                self.$store.dispatch('setImageUrl', doc.data()['imageUrl'])
+              }
             }
           })
       } else {
         this.$store.dispatch('setUser', null)
+        if (this.$route.path !== '/' && this.$route.path !== '/posts') {
+          this.$router.push('/')
+        }
       }
     })
   },

@@ -1,6 +1,6 @@
 <template>
   <v-app light>
-    <v-navigation-drawer
+    <!-- <v-navigation-drawer
       v-model="drawer"
       :mini-variant="miniVariant"
       :clipped="clipped"
@@ -23,7 +23,7 @@
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
-    </v-navigation-drawer>
+    </v-navigation-drawer> -->
     <toolbar></toolbar>
     <!-- <v-toolbar
       :clipped-left="clipped"
@@ -117,3 +117,18 @@ export default {
   }
 }
 </script>
+
+<style>
+.textColor {
+  color: #555555;
+}
+.edit-text-color {
+  color: #00897B;
+}
+.warning-text-color {
+  color: #E53935;
+}
+.break {
+  word-break: break-all;
+}
+</style>
