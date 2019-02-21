@@ -19,8 +19,8 @@
             </v-toolbar>
 
             <v-list>
+              <!-- ホーム -->
               <v-list-tile
-                avatar
                 class="px-3"
                 to="/"
                 @click="dropdownMenu=false"
@@ -30,10 +30,21 @@
                 </v-list-tile-content>
               </v-list-tile>
 
-              <v-divider class="mx-4"></v-divider>
-
+              <!-- プロフィール -->
               <v-list-tile
-                avatar
+                class="px-3"
+                to="/user/profile"
+                @click="dropdownMenu=false"
+              >
+                <v-list-tile-content>
+                  <v-list-tile-title class="textColor">プロフィール</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+
+              <v-divider class="mx-4"></v-divider>
+              <!-- 登録 -->
+              <v-list-tile
+                v-if="!user"
                 class="px-3"
                 @click="signUpButtonClicked"
               >
@@ -41,14 +52,24 @@
                   <v-list-tile-title class="textColor">登録する</v-list-tile-title>
                 </v-list-tile-content>
               </v-list-tile>
-
+              <!-- ログイン -->
               <v-list-tile
-                avatar
+                v-if="!user"
                 class="px-3"
                 @click="signInButtonClicked"
               >
                 <v-list-tile-content>
                   <v-list-tile-title class="textColor">ログイン</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+              <!-- ログアウト -->
+              <v-list-tile
+                v-if="user"
+                class="px-3"
+                @click="signOut"
+              >
+                <v-list-tile-content>
+                  <v-list-tile-title class="textColor">ログアウト</v-list-tile-title>
                 </v-list-tile-content>
               </v-list-tile>
             </v-list>
@@ -378,6 +399,7 @@ export default {
             }
           })
       } else {
+        this.resetData()
         this.$store.dispatch('setUser', null)
         if (this.$route.path !== '/' && this.$route.path !== '/posts') {
           this.$router.push('/')
