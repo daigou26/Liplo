@@ -19,8 +19,8 @@
             </v-toolbar>
 
             <v-list>
+              <!-- ホーム -->
               <v-list-tile
-                avatar
                 class="px-3"
                 to="/"
                 @click="dropdownMenu=false"
@@ -30,10 +30,21 @@
                 </v-list-tile-content>
               </v-list-tile>
 
-              <v-divider class="mx-4"></v-divider>
-
+              <!-- プロフィール -->
               <v-list-tile
-                avatar
+                class="px-3"
+                to="/user/profile"
+                @click="dropdownMenu=false"
+              >
+                <v-list-tile-content>
+                  <v-list-tile-title class="textColor">プロフィール</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+
+              <v-divider class="mx-4"></v-divider>
+              <!-- 登録 -->
+              <v-list-tile
+                v-if="!user"
                 class="px-3"
                 @click="signUpButtonClicked"
               >
@@ -41,14 +52,24 @@
                   <v-list-tile-title class="textColor">登録する</v-list-tile-title>
                 </v-list-tile-content>
               </v-list-tile>
-
+              <!-- ログイン -->
               <v-list-tile
-                avatar
+                v-if="!user"
                 class="px-3"
                 @click="signInButtonClicked"
               >
                 <v-list-tile-content>
                   <v-list-tile-title class="textColor">ログイン</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+              <!-- ログアウト -->
+              <v-list-tile
+                v-if="user"
+                class="px-3"
+                @click="signOut"
+              >
+                <v-list-tile-content>
+                  <v-list-tile-title class="textColor">ログアウト</v-list-tile-title>
                 </v-list-tile-content>
               </v-list-tile>
             </v-list>
@@ -57,7 +78,9 @@
       </v-layout>
       </v-dialog>
     </div>
-    <v-toolbar-title>Title</v-toolbar-title>
+    <v-toolbar-title>
+      <nuxt-link to="/" class="toolbar-title">Home</nuxt-link>
+    </v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items class="hidden-sm-and-down">
       <v-container fill-height>
@@ -68,17 +91,17 @@
               <div class="text-xs-center">
                 <v-menu offset-y>
                   <!-- Profile画像 -->
-                  <v-btn
+                  <v-avatar
                     slot="activator"
-                    icon
-                    fab
+                    :size="avatarSize"
                   >
-                    <v-avatar :size="avatarSize">
-                      <img v-if="imageUrl" :src="imageUrl" alt="avatar">
-                      <v-icon v-else>person</v-icon>
-                    </v-avatar>
-                  </v-btn>
+                    <img v-if="imageUrl" :src="imageUrl" alt="avatar">
+                    <v-icon v-else>person</v-icon>
+                  </v-avatar>
                   <v-list>
+                    <v-list-tile to="/user/profile">
+                      <v-list-tile-title>プロフィール</v-list-tile-title>
+                    </v-list-tile>
                     <v-list-tile @click="signOut">
                       <v-list-tile-title>ログアウト</v-list-tile-title>
                     </v-list-tile>
@@ -330,27 +353,36 @@ export default {
   computed: {
     ...mapGetters([
       'user',
-      'imageUrl',
       'authError',
       'loading'
-    ])
+    ]),
+    ...mapState({
+      imageUrl: state => state.profile.imageUrl,
+    })
   },
   mounted() {
     // ログイン時、dbにuser情報保存(localStorageにも保存)
     auth.onAuthStateChanged((user) => {
-      console.log('auth state changed')
       if (user) {
         this.$store.dispatch('setUser', user)
         const self = this
         firestore.collection('users').doc(user.uid).get()
           .then(function(doc) {
             if (!doc.exists) {
-              firestore.collection('users').doc(user.uid)
-                .set({
-                  firstname: self.firstName,
-                  lastname: self.lastName,
-                  email: user.email
-                })
+              const batch = firestore.batch()
+              const userRef = firestore.collection('users').doc(user.uid)
+              batch.set(userRef, {
+                firstName: self.firstName,
+                lastName: self.lastName,
+              })
+              const profileRef = firestore.collection('users')
+                .doc(user.uid).collection('profile').doc(user.uid)
+              batch.set(profileRef, {
+                firstName: self.firstName,
+                lastName: self.lastName,
+                email: user.email
+              })
+              batch.commit()
                 .then(() => {
                   self.resetData()
                 })
@@ -359,10 +391,17 @@ export default {
                 })
             } else {
               self.resetData()
+              if (doc.data()['imageUrl'] != null) {
+                self.$store.dispatch('profile/setImageUrl', doc.data()['imageUrl'])
+              }
             }
           })
       } else {
+        this.resetData()
         this.$store.dispatch('setUser', null)
+        if (this.$route.path !== '/' && this.$route.path !== '/posts') {
+          this.$router.push('/')
+        }
       }
     })
   },
@@ -411,9 +450,3 @@ export default {
   }
 }
 </script>
-
-<style>
-  .textColor {
-    color: #555555;
-  }
-</style>
