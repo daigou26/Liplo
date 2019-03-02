@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar>
+  <v-toolbar flat color="white" class="toolbar-fixed border-bottom">
     <v-toolbar-side-icon　@click="iconClicked"></v-toolbar-side-icon>
     <div class="text-xs-center hidden-sm-and-up">
       <v-dialog
@@ -78,6 +78,10 @@
       </v-layout>
       </v-dialog>
     </div>
+    <!-- filter extension -->
+    <v-flex xs12 slot="extension" v-if="toolbarExtension">
+      <filter-extension></filter-extension>
+    </v-flex>
     <v-toolbar-title>
       <nuxt-link to="/" class="toolbar-title">Home</nuxt-link>
     </v-toolbar-title>
@@ -318,8 +322,12 @@
 <script>
 import { firestore, auth } from '@/plugins/firebase'
 import { mapActions, mapState, mapGetters } from 'vuex'
+import FilterExtension from '~/components/FilterExtension'
 
 export default {
+  components: {
+    FilterExtension
+  },
   data: () => ({
     avatarSize: 40,
     dialog: false,
@@ -351,13 +359,12 @@ export default {
     ],
   }),
   computed: {
-    ...mapGetters([
-      'user',
-      'authError',
-      'loading'
-    ]),
     ...mapState({
+      user: state => state.user,
+      authError: state => state.authError,
+      loading: state => state.loading,
       imageUrl: state => state.profile.imageUrl,
+      toolbarExtension: state => state.main.toolbarExtension,
     })
   },
   mounted() {
@@ -399,7 +406,7 @@ export default {
       } else {
         this.resetData()
         this.$store.dispatch('setUser', null)
-        if (this.$route.path !== '/' && this.$route.path !== '/posts') {
+        if (this.$route.path !== '/' && this.$route.path !== '/jobs') {
           this.$router.push('/')
         }
       }
