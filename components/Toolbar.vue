@@ -78,7 +78,9 @@
       </v-layout>
       </v-dialog>
     </div>
-    <v-toolbar-title>Title</v-toolbar-title>
+    <v-toolbar-title>
+      <nuxt-link to="/" class="toolbar-title">Home</nuxt-link>
+    </v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items class="hidden-sm-and-down">
       <v-container fill-height>
@@ -89,16 +91,13 @@
               <div class="text-xs-center">
                 <v-menu offset-y>
                   <!-- Profile画像 -->
-                  <v-btn
+                  <v-avatar
                     slot="activator"
-                    icon
-                    fab
+                    :size="avatarSize"
                   >
-                    <v-avatar :size="avatarSize">
-                      <img v-if="imageUrl" :src="imageUrl" alt="avatar">
-                      <v-icon v-else>person</v-icon>
-                    </v-avatar>
-                  </v-btn>
+                    <img v-if="imageUrl" :src="imageUrl" alt="avatar">
+                    <v-icon v-else>person</v-icon>
+                  </v-avatar>
                   <v-list>
                     <v-list-tile to="/user/profile">
                       <v-list-tile-title>プロフィール</v-list-tile-title>
@@ -354,15 +353,16 @@ export default {
   computed: {
     ...mapGetters([
       'user',
-      'imageUrl',
       'authError',
       'loading'
-    ])
+    ]),
+    ...mapState({
+      imageUrl: state => state.profile.imageUrl,
+    })
   },
   mounted() {
     // ログイン時、dbにuser情報保存(localStorageにも保存)
     auth.onAuthStateChanged((user) => {
-      console.log('auth state changed')
       if (user) {
         this.$store.dispatch('setUser', user)
         const self = this
@@ -390,11 +390,9 @@ export default {
                   console.error("Error adding document: ", error)
                 })
             } else {
-              console.log('user doc exists')
-
               self.resetData()
               if (doc.data()['imageUrl'] != null) {
-                self.$store.dispatch('setImageUrl', doc.data()['imageUrl'])
+                self.$store.dispatch('profile/setImageUrl', doc.data()['imageUrl'])
               }
             }
           })
@@ -452,9 +450,3 @@ export default {
   }
 }
 </script>
-
-<style>
-  .textColor {
-    color: #555555;
-  }
-</style>

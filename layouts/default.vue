@@ -119,6 +119,10 @@ export default {
 </script>
 
 <style>
+.toolbar-title {
+  color: inherit;
+  text-decoration: inherit;
+}
 .textColor {
   color: #555555;
 }
@@ -130,5 +134,8 @@ export default {
 }
 .break {
   word-break: break-all;
+}
+.clickable {
+  cursor: pointer;
 }
 </style>

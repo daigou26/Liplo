@@ -4,20 +4,14 @@ import { firebase, auth, GoogleProvider } from '@/plugins/firebase'
 
 export const state = () => ({
   user: null,
-  imageUrl: null,
-  imageUrl: null,
   authError: null,
   loading: false,
 })
 
 export const mutations = {
   setUser(state, user) {
-    console.log('[STORE MUTATIONS] - setUSER:', user)
+    console.log('[STORE MUTATIONS] - setUSER')
     state.user = user
-  },
-  setImageUrl(state, imageUrl) {
-    console.log('[STORE MUTATIONS] - setImageUrl:', imageUrl)
-    state.imageUrl = imageUrl
   },
   setAuthError(state, error) {
     state.authError = error
@@ -70,10 +64,6 @@ export const actions = {
     console.log('[STORE ACTIONS] - setUser')
     commit('setUser', user)
   },
-  setImageUrl({commit}, imageUrl) {
-    console.log('STORE ACTIONS] - setImageUrl')
-    commit('setImageUrl', imageUrl)
-  },
   resetAuthError({commit}) {
     commit('resetAuthError')
   },
@@ -85,9 +75,6 @@ export const actions = {
 export const getters = {
   user(state) {
     return state.user
-  },
-  imageUrl(state) {
-    return state.imageUrl
   },
   authError(state) {
     return state.authError
