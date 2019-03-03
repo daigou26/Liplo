@@ -126,23 +126,27 @@ export const actions = {
         jobsRef = jobsRef.where('features.overseas', '==', true)
       }
     }
-    return jobsRef.orderBy('createdAt', 'desc').limit(10).get().then(function(snapshot) {
-      const data = []
-      snapshot.forEach(function(doc) {
-        const job = {
-          jobId: doc.id,
-          title: doc.data()['title'],
-          content: doc.data()['content'],
-          imageUrl: doc.data()['imageUrl'],
-          companyName: doc.data()['companyName'],
-          companyImageUrl: doc.data()['companyImageUrl'],
-          rating: doc.data()['rating'],
-          createdAt: doc.data()['createdAt']
-        }
-        data.push(job)
+    return jobsRef.orderBy('createdAt', 'desc').limit(10).get()
+      .then(function(snapshot) {
+        const data = []
+        snapshot.forEach(function(doc) {
+          const job = {
+            jobId: doc.id,
+            title: doc.data()['title'],
+            content: doc.data()['content'],
+            imageUrl: doc.data()['imageUrl'],
+            companyName: doc.data()['companyName'],
+            companyImageUrl: doc.data()['companyImageUrl'],
+            rating: doc.data()['rating'],
+            createdAt: doc.data()['createdAt']
+          }
+          data.push(job)
+        })
+        commit('setJobs', data)
       })
-      commit('setJobs', data)
-    })
+      .catch(function(error) {
+        console.log("Error getting document:", error);
+      })
   },
   addJobs({commit}, {queryParams, jobs}) {
     const occupationParams = queryParams.occupation
@@ -215,6 +219,9 @@ export const actions = {
           }
           commit('addJobs', job)
         })
+      })
+      .catch(function(error) {
+        console.log("Error getting document:", error);
       })
   },
   setFilter({commit}, queryParams) {
