@@ -58,7 +58,7 @@
       </v-btn>
     </v-toolbar> -->
     <v-content>
-      <v-container>
+      <v-container fluid pa-0>
         <nuxt />
       </v-container>
     </v-content>
@@ -126,6 +126,9 @@ export default {
 .textColor {
   color: #555555;
 }
+.whiteTextColor {
+  color: #ffffff;
+}
 .edit-text-color {
   color: #00897B;
 }
@@ -137,5 +140,30 @@ export default {
 }
 .clickable {
   cursor: pointer;
+}
+.border-bottom {
+  border-bottom: 0.1px solid;
+  border-color: #E0E0E0;
+}
+.toolbar-fixed {
+  position: sticky !important;
+  top: 0px !important;
+  z-index: 10 !important;
+}
+div.v-toolbar__content {
+  border-bottom: 0.1px solid;
+  border-color: #E0E0E0;
+}
+div.v-toolbar__extension {
+  height: 48px !important;
+  /* border-top: 0.1px solid; */
+  border-bottom: 0.1px solid;
+  border-color: #E0E0E0;
+}
+i.v-icon {
+  padding: 0px !important;
+}
+.v-btn {
+  height: 32px;
 }
 </style>
