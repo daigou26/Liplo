@@ -22,8 +22,8 @@ export const mutations = {
   setJobs(state, jobs) {
     state.jobs = jobs
   },
-  addJobs(state, jobs) {
-    state.jobs.push(jobs)
+  addJob(state, job) {
+    state.jobs.push(job)
   },
   // occupation
   updateEngineer(state, isActive) {
@@ -217,7 +217,7 @@ export const actions = {
             rating: doc.data()['rating'],
             createdAt: doc.data()['createdAt']
           }
-          commit('addJobs', job)
+          commit('addJob', job)
         })
       })
       .catch(function(error) {
