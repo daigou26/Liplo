@@ -45,7 +45,8 @@ module.exports = {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    '@/plugins/vuetify'
+    '@/plugins/vuetify',
+    { src: '~plugins/vue-chartjs.js', ssr: false },
   ],
 
   /*

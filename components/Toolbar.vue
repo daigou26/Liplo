@@ -392,12 +392,17 @@ export default {
               batch.commit()
                 .then(() => {
                   self.resetData()
+                  self.$store.dispatch('profile/setFirstName', self.firstName)
+                  self.$store.dispatch('profile/setLastName', self.lastName)
                 })
                 .catch((error) => {
                   console.error("Error adding document: ", error)
                 })
             } else {
               self.resetData()
+              self.$store.dispatch('profile/setFirstName', doc.data()['firstName'])
+              self.$store.dispatch('profile/setLastName', doc.data()['lastName'])
+
               if (doc.data()['imageUrl'] != null) {
                 self.$store.dispatch('profile/setImageUrl', doc.data()['imageUrl'])
               }
@@ -406,7 +411,7 @@ export default {
       } else {
         this.resetData()
         this.$store.dispatch('setUser', null)
-        if (this.$route.path !== '/' && this.$route.path !== '/jobs') {
+        if (this.$route.path !== '/' && this.$route.name !== 'jobs-id') {
           this.$router.push('/')
         }
       }

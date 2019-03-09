@@ -133,6 +133,12 @@ export const actions = {
   setImageUrl({commit}, imageUrl) {
     commit('setImageUrl', imageUrl)
   },
+  setFirstName({commit}, firstName) {
+    commit('setFirstName', firstName)
+  },
+  setLastName({commit}, lastName) {
+    commit('setLastName', lastName)
+  },
   updateImageFileSizeValid({commit}, valid) {
     commit('updateImageFileSizeValid', valid)
   },

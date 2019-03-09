@@ -10,7 +10,6 @@ export const state = () => ({
 
 export const mutations = {
   setUser(state, user) {
-    console.log('[STORE MUTATIONS] - setUSER')
     state.user = user
   },
   setAuthError(state, error) {
@@ -29,11 +28,9 @@ export const mutations = {
 
 export const actions = {
   async signUp({commit}, {email, password}) {
-    console.log('[STORE ACTIONS] - signup')
     auth.createUserWithEmailAndPassword(email, password)
       .then(function() {
         commit('resetLoading')
-        console.log('create')
       })
       .catch(function(error) {
         var errorCode = error.code
@@ -44,7 +41,6 @@ export const actions = {
       })
   },
   async signIn({commit}, {email, password}) {
-    console.log('[STORE ACTIONS] - signin')
     auth.signInWithEmailAndPassword(email, password)
       .then(function() {
         commit('resetLoading')
@@ -57,11 +53,9 @@ export const actions = {
       })
   },
   async signOut({commit}) {
-    console.log('[STORE ACTIONS] - signout')
     auth.signOut()
   },
   setUser({commit}, user) {
-    console.log('[STORE ACTIONS] - setUser')
     commit('setUser', user)
   },
   resetAuthError({commit}) {

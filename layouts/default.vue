@@ -77,12 +77,12 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-footer
+    <!-- <v-footer
       :fixed="fixed"
       app
     >
       <span>&copy; 2019</span>
-    </v-footer>
+    </v-footer> -->
   </v-app>
 </template>
 
@@ -123,6 +123,16 @@ export default {
   color: inherit;
   text-decoration: inherit;
 }
+.job-title {
+  font-size: 30px;
+}
+.job-sub-title {
+  font-size: 18px;
+}
+.body-text {
+  color: #555555;
+  font-size: 16px;
+}
 .textColor {
   color: #555555;
 }
@@ -138,6 +148,12 @@ export default {
 .break {
   word-break: break-all;
 }
+.return {
+  white-space: pre-wrap;
+}
+.shadow-top {
+  box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.14);
+}
 .clickable {
   cursor: pointer;
 }
@@ -149,6 +165,17 @@ export default {
   position: sticky !important;
   top: 0px !important;
   z-index: 10 !important;
+}
+.job-bottom-fixed {
+  position:absolute;
+  bottom:0;
+}
+.overflow-hidden {
+  overflow: hidden;
+}
+.horiz-scroll {
+  overflow-y: hidden;
+  overflow-x: auto;
 }
 div.v-toolbar__content {
   border-bottom: 0.1px solid;
@@ -163,7 +190,9 @@ div.v-toolbar__extension {
 i.v-icon {
   padding: 0px !important;
 }
-.v-btn {
-  height: 32px;
+@media screen and (min-width: 600px) {
+  #job-apply.v-btn {
+    width: 200px;
+  }
 }
 </style>
