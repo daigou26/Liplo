@@ -15,7 +15,7 @@
           <v-list class="pt-0" v-if="jobs">
             <template v-for="(job, index) in jobs">
               <v-card class="mb-5">
-                <v-card flat @click='' class="clickable">
+                <v-card flat :to='"jobs/" + job.jobId' class="clickable">
                   <v-img
                     :src="job.imageUrl"
                     aspect-ratio="2.75"
@@ -85,7 +85,7 @@ export default {
   },
   watchQuery: ['occupation', 'features'],
   fetch(context) {
-    const store = context.app.store
+    const store = context.store
     // filter set
     store.dispatch('main/setFilter', context.query)
     // query jobs
@@ -93,7 +93,7 @@ export default {
   },
   watch: {
     bottom(bottom) {
-      if (bottom) {
+      if (bottom　&& this.jobs != null) {
         this.$store.dispatch('main/addJobs', { queryParams: this.$route.query, jobs: this.$store.state.main.jobs})
       }
     }

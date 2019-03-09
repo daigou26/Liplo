@@ -165,7 +165,7 @@
               <v-flex xs12 sm10 class="break">
                 <!-- 自己紹介の表示 -->
                 <v-card-text v-if="!isEditingSelfIntro">
-                  <p>{{ selfIntro }}</p>
+                  <p class="return">{{ selfIntro }}</p>
                 </v-card-text>
                 <!-- 自己紹介の編集画面 -->
                 <div v-else>
@@ -219,7 +219,7 @@
               <v-flex xs12 sm10 class="break">
                 <!-- やりたいことの表示 -->
                 <v-card-text v-if="!isEditingWhatWantToDo">
-                  <p>{{ whatWantToDo }}</p>
+                  <p class="return">{{ whatWantToDo }}</p>
                 </v-card-text>
                 <!-- やりたいことの編集画面 -->
                 <div v-else>
@@ -290,9 +290,7 @@
                               <span class="caption edit-text-color">編集する</span>
                             </v-btn>
                           </div>
-                          <p　class="textColor">
-                            {{ item.content }}
-                          </p>
+                          <p　class="textColor return">{{ item.content }}</p>
                           <p class="textColor">
                             {{ item.url }}
                           </p>
@@ -409,9 +407,7 @@
                           <span class="caption edit-text-color">編集する</span>
                         </v-btn>
                       </div>
-                      <p>
-                        {{ item.content }}
-                      </p>
+                      <p class="return">{{ item.content }}</p>
                     </div>
                   </template>
                 </v-list>

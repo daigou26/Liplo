@@ -12,8 +12,12 @@
   },
   "dependencies": {
     "@nuxtjs/pwa": "^2.6.0",
+    "chart.js": "^2.7.3",
     "cross-env": "^5.2.0",
+    "firebase-admin": "^7.0.0",
+    "firebase-functions": "^2.2.0",
     "nuxt": "^2.4.0",
+    "vue-chartjs": "^3.4.0",
     "vuetify": "^1.5.1",
     "vuetify-loader": "^1.2.0",
     "vuex-persistedstate": "^2.5.4"

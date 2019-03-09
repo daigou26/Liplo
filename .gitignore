@@ -93,3 +93,4 @@ sw.*
 
 #firebase
 **/.firebaserc
+/functions/node_modules
