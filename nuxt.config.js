@@ -47,6 +47,7 @@ module.exports = {
   plugins: [
     '@/plugins/vuetify',
     { src: '~plugins/vue-chartjs.js', ssr: false },
+    { src: '~plugins/vue-infinite-loading.js', ssr: false },
   ],
 
   /*
