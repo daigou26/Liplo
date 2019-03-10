@@ -157,8 +157,12 @@ export default {
 .clickable {
   cursor: pointer;
 }
+.border {
+  border: 1px solid;
+  border-color: #E0E0E0;
+}
 .border-bottom {
-  border-bottom: 0.1px solid;
+  border-bottom: 1px solid;
   border-color: #E0E0E0;
 }
 .toolbar-fixed {

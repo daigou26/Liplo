@@ -19,6 +19,7 @@ export const actions = {
     if (reviews == null) {
       return firestore.collection('reviews')
         .where('companyId', '==', companyId)
+        .orderBy('createdAt', 'desc')
         .limit(2)
         .get()
         .then(function(snapshot) {
