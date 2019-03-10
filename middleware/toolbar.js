@@ -1,7 +1,7 @@
 export default function ({ store, route, redirect }) {
   if (route.path === '/') {
-    store.dispatch('main/setToolbarExtension')
+    store.dispatch('jobs/setToolbarExtension')
   } else {
-    store.dispatch('main/resetToolbarExtension')
+    store.dispatch('jobs/resetToolbarExtension')
   }
 }

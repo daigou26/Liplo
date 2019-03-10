@@ -68,8 +68,8 @@ export default {
   },
   computed: {
     ...mapState({
-      jobs: state => state.main.jobs,
-      loading: state => state.main.loading,
+      jobs: state => state.jobs.jobs,
+      loading: state => state.jobs.loading,
     })
   },
   mounted() {
@@ -78,23 +78,23 @@ export default {
     })
     if (this.jobs == null) {
       // filter set
-      this.$store.dispatch('main/setFilter', this.$route.query)
+      this.$store.dispatch('jobs/setFilter', this.$route.query)
       // query jobs
-      this.$store.dispatch('main/queryJobs', this.$route.query)
+      this.$store.dispatch('jobs/queryJobs', this.$route.query)
     }
   },
   watchQuery: ['occupation', 'features'],
   fetch(context) {
     const store = context.store
     // filter set
-    store.dispatch('main/setFilter', context.query)
+    store.dispatch('jobs/setFilter', context.query)
     // query jobs
-    store.dispatch('main/queryJobs', context.query)
+    store.dispatch('jobs/queryJobs', context.query)
   },
   watch: {
     bottom(bottom) {
       if (bottom　&& this.jobs != null) {
-        this.$store.dispatch('main/addJobs', { queryParams: this.$route.query, jobs: this.$store.state.main.jobs})
+        this.$store.dispatch('jobs/addJobs', { queryParams: this.$route.query, jobs: this.$store.state.jobs.jobs})
       }
     }
   },

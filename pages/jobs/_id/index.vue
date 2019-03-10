@@ -555,14 +555,14 @@ export default {
       reviews: state => state.job.reviews,
       chartData: state => state.job.chartData,
       applied: state => state.job.applied,
-      allReviews: state => state.review.reviews,
+      allReviews: state => state.reviews.reviews,
     }),
   },
   mounted() {
     this.showChart = true
     auth.onAuthStateChanged((user) => {
       if (user) {
-        this.$store.dispatch('job/queryJob', {nuxt: this.$nuxt, params: this.$route.params, uid: this.user.uid})
+        this.$store.dispatch('job/queryJob', {nuxt: this.$nuxt, params: this.$route.params, uid: user.uid})
       } else {
         this.$store.dispatch('job/queryJob', {nuxt: this.$nuxt, params: this.$route.params, uid: null})
       }
@@ -592,7 +592,7 @@ export default {
       })
     },
     ...mapActions({
-      queryReviews: 'review/queryReviews',
+      queryReviews: 'reviews/queryReviews',
       apply: 'job/apply',
     }),
   }

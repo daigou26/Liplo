@@ -364,7 +364,7 @@ export default {
       authError: state => state.authError,
       loading: state => state.loading,
       imageUrl: state => state.profile.imageUrl,
-      toolbarExtension: state => state.main.toolbarExtension,
+      toolbarExtension: state => state.jobs.toolbarExtension,
     })
   },
   mounted() {
