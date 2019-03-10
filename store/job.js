@@ -29,9 +29,9 @@ export const state = () => ({
   features: '',
   field: '',
   createdAt: '',
+  applicants: null,
   reviews: null,
   chartData: null,
-  applied: false,
 })
 
 export const mutations = {
@@ -116,19 +116,19 @@ export const mutations = {
   setCreatedAt(state, createdAt) {
     state.createdAt = createdAt
   },
+  setApplicants(state, applicants) {
+    state.applicants = applicants
+  },
   setReviews(state, reviews) {
     state.reviews = reviews
   },
   setChartData(state, data) {
     state.chartData = data
   },
-  setApplied(state) {
-    state.applied = true
-  }
 }
 
 export const actions = {
-  queryJob({commit}, {nuxt, params, uid}) {
+  queryJob({commit}, {nuxt, params}) {
     const jobId = params.id
     if (jobId != null && jobId != '') {
       return firestore.collection('jobs').doc(jobId).collection('detail').doc(jobId).get()
@@ -160,6 +160,7 @@ export const actions = {
             // commit('setOccupation', doc.data()['occupation'])
             // commit('setFeatures', doc.data()['features'])
             commit('setCreatedAt', doc.data()['createdAt'])
+            commit('setApplicants', doc.data()['applicants'])
             commit('setReviews', doc.data()['reviews'])
 
             // chart Data
@@ -191,11 +192,6 @@ export const actions = {
               ]
             }
             commit('setChartData', chartData)
-
-            // 応募済みかどうか
-            if (uid != null && doc.data()['applicants'] != null && doc.data()['applicants'].users.includes(uid)) {
-              commit('setApplied')
-            }
           } else {
             // 404
             console.log('404')
