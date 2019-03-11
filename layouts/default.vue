@@ -187,12 +187,15 @@ div.v-toolbar__content {
 }
 div.v-toolbar__extension {
   height: 48px !important;
-  /* border-top: 0.1px solid; */
   border-bottom: 0.1px solid;
   border-color: #E0E0E0;
 }
 i.v-icon {
   padding: 0px !important;
+}
+#toolbar span.v-badge__badge {
+  width: 5px;
+  height: 5px;
 }
 @media screen and (min-width: 600px) {
   #job-apply.v-btn {

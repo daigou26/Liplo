@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar flat color="white" class="toolbar-fixed border-bottom">
+  <v-toolbar flat color="white" class="toolbar-fixed border-bottom" id="toolbar">
     <v-toolbar-side-icon　@click="iconClicked"></v-toolbar-side-icon>
     <div class="text-xs-center hidden-sm-and-up">
       <v-dialog
@@ -38,6 +38,17 @@
               >
                 <v-list-tile-content>
                   <v-list-tile-title class="textColor">プロフィール</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+
+              <!-- メッセージ -->
+              <v-list-tile
+                class="px-3"
+                to="/messages"
+                @click="dropdownMenu=false"
+              >
+                <v-list-tile-content>
+                  <v-list-tile-title class="textColor">メッセージ</v-list-tile-title>
                 </v-list-tile-content>
               </v-list-tile>
 
@@ -86,7 +97,21 @@
       <nuxt-link to="/" class="toolbar-title">Home</nuxt-link>
     </v-toolbar-title>
     <v-spacer></v-spacer>
-    <v-toolbar-items class="hidden-sm-and-down">
+    <v-toolbar-items class="hidden-xs-only">
+      <v-btn
+        v-if="user"
+        flat
+        to="/messages"
+      >
+        <v-badge  overlap color="red">
+          <template v-slot:badge>
+            <span></span>
+          </template>
+          <span class="font-weight-bold">メッセージ</span>
+        </v-badge>
+      </v-btn>
+
+
       <v-container fill-height>
         <v-layout row wrap align-center>
           <v-flex class="text-xs-center">

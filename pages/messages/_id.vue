@@ -158,7 +158,27 @@ export default {
     }),
   },
   mounted() {
-    this.windowHeight = window.innerHeight - 64
+    // 画面サイズ取得
+    let toolbarHeight
+    switch (this.$vuetify.breakpoint.name) {
+       case 'xs':
+        toolbarHeight = 48
+        break
+       case 'sm':
+         toolbarHeight = 48
+         break
+       case 'md':
+         toolbarHeight = 64
+         break
+       case 'lg':
+         toolbarHeight = 64
+         break
+       case 'xl':
+         toolbarHeight = 64
+         break
+     }
+     this.windowHeight = window.innerHeight - toolbarHeight
+
     this.showInfiniteLoading = true
     auth.onAuthStateChanged((user) => {
       if (user) {
