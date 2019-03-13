@@ -165,6 +165,9 @@ export default {
   border-bottom: 1px solid;
   border-color: #E0E0E0;
 }
+.message-border-radius {
+  border-radius: 12px 12px 12px 12px;
+}
 .toolbar-fixed {
   position: sticky !important;
   top: 0px !important;
@@ -187,7 +190,7 @@ div.v-toolbar__content {
 }
 div.v-toolbar__extension {
   height: 48px !important;
-  border-bottom: 0.1px solid;
+  border-bottom: 1px solid;
   border-color: #E0E0E0;
 }
 i.v-icon {

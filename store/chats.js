@@ -39,6 +39,7 @@ export const actions = {
           snapshot.forEach(function(doc) {
             docCount += 1
             const chat = {
+              chatId: doc.id,
               uid: doc.data()['uid'],
               profileImageUrl: doc.data()['profileImageUrl'],
               userName: doc.data()['userName'],
@@ -80,6 +81,7 @@ export const actions = {
           snapshot.forEach(function(doc) {
             docCount += 1
             const chat = {
+              chatId: doc.id,
               uid: doc.data()['uid'],
               profileImageUrl: doc.data()['profileImageUrl'],
               userName: doc.data()['userName'],
