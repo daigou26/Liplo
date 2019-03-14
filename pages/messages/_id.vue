@@ -429,7 +429,7 @@ export default {
 
     },
     sendButtonClicked() {
-      if (this.params.id != null) {
+      if (this.params.id != null && this.message) {
         this.postMessageFromUser({
           params: this.$route.params,
           message: this.message,
@@ -438,6 +438,7 @@ export default {
           name: this.lastName + ' ' + this.firstName,
         })
       }
+      this.message = ''
     },
     ...mapActions({
       queryChat: 'chat/queryChat',
