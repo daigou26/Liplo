@@ -210,16 +210,16 @@ export default {
       return (this.experience || this.funding || this.founder20s || this.media || this.friend || this.overseas)
     },
     ...mapState({
-      engineer: state => state.main.engineer,
-      designer: state => state.main.designer,
-      sales: state => state.main.sales,
-      others: state => state.main.others,
-      experience: state => state.main.experience,
-      funding: state => state.main.funding,
-      founder20s: state => state.main.founder20s,
-      media: state => state.main.media,
-      friend: state => state.main.friend,
-      overseas: state => state.main.overseas,
+      engineer: state => state.jobs.engineer,
+      designer: state => state.jobs.designer,
+      sales: state => state.jobs.sales,
+      others: state => state.jobs.others,
+      experience: state => state.jobs.experience,
+      funding: state => state.jobs.funding,
+      founder20s: state => state.jobs.founder20s,
+      media: state => state.jobs.media,
+      friend: state => state.jobs.friend,
+      overseas: state => state.jobs.overseas,
     })
   },
   methods: {

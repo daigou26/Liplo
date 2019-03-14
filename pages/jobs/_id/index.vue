@@ -482,7 +482,6 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import { auth } from '@/plugins/firebase'
 
 export default {
   data: () => ({
@@ -512,6 +511,9 @@ export default {
     ],
   }),
   computed: {
+    applied() {
+      return this.applicants != null && this.applicants.users.includes(this.user.uid)
+    },
     imageRatio() {
       switch (this.$vuetify.breakpoint.name) {
         case 'xs': return '2'
@@ -552,21 +554,15 @@ export default {
       occupation: state => state.job.occupation,
       features: state => state.job.features,
       createdAt: state => state.job.createdAt,
+      applicants: state => state.job.applicants,
       reviews: state => state.job.reviews,
       chartData: state => state.job.chartData,
-      applied: state => state.job.applied,
-      allReviews: state => state.review.reviews,
+      allReviews: state => state.reviews.reviews,
     }),
   },
   mounted() {
     this.showChart = true
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        this.$store.dispatch('job/queryJob', {nuxt: this.$nuxt, params: this.$route.params, uid: this.user.uid})
-      } else {
-        this.$store.dispatch('job/queryJob', {nuxt: this.$nuxt, params: this.$route.params, uid: null})
-      }
-    })
+    this.$store.dispatch('job/queryJob', {nuxt: this.$nuxt, params: this.$route.params})
   },
   // fetch(context) {
   //   console.log('fetch')
@@ -592,7 +588,7 @@ export default {
       })
     },
     ...mapActions({
-      queryReviews: 'review/queryReviews',
+      queryReviews: 'reviews/queryReviews',
       apply: 'job/apply',
     }),
   }

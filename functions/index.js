@@ -52,3 +52,43 @@ exports.applyForJob = functions.firestore
         console.log('Error getting document', err)
       })
   })
+
+// メッセージを送信した時の処理
+exports.sendMessageFromUser = functions.firestore
+  .document('chats/{chatId}/messages/{messageId}')
+  .onCreate((snap, context) => {
+    const chatId = context.params.chatId
+    const messageId = context.params.messageId
+
+    // chatのupdatedAt, picUnreadCountを更新
+    return admin.firestore()
+      .collection('chats').doc(chatId)
+      .collection('messages').doc(messageId)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          let picUnreadCount
+          if (doc.data().picUnreadCount != null) {
+            picUnreadCount = doc.data().picUnreadCount
+          } else {
+            picUnreadCount = 0
+          }
+
+          admin.firestore()
+            .collection('chats').doc(chatId)
+            .update({
+              updatedAt: snap.data().createdAt,
+              picUnreadCount: picUnreadCount + 1,
+            })
+            .then(() => {
+              console.log('sendMessageFromUser completed.')
+            })
+            .catch(err => {
+              console.log('Error getting document', err)
+            })
+        }
+      })
+      .catch(err => {
+        console.log('Error getting document', err)
+      })
+  })

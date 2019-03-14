@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar flat color="white" class="toolbar-fixed border-bottom">
+  <v-toolbar flat color="white" class="toolbar-fixed border-bottom" id="toolbar">
     <v-toolbar-side-icon　@click="iconClicked"></v-toolbar-side-icon>
     <div class="text-xs-center hidden-sm-and-up">
       <v-dialog
@@ -7,75 +7,85 @@
         fullscreen
         transition="dialog-bottom-transition"
       >
+        <v-layout row class="hidden-sm-and-up" fill-height>
+          <v-flex xs12>
+            <v-card style="height: 100%;">
+              <v-toolbar flat color="white">
+                <v-toolbar-side-icon
+                  @click="iconClicked"
+                  class="ml-2"
+                ></v-toolbar-side-icon>
+              </v-toolbar>
 
-      <v-layout row class="hidden-sm-and-up" fill-height>
-        <v-flex xs12>
-          <v-card style="height: 100%;">
-            <v-toolbar flat color="white">
-              <v-toolbar-side-icon
-                @click="iconClicked"
-                class="ml-2"
-              ></v-toolbar-side-icon>
-            </v-toolbar>
+              <v-list>
+                <!-- ホーム -->
+                <v-list-tile
+                  class="px-3"
+                  to="/"
+                  @click="dropdownMenu=false"
+                >
+                  <v-list-tile-content>
+                    <v-list-tile-title class="textColor">ホーム</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
 
-            <v-list>
-              <!-- ホーム -->
-              <v-list-tile
-                class="px-3"
-                to="/"
-                @click="dropdownMenu=false"
-              >
-                <v-list-tile-content>
-                  <v-list-tile-title class="textColor">ホーム</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
+                <!-- プロフィール -->
+                <v-list-tile
+                  class="px-3"
+                  to="/user/profile"
+                  @click="dropdownMenu=false"
+                >
+                  <v-list-tile-content>
+                    <v-list-tile-title class="textColor">プロフィール</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
 
-              <!-- プロフィール -->
-              <v-list-tile
-                class="px-3"
-                to="/user/profile"
-                @click="dropdownMenu=false"
-              >
-                <v-list-tile-content>
-                  <v-list-tile-title class="textColor">プロフィール</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
+                <!-- メッセージ -->
+                <v-list-tile
+                  class="px-3"
+                  to="/messages"
+                  @click="dropdownMenu=false"
+                >
+                  <v-list-tile-content>
+                    <v-list-tile-title class="textColor">メッセージ</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
 
-              <v-divider class="mx-4"></v-divider>
-              <!-- 登録 -->
-              <v-list-tile
-                v-if="!user"
-                class="px-3"
-                @click="signUpButtonClicked"
-              >
-                <v-list-tile-content>
-                  <v-list-tile-title class="textColor">登録する</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-              <!-- ログイン -->
-              <v-list-tile
-                v-if="!user"
-                class="px-3"
-                @click="signInButtonClicked"
-              >
-                <v-list-tile-content>
-                  <v-list-tile-title class="textColor">ログイン</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-              <!-- ログアウト -->
-              <v-list-tile
-                v-if="user"
-                class="px-3"
-                @click="signOut"
-              >
-                <v-list-tile-content>
-                  <v-list-tile-title class="textColor">ログアウト</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-            </v-list>
-          </v-card>
-        </v-flex>
-      </v-layout>
+                <v-divider class="mx-4"></v-divider>
+                <!-- 登録 -->
+                <v-list-tile
+                  v-if="!user"
+                  class="px-3"
+                  @click="signUpButtonClicked"
+                >
+                  <v-list-tile-content>
+                    <v-list-tile-title class="textColor">登録する</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+                <!-- ログイン -->
+                <v-list-tile
+                  v-if="!user"
+                  class="px-3"
+                  @click="signInButtonClicked"
+                >
+                  <v-list-tile-content>
+                    <v-list-tile-title class="textColor">ログイン</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+                <!-- ログアウト -->
+                <v-list-tile
+                  v-if="user"
+                  class="px-3"
+                  @click="signOut"
+                >
+                  <v-list-tile-content>
+                    <v-list-tile-title class="textColor">ログアウト</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </v-list>
+            </v-card>
+          </v-flex>
+        </v-layout>
       </v-dialog>
     </div>
     <!-- filter extension -->
@@ -86,7 +96,22 @@
       <nuxt-link to="/" class="toolbar-title">Home</nuxt-link>
     </v-toolbar-title>
     <v-spacer></v-spacer>
-    <v-toolbar-items class="hidden-sm-and-down">
+    <v-toolbar-items class="hidden-xs-only">
+      <v-btn
+        v-if="user"
+        flat
+        to="/messages"
+        active-class
+      >
+        <v-badge  overlap color="red">
+          <template v-slot:badge>
+            <span></span>
+          </template>
+          <span class="font-weight-bold">メッセージ</span>
+        </v-badge>
+      </v-btn>
+
+
       <v-container fill-height>
         <v-layout row wrap align-center>
           <v-flex class="text-xs-center">
@@ -364,7 +389,7 @@ export default {
       authError: state => state.authError,
       loading: state => state.loading,
       imageUrl: state => state.profile.imageUrl,
-      toolbarExtension: state => state.main.toolbarExtension,
+      toolbarExtension: state => state.jobs.toolbarExtension,
     })
   },
   mounted() {
