@@ -39,7 +39,7 @@
                 <v-list-tile
                   avatar
                   :class="{ 'teal lighten-5': params.id == chat.chatId }"
-                  :to="chat.chatId"
+                  :to="'/messages/' + chat.chatId"
                 >
                   <v-list-tile-avatar>
                     <v-avatar
@@ -88,7 +88,7 @@
           >
             <!-- companyName -->
             <div>
-              <v-btn flat>{{ companyName }}</v-btn>
+              <v-btn flat :to="'/companies/' + companyId">{{ companyName }}</v-btn>
             </div>
             <!-- message -->
             <v-flex
@@ -171,7 +171,7 @@
               <template v-for="(chat, index) in chats">
                 <v-list-tile
                   avatar
-                  :to="chat.chatId"
+                  :to="'/messages/' + chat.chatId"
                 >
                   <v-list-tile-avatar>
                     <v-avatar
@@ -222,7 +222,7 @@
           >
             <!-- companyName -->
             <div>
-              <v-btn flat>{{ companyName }}</v-btn>
+              <v-btn flat :to="'/companies/' + companyId">{{ companyName }}</v-btn>
             </div>
             <!-- message -->
             <v-flex
