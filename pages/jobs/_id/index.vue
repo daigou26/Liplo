@@ -273,12 +273,10 @@
             <div>
               <v-card flat>
                 <v-card-text class="overflow-hidden py-0">
-                  <v-layout row align-content-center class="horiz-scroll">
-                    <v-flex
+                  <v-layout class="horiz-scroll">
+                    <div
                       v-for="media in mediaList"
-                      :key="media.id"
-                      pr-3
-                      pb-2
+                      class="pr-3 pb-2"
                     >
                       <div>
                         <img :src="media.src" height="133" width="200"/>
@@ -286,7 +284,7 @@
                           エンジニア、デザイナー募集
                         </div>
                       </div>
-                    </v-flex>
+                    </div>
                   </v-layout>
                 </v-card-text>
               </v-card>

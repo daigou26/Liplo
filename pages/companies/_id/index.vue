@@ -401,8 +401,8 @@ export default {
       {id: 3, name: "1.png", src: "https://placeimg.com/200/200/nature"},
       {id: 4, name: "1.png", src: "https://placeimg.com/200/200/people"},
       {id: 5, name: "1.png", src: "https://placeimg.com/200/200/tech"},
-      // {id: 6, name: "1.png", src: "https://placeimg.com/200/200/animals"},
-      // {id: 7, name: "1.png", src: "https://placeimg.com/200/200/animals"},
+      {id: 6, name: "1.png", src: "https://placeimg.com/200/200/animals"},
+      {id: 7, name: "1.png", src: "https://placeimg.com/200/200/animals"},
     ],
   }),
   computed: {
