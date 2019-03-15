@@ -446,12 +446,6 @@ export default {
     this.showChart = true
     this.queryCompany({nuxt: this.$nuxt, params: this.$route.params})
   },
-  // fetch(context) {
-  //   console.log('fetch')
-  //   const store = context.store
-  //   // query job
-  //   store.dispatch('job/queryJob', {params: context.params, uid: store.state.user.uid})
-  // },
   methods: {
     reviewsButtonClicked() {
       this.reviewsDialog = true

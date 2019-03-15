@@ -296,7 +296,7 @@
         <!-- right section -->
         <v-flex xs4 pa-5 hidden-md-and-down>
           <!-- companyImage & Name -->
-          <div class="mb-5">
+          <!-- <div class="mb-5">
             <v-avatar
               class="grey lighten-3"
             >
@@ -305,7 +305,7 @@
             <span class="textColor font-weight-bold align-center px-3">
               {{ companyName }}
             </span>
-          </div>
+          </div> -->
           <!-- review -->
           <div v-if="reviews" class="py-4">
             <p class="title font-weight-bold textColor">
@@ -353,34 +353,38 @@
       <v-layout
         align-center
       >
-        <!-- Company Image -->
-        <v-flex
-          sm1
-          hidden-xs-only
-          text-sm-right
-        >
-          <v-avatar
-            class="grey lighten-3"
-          >
-            <v-img :src="companyImageUrl" :size="30"></v-img>
-          </v-avatar>
-        </v-flex>
+
         <!-- Company Name && Rating -->
         <v-flex
           xs6
-          sm6
-          md7
-          pl-3
+          sm7
+          md8
           text-xs-left
           class="break"
+          :class="{
+            'pl-4': $vuetify.breakpoint.mdAndUp,
+          }"
         >
-          <div class="textColor font-weight-bold align-center">
-            {{ companyName }}
-          </div>
-          <div v-if="reviews" class="d-inline-flex">
-            <v-rating small readonly v-model="reviews.rating.all"/>
-            <span class="pl-2 font-weight-medium">{{ reviews.rating.count }}</span>
-          </div>
+        <v-card v-if="companyId" flat :to="'../companies/' + companyId">
+          <v-card-actions>
+            <v-list-tile>
+              <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
+                <v-img
+                  :src="companyImageUrl"
+                ></v-img>
+              </v-list-tile-avatar>
+              <v-list-tile-content>
+                <v-list-tile-title class="textColor font-weight-bold">
+                  {{ companyName }}
+                </v-list-tile-title>
+                <v-list-tile-sub-title>
+                  <v-rating small readonly v-model="reviews.rating.all"/>
+                </v-list-tile-sub-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-card-actions>
+        </v-card>
+
         </v-flex>
         <v-flex
           xs6

@@ -12,8 +12,10 @@
           lg8
           text-xs-center
         >
+          <!-- job lists -->
           <v-list class="pt-0" v-if="jobs">
             <template v-for="(job, index) in jobs">
+              <!-- job image & title -->
               <v-card class="mb-5">
                 <v-card flat :to='"jobs/" + job.jobId' class="clickable">
                   <v-img
@@ -28,26 +30,26 @@
                     </div>
                   </v-card-title>
                 </v-card>
-                <v-layout
-                  align-center
-                  class="pt-3 pb-5"
-                >
-                  <!-- Company Image -->
-                  <v-flex xs2 text-xs-center>
-                    <v-avatar
-                      class="grey lighten-3"
-                    >
-                      <v-img :src="job.companyImageUrl" :size="30"></v-img>
-                    </v-avatar>
-                  </v-flex>
-                  <!-- Company Name && Rating -->
-                  <v-flex xs10 text-xs-left class="break">
-                    <div class="textColor font-weight-bold align-center">
-                      {{ job.companyName }}
-                    </div>
-                    <v-rating small readonly v-model="job.rating"></v-rating>
-                  </v-flex>
-                </v-layout>
+                <!-- company info -->
+                <v-card flat class="pb-3" :to="'companies/' + job.companyId">
+                  <v-card-actions>
+                    <v-list-tile>
+                      <v-list-tile-avatar color="grey darken-3">
+                        <v-img
+                          :src="job.companyImageUrl"
+                        ></v-img>
+                      </v-list-tile-avatar>
+                      <v-list-tile-content>
+                        <v-list-tile-title class="textColor font-weight-bold">
+                          {{ job.companyName }}
+                        </v-list-tile-title>
+                        <v-list-tile-sub-title>
+                          <v-rating small readonly v-model="job.rating"/>
+                        </v-list-tile-sub-title>
+                      </v-list-tile-content>
+                    </v-list-tile>
+                  </v-card-actions>
+                </v-card>
               </v-card>
             </template>
           </v-list>
