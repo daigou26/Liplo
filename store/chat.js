@@ -32,7 +32,7 @@ export const mutations = {
 }
 
 export const actions = {
-  queryChat({commit}, params) {
+  queryChat({commit}, {nuxt, params}) {
     const chatId = params.id
 
     return firestore.collection('chats')
@@ -55,7 +55,6 @@ export const actions = {
       .catch(function(error) {
         console.log("Error getting document:", error)
         nuxt.error({ statusCode: 404, message: 'not found' })
-
       })
   },
 }

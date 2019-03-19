@@ -61,14 +61,14 @@
                 ></v-divider>
               </template>
             </v-list>
+            <infinite-loading
+              v-if="showInfiniteLoading && chats && chats.length >= 2 && !isLoading"
+              :distance="50"
+              spinner="waveDots"
+              @infinite="infiniteHandler">
+              <div slot="no-results"></div>
+            </infinite-loading>
           </v-flex>
-          <infinite-loading
-            v-if="showInfiniteLoading && chats.length >= 2 && !isLoading"
-            :distance="50"
-            spinner="waveDots"
-            @infinite="infiniteHandler">
-            <div slot="no-results"></div>
-          </infinite-loading>
         </v-flex>
         <!-- messages (lg, md) -->
         <v-flex
@@ -193,14 +193,14 @@
                 ></v-divider>
               </template>
             </v-list>
+            <infinite-loading
+              v-if="showInfiniteLoading && chats.length >= 2 && !isLoading"
+              :distance="50"
+              spinner="waveDots"
+              @infinite="infiniteHandler">
+              <div slot="no-results"></div>
+            </infinite-loading>
           </v-flex>
-          <infinite-loading
-            v-if="showInfiniteLoading && chats.length >= 2 && !isLoading"
-            :distance="50"
-            spinner="waveDots"
-            @infinite="infiniteHandler">
-            <div slot="no-results"></div>
-          </infinite-loading>
         </v-flex>
         <!-- urlが /messages/:id の場合: messages (sm, xs) -->
         <v-flex
@@ -395,7 +395,7 @@ export default {
               this.queryChats({uid: user.uid, companyId: null, chats: this.chats})
             }
           } else {
-            this.queryChat(this.params)
+            this.queryChat({nuxt: this.$nuxt, params: this.$route.params})
           }
         }
       }
@@ -417,8 +417,7 @@ export default {
           this.updateLoading(true)
           this.queryChats({uid: this.user.uid, companyId: null, chats: this.chats})
         }
-
-        if (this.count < 20) {
+        if (this.count > 20) {
           $state.complete()
         } else {
           $state.loaded()
