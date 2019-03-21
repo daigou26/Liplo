@@ -53,9 +53,7 @@
                       ></v-img>
                     </v-list-tile-avatar>
                     <v-list-tile-content>
-                      <v-list-tile-title class="textColor font-weight-bold">
-                        {{ review.companyName }}
-                      </v-list-tile-title>
+                      <v-list-tile-title class="textColor font-weight-bold return">{{ review.companyName }}</v-list-tile-title>
                       <v-list-tile-sub-title>
                         <v-rating small readonly v-model="review.all"/>
                       </v-list-tile-sub-title>
@@ -92,9 +90,7 @@
                       ></v-img>
                     </v-list-tile-avatar>
                     <v-list-tile-content>
-                      <v-list-tile-title class="textColor font-weight-bold">
-                        {{ companyName }}
-                      </v-list-tile-title>
+                      <v-list-tile-title class="textColor font-weight-bold return">{{ companyName }}</v-list-tile-title>
                       <v-list-tile-sub-title>
                         <v-rating v-if="all" small readonly v-model="all"/>
                       </v-list-tile-sub-title>
@@ -180,7 +176,7 @@ export default {
     count: 0,
     showInfiniteLoading: false,
     mypageItems: [
-      'pass',
+      'passes',
       'career',
       'feedbacks',
       'reviews'

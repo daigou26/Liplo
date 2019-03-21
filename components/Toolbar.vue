@@ -429,6 +429,10 @@ export default {
               if (doc.data()['imageUrl'] != null) {
                 self.$store.dispatch('profile/setImageUrl', doc.data()['imageUrl'])
               }
+              if (doc.data()['acceptedOffer'] != null) {
+                console.log('acceptedOffer', doc.data()['acceptedOffer'])
+                self.setAcceptedOffer(doc.data()['acceptedOffer'])
+              }
             }
           })
       } else {
@@ -482,6 +486,9 @@ export default {
       this.email = ''
       this.password = ''
     },
+    ...mapActions({
+      setAcceptedOffer: 'setAcceptedOffer',
+    }),
   }
 }
 </script>

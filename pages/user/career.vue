@@ -56,7 +56,7 @@
                 </template>
                 <div class="py-3">
                   <div class="mb-1">{{ item.startedAt }}</div>
-                  <div class="title font-weight-bold mb-3">{{ item.companyName }}</div>
+                  <div class="title font-weight-bold mb-3 return">{{ item.companyName }}</div>
                   <div>{{ item.occupation }}</div>
                   <div v-if="item.end">期間: {{ item.duration }}ヶ月</div>
                   <div v-else>勤務中</div>
@@ -81,7 +81,7 @@ export default {
   },
   data: () => ({
     mypageItems: [
-      'pass',
+      'passes',
       'career',
       'feedbacks',
       'reviews'

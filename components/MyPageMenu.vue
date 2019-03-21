@@ -57,7 +57,7 @@ export default {
   data: () => ({
     dropdownText: '',
     mypageItems: [
-      'pass',
+      'passes',
       'career',
       'feedbacks',
       'reviews'
@@ -78,7 +78,7 @@ export default {
       this.dropdownText = 'レビュー'
     } else if (this.path.includes('user/feedbacks')) {
       this.dropdownText = 'フィードバック'
-    } else if (this.path.includes('user/pass')) {
+    } else if (this.path.includes('user/passes')) {
       this.dropdownText = '内定パス'
     }
   },

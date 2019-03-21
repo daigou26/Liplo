@@ -2,6 +2,79 @@ const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 admin.initializeApp()
 
+// 内定パスを承諾した時の処理
+exports.acceptJobOffer = functions.firestore
+  .document('passes/{passId}')
+  .onUpdate((change, context) => {
+    const newValue = change.after.data()
+    const previousValue = change.before.data()
+
+    if (newValue.isAccepted != true || previousValue.isAccepted != false) {
+      return 0
+    }
+
+    const uid = newValue.uid
+    const userName = newValue.userName
+    const profileImageUrl = newValue.profileImageUrl
+    const userMessage = newValue.userMessage
+    const companyId = newValue.companyId
+    const companyName = newValue.companyName
+    const companyImageUrl = newValue.companyImageUrl
+    const occupation = newValue.occupation
+    const passId = context.params.passId
+    const acceptedOffer = {
+      acceptedOffer: {
+        companyId: companyId,
+        companyName: companyName,
+        companyImageUrl: companyImageUrl,
+        passId: passId,
+        occupation: occupation,
+        isContracted: false,
+      }
+    }
+    const message = {
+      message: userMessage,
+      createdAt: newValue.acceptedAt,
+      type: 'acceptOffer',
+      user: {
+        uid: uid,
+        name: userName,
+        profileImageUrl: profileImageUrl
+      }
+    }
+
+    // user に acceptedOffer を追加, メッセージを messages に追加
+    return admin.firestore()
+      .collection('chats')
+      .where('uid', '==', uid)
+      .where('companyId', '==', companyId)
+      .get()
+      .then(function(snapshot) {
+        var docCount = 0
+        snapshot.forEach(function(doc) {
+          docCount += 1
+          console.log('docCount', docCount)
+          if (docCount == 1) {
+            const batch = admin.firestore().batch()
+            const userRef = admin.firestore().collection('users').doc(uid)
+            batch.update(userRef, acceptedOffer)
+            const messagesRef = admin.firestore().collection('chats').doc(doc.id).collection('messages').doc()
+            batch.set(messagesRef, message)
+            batch.commit()
+              .then(() => {
+                console.log('acceptJobOffer complete.')
+              })
+              .catch((error) => {
+                console.error("Error adding document: ", error)
+              })
+          }
+        })
+      })
+      .catch(err => {
+        console.log('Error getting document', err)
+      })
+  })
+
 // ユーザーが応募した時の処理
 exports.applyForJob = functions.firestore
   .document('companies/{companyId}/applicants/{applicantId}')

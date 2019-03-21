@@ -29,7 +29,7 @@
         >
           <my-page-menu/>
         </v-flex>
-        <!-- feedbacks (lg, md) -->
+        <!-- passes (lg, md) -->
         <v-flex
           md8
           xs12
@@ -42,41 +42,47 @@
           <v-flex md10 sm6 xs8 offset-md1 offset-sm3 offset-xs2>
             <!-- menu (sm, xs) -->
             <my-page-menu class="hidden-md-and-up"></my-page-menu>
-            <!-- feedbacks -->
+            <!-- passes -->
             <div v-if="params.id == null">
-              <v-list v-if="feedbacks" two-line class="border">
-                <template v-for="(feedback, index) in feedbacks">
-                  <v-list-tile :to="'/user/feedbacks/' + feedback.feedbackId" >
+              <v-list v-if="passes" three-line class="border">
+                <template v-for="(pass, index) in passes">
+                  <v-list-tile :to="'/user/passes/' + pass.passId" >
                     <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
                       <v-img
-                        :src="feedback.companyImageUrl"
+                        :src="pass.companyImageUrl"
                       ></v-img>
                     </v-list-tile-avatar>
                     <v-list-tile-content>
-                      <v-list-tile-title class="textColor font-weight-bold return">{{ feedback.companyName }}</v-list-tile-title>
+                      <v-list-tile-title class="textColor font-weight-bold return">{{ pass.companyName }}</v-list-tile-title>
+                      <v-list-tile-sub-title>
+                        {{ pass.occupation }}
+                      </v-list-tile-sub-title>
+                      <v-list-tile-sub-title class="pt-2" style="font-size: 13px">
+                        有効期限: {{ pass.expirationDate }} まで
+                      </v-list-tile-sub-title>
                     </v-list-tile-content>
                   </v-list-tile>
                   <v-divider
-                    v-if="feedbacks.length != index + 1"
+                    v-if="passes.length != index + 1"
                     :inset="true"
                   ></v-divider>
                 </template>
               </v-list>
               <infinite-loading
-                v-if="showInfiniteLoading && feedbacks && feedbacks.length >= 2 && !isFeedbacksLoading"
+                v-if="showInfiniteLoading && passes && passes.length >= 2 && !isPassesLoading"
                 :distance="50"
                 spinner="waveDots"
                 @infinite="infiniteHandler">
                 <div slot="no-results"></div>
               </infinite-loading>
             </div>
-            <!-- feedback detail -->
+            <!-- pass detail -->
             <div
               v-else
               :class="{
                 'px-5 py-2 border': $vuetify.breakpoint.mdAndUp,
               }"
-              id="feedback-detail"
+              id="pass-detail"
             >
               <v-card v-if="companyId" flat :to="'/companies/' + companyId">
                 <v-card-actions class="px-0 pb-4">
@@ -92,13 +98,31 @@
                   </v-list-tile>
                 </v-card-actions>
               </v-card>
-              <div class="pt-5">
-                <span class="font-weight-bold">良かった点</span>
-                <p v-if="goodPoint" class="font-weight-medium body-text return">{{ goodPoint }}</p>
+              <div class="">
+                <span class="font-weight-bold textColor">職種:</span>
+                <p v-if="occupation" class="font-weight-medium body-text">{{ occupation }}</p>
               </div>
               <div class="py-5">
-                <span class="font-weight-bold">アドバイス</span>
-                <p v-if="advice" class="font-weight-medium body-text return">{{ advice }}</p>
+                <span class="font-weight-bold textColor">メッセージ</span>
+                <p v-if="message" class="body-text return">{{ message }}</p>
+              </div>
+              <div class="text-xs-right">
+                <v-form v-model="acceptOfferValid">
+                  <v-textarea
+                    v-if="acceptedOffer == null"
+                    solo
+                    label="メッセージ"
+                    v-model="userMessage"
+                    :rules="messageRules"
+                    required
+                  ></v-textarea>
+                  <v-btn
+                    :disabled="!acceptOfferValid || acceptedOffer != null"
+                    color="warning"
+                    @click="acceptButtonClicked">
+                    受諾する
+                  </v-btn>
+                </v-form>
               </div>
             </div>
           </v-flex>
@@ -118,6 +142,11 @@ export default {
     MyPageMenu
   },
   data: () => ({
+    acceptOfferValid: true,
+    userMessage: '',
+    messageRules: [
+      v => !!v || 'メッセージを入力してください',
+    ],
     count: 0,
     showInfiniteLoading: false,
     mypageItems: [
@@ -140,15 +169,16 @@ export default {
     },
     ...mapState({
       user: state => state.user,
-      feedbacks: state => state.feedbacks.feedbacks,
-      isFeedbacksLoading: state => state.feedbacks.isFeedbacksLoading,
-      allFeedbacksQueried: state => state.feedbacks.allFeedbacksQueried,
-      companyId: state => state.feedback.companyId,
-      companyName: state => state.feedback.companyName,
-      companyImageUrl: state => state.feedback.companyImageUrl,
-      goodPoint: state => state.feedback.goodPoint,
-      advice: state => state.feedback.advice,
-      createdAt: state => state.feedback.createdAt,
+      acceptedOffer: state => state.acceptedOffer,
+      passes: state => state.passes.passes,
+      isPassesLoading: state => state.passes.isPassesLoading,
+      allPassesQueried: state => state.passes.allPassesQueried,
+      companyId: state => state.pass.companyId,
+      companyName: state => state.pass.companyName,
+      companyImageUrl: state => state.pass.companyImageUrl,
+      message: state => state.pass.message,
+      occupation: state => state.pass.occupation,
+      expirationDate: state => state.pass.expirationDate,
     }),
   },
   mounted() {
@@ -164,20 +194,30 @@ export default {
     auth.onAuthStateChanged((user) => {
       if (user) {
         if (this.params.id == null) {
-          this.queryFeedbacks({uid: user.uid, feedbacks: this.feedbacks})
+          this.queryPasses({uid: user.uid, passes: this.passes})
         } else {
-          this.queryFeedback({nuxt: this.$nuxt, params: this.$route.params})
+          this.queryPass({nuxt: this.$nuxt, params: this.$route.params})
         }
       }
     })
   },
   methods: {
+    acceptButtonClicked() {
+      this.acceptOffer({params: this.params, message: this.userMessage})
+      const acceptedOffer = {
+        passId: this.params.id,
+        companyId: this.companyId,
+        companyName: this.companyName,
+        companyImageUrl: this.companyImageUrl,
+      }
+      this.setAcceptedOffer(acceptedOffer)
+    },
     infiniteHandler($state) {
-      if (!this.allFeedbacksQueried) {
-        if (!this.isFeedbacksLoading && this.user != null) {
+      if (!this.allPassesQueried) {
+        if (!this.isPassesLoading && this.user != null) {
           this.count += 1
-          this.updateFeedbacksLoading(true)
-          this.queryFeedbacks({uid: this.user.uid, feedbacks: this.feedbacks})
+          this.updatePassesLoading(true)
+          this.queryPasses({uid: this.user.uid, passes: this.passes})
         }
         if (this.count > 20) {
           $state.complete()
@@ -189,15 +229,17 @@ export default {
       }
     },
     ...mapActions({
-      queryFeedbacks: 'feedbacks/queryFeedbacks',
-      updateFeedbacksLoading: 'feedbacks/updateFeedbacksLoading',
-      queryFeedback: 'feedback/queryFeedback',
+      queryPasses: 'passes/queryPasses',
+      updatePassesLoading: 'passes/updatePassesLoading',
+      queryPass: 'pass/queryPass',
+      acceptOffer: 'pass/acceptOffer',
+      setAcceptedOffer: 'setAcceptedOffer',
     }),
   }
 }
 </script>
 <style>
-#feedback-detail div.v-list__tile {
+#pass-detail div.v-list__tile {
   padding: 0px;
 }
 </style>

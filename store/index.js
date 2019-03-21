@@ -4,6 +4,7 @@ import { firebase, auth, GoogleProvider } from '@/plugins/firebase'
 
 export const state = () => ({
   user: null,
+  acceptedOffer: null,
   authError: null,
   loading: false,
 })
@@ -11,6 +12,9 @@ export const state = () => ({
 export const mutations = {
   setUser(state, user) {
     state.user = user
+  },
+  setAcceptedOffer(state, acceptedOffer) {
+    state.acceptedOffer = acceptedOffer
   },
   setAuthError(state, error) {
     state.authError = error
@@ -57,6 +61,9 @@ export const actions = {
   },
   setUser({commit}, user) {
     commit('setUser', user)
+  },
+  setAcceptedOffer({commit}, acceptedOffer) {
+    commit('setAcceptedOffer', acceptedOffer)
   },
   resetAuthError({commit}) {
     commit('resetAuthError')
