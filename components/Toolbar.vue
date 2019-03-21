@@ -40,6 +40,17 @@
                   </v-list-tile-content>
                 </v-list-tile>
 
+                <!-- マイページ -->
+                <v-list-tile
+                  class="px-3"
+                  to="/user/passes"
+                  @click="dropdownMenu=false"
+                >
+                  <v-list-tile-content>
+                    <v-list-tile-title class="textColor">マイページ</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+
                 <!-- メッセージ -->
                 <v-list-tile
                   class="px-3"
@@ -116,8 +127,8 @@
         <v-flex class="text-xs-center">
           <!-- ログイン中に表示される -->
           <div v-if="user" class="align-center">
-            <div class="text-xs-center">
-              <v-menu offset-y>
+            <div class="text-xs-left">
+              <v-menu offset-y offset-x min-width="250">
                 <!-- Profile画像 -->
                 <v-avatar
                   slot="activator"
@@ -130,6 +141,11 @@
                   <v-list-tile to="/user/profile">
                     <v-list-tile-title>プロフィール</v-list-tile-title>
                   </v-list-tile>
+                  <v-divider></v-divider>
+                  <v-list-tile to="/user/passes">
+                    <v-list-tile-title>マイページ</v-list-tile-title>
+                  </v-list-tile>
+                  <v-divider></v-divider>
                   <v-list-tile @click="signOut">
                     <v-list-tile-title>ログアウト</v-list-tile-title>
                   </v-list-tile>
