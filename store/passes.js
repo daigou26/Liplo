@@ -25,7 +25,7 @@ export const actions = {
       return firestore.collection('passes')
         .where('uid', '==', uid)
         .orderBy('expirationDate', 'asc')
-        .limit(2)
+        .limit(10)
         .get()
         .then(function(snapshot) {
           var docCount = 0
@@ -46,6 +46,14 @@ export const actions = {
               companyName: doc.data()['companyName'],
               occupation: doc.data()['occupation'],
               expirationDate: expirationDate,
+              isAccepted: doc.data()['isAccepted'],
+              isContracted: doc.data()['isContracted'],
+            }
+            const currentDate = new Date()
+            if (doc.data()['expirationDate'].seconds < currentDate.seconds) {
+              pass.isExpired = true
+            } else {
+              pass.isExpired = false
             }
             commit('addPass', pass)
           })
@@ -64,7 +72,7 @@ export const actions = {
         .where('uid', '==', uid)
         .orderBy('expirationDate', 'asc')
         .startAfter(lastDate)
-        .limit(2)
+        .limit(10)
         .get()
         .then(function(snapshot) {
           var docCount = 0
@@ -85,6 +93,14 @@ export const actions = {
               companyName: doc.data()['companyName'],
               occupation: doc.data()['occupation'],
               expirationDate: expirationDate,
+              isAccepted: doc.data()['isAccepted'],
+              isContracted: doc.data()['isContracted'],
+            }
+            const currentDate = new Date()
+            if (doc.data()['expirationDate'].seconds < currentDate.seconds) {
+              pass.isExpired = true
+            } else {
+              pass.isExpired = false
             }
             commit('addPass', pass)
           })

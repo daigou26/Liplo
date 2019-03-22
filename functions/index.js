@@ -136,7 +136,7 @@ exports.acceptJobOffer = functions.firestore
       }
     }
 
-    // user に acceptedOffer を追加, メッセージを messages に追加
+    // メッセージを messages に追加
     return admin.firestore()
       .collection('chats')
       .where('uid', '==', uid)
@@ -147,12 +147,9 @@ exports.acceptJobOffer = functions.firestore
         snapshot.forEach(function(doc) {
           docCount += 1
           if (docCount == 1) {
-            const batch = admin.firestore().batch()
-            const userRef = admin.firestore().collection('users').doc(uid)
-            batch.update(userRef, acceptedOffer)
-            const messagesRef = admin.firestore().collection('chats').doc(doc.id).collection('messages').doc()
-            batch.set(messagesRef, message)
-            batch.commit()
+            admin.firestore().collection('chats').doc(doc.id)
+              .collection('messages')
+              .add(message)
               .then(() => {
                 console.log('acceptJobOffer complete.')
               })

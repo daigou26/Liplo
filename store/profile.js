@@ -28,7 +28,8 @@ export const state = () => ({
   faculty: '',
   department: '',
   birthTimestamp: '',
-  isEditingUserInfo: false
+  isEditingUserInfo: false,
+  acceptedOffers: [],
 })
 
 export const mutations = {
@@ -107,6 +108,9 @@ export const mutations = {
   updateIsEditingUserInfo(state, isEditing) {
     state.isEditingUserInfo = isEditing
   },
+  setAcceptedOffers(state, acceptedOffers) {
+    state.acceptedOffers = acceptedOffers
+  },
 }
 
 export const actions = {
@@ -127,6 +131,7 @@ export const actions = {
           commit('setUniversity', doc.data()['university'] != null ? doc.data()['university'] : '')
           commit('setFaculty', doc.data()['faculty'] != null ? doc.data()['faculty'] : '')
           commit('setDepartment', doc.data()['department'] != null ? doc.data()['department'] : '')
+          commit('setAcceptedOffers', doc.data()['acceptedOffers'])
         }
       })
   },

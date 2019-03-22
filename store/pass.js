@@ -8,6 +8,8 @@ export const state = () => ({
   message: '',
   occupation: '',
   expirationDate: null,
+  isAccepted: false,
+  isContracted: false,
 })
 
 export const mutations = {
@@ -28,6 +30,12 @@ export const mutations = {
   },
   setExpirationDate(state, date) {
     state.expirationDate = date
+  },
+  setIsAccepted(state, isAccepted) {
+    state.isAccepted = isAccepted
+  },
+  setIsContracted(state, isContracted) {
+    state.isContracted = isContracted
   },
 }
 
@@ -74,6 +82,8 @@ export const actions = {
           commit('setMessage', doc.data()['picMessage'])
           commit('setOccupation', doc.data()['occupation'])
           commit('setExpirationDate', expirationDate)
+          commit('setIsAccepted', doc.data()['isAccepted'])
+          commit('setIsContracted', doc.data()['isContracted'])
         } else {
           // 404
           console.log('404')

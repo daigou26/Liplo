@@ -58,7 +58,10 @@
                         {{ pass.occupation }}
                       </v-list-tile-sub-title>
                       <v-list-tile-sub-title class="pt-2" style="font-size: 13px">
-                        有効期限: {{ pass.expirationDate }} まで
+                        <span v-if="pass.isContracted">内定契約済み</span>
+                        <span v-else-if="pass.isAccepted">内定受諾済み</span>
+                        <span v-else-if="pass.isExpired">有効期限を過ぎました</span>
+                        <span v-else>有効期限: {{ pass.expirationDate }} まで</span>
                       </v-list-tile-sub-title>
                     </v-list-tile-content>
                   </v-list-tile>
@@ -109,7 +112,7 @@
               <div class="text-xs-right">
                 <v-form v-model="acceptOfferValid">
                   <v-textarea
-                    v-if="acceptedOffer == null"
+                    v-if="!isAccepted"
                     solo
                     label="メッセージ"
                     v-model="userMessage"
@@ -117,7 +120,7 @@
                     required
                   ></v-textarea>
                   <v-btn
-                    :disabled="!acceptOfferValid || acceptedOffer != null"
+                    :disabled="!acceptOfferValid || isAccepted"
                     color="warning"
                     @click="acceptButtonClicked">
                     受諾する
@@ -169,7 +172,6 @@ export default {
     },
     ...mapState({
       user: state => state.user,
-      acceptedOffer: state => state.acceptedOffer,
       passes: state => state.passes.passes,
       isPassesLoading: state => state.passes.isPassesLoading,
       allPassesQueried: state => state.passes.allPassesQueried,
@@ -179,6 +181,8 @@ export default {
       message: state => state.pass.message,
       occupation: state => state.pass.occupation,
       expirationDate: state => state.pass.expirationDate,
+      isAccepted: state => state.pass.isAccepted,
+
     }),
   },
   mounted() {
@@ -204,13 +208,7 @@ export default {
   methods: {
     acceptButtonClicked() {
       this.acceptOffer({params: this.params, message: this.userMessage})
-      const acceptedOffer = {
-        passId: this.params.id,
-        companyId: this.companyId,
-        companyName: this.companyName,
-        companyImageUrl: this.companyImageUrl,
-      }
-      this.setAcceptedOffer(acceptedOffer)
+      this.setIsAccepted(true)
     },
     infiniteHandler($state) {
       if (!this.allPassesQueried) {
@@ -233,7 +231,7 @@ export default {
       updatePassesLoading: 'passes/updatePassesLoading',
       queryPass: 'pass/queryPass',
       acceptOffer: 'pass/acceptOffer',
-      setAcceptedOffer: 'setAcceptedOffer',
+      setIsAccepted: 'pass/setIsAccepted',
     }),
   }
 }
