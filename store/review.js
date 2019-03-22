@@ -56,6 +56,16 @@ export const mutations = {
 }
 
 export const actions = {
+  postReview({commit}, review) {
+    return firestore.collection('reviews')
+      .add(review)
+      .then(() => {
+        console.log('post review')
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error)
+      })
+  },
   queryUserReview({commit}, {nuxt, params}) {
     const reviewId = params.id
 

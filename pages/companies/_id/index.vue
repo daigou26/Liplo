@@ -201,14 +201,14 @@
                 </div>
               </div>
               <div class="d-flex">
-                <!-- comment -->
+                <!-- comments -->
                 <v-flex
                   md8
                   xs12
                   :class="{'pr-4': $vuetify.breakpoint.mdOnly}"
                 >
                   <v-list>
-                    <template v-for="(item, index) in reviews.comment">
+                    <template v-for="(item, index) in reviews.comments">
                       <div class="py-2">
                         <div class="font-weight-bold body-text">
                           <v-avatar

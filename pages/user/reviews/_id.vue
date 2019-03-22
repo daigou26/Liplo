@@ -42,8 +42,42 @@
           <v-flex md10 sm6 xs8 offset-md1 offset-sm3 offset-xs2>
             <!-- menu (sm, xs) -->
             <my-page-menu class="hidden-md-and-up"/>
+            <!-- 記入可能なレビュー -->
+            <div v-if="params.id == null" class="my-3">
+              <div class="subheading">
+                記入待ちのレビュー
+              </div>
+              <v-list v-if="notReviewedLists != null && notReviewedLists.length != 0" two-line class="border">
+                <template v-for="(item, index) in notReviewedLists">
+                  <v-list-tile :to="'/user/reviews/new?companyId=' + item.companyId" >
+                    <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
+                      <v-img
+                        :src="item.companyImageUrl"
+                      ></v-img>
+                    </v-list-tile-avatar>
+                    <v-list-tile-content>
+                      <v-list-tile-title class="textColor font-weight-bold return">{{ item.companyName }}</v-list-tile-title>
+                      <v-list-tile-sub-title class="textColor">
+                        {{ item.occupation }}
+                      </v-list-tile-sub-title>
+                    </v-list-tile-content>
+                  </v-list-tile>
+                  <v-divider
+                    v-if="notReviewedLists.length != index + 1"
+                    :inset="true"
+                  ></v-divider>
+                </template>
+              </v-list>
+              <div v-else class="pa-3 border">
+                レビューを書ける企業がありません。インターンに行きましょう！
+              </div>
+            </div>
+
             <!-- reviews -->
-            <div v-if="params.id == null">
+            <div v-if="params.id == null" class="my-4">
+              <div class="subheading">
+                過去に書いたレビュー
+              </div>
               <v-list v-if="userReviews" two-line class="border">
                 <template v-for="(review, index) in userReviews">
                   <v-list-tile :to="'/user/reviews/' + review.reviewId" >
@@ -65,6 +99,9 @@
                   ></v-divider>
                 </template>
               </v-list>
+              <div v-else class="pa-3 border">
+                書いたレビューがありません。
+              </div>
               <infinite-loading
                 v-if="showInfiniteLoading && userReviews && userReviews.length >= 2 && !isUserReviewsLoading"
                 :distance="50"
@@ -195,6 +232,7 @@ export default {
     },
     ...mapState({
       user: state => state.user,
+      notReviewedLists: state => state.career.notReviewedLists,
       userReviews: state => state.reviews.userReviews,
       isUserReviewsLoading: state => state.reviews.isUserReviewsLoading,
       allUserReviewsQueried: state => state.reviews.allUserReviewsQueried,
@@ -226,6 +264,7 @@ export default {
       if (user) {
         if (this.params.id == null) {
           this.queryUserReviews({uid: user.uid, reviews: this.userReviews})
+          this.queryNotReviewedLists(user.uid)
         } else {
           this.queryUserReview({nuxt: this.$nuxt, params: this.$route.params})
         }
@@ -253,6 +292,7 @@ export default {
       queryUserReviews: 'reviews/queryUserReviews',
       updateUserReviewsLoading: 'reviews/updateUserReviewsLoading',
       queryUserReview: 'review/queryUserReview',
+      queryNotReviewedLists: 'career/queryNotReviewedLists',
     }),
   }
 }

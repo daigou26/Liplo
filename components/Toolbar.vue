@@ -113,7 +113,6 @@
         flat
         to="/messages"
         active-class
-        class="pr-5"
       >
         <v-badge  overlap color="red">
           <template v-slot:badge>
@@ -123,7 +122,7 @@
         </v-badge>
       </v-btn>
 
-      <v-layout row wrap align-center>
+      <v-layout row wrap align-center class="pl-5">
         <v-flex class="text-xs-center">
           <!-- ログイン中に表示される -->
           <div v-if="user" class="align-center">
@@ -446,7 +445,6 @@ export default {
                 self.$store.dispatch('profile/setImageUrl', doc.data()['imageUrl'])
               }
               if (doc.data()['acceptedOffer'] != null) {
-                console.log('acceptedOffer', doc.data()['acceptedOffer'])
                 self.setAcceptedOffer(doc.data()['acceptedOffer'])
               }
             }

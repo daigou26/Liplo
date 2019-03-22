@@ -21,8 +21,8 @@ export const actions = {
       profileImageUrl: profileImageUrl,
       name: name,
     }
-    
-    firestore.collection('chats').doc(chatId)
+
+    return firestore.collection('chats').doc(chatId)
       .collection('messages')
       .add({
         message: message,
@@ -30,7 +30,7 @@ export const actions = {
         createdAt: new Date(),
       })
       .then(() => {
-        console.log('post message')
+        
       })
       .catch((error) => {
         console.error("Error adding document: ", error)

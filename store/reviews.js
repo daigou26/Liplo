@@ -32,7 +32,7 @@ export const actions = {
       return firestore.collection('reviews')
         .where('companyId', '==', companyId)
         .orderBy('createdAt', 'desc')
-        .limit(2)
+        .limit(10)
         .get()
         .then(function(snapshot) {
           const data = []
@@ -57,7 +57,7 @@ export const actions = {
         .where('companyId', '==', companyId)
         .orderBy('createdAt', 'desc')
         .startAfter(lastDate)
-        .limit(2)
+        .limit(10)
         .get()
         .then(function(snapshot) {
           snapshot.forEach(function(doc) {
@@ -80,12 +80,11 @@ export const actions = {
       return firestore.collection('reviews')
         .where('uid', '==', uid)
         .orderBy('createdAt', 'desc')
-        .limit(2)
+        .limit(10)
         .get()
         .then(function(snapshot) {
           var docCount = 0
           snapshot.forEach(function(doc) {
-            console.log(doc.data())
             docCount += 1
             const review = {
               reviewId: doc.id,
@@ -111,7 +110,7 @@ export const actions = {
         .where('uid', '==', uid)
         .orderBy('createdAt', 'desc')
         .startAfter(lastDate)
-        .limit(2)
+        .limit(10)
         .get()
         .then(function(snapshot) {
           var docCount = 0

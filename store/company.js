@@ -140,37 +140,47 @@ export const actions = {
             commit('setWorkday', doc.data()['workday'])
             // commit('setOccupation', doc.data()['occupation'])
             // commit('setFeatures', doc.data()['features'])
-            commit('setReviews', doc.data()['reviews'])
+            // commit('setReviews', doc.data()['reviews'])
 
-            // chart Data
-            const reviews = doc.data()['reviews']
-            const chartData = {
-              labels: [
-                '成長できるか',
-                '仕事内容',
-                '裁量度',
-                '勤務中の自由度',
-                '出勤時間の柔軟性',
-                'メンター',
-                '雰囲気',
-              ],
-              datasets: [
-                {
-                  borderColor: '#f87979',
-                  backgroundColor: 'rgba(248, 121, 121, 0.1)',
-                  data: [
-                    reviews.rating.growth,
-                    reviews.rating.job,
-                    reviews.rating.discretion,
-                    reviews.rating.flexibility,
-                    reviews.rating.flexibleSchedule,
-                    reviews.rating.mentor,
-                    reviews.rating.atmosphere
-                  ]
+            firestore.collection('companies')
+              .doc(doc.id)
+              .collection('detail')
+              .doc(doc.id)
+              .get()
+              .then(function(companyDoc) {
+                if (companyDoc.exists) {
+                  commit('setReviews', companyDoc.data()['reviews'])
+                  // chart Data
+                  const reviews = companyDoc.data()['reviews']
+                  const chartData = {
+                    labels: [
+                      '成長できるか',
+                      '仕事内容',
+                      '裁量度',
+                      '勤務中の自由度',
+                      '出勤時間の柔軟性',
+                      'メンター',
+                      '雰囲気',
+                    ],
+                    datasets: [
+                      {
+                        borderColor: '#f87979',
+                        backgroundColor: 'rgba(248, 121, 121, 0.1)',
+                        data: [
+                          reviews.rating.growth,
+                          reviews.rating.job,
+                          reviews.rating.discretion,
+                          reviews.rating.flexibility,
+                          reviews.rating.flexibleSchedule,
+                          reviews.rating.mentor,
+                          reviews.rating.atmosphere
+                        ]
+                      }
+                    ]
+                  }
+                  commit('setChartData', chartData)
                 }
-              ]
-            }
-            commit('setChartData', chartData)
+              })
           } else {
             // 404
             console.log('404')
