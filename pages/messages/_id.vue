@@ -345,6 +345,7 @@ export default {
     },
     ...mapState({
       user: state => state.user,
+      type: state => state.profile.type,
       profileImageUrl: state => state.profile.imageUrl,
       firstName: state => state.profile.firstName,
       lastName: state => state.profile.lastName,

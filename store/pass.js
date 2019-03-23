@@ -95,4 +95,14 @@ export const actions = {
         nuxt.error({ statusCode: 404, message: 'not found' })
       })
   },
+  resetState({commit}) {
+    commit('setCompanyId', null)
+    commit('setCompanyImageUrl', null)
+    commit('setCompanyName', null)
+    commit('setMessage', '')
+    commit('setOccupation', '')
+    commit('setExpirationDate', null)
+    commit('setIsAccepted', false)
+    commit('setIsContracted', false)
+  },
 }

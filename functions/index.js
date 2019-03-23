@@ -2,6 +2,39 @@ const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 admin.initializeApp()
 
+// 企業が登録された時の処理
+exports.addCompany = functions.firestore
+  .document('companies/{companyId}')
+  .onCreate((snap, context) => {
+    const companyId = context.params.companyId
+    const members = snap.data().members
+    const uid = members[0].uid
+    const companyName = snap.data().name
+    const companyEmail = snap.data().email
+
+    const companyDetail = {
+      name: companyName,
+      email: companyEmail,
+      members: members,
+    }
+
+    // userにcompanyId を追加, companyDetail に companyName や members などを追加
+    const batch = admin.firestore().batch()
+    const companyDetailRef = admin.firestore().collection('companies').doc(companyId).collection('detail').doc(companyId)
+    batch.set(companyDetailRef, companyDetail)
+    const userRef = admin.firestore().collection('users').doc(uid)
+    batch.update(userRef, {
+      companyId: companyId
+    })
+    return batch.commit()
+      .then(() => {
+        console.log('addCompany completed.')
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error)
+      })
+  })
+
 // レビューした時の処理
 exports.addReview = functions.firestore
   .document('reviews/{reviewId}')
@@ -95,6 +128,7 @@ exports.addReview = functions.firestore
         console.log('Error getting document', err)
       })
   })
+
 // 内定パスを承諾した時の処理
 exports.acceptJobOffer = functions.firestore
   .document('passes/{passId}')

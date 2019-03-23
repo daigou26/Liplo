@@ -18,6 +18,9 @@ export const mutations = {
   addUserReview(state, review) {
     state.userReviews.push(review)
   },
+  resetUserReviews(state) {
+    state.userReviews = []
+  },
   updateUserReviewsLoading(state, isLoading) {
     state.isUserReviewsLoading = isLoading
   },
@@ -137,5 +140,11 @@ export const actions = {
   },
   updateUserReviewsLoading({commit}, isLoading) {
     commit('updateUserReviewsLoading', isLoading)
+  },
+  resetState({commit}) {
+    commit('setReviews', null)
+    commit('resetUserReviews')
+    commit('updateUserReviewsLoading', false)
+    commit('setAllUserReviewsQueried', false)
   },
 }

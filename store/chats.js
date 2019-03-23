@@ -11,6 +11,9 @@ export const mutations = {
   addChat(state, chat) {
     state.chats.push(chat)
   },
+  resetChats(state) {
+    state.chats = []
+  },
   updateLoading(state, isLoading) {
     state.isLoading = isLoading
   },
@@ -104,5 +107,10 @@ export const actions = {
           console.log("Error getting document:", error)
         })
     }
+  },
+  resetState({commit}) {
+    commit('resetChats')
+    commit('updateLoading', false)
+    commit('setAllChatsQueried', false)
   },
 }

@@ -3,6 +3,7 @@ import { firestore, storageRef } from '@/plugins/firebase'
 
 
 export const state = () => ({
+  type: null,
   imageUrl: '',
   imageFileSizeValid: true,
   isEditingProfileImage: false,
@@ -33,6 +34,9 @@ export const state = () => ({
 })
 
 export const mutations = {
+  setType(state, type) {
+    state.type = type
+  },
   setImageUrl(state, imageUrl) {
     state.imageUrl = imageUrl
   },
@@ -93,8 +97,8 @@ export const mutations = {
   updateIsEditingLinks(state, isEditing) {
     state.isEditingLinks = isEditing
   },
-  setBirthTimestamp(state, birthTimestamp) {
-    state.birthTimestamp = birthTimestamp
+  setEmail(state, email) {
+    state.email = email
   },
   setUniversity(state, university) {
     state.university = university
@@ -104,6 +108,9 @@ export const mutations = {
   },
   setDepartment(state, department) {
     state.department = department
+  },
+  setBirthTimestamp(state, birthTimestamp) {
+    state.birthTimestamp = birthTimestamp
   },
   updateIsEditingUserInfo(state, isEditing) {
     state.isEditingUserInfo = isEditing
@@ -127,13 +134,17 @@ export const actions = {
           commit('setPortfolio', doc.data()['portfolio'])
           commit('setSkills', doc.data()['skills'])
           commit('setLinks', doc.data()['links'])
-          commit('setBirthTimestamp', doc.data()['birthTimestamp'])
+          commit('setEmail', doc.data()['email'])
           commit('setUniversity', doc.data()['university'] != null ? doc.data()['university'] : '')
           commit('setFaculty', doc.data()['faculty'] != null ? doc.data()['faculty'] : '')
           commit('setDepartment', doc.data()['department'] != null ? doc.data()['department'] : '')
+          commit('setBirthTimestamp', doc.data()['birthTimestamp'])
           commit('setAcceptedOffers', doc.data()['acceptedOffers'])
         }
       })
+  },
+  setType({commit}, type) {
+    commit('setType', type)
   },
   setImageUrl({commit}, imageUrl) {
     commit('setImageUrl', imageUrl)
@@ -465,5 +476,35 @@ export const actions = {
       .catch((error) => {
         console.error("Error adding document: ", error)
       })
+  },
+  resetState({commit}) {
+    commit('setType', null)
+    commit('setImageUrl', '')
+    commit('updateImageFileSizeValid', true)
+    commit('updateIsEditingProfileImage', false)
+    commit('setFirstName', '')
+    commit('setLastName', '')
+    commit('updateIsEditingUserName', false)
+    commit('setSelfIntro', '')
+    commit('updateIsEditingSelfIntro', false)
+    commit('setWhatWantToDo', '')
+    commit('updateIsEditingWhatWantToDo', false)
+    commit('setPortfolio', null)
+    commit('updateIsPortfolioImageChanged', false)
+    commit('setSelectedPortfolioItemIndex', null)
+    commit('updateIsEditingPortfolio', false)
+    commit('setSkills', null)
+    commit('setSelectedSkillIndex', null)
+    commit('updateIsEditingSkills', false)
+    commit('setLinks', null)
+    commit('setSelectedLinkIndex', null)
+    commit('updateIsEditingLinks', false)
+    commit('setEmail', '')
+    commit('setUniversity', '')
+    commit('setFaculty', '')
+    commit('setDepartment', '')
+    commit('setBirthTimestamp', '')
+    commit('updateIsEditingUserInfo', null)
+    commit('setAcceptedOffers', [])
   },
 }

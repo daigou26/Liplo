@@ -11,6 +11,9 @@ export const mutations = {
   addPass(state, pass) {
     state.passes.push(pass)
   },
+  resetPasses(state) {
+    state.passes = []
+  },
   updatePassesLoading(state, isLoading) {
     state.isPassesLoading = isLoading
   },
@@ -116,5 +119,10 @@ export const actions = {
   },
   updatePassesLoading({commit}, isLoading) {
     commit('updatePassesLoading', isLoading)
+  },
+  resetState({commit}) {
+    commit('resetPasses')
+    commit('updatePassesLoading', false)
+    commit('setAllPassesQueried', false)
   },
 }

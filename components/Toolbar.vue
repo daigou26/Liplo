@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar flat color="white" class="toolbar-fixed border-bottom" id="toolbar">
+  <v-toolbar v-if="type != 'recruiter'" flat color="white" class="toolbar-fixed border-bottom" id="toolbar">
     <v-toolbar-side-icon　@click="iconClicked"></v-toolbar-side-icon>
     <div class="text-xs-center hidden-sm-and-up">
       <v-dialog
@@ -355,6 +355,44 @@
       </v-layout>
     </v-toolbar-items>
   </v-toolbar>
+  <v-toolbar v-else flat fixed app>
+      <v-toolbar-title v-if="!path.includes('recruiter')">Application</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-layout row wrap align-center class="pl-5">
+          <v-flex class="text-xs-center">
+            <!-- ログイン中に表示される -->
+            <div class="align-center">
+              <div class="text-xs-left">
+                <v-menu offset-y offset-x min-width="250">
+                  <!-- Profile画像 -->
+                  <v-avatar
+                    slot="activator"
+                    :size="avatarSize"
+                  >
+                    <img v-if="imageUrl" :src="imageUrl" alt="avatar">
+                    <v-icon v-else>person</v-icon>
+                  </v-avatar>
+                  <v-list>
+                    <v-list-tile to="/recruiter/profile">
+                      <v-list-tile-title>プロフィール</v-list-tile-title>
+                    </v-list-tile>
+                    <v-divider></v-divider>
+                    <v-list-tile to="/recruiter/dashboard">
+                      <v-list-tile-title>ダッシュボード</v-list-tile-title>
+                    </v-list-tile>
+                    <v-divider></v-divider>
+                    <v-list-tile @click="signOut">
+                      <v-list-tile-title>ログアウト</v-list-tile-title>
+                    </v-list-tile>
+                  </v-list>
+                </v-menu>
+              </div>
+            </div>
+          </v-flex>
+        </v-layout>
+      </v-toolbar-items>
+    </v-toolbar>
 </template>
 
 <script>
@@ -397,8 +435,12 @@ export default {
     ],
   }),
   computed: {
+    path() {
+      return this.$route.path
+    },
     ...mapState({
       user: state => state.user,
+      type: state => state.profile.type,
       authError: state => state.authError,
       loading: state => state.loading,
       imageUrl: state => state.profile.imageUrl,
@@ -406,53 +448,62 @@ export default {
     })
   },
   mounted() {
-    // ログイン時、dbにuser情報保存(localStorageにも保存)
+    // ログイン時、dbにuser(recruiter)情報保存(localStorageにも保存)
     auth.onAuthStateChanged((user) => {
-      if (user) {
-        this.$store.dispatch('setUser', user)
-        const self = this
-        firestore.collection('users').doc(user.uid).get()
-          .then(function(doc) {
-            if (!doc.exists) {
-              const batch = firestore.batch()
-              const userRef = firestore.collection('users').doc(user.uid)
-              batch.set(userRef, {
-                firstName: self.firstName,
-                lastName: self.lastName,
-              })
-              const profileRef = firestore.collection('users')
-                .doc(user.uid).collection('profile').doc(user.uid)
-              batch.set(profileRef, {
-                firstName: self.firstName,
-                lastName: self.lastName,
-                email: user.email
-              })
-              batch.commit()
-                .then(() => {
-                  self.resetData()
-                  self.$store.dispatch('profile/setFirstName', self.firstName)
-                  self.$store.dispatch('profile/setLastName', self.lastName)
-                })
-                .catch((error) => {
-                  console.error("Error adding document: ", error)
-                })
-            } else {
-              self.resetData()
-              self.$store.dispatch('profile/setFirstName', doc.data()['firstName'])
-              self.$store.dispatch('profile/setLastName', doc.data()['lastName'])
-
-              if (doc.data()['imageUrl'] != null) {
-                self.$store.dispatch('profile/setImageUrl', doc.data()['imageUrl'])
-              }
-            }
-          })
-      } else {
-        this.resetData()
-        this.$store.dispatch('setUser', null)
-        if (this.$route.path !== '/' && this.$route.name !== 'jobs-id') {
-          this.$router.push('/')
-        }
-      }
+      this.setAuthInfo({
+        route: this.$route,
+        router: this.$router,
+        user: user,
+        firstName: this.firstName,
+        lastName: this.lastName
+      })
+      this.resetData()
+      // if (user) {
+      //   this.$store.dispatch('setUser', user)
+      //   const self = this
+      //   firestore.collection('users').doc(user.uid).get()
+      //     .then(function(doc) {
+      //       if (!doc.exists) {
+      //         const batch = firestore.batch()
+      //         const userRef = firestore.collection('users').doc(user.uid)
+      //         batch.set(userRef, {
+      //           firstName: self.firstName,
+      //           lastName: self.lastName,
+      //         })
+      //         const profileRef = firestore.collection('users')
+      //           .doc(user.uid).collection('profile').doc(user.uid)
+      //         batch.set(profileRef, {
+      //           firstName: self.firstName,
+      //           lastName: self.lastName,
+      //           email: user.email
+      //         })
+      //         batch.commit()
+      //           .then(() => {
+      //             self.resetData()
+      //             self.$store.dispatch('profile/setFirstName', self.firstName)
+      //             self.$store.dispatch('profile/setLastName', self.lastName)
+      //           })
+      //           .catch((error) => {
+      //             console.error("Error adding document: ", error)
+      //           })
+      //       } else {
+      //         self.resetData()
+      //         self.$store.dispatch('profile/setFirstName', doc.data()['firstName'])
+      //         self.$store.dispatch('profile/setLastName', doc.data()['lastName'])
+      //
+      //         if (doc.data()['imageUrl'] != null) {
+      //           self.$store.dispatch('profile/setImageUrl', doc.data()['imageUrl'])
+      //         }
+      //       }
+      //     })
+      //
+      // } else {
+      //   this.resetData()
+      //   this.$store.dispatch('setUser', null)
+      //   if (this.$route.path !== '/' && this.$route.name !== 'jobs-id') {
+      //     this.$router.push('/')
+      //   }
+      // }
     })
   },
   methods: {
@@ -497,6 +548,9 @@ export default {
       this.email = ''
       this.password = ''
     },
+    ...mapActions({
+      setAuthInfo: 'setAuthInfo',
+    }),
   }
 }
 </script>

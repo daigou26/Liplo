@@ -385,6 +385,7 @@
 
         </v-flex>
         <v-flex
+          v-if="type != 'recruiter'"
           xs6
           sm5
           md4
@@ -526,6 +527,7 @@ export default {
       }
     },
     ...mapState({
+      type: state => state.profile.type,
       profileImageUrl: state => state.profile.imageUrl,
       firstName: state => state.profile.firstName,
       lastName: state => state.profile.lastName,

@@ -16,7 +16,7 @@ export const mutations = {
   },
   setNotReviewedCompany(state, company) {
     state.notReviewedCompany = company
-  }
+  },
 }
 
 export const actions = {
@@ -114,5 +114,10 @@ export const actions = {
       .catch(function(error) {
         console.log("Error getting document:", error)
       })
+  },
+  resetState({commit}) {
+    commit('setCareer', [])
+    commit('setNotReviewedLists', null)
+    commit('setNotReviewedCompany', null)
   },
 }
