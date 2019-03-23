@@ -1,0 +1,243 @@
+<template>
+  <v-layout
+    white
+    row
+    align-center
+    wrap
+    :style="{ height: windowHeight + 'px' }"
+  >
+    <v-flex
+      xs12
+      md10
+      offset-md1
+      class="break"
+      style="height: 100%"
+    >
+      <v-layout
+        row
+        wrap
+        style="height: 100%"
+      >
+        <!-- menu (lg, md)-->
+        <v-flex
+          md3
+          hidden-sm-and-down
+          :class="{
+            'pa-5': $vuetify.breakpoint.lgAndUp,
+            'pa-3': $vuetify.breakpoint.mdOnly,
+          }"
+        >
+          <my-page-menu/>
+        </v-flex>
+        <!-- passes (lg, md) -->
+        <v-flex
+          md8
+          xs12
+          class="py-3"
+          :class="{
+            'px-5': $vuetify.breakpoint.lgAndUp,
+            'px-3': $vuetify.breakpoint.mdOnly,
+          }"
+        >
+          <v-flex md10 sm6 xs8 offset-md1 offset-sm3 offset-xs2>
+            <!-- menu (sm, xs) -->
+            <my-page-menu class="hidden-md-and-up"></my-page-menu>
+            <!-- passes -->
+            <div v-if="params.id == null">
+              <v-list v-if="passes" three-line class="border">
+                <template v-for="(pass, index) in passes">
+                  <v-list-tile :to="'/user/passes/' + pass.passId" >
+                    <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
+                      <v-img
+                        :src="pass.companyImageUrl"
+                      ></v-img>
+                    </v-list-tile-avatar>
+                    <v-list-tile-content>
+                      <v-list-tile-title class="textColor font-weight-bold return">{{ pass.companyName }}</v-list-tile-title>
+                      <v-list-tile-sub-title>
+                        {{ pass.occupation }}
+                      </v-list-tile-sub-title>
+                      <v-list-tile-sub-title class="pt-2" style="font-size: 13px">
+                        <span v-if="pass.isContracted">内定契約済み</span>
+                        <span v-else-if="pass.isAccepted">内定受諾済み</span>
+                        <span v-else-if="pass.isExpired">有効期限を過ぎました</span>
+                        <span v-else>有効期限: {{ pass.expirationDate }} まで</span>
+                      </v-list-tile-sub-title>
+                    </v-list-tile-content>
+                  </v-list-tile>
+                  <v-divider
+                    v-if="passes.length != index + 1"
+                    :inset="true"
+                  ></v-divider>
+                </template>
+              </v-list>
+              <infinite-loading
+                v-if="showInfiniteLoading && passes && passes.length >= 2 && !isPassesLoading"
+                :distance="50"
+                spinner="waveDots"
+                @infinite="infiniteHandler">
+                <div slot="no-results"></div>
+              </infinite-loading>
+            </div>
+            <!-- pass detail -->
+            <div
+              v-else
+              :class="{
+                'px-5 py-2 border': $vuetify.breakpoint.mdAndUp,
+              }"
+              id="pass-detail"
+            >
+              <v-card v-if="companyId" flat :to="'/companies/' + companyId">
+                <v-card-actions class="px-0 pb-4">
+                  <v-list-tile>
+                    <v-list-tile-avatar color="grey darken-3">
+                      <v-img
+                        :src="companyImageUrl"
+                      ></v-img>
+                    </v-list-tile-avatar>
+                    <v-list-tile-content>
+                      <v-list-tile-title class="textColor font-weight-bold return">{{ companyName }}</v-list-tile-title>
+                    </v-list-tile-content>
+                  </v-list-tile>
+                </v-card-actions>
+              </v-card>
+              <div class="">
+                <span class="font-weight-bold textColor">職種:</span>
+                <p v-if="occupation" class="font-weight-medium body-text">{{ occupation }}</p>
+              </div>
+              <div class="py-5">
+                <span class="font-weight-bold textColor">メッセージ</span>
+                <p v-if="message" class="body-text return">{{ message }}</p>
+              </div>
+              <div class="text-xs-right">
+                <v-form v-model="acceptOfferValid">
+                  <v-textarea
+                    v-if="!isAccepted"
+                    solo
+                    label="メッセージ"
+                    v-model="userMessage"
+                    :rules="messageRules"
+                    required
+                  ></v-textarea>
+                  <v-btn
+                    :disabled="!acceptOfferValid || isAccepted"
+                    color="warning"
+                    @click="acceptButtonClicked">
+                    受諾する
+                  </v-btn>
+                </v-form>
+              </div>
+            </div>
+          </v-flex>
+        </v-flex>
+      </v-layout>
+    </v-flex>
+  </v-layout>
+</template>
+
+<script>
+import { mapActions, mapState } from 'vuex'
+import { auth } from '@/plugins/firebase'
+import MyPageMenu from '~/components/MyPageMenu'
+
+export default {
+  components: {
+    MyPageMenu
+  },
+  data: () => ({
+    acceptOfferValid: true,
+    userMessage: '',
+    messageRules: [
+      v => !!v || 'メッセージを入力してください',
+    ],
+    count: 0,
+    showInfiniteLoading: false,
+    mypageItems: [
+      'passes',
+      'career',
+      'feedbacks',
+      'reviews'
+    ],
+    windowHeight: 0,
+  }),
+  computed: {
+    params() {
+      return this.$route.params
+    },
+    path() {
+      return this.$route.path
+    },
+    breakpoint() {
+      return this.$vuetify.breakpoint.name
+    },
+    ...mapState({
+      user: state => state.user,
+      passes: state => state.passes.passes,
+      isPassesLoading: state => state.passes.isPassesLoading,
+      allPassesQueried: state => state.passes.allPassesQueried,
+      companyId: state => state.pass.companyId,
+      companyName: state => state.pass.companyName,
+      companyImageUrl: state => state.pass.companyImageUrl,
+      message: state => state.pass.message,
+      occupation: state => state.pass.occupation,
+      expirationDate: state => state.pass.expirationDate,
+      isAccepted: state => state.pass.isAccepted,
+
+    }),
+  },
+  mounted() {
+    let toolbarHeight
+    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+      toolbarHeight = 48
+    } else {
+      toolbarHeight = 64
+    }
+    this.windowHeight = window.innerHeight - toolbarHeight
+    this.showInfiniteLoading = true
+
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        if (this.params.id == null) {
+          this.queryPasses({uid: user.uid, passes: this.passes})
+        } else {
+          this.queryPass({nuxt: this.$nuxt, params: this.$route.params})
+        }
+      }
+    })
+  },
+  methods: {
+    acceptButtonClicked() {
+      this.acceptOffer({params: this.params, message: this.userMessage})
+      this.setIsAccepted(true)
+    },
+    infiniteHandler($state) {
+      if (!this.allPassesQueried) {
+        if (!this.isPassesLoading && this.user != null) {
+          this.count += 1
+          this.updatePassesLoading(true)
+          this.queryPasses({uid: this.user.uid, passes: this.passes})
+        }
+        if (this.count > 20) {
+          $state.complete()
+        } else {
+          $state.loaded()
+        }
+      } else {
+        $state.complete()
+      }
+    },
+    ...mapActions({
+      queryPasses: 'passes/queryPasses',
+      updatePassesLoading: 'passes/updatePassesLoading',
+      queryPass: 'pass/queryPass',
+      acceptOffer: 'pass/acceptOffer',
+      setIsAccepted: 'pass/setIsAccepted',
+    }),
+  }
+}
+</script>
+<style>
+#pass-detail div.v-list__tile {
+  padding: 0px;
+}
+</style>

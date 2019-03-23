@@ -2,24 +2,15 @@ export const strict = false
 import { firestore } from '@/plugins/firebase'
 
 export const state = () => ({
-  uid: null,
-  profileImageUrl: null,
-  userName: null,
   companyId: null,
   companyImageUrl: null,
   companyName: null,
+  goodPoint: '',
+  advice: '',
+  createdAt: null,
 })
 
 export const mutations = {
-  setUid(state, uid) {
-    state.uid = uid
-  },
-  setProfileImageUrl(state, profileImageUrl) {
-    state.profileImageUrl = profileImageUrl
-  },
-  setUserName(state, userName) {
-    state.userName = userName
-  },
   setCompanyId(state, companyId) {
     state.companyId = companyId
   },
@@ -29,23 +20,32 @@ export const mutations = {
   setCompanyName(state, companyName) {
     state.companyName = companyName
   },
+  setGoodPoint(state, goodPoint) {
+    state.goodPoint = goodPoint
+  },
+  setAdvice(state, advice) {
+    state.advice = advice
+  },
+  setCreatedAt(state, createdAt) {
+    state.createdAt = createdAt
+  },
 }
 
 export const actions = {
-  queryChat({commit}, {nuxt, params}) {
-    const chatId = params.id
+  queryFeedback({commit}, {nuxt, params}) {
+    const feedbackId = params.id
 
-    return firestore.collection('chats')
-      .doc(chatId)
+    return firestore.collection('feedbacks')
+      .doc(feedbackId)
       .get()
       .then(function(doc) {
         if (doc.exists) {
-          commit('setUid', doc.data()['uid'])
-          commit('setProfileImageUrl', doc.data()['profileImageUrl'])
-          commit('setUserName', doc.data()['userName'])
           commit('setCompanyId', doc.data()['companyId'])
           commit('setCompanyImageUrl', doc.data()['companyImageUrl'])
           commit('setCompanyName', doc.data()['companyName'])
+          commit('setGoodPoint', doc.data()['goodPoint'])
+          commit('setAdvice', doc.data()['advice'])
+          commit('setCreatedAt', doc.data()['createdAt'])
         } else {
           // 404
           console.log('404')

@@ -40,6 +40,17 @@
                   </v-list-tile-content>
                 </v-list-tile>
 
+                <!-- マイページ -->
+                <v-list-tile
+                  class="px-3"
+                  to="/user/passes"
+                  @click="dropdownMenu=false"
+                >
+                  <v-list-tile-content>
+                    <v-list-tile-title class="textColor">マイページ</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+
                 <!-- メッセージ -->
                 <v-list-tile
                   class="px-3"
@@ -111,235 +122,237 @@
         </v-badge>
       </v-btn>
 
-
-      <v-container fill-height>
-        <v-layout row wrap align-center>
-          <v-flex class="text-xs-center">
-            <!-- ログイン中に表示される -->
-            <div v-if="user" class="align-center">
-              <div class="text-xs-center">
-                <v-menu offset-y>
-                  <!-- Profile画像 -->
-                  <v-avatar
-                    slot="activator"
-                    :size="avatarSize"
-                  >
-                    <img v-if="imageUrl" :src="imageUrl" alt="avatar">
-                    <v-icon v-else>person</v-icon>
-                  </v-avatar>
-                  <v-list>
-                    <v-list-tile to="/user/profile">
-                      <v-list-tile-title>プロフィール</v-list-tile-title>
-                    </v-list-tile>
-                    <v-list-tile @click="signOut">
-                      <v-list-tile-title>ログアウト</v-list-tile-title>
-                    </v-list-tile>
-                  </v-list>
-                </v-menu>
-              </div>
-            </div>
-            <!-- ログインしていない場合に表示される -->
-            <div v-else>
-              <v-btn flat @click="signUpButtonClicked">
-                <span class="font-weight-bold" style="color: #555555">登録する</span>
-              </v-btn>
-              <v-btn flat @click="signInButtonClicked">
-                <span class="font-weight-bold" style="color: #555555">ログイン</span>
-              </v-btn>
-              <!-- Auth Dialog -->
-              <div class="text-xs-center">
-                <v-dialog
-                  v-model="dialog"
-                  :fullscreen="$vuetify.breakpoint.xsOnly"
-                  width="500"
+      <v-layout row wrap align-center class="pl-5">
+        <v-flex class="text-xs-center">
+          <!-- ログイン中に表示される -->
+          <div v-if="user" class="align-center">
+            <div class="text-xs-left">
+              <v-menu offset-y offset-x min-width="250">
+                <!-- Profile画像 -->
+                <v-avatar
+                  slot="activator"
+                  :size="avatarSize"
                 >
-                  <v-card class="pt-5 pb-3 px-3">
-                    <v-toolbar flat color="white hidden-sm-and-up">
-                      <v-toolbar-side-icon
-                        @click="dialog=false"
-                      ></v-toolbar-side-icon>
-                    </v-toolbar>
-                    <v-flex
-                      xs12
-                      class="text-xs-center"
-                      :class="{'px-2': $vuetify.breakpoint.smAndUp, 'px-3 mt-4': $vuetify.breakpoint.xsOnly}"
-                    >
-                      <!-- ログインフォーム -->
-                      <div v-if="signInDialog">
-                        <v-form v-model="valid">
-                          <v-container>
-                            <v-layout
-                              column
-                              justify-center
-                            >
-                              <v-flex xs12>
-                                <!-- Error Message -->
-                                <v-alert
-                                  :value="authError != null"
-                                  type="error"
-                                  class="mb-5"
-                                >
-                                  {{ authError }}
-                                </v-alert>
-                                <!-- メールアドレス -->
-                                <v-text-field
-                                  v-model="email"
-                                  :rules="emailRules"
-                                  label="メールアドレス"
-                                  append-icon="mail_outline"
-                                  solo
-                                  required
-                                ></v-text-field>
-                                <!-- パスワード -->
-                                <v-text-field
-                                  v-model="password"
-                                  :append-icon="passwordShow ? 'visibility_off' : 'visibility'"
-                                  :rules="passwordRules"
-                                  :type="passwordShow ? 'text' : 'password'"
-                                  label="パスワード"
-                                  solo
-                                  required
-                                  @click:append="passwordShow = !passwordShow"
-                                ></v-text-field>
-                              </v-flex>
-                              <!-- ログインボタン -->
-                              <v-btn
-                                block
-                                :disabled="!valid || loading"
-                                class="orange darken-1"
-                                @click="signIn"
-                              >
-                                <span
-                                  class="font-weight-bold body-1"
-                                  style="color: #ffffff;"
-                                >
-                                  ログイン
-                                </span>
-                              </v-btn>
-                            </v-layout>
-                          </v-container>
-                        </v-form>
-                      </div>
-                      <!-- 登録フォーム -->
-                      <div v-else-if="signUpForm">
-                        <v-form v-model="valid">
-                          <v-container>
-                            <v-layout
-                              column
-                              justify-center
-                            >
-                              <v-flex xs12>
-                                <!-- Error Message -->
-                                <v-alert
-                                  :value="authError != null"
-                                  type="error"
-                                  class="mb-5"
-                                >
-                                  {{ authError }}
-                                </v-alert>
-                                <!-- メールアドレス -->
-                                <v-text-field
-                                  v-model="email"
-                                  :rules="emailRules"
-                                  label="メールアドレス"
-                                  append-icon="mail_outline"
-                                  solo
-                                  required
-                                ></v-text-field>
-                                <!-- 名前 -->
-                                <v-text-field
-                                  v-model="firstName"
-                                  :rules="firstNameRules"
-                                  label="名"
-                                  append-icon="person"
-                                  solo
-                                  required
-                                ></v-text-field>
-                                <!-- 苗字 -->
-                                <v-text-field
-                                  v-model="lastName"
-                                  :rules="lastNameRules"
-                                  label="姓"
-                                  append-icon="person"
-                                  solo
-                                  required
-                                ></v-text-field>
-                                <!-- パスワード -->
-                                <v-text-field
-                                  v-model="password"
-                                  :append-icon="passwordShow ? 'visibility_off' : 'visibility'"
-                                  :rules="passwordRules"
-                                  :type="passwordShow ? 'text' : 'password'"
-                                  label="パスワード"
-                                  solo
-                                  required
-                                  @click:append="passwordShow = !passwordShow"
-                                ></v-text-field>
-                              </v-flex>
-                              <!-- 登録ボタン -->
-                              <v-btn
-                                block
-                                :disabled="!valid || loading"
-                                class="orange darken-1"
-                                @click="signUp"
-                              >
-                                <span
-                                  class="font-weight-bold body-1"
-                                  style="color: #ffffff;"
-                                >
-                                  登録する
-                                </span>
-                              </v-btn>
-                            </v-layout>
-                          </v-container>
-                        </v-form>
-                      </div>
-                      <!-- 登録方法 -->
-                      <div v-else>
-                        <!-- メールアドレス登録 -->
-                        <v-btn
-                          block
-                          color="primary"
-                          @click="signUpForm=true"
-                        >
-                          <v-icon>mail_outline</v-icon>
-                          <span class="font-weight-bold body-1 ml-2">メールアドレスで登録</span>
-                        </v-btn>
-                      </div>
-                    </v-flex>
-
-                    <v-divider class="mt-4"></v-divider>
-                    <!-- アカウントを持っている場合はログイン画面へ -->
-                    <v-flex xs12 class="text-xs-center px-2">
-                      <div v-if="signInDialog">
-                        <span>アカウントをお持ちでない方は</span>
-                        <v-btn
-                          flat
-                          color="primary"
-                          @click="signUpButtonClicked"
-                        >
-                          <span>登録</span>
-                        </v-btn>
-                      </div>
-                      <div v-else>
-                        <span>アカウントをお持ちの方は</span>
-                        <v-btn
-                          flat
-                          color="primary"
-                          @click="signInButtonClicked"
-                        >
-                          <span>ログイン</span>
-                        </v-btn>
-                      </div>
-                    </v-flex>
-                  </v-card>
-
-                </v-dialog>
-              </div>
+                  <img v-if="imageUrl" :src="imageUrl" alt="avatar">
+                  <v-icon v-else>person</v-icon>
+                </v-avatar>
+                <v-list>
+                  <v-list-tile to="/user/profile">
+                    <v-list-tile-title>プロフィール</v-list-tile-title>
+                  </v-list-tile>
+                  <v-divider></v-divider>
+                  <v-list-tile to="/user/passes">
+                    <v-list-tile-title>マイページ</v-list-tile-title>
+                  </v-list-tile>
+                  <v-divider></v-divider>
+                  <v-list-tile @click="signOut">
+                    <v-list-tile-title>ログアウト</v-list-tile-title>
+                  </v-list-tile>
+                </v-list>
+              </v-menu>
             </div>
-          </v-flex>
-        </v-layout>
-      </v-container>
+          </div>
+          <!-- ログインしていない場合に表示される -->
+          <div v-else>
+            <v-btn flat @click="signUpButtonClicked">
+              <span class="font-weight-bold" style="color: #555555">登録する</span>
+            </v-btn>
+            <v-btn flat @click="signInButtonClicked">
+              <span class="font-weight-bold" style="color: #555555">ログイン</span>
+            </v-btn>
+            <!-- Auth Dialog -->
+            <div class="text-xs-center">
+              <v-dialog
+                v-model="dialog"
+                :fullscreen="$vuetify.breakpoint.xsOnly"
+                width="500"
+              >
+                <v-card class="pt-5 pb-3 px-3">
+                  <v-toolbar flat color="white hidden-sm-and-up">
+                    <v-toolbar-side-icon
+                      @click="dialog=false"
+                    ></v-toolbar-side-icon>
+                  </v-toolbar>
+                  <v-flex
+                    xs12
+                    class="text-xs-center"
+                    :class="{'px-2': $vuetify.breakpoint.smAndUp, 'px-3 mt-4': $vuetify.breakpoint.xsOnly}"
+                  >
+                    <!-- ログインフォーム -->
+                    <div v-if="signInDialog">
+                      <v-form v-model="valid">
+                        <v-container>
+                          <v-layout
+                            column
+                            justify-center
+                          >
+                            <v-flex xs12>
+                              <!-- Error Message -->
+                              <v-alert
+                                :value="authError != null"
+                                type="error"
+                                class="mb-5"
+                              >
+                                {{ authError }}
+                              </v-alert>
+                              <!-- メールアドレス -->
+                              <v-text-field
+                                v-model="email"
+                                :rules="emailRules"
+                                label="メールアドレス"
+                                append-icon="mail_outline"
+                                solo
+                                required
+                              ></v-text-field>
+                              <!-- パスワード -->
+                              <v-text-field
+                                v-model="password"
+                                :append-icon="passwordShow ? 'visibility_off' : 'visibility'"
+                                :rules="passwordRules"
+                                :type="passwordShow ? 'text' : 'password'"
+                                label="パスワード"
+                                solo
+                                required
+                                @click:append="passwordShow = !passwordShow"
+                              ></v-text-field>
+                            </v-flex>
+                            <!-- ログインボタン -->
+                            <v-btn
+                              block
+                              :disabled="!valid || loading"
+                              class="orange darken-1"
+                              @click="signIn"
+                            >
+                              <span
+                                class="font-weight-bold body-1"
+                                style="color: #ffffff;"
+                              >
+                                ログイン
+                              </span>
+                            </v-btn>
+                          </v-layout>
+                        </v-container>
+                      </v-form>
+                    </div>
+                    <!-- 登録フォーム -->
+                    <div v-else-if="signUpForm">
+                      <v-form v-model="valid">
+                        <v-container>
+                          <v-layout
+                            column
+                            justify-center
+                          >
+                            <v-flex xs12>
+                              <!-- Error Message -->
+                              <v-alert
+                                :value="authError != null"
+                                type="error"
+                                class="mb-5"
+                              >
+                                {{ authError }}
+                              </v-alert>
+                              <!-- メールアドレス -->
+                              <v-text-field
+                                v-model="email"
+                                :rules="emailRules"
+                                label="メールアドレス"
+                                append-icon="mail_outline"
+                                solo
+                                required
+                              ></v-text-field>
+                              <!-- 名前 -->
+                              <v-text-field
+                                v-model="firstName"
+                                :rules="firstNameRules"
+                                label="名"
+                                append-icon="person"
+                                solo
+                                required
+                              ></v-text-field>
+                              <!-- 苗字 -->
+                              <v-text-field
+                                v-model="lastName"
+                                :rules="lastNameRules"
+                                label="姓"
+                                append-icon="person"
+                                solo
+                                required
+                              ></v-text-field>
+                              <!-- パスワード -->
+                              <v-text-field
+                                v-model="password"
+                                :append-icon="passwordShow ? 'visibility_off' : 'visibility'"
+                                :rules="passwordRules"
+                                :type="passwordShow ? 'text' : 'password'"
+                                label="パスワード"
+                                solo
+                                required
+                                @click:append="passwordShow = !passwordShow"
+                              ></v-text-field>
+                            </v-flex>
+                            <!-- 登録ボタン -->
+                            <v-btn
+                              block
+                              :disabled="!valid || loading"
+                              class="orange darken-1"
+                              @click="signUp"
+                            >
+                              <span
+                                class="font-weight-bold body-1"
+                                style="color: #ffffff;"
+                              >
+                                登録する
+                              </span>
+                            </v-btn>
+                          </v-layout>
+                        </v-container>
+                      </v-form>
+                    </div>
+                    <!-- 登録方法 -->
+                    <div v-else>
+                      <!-- メールアドレス登録 -->
+                      <v-btn
+                        block
+                        color="primary"
+                        @click="signUpForm=true"
+                      >
+                        <v-icon>mail_outline</v-icon>
+                        <span class="font-weight-bold body-1 ml-2">メールアドレスで登録</span>
+                      </v-btn>
+                    </div>
+                  </v-flex>
+
+                  <v-divider class="mt-4"></v-divider>
+                  <!-- アカウントを持っている場合はログイン画面へ -->
+                  <v-flex xs12 class="text-xs-center px-2">
+                    <div v-if="signInDialog">
+                      <span>アカウントをお持ちでない方は</span>
+                      <v-btn
+                        flat
+                        color="primary"
+                        @click="signUpButtonClicked"
+                      >
+                        <span>登録</span>
+                      </v-btn>
+                    </div>
+                    <div v-else>
+                      <span>アカウントをお持ちの方は</span>
+                      <v-btn
+                        flat
+                        color="primary"
+                        @click="signInButtonClicked"
+                      >
+                        <span>ログイン</span>
+                      </v-btn>
+                    </div>
+                  </v-flex>
+                </v-card>
+
+              </v-dialog>
+            </div>
+          </div>
+        </v-flex>
+      </v-layout>
     </v-toolbar-items>
   </v-toolbar>
 </template>

@@ -161,6 +161,11 @@ export default {
   border: 1px solid;
   border-color: #E0E0E0;
 }
+.border-side {
+  border-left: 1px solid;
+  border-right: 1px solid;
+  border-color: #E0E0E0;
+}
 .border-bottom {
   border-bottom: 1px solid;
   border-color: #E0E0E0;
@@ -176,6 +181,10 @@ export default {
 .job-bottom-fixed {
   position:absolute;
   bottom:0;
+}
+.mypage-left-section-fixed {
+  position:fixed;
+  top:50;
 }
 .overflow-hidden {
   overflow: hidden;
