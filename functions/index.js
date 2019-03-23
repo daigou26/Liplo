@@ -221,15 +221,16 @@ exports.sendMessageFromUser = functions.firestore
   .onCreate((snap, context) => {
     const chatId = context.params.chatId
     const messageId = context.params.messageId
+    const message = snap.data().message
 
     // chatのupdatedAt, picUnreadCountを更新
     return admin.firestore()
       .collection('chats').doc(chatId)
-      .collection('messages').doc(messageId)
       .get()
       .then(doc => {
         if (doc.exists) {
           let picUnreadCount
+          // 更新されない
           if (doc.data().picUnreadCount != null) {
             picUnreadCount = doc.data().picUnreadCount
           } else {
@@ -241,6 +242,7 @@ exports.sendMessageFromUser = functions.firestore
             .update({
               updatedAt: snap.data().createdAt,
               picUnreadCount: picUnreadCount + 1,
+              lastMessage: message,
             })
             .then(() => {
               console.log('sendMessageFromUser completed.')
