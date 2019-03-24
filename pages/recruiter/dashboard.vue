@@ -68,7 +68,7 @@
               'pa-2': $vuetify.breakpoint.xsOnly,
             }"
           >
-            <radar-chart v-if="showChart && chartData" :data="chartData" :options="chartOptions" />
+            <radar-chart v-if="showChart && reviewChartData" :data="reviewChartData" :options="reviewChartOptions" />
             <div v-else>
               まだデータがありません
             </div>
@@ -79,8 +79,7 @@
     </v-flex>
     <v-flex xs12 hidden-sm-and-up><v-divider></v-divider></v-flex>
     <v-flex
-      sm4
-      offset-sm1
+      sm6
       xs12
       :class="{
         'pa-3': $vuetify.breakpoint.mdAndUp,
@@ -88,9 +87,8 @@
     >
       <v-card
         :flat="flat"
-        class="py-3"
         :class="{
-          'py-5': $vuetify.breakpoint.smOnly,
+          'py-4': $vuetify.breakpoint.smOnly,
         }"
       >
         <v-container>
@@ -99,22 +97,21 @@
               'pa-0': $vuetify.breakpoint.mdAndDown,
             }"
           >
-            <div v-if="feedback"　class="text-xs-center">
-              <div class="headline font-weight-bold">
-                {{ (feedback.writtenCount / feedback.all).toFixed(2) * 100 }} %
-              </div>
-              <div class="pt-2">
-                フィードバック記入率
-              </div>
-            </div>
+          <div class="subheading font-weight-bold pt-3">
+            フィードバック記入率
+          </div>
+          <div
+            class="text-xs-center"
+            :class="{
+              'pa-5': $vuetify.breakpoint.mdAndUp,
+              'pa-4': $vuetify.breakpoint.smAndDown,
+            }"
+          >
+            <doughnut-chart v-if="showChart && feedbackChartData && feedbackChartOptions" :data="feedbackChartData" :options="feedbackChartOptions" />
             <div v-else>
-              <div class="subheading font-weight-bold">
-                フィードバック
-              </div>
-              <div class="text-xs-center pt-4">
-                データがありません
-              </div>
+              まだデータがありません
             </div>
+          </div>
           </v-card-text>
         </v-container>
       </v-card>
@@ -129,6 +126,7 @@ export default {
   data() {
     return {
       windowHeight: 0,
+      isQueried: false,
       items: [
         {
           title: '応募者',
@@ -148,7 +146,7 @@ export default {
         },
       ],
       showChart: false,
-      chartOptions: {
+      reviewChartOptions: {
         responsive: true,
         maintainAspectRatio: true,
         legend: {
@@ -177,7 +175,9 @@ export default {
       rating: state => state.company.rating,
       count: state => state.company.count,
       feedback: state => state.company.feedback,
-      chartData: state => state.company.chartData,
+      reviewChartData: state => state.company.reviewChartData,
+      feedbackChartData: state => state.company.feedbackChartData,
+      feedbackChartOptions: state => state.company.feedbackChartOptions,
     }),
   },
   mounted() {
@@ -188,12 +188,16 @@ export default {
       toolbarHeight = 64
     }
     this.windowHeight = window.innerHeight - toolbarHeight
-
     this.showChart = true
+
+    if (this.companyId != null && !this.isQueried) {
+      this.queryCompany({nuxt: this.$nuxt, companyId: this.companyId})
+    }
   },
   watch: {
     companyId(companyId) {
       if (companyId != null && this.rating == null) {
+        this.isQueried = true
         this.queryCompany({nuxt: this.$nuxt, companyId: companyId})
       }
     }

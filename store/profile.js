@@ -4,6 +4,8 @@ import { firestore, storageRef } from '@/plugins/firebase'
 
 export const state = () => ({
   type: null,
+  position: null,
+  isEditingPosition: false,
   companyId: null,
   imageUrl: '',
   imageFileSizeValid: true,
@@ -37,6 +39,12 @@ export const state = () => ({
 export const mutations = {
   setType(state, type) {
     state.type = type
+  },
+  setPosition(state, position) {
+    state.position = position
+  },
+  updateIsEditingPosition(state, isEditing) {
+    state.isEditingPosition = isEditing
   },
   setCompanyId(state, companyId) {
     state.companyId = companyId
@@ -131,6 +139,7 @@ export const actions = {
       .get()
       .then(function(doc) {
         if (doc.exists) {
+          commit('setPosition', doc.data()['position'])
           commit('setFirstName', doc.data()['firstName'])
           commit('setLastName', doc.data()['lastName'])
           commit('setSelfIntro', doc.data()['selfIntro'] != null ? doc.data()['selfIntro'] : '')
@@ -149,6 +158,23 @@ export const actions = {
   },
   setType({commit}, type) {
     commit('setType', type)
+  },
+  updateIsEditingPosition({commit}, isEditing) {
+    commit('updateIsEditingPosition', isEditing)
+  },
+  updatePosition({commit}, {uid, position}) {
+    firestore.collection('users').doc(uid)
+      .collection('profile').doc(uid)
+      .update({
+        position: position,
+      })
+      .then(() => {
+        commit('setPosition', position)
+        commit('updateIsEditingPosition', false)
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error)
+      })
   },
   setCompanyId({commit}, companyId) {
     commit('setCompanyId', companyId)

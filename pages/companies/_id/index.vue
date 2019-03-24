@@ -234,7 +234,7 @@
                 </v-flex>
                 <!-- chart -->
                 <v-flex md4 hidden-sm-and-down>
-                  <radar-chart v-if="showChart && chartData" :data="chartData" :options="chartOptions" />
+                  <radar-chart v-if="showChart && reviewChartData" :data="reviewChartData" :options="reviewChartOptions" />
                 </v-flex>
               </div>
             </div>
@@ -381,7 +381,7 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data: () => ({
     reviewsDialog: false,
-    chartOptions: {
+    reviewChartOptions: {
       responsive: true,
       maintainAspectRatio: false,
       legend: {
@@ -438,7 +438,7 @@ export default {
       occupation: state => state.company.occupation,
       features: state => state.company.features,
       reviews: state => state.company.reviews,
-      chartData: state => state.company.chartData,
+      reviewChartData: state => state.company.reviewChartData,
       allReviews: state => state.reviews.reviews,
     }),
   },

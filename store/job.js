@@ -31,7 +31,7 @@ export const state = () => ({
   createdAt: '',
   applicants: null,
   reviews: null,
-  chartData: null,
+  reviewChartData: null,
 })
 
 export const mutations = {
@@ -122,8 +122,8 @@ export const mutations = {
   setReviews(state, reviews) {
     state.reviews = reviews
   },
-  setChartData(state, data) {
-    state.chartData = data
+  setReviewChartData(state, data) {
+    state.reviewChartData = data
   },
 }
 
@@ -173,7 +173,7 @@ export const actions = {
                   commit('setReviews', companyDoc.data()['reviews'])
                   // chart Data
                   const reviews = companyDoc.data()['reviews']
-                  const chartData = {
+                  const reviewChartData = {
                     labels: [
                       '成長できるか',
                       '仕事内容',
@@ -199,7 +199,7 @@ export const actions = {
                       }
                     ]
                   }
-                  commit('setChartData', chartData)
+                  commit('setReviewChartData', reviewChartData)
                 }
               })
           } else {

@@ -28,7 +28,9 @@ export const state = () => ({
   features: '',
   field: '',
   reviews: null,
-  chartData: null,
+  reviewChartData: null,
+  feedbackChartData: null,
+  feedbackChartOptions: null,
 })
 
 export const mutations = {
@@ -107,8 +109,14 @@ export const mutations = {
   setReviews(state, reviews) {
     state.reviews = reviews
   },
-  setChartData(state, data) {
-    state.chartData = data
+  setReviewChartData(state, data) {
+    state.reviewChartData = data
+  },
+  setFeedbackChartData(state, data) {
+    state.feedbackChartData = data
+  },
+  setFeedbackChartOptions(state, options) {
+    state.feedbackChartOptions = options
   },
 }
 
@@ -126,7 +134,7 @@ export const actions = {
             // chart Data
             if (doc.data()['rating']) {
               const rating = doc.data()['rating']
-              const chartData = {
+              const reviewChartData = {
                 labels: [
                   '成長できるか',
                   '仕事内容',
@@ -152,7 +160,40 @@ export const actions = {
                   }
                 ]
               }
-              commit('setChartData', chartData)
+              commit('setReviewChartData', reviewChartData)
+            }
+
+            if (doc.data()['feedback']) {
+              const feedback = doc.data()['feedback']
+              const feedbackRate = Math.round(feedback.writtenCount / feedback.all * 100)
+              const feedbackChartData = {
+                labels: [
+                  '記入済',
+                  '未記入',
+                ],
+                datasets: [{
+                    data: [feedbackRate, (100 - feedbackRate)],
+                    backgroundColor: ['teal','burlywood']
+                }],
+              }
+              const feedbackChartOptions = {
+                elements: {
+                  center: {
+                    text: String(feedbackRate) + '%',
+                    color: '#36A2EB', //Default black
+                    fontStyle: 'Helvetica', //Default Arial
+                    sidePadding: 50 //Default 20 (as a percentage)
+                  }
+                },
+                responsive: true,
+                maintainAspectRatio: true,
+                legend: {
+                  display: false
+                },
+              }
+              commit('setFeedbackChartData', feedbackChartData)
+              commit('setFeedbackChartOptions', feedbackChartOptions)
+
             }
           } else {
             // 404
@@ -214,7 +255,7 @@ export const actions = {
             // chart Data
             if (doc.data()['reviews']) {
               const reviews = doc.data()['reviews']
-              const chartData = {
+              const reviewChartData = {
                 labels: [
                   '成長できるか',
                   '仕事内容',
@@ -240,7 +281,7 @@ export const actions = {
                   }
                 ]
               }
-              commit('setChartData', chartData)
+              commit('setReviewChartData', reviewChartData)
             }
           } else {
             // 404

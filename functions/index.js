@@ -2,8 +2,69 @@ const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 admin.initializeApp()
 
+// 採用担当者がプロフィールを編集した時の処理
+exports.editRecruiterProfile = functions.region('asia-northeast1')
+  .firestore
+  .document('users/{uid}/profile/{profile}')
+  .onUpdate((change, context) => {
+    const newValue = change.after.data()
+    const uid = context.params.uid
+    const companyId = newValue.companyId
+    const position = newValue.position
+    const firstName = newValue.firstName
+    const lastName = newValue.lastName
+    const selfIntro = newValue.selfIntro
+
+    return admin.firestore()
+      .collection('companies').doc(companyId)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          let members = doc.data().members
+
+          var index
+          members.forEach((member, i) => {
+            if (member.uid == uid) {
+              index = i
+            }
+          })
+
+          const member = {
+            uid: uid,
+            position: position,
+            name: lastName + ' ' + firstName,
+            selfIntro: selfIntro,
+          }
+          members.splice(index, 1)
+          members.push(member)
+
+          // members更新
+          const batch = admin.firestore().batch()
+          const companyRef = admin.firestore().collection('companies').doc(companyId)
+          batch.update(companyRef, {
+            members: members,
+          })
+          const companyDetailRef = admin.firestore().collection('companies').doc(companyId).collection('detail').doc(companyId)
+          batch.update(companyDetailRef, {
+            members: members,
+          })
+          batch.commit()
+            .then(() => {
+              console.log('editRecruiterProfile completed.')
+            })
+            .catch((error) => {
+              console.error("Error adding document: ", error)
+            })
+        }
+      })
+      .catch(err => {
+        console.log('Error getting document', err)
+      })
+  })
+
 // 企業が登録された時の処理
-exports.addCompany = functions.firestore
+exports.addCompany = functions.region('asia-northeast1')
+  .firestore
   .document('companies/{companyId}')
   .onCreate((snap, context) => {
     const companyId = context.params.companyId
@@ -26,6 +87,10 @@ exports.addCompany = functions.firestore
     batch.update(userRef, {
       companyId: companyId
     })
+    const userProfileRef = admin.firestore().collection('users').doc(uid).collection('profile').doc(uid)
+    batch.update(userProfileRef, {
+      companyId: companyId
+    })
     return batch.commit()
       .then(() => {
         console.log('addCompany completed.')
@@ -36,7 +101,8 @@ exports.addCompany = functions.firestore
   })
 
 // レビューした時の処理
-exports.addReview = functions.firestore
+exports.addReview = functions.region('asia-northeast1')
+  .firestore
   .document('reviews/{reviewId}')
   .onCreate((snap, context) => {
 
@@ -135,7 +201,8 @@ exports.addReview = functions.firestore
   })
 
 // 内定パスを承諾した時の処理
-exports.acceptJobOffer = functions.firestore
+exports.acceptJobOffer = functions.region('asia-northeast1')
+  .firestore
   .document('passes/{passId}')
   .onUpdate((change, context) => {
     const newValue = change.after.data()
@@ -204,7 +271,8 @@ exports.acceptJobOffer = functions.firestore
   })
 
 // ユーザーが応募した時の処理
-exports.applyForJob = functions.firestore
+exports.applyForJob = functions.region('asia-northeast1')
+  .firestore
   .document('companies/{companyId}/applicants/{applicantId}')
   .onCreate((snap, context) => {
     const uid = snap.data().uid
@@ -255,7 +323,8 @@ exports.applyForJob = functions.firestore
   })
 
 // メッセージを送信した時の処理
-exports.sendMessageFromUser = functions.firestore
+exports.sendMessageFromUser = functions.region('asia-northeast1')
+  .firestore
   .document('chats/{chatId}/messages/{messageId}')
   .onCreate((snap, context) => {
     const chatId = context.params.chatId

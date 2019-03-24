@@ -260,7 +260,7 @@
                 </v-flex>
                 <!-- chart -->
                 <v-flex md4 hidden-sm-and-down>
-                  <radar-chart v-if="showChart && chartData" :data="chartData" :options="chartOptions" />
+                  <radar-chart v-if="showChart && reviewChartData" :data="reviewChartData" :options="reviewChartOptions" />
                 </v-flex>
               </div>
             </div>
@@ -310,7 +310,7 @@
               レビュー({{ reviews.rating.count }})
             </p>
             <div>
-              <radar-chart v-if="showChart && chartData" :data="chartData" :options="chartOptions" />
+              <radar-chart v-if="showChart && reviewChartData" :data="reviewChartData" :options="reviewChartOptions" />
               <v-list>
                 <template v-for="(item, index) in reviews.comments">
                   <div class="py-2">
@@ -489,7 +489,7 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data: () => ({
     reviewsDialog: false,
-    chartOptions: {
+    reviewChartOptions: {
       responsive: true,
       maintainAspectRatio: false,
       legend: {
@@ -560,7 +560,7 @@ export default {
       createdAt: state => state.job.createdAt,
       applicants: state => state.job.applicants,
       reviews: state => state.job.reviews,
-      chartData: state => state.job.chartData,
+      reviewChartData: state => state.job.reviewChartData,
       allReviews: state => state.reviews.reviews,
     }),
   },
