@@ -129,6 +129,7 @@ export default {
   data() {
     return {
       windowHeight: 0,
+      isQueried: false,
       items: [
         {
           title: '応募者',
@@ -188,12 +189,16 @@ export default {
       toolbarHeight = 64
     }
     this.windowHeight = window.innerHeight - toolbarHeight
-
     this.showChart = true
+
+    if (this.companyId != null && !this.isQueried) {
+      this.queryCompany({nuxt: this.$nuxt, companyId: this.companyId})
+    }
   },
   watch: {
     companyId(companyId) {
       if (companyId != null && this.rating == null) {
+        this.isQueried = true
         this.queryCompany({nuxt: this.$nuxt, companyId: companyId})
       }
     }
