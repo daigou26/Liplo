@@ -68,7 +68,7 @@
               'pa-2': $vuetify.breakpoint.xsOnly,
             }"
           >
-            <radar-chart v-if="showChart && chartData" :data="chartData" :options="chartOptions" />
+            <radar-chart v-if="showChart && reviewChartData" :data="reviewChartData" :options="reviewChartOptions" />
             <div v-else>
               まだデータがありません
             </div>
@@ -146,7 +146,7 @@ export default {
         },
       ],
       showChart: false,
-      chartOptions: {
+      reviewChartOptions: {
         responsive: true,
         maintainAspectRatio: true,
         legend: {
@@ -175,7 +175,7 @@ export default {
       rating: state => state.company.rating,
       count: state => state.company.count,
       feedback: state => state.company.feedback,
-      chartData: state => state.company.chartData,
+      reviewChartData: state => state.company.reviewChartData,
       feedbackChartData: state => state.company.feedbackChartData,
       feedbackChartOptions: state => state.company.feedbackChartOptions,
     }),

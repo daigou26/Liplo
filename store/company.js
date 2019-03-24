@@ -28,7 +28,7 @@ export const state = () => ({
   features: '',
   field: '',
   reviews: null,
-  chartData: null,
+  reviewChartData: null,
   feedbackChartData: null,
   feedbackChartOptions: null,
 })
@@ -109,8 +109,8 @@ export const mutations = {
   setReviews(state, reviews) {
     state.reviews = reviews
   },
-  setChartData(state, data) {
-    state.chartData = data
+  setReviewChartData(state, data) {
+    state.reviewChartData = data
   },
   setFeedbackChartData(state, data) {
     state.feedbackChartData = data
@@ -134,7 +134,7 @@ export const actions = {
             // chart Data
             if (doc.data()['rating']) {
               const rating = doc.data()['rating']
-              const chartData = {
+              const reviewChartData = {
                 labels: [
                   '成長できるか',
                   '仕事内容',
@@ -160,7 +160,7 @@ export const actions = {
                   }
                 ]
               }
-              commit('setChartData', chartData)
+              commit('setReviewChartData', reviewChartData)
             }
 
             if (doc.data()['feedback']) {
@@ -255,7 +255,7 @@ export const actions = {
             // chart Data
             if (doc.data()['reviews']) {
               const reviews = doc.data()['reviews']
-              const chartData = {
+              const reviewChartData = {
                 labels: [
                   '成長できるか',
                   '仕事内容',
@@ -281,7 +281,7 @@ export const actions = {
                   }
                 ]
               }
-              commit('setChartData', chartData)
+              commit('setReviewChartData', reviewChartData)
             }
           } else {
             // 404
