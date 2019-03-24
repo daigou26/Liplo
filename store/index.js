@@ -1,5 +1,5 @@
 export const strict = false
-import { firebase, auth, GoogleProvider } from '@/plugins/firebase'
+import { firestore, auth, GoogleProvider } from '@/plugins/firebase'
 
 
 export const state = () => ({
@@ -52,8 +52,20 @@ export const actions = {
         commit('resetLoading')
       })
   },
-  async signOut({commit}) {
+  async signOut({dispatch, commit}) {
     auth.signOut()
+    dispatch('career/resetState')
+    dispatch('chat/resetState')
+    dispatch('chats/resetState')
+    dispatch('feedback/resetState')
+    dispatch('feedbacks/resetState')
+    dispatch('resetState')
+    dispatch('messages/resetState')
+    dispatch('profile/resetState')
+    dispatch('review/resetState')
+    dispatch('reviews/resetState')
+    dispatch('pass/resetState')
+    dispatch('passes/resetState')
   },
   setUser({commit}, user) {
     commit('setUser', user)
@@ -63,6 +75,110 @@ export const actions = {
   },
   setLoading({commit}) {
     commit('setLoading')
+  },
+  setAuthInfo({dispatch, commit}, {route, router, user, firstName, lastName, companyName, companyEmail}) {
+    if (user) {
+      commit('setUser', user)
+      firestore.collection('users').doc(user.uid).get()
+        .then(function(doc) {
+          if (!doc.exists) {
+            // サインアップ時
+            if (firstName != '' && lastName != '') {
+              if (companyName == '' && companyEmail == '') {
+                // user
+                const batch = firestore.batch()
+                const userRef = firestore.collection('users').doc(user.uid)
+                batch.set(userRef, {
+                  firstName: firstName,
+                  lastName: lastName,
+                })
+                const profileRef = firestore.collection('users')
+                  .doc(user.uid).collection('profile').doc(user.uid)
+                batch.set(profileRef, {
+                  firstName: firstName,
+                  lastName: lastName,
+                  email: user.email
+                })
+                batch.commit()
+                  .then(() => {
+                    dispatch('profile/setFirstName', firstName)
+                    dispatch('profile/setLastName', lastName)
+                  })
+                  .catch((error) => {
+                    console.error("Error adding document: ", error)
+                  })
+              } else {
+                // recruiter
+                const members = [{
+                  uid: user.uid,
+                  name: lastName + ' ' + firstName,
+                }]
+                const company = {
+                  name: companyName,
+                  email: companyEmail,
+                  members: members,
+                }
+                const batch = firestore.batch()
+                const companyRef = firestore.collection('companies').doc()
+                batch.set(companyRef, company)
+                const userRef = firestore.collection('users').doc(user.uid)
+                batch.set(userRef, {
+                  firstName: firstName,
+                  lastName: lastName,
+                  type: 'recruiter',
+                })
+                const profileRef = firestore.collection('users')
+                  .doc(user.uid).collection('profile').doc(user.uid)
+                batch.set(profileRef, {
+                  firstName: firstName,
+                  lastName: lastName,
+                  email: user.email
+                })
+                batch.commit()
+                  .then(() => {
+                    dispatch('profile/setFirstName', firstName)
+                    dispatch('profile/setLastName', lastName)
+                    dispatch('profile/setType', 'recruiter')
+                    router.replace('/recruiter/dashboard')
+                  })
+                  .catch((error) => {
+                    console.error("Error adding document: ", error)
+                  })
+              }
+            }
+          } else {
+            dispatch('profile/setFirstName', doc.data()['firstName'])
+            dispatch('profile/setLastName', doc.data()['lastName'])
+            dispatch('profile/setType', doc.data()['type'])
+            dispatch('profile/setCompanyId', doc.data()['companyId'])
+
+            if (doc.data()['imageUrl'] != null) {
+              dispatch('profile/setImageUrl', doc.data()['imageUrl'])
+            }
+
+            if (doc.data()['type'] != null) {
+              if (route.path.includes('/user') || route.path.includes('/messages')) {
+                router.replace('/recruiter/dashboard')
+              }
+            } else {
+              if (route.path.includes('/recruiter')) {
+                router.replace('/')
+              }
+            }
+          }
+        })
+
+    } else {
+      commit('setUser', null)
+      if (route.path !== '/' && route.name !== 'jobs-id') {
+        router.push('/')
+      }
+    }
+  },
+  resetState({commit}) {
+    commit('setUser', null)
+    commit('setAuthError', null)
+    commit('resetLoading')
   },
 }
 

@@ -128,7 +128,7 @@ export const mutations = {
 }
 
 export const actions = {
-  queryJob({commit}, {nuxt, params}) {
+  queryJobDetail({commit}, {nuxt, params}) {
     const jobId = params.id
     if (jobId != null && jobId != '') {
       return firestore.collection('jobs').doc(jobId).collection('detail').doc(jobId).get()

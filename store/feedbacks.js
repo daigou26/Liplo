@@ -11,6 +11,9 @@ export const mutations = {
   addFeedback(state, feedback) {
     state.feedbacks.push(feedback)
   },
+  resetFeedbacks(state) {
+    state.feedbacks = []
+  },
   updateFeedbacksLoading(state, isLoading) {
     state.isFeedbacksLoading = isLoading
   },
@@ -84,5 +87,10 @@ export const actions = {
   },
   updateFeedbacksLoading({commit}, isLoading) {
     commit('updateFeedbacksLoading', isLoading)
+  },
+  resetState({commit}) {
+    commit('resetFeedbacks')
+    commit('updateFeedbacksLoading', false)
+    commit('setAllFeedbacksQueried', false)
   },
 }

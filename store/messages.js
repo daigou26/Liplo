@@ -20,6 +20,9 @@ export const mutations = {
   resetMessages(state) {
     state.messages = []
   },
+  updateIsInitialQuery(state, isInitialQuery) {
+    state.isInitialQuery = isInitialQuery
+  },
   updateLoading(state, isLoading) {
     state.isLoading = isLoading
   },
@@ -29,9 +32,6 @@ export const mutations = {
   updateUnsubscribe(state, unsubscribe) {
     state.unsubscribe = unsubscribe
   },
-  updateIsInitialQuery(state, isInitialQuery) {
-    state.isInitialQuery = isInitialQuery
-  }
 }
 
 export const actions = {
@@ -163,6 +163,13 @@ export const actions = {
     commit('updateUnsubscribe', listener)
   },
   resetUnsubscribe({commit}) {
+    commit('updateUnsubscribe', null)
+  },
+  resetState({commit}) {
+    commit('resetMessages')
+    commit('updateIsInitialQuery', true)
+    commit('updateLoading', false)
+    commit('setAllMessagesQueried', false)
     commit('updateUnsubscribe', null)
   },
 }

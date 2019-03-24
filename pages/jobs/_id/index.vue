@@ -385,6 +385,7 @@
 
         </v-flex>
         <v-flex
+          v-if="type != 'recruiter'"
           xs6
           sm5
           md4
@@ -526,6 +527,7 @@ export default {
       }
     },
     ...mapState({
+      type: state => state.profile.type,
       profileImageUrl: state => state.profile.imageUrl,
       firstName: state => state.profile.firstName,
       lastName: state => state.profile.lastName,
@@ -564,7 +566,7 @@ export default {
   },
   mounted() {
     this.showChart = true
-    this.queryJob({nuxt: this.$nuxt, params: this.$route.params})
+    this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params})
 
   },
   // fetch(context) {
@@ -591,7 +593,7 @@ export default {
       })
     },
     ...mapActions({
-      queryJob: 'job/queryJob',
+      queryJobDetail: 'job/queryJobDetail',
       queryReviews: 'reviews/queryReviews',
       apply: 'job/apply',
     }),

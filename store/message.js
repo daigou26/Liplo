@@ -2,15 +2,11 @@ export const strict = false
 import { firestore } from '@/plugins/firebase'
 
 export const state = () => ({
-  // chats: [],
-  // isLoading: false,
-  // allChatsQueried: false,
+
 })
 
 export const mutations = {
-  // addChat(state, chat) {
-  //   state.chats.push(chat)
-  // },
+
 }
 
 export const actions = {
@@ -30,7 +26,7 @@ export const actions = {
         createdAt: new Date(),
       })
       .then(() => {
-        
+
       })
       .catch((error) => {
         console.error("Error adding document: ", error)
