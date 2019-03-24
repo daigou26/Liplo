@@ -91,24 +91,29 @@ exports.addReview = functions.firestore
             comments.splice(index, 1)
             comments.push(comment)
           }
+          const rating = {
+            all: all,
+            count: reviewCount + 1,
+            atmosphere: atmosphere,
+            job: job,
+            discretion: discretion,
+            flexibleSchedule: flexibleSchedule,
+            flexibility: flexibility,
+            mentor: mentor,
+            growth: growth
+          }
           const reviews = {
             reviews: {
-              rating: {
-                all: all,
-                count: reviewCount + 1,
-                atmosphere: atmosphere,
-                job: job,
-                discretion: discretion,
-                flexibleSchedule: flexibleSchedule,
-                flexibility: flexibility,
-                mentor: mentor,
-                growth: growth
-              },
+              rating: rating,
               comments: comments,
             }
           }
 
           const batch = admin.firestore().batch()
+          const companyRef = admin.firestore().collection('companies').doc(companyId)
+          batch.update(companyRef, {
+            rating: rating
+          })
           const companyDetailRef = admin.firestore().collection('companies').doc(companyId).collection('detail').doc(companyId)
           batch.update(companyDetailRef, reviews)
           const careerRef = admin.firestore().collection('users').doc(uid).collection('career').doc(jobId)

@@ -1,5 +1,5 @@
 <template>
-  <v-app light class="">
+  <v-app light>
     <drawer v-if="path.includes('recruiter')"></drawer>
     <toolbar></toolbar>
     <v-content>

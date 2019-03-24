@@ -566,7 +566,7 @@ export default {
   },
   mounted() {
     this.showChart = true
-    this.queryJob({nuxt: this.$nuxt, params: this.$route.params})
+    this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params})
 
   },
   // fetch(context) {
@@ -593,7 +593,7 @@ export default {
       })
     },
     ...mapActions({
-      queryJob: 'job/queryJob',
+      queryJobDetail: 'job/queryJobDetail',
       queryReviews: 'reviews/queryReviews',
       apply: 'job/apply',
     }),

@@ -150,6 +150,7 @@ export const actions = {
             dispatch('profile/setFirstName', doc.data()['firstName'])
             dispatch('profile/setLastName', doc.data()['lastName'])
             dispatch('profile/setType', doc.data()['type'])
+            dispatch('profile/setCompanyId', doc.data()['companyId'])
 
             if (doc.data()['imageUrl'] != null) {
               dispatch('profile/setImageUrl', doc.data()['imageUrl'])

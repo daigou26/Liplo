@@ -356,7 +356,7 @@
     </v-toolbar-items>
   </v-toolbar>
   <v-toolbar v-else flat fixed app>
-      <v-toolbar-title v-if="!path.includes('recruiter')">Application</v-toolbar-title>
+      <v-toolbar-title v-if="!path.includes('recruiter') || breakpoint == 'xs'">Application</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <v-layout row wrap align-center class="pl-5">
@@ -437,6 +437,9 @@ export default {
   computed: {
     path() {
       return this.$route.path
+    },
+    breakpoint() {
+      return this.$vuetify.breakpoint.name
     },
     ...mapState({
       user: state => state.user,

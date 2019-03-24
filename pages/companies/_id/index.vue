@@ -444,7 +444,7 @@ export default {
   },
   mounted() {
     this.showChart = true
-    this.queryCompany({nuxt: this.$nuxt, params: this.$route.params})
+    this.queryCompanyDetail({nuxt: this.$nuxt, params: this.$route.params})
   },
   methods: {
     reviewsButtonClicked() {
@@ -454,7 +454,7 @@ export default {
       }
     },
     ...mapActions({
-      queryCompany: 'company/queryCompany',
+      queryCompanyDetail: 'company/queryCompanyDetail',
       queryReviews: 'reviews/queryReviews',
     }),
   }

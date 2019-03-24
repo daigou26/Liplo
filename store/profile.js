@@ -4,6 +4,7 @@ import { firestore, storageRef } from '@/plugins/firebase'
 
 export const state = () => ({
   type: null,
+  companyId: null,
   imageUrl: '',
   imageFileSizeValid: true,
   isEditingProfileImage: false,
@@ -36,6 +37,9 @@ export const state = () => ({
 export const mutations = {
   setType(state, type) {
     state.type = type
+  },
+  setCompanyId(state, companyId) {
+    state.companyId = companyId
   },
   setImageUrl(state, imageUrl) {
     state.imageUrl = imageUrl
@@ -145,6 +149,9 @@ export const actions = {
   },
   setType({commit}, type) {
     commit('setType', type)
+  },
+  setCompanyId({commit}, companyId) {
+    commit('setCompanyId', companyId)
   },
   setImageUrl({commit}, imageUrl) {
     commit('setImageUrl', imageUrl)
