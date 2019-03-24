@@ -79,8 +79,7 @@
     </v-flex>
     <v-flex xs12 hidden-sm-and-up><v-divider></v-divider></v-flex>
     <v-flex
-      sm4
-      offset-sm1
+      sm6
       xs12
       :class="{
         'pa-3': $vuetify.breakpoint.mdAndUp,
@@ -88,9 +87,8 @@
     >
       <v-card
         :flat="flat"
-        class="py-3"
         :class="{
-          'py-5': $vuetify.breakpoint.smOnly,
+          'py-4': $vuetify.breakpoint.smOnly,
         }"
       >
         <v-container>
@@ -99,22 +97,21 @@
               'pa-0': $vuetify.breakpoint.mdAndDown,
             }"
           >
-            <div v-if="feedback"　class="text-xs-center">
-              <div class="headline font-weight-bold">
-                {{ (feedback.writtenCount / feedback.all).toFixed(2) * 100 }} %
-              </div>
-              <div class="pt-2">
-                フィードバック記入率
-              </div>
-            </div>
+          <div class="subheading font-weight-bold pt-3">
+            フィードバック記入率
+          </div>
+          <div
+            class="text-xs-center"
+            :class="{
+              'pa-5': $vuetify.breakpoint.mdAndUp,
+              'pa-4': $vuetify.breakpoint.smAndDown,
+            }"
+          >
+            <doughnut-chart v-if="showChart && feedbackChartData && feedbackChartOptions" :data="feedbackChartData" :options="feedbackChartOptions" />
             <div v-else>
-              <div class="subheading font-weight-bold">
-                フィードバック
-              </div>
-              <div class="text-xs-center pt-4">
-                データがありません
-              </div>
+              まだデータがありません
             </div>
+          </div>
           </v-card-text>
         </v-container>
       </v-card>
@@ -179,6 +176,8 @@ export default {
       count: state => state.company.count,
       feedback: state => state.company.feedback,
       chartData: state => state.company.chartData,
+      feedbackChartData: state => state.company.feedbackChartData,
+      feedbackChartOptions: state => state.company.feedbackChartOptions,
     }),
   },
   mounted() {
