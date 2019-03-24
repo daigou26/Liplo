@@ -37,6 +37,7 @@
         </v-card>
       </v-flex>
     </template>
+    <v-flex xs12 hidden-md-and-up><v-divider></v-divider></v-flex>
     <v-flex
       sm6
       xs12
@@ -46,6 +47,9 @@
     >
       <v-card
         :flat="flat"
+        :class="{
+          'py-4': $vuetify.breakpoint.smOnly,
+        }"
       >
         <v-container>
           <v-card-text
@@ -73,6 +77,7 @@
         </v-container>
       </v-card>
     </v-flex>
+    <v-flex xs12 hidden-sm-and-up><v-divider></v-divider></v-flex>
     <v-flex
       sm4
       offset-sm1
@@ -84,6 +89,9 @@
       <v-card
         :flat="flat"
         class="py-3"
+        :class="{
+          'py-5': $vuetify.breakpoint.smOnly,
+        }"
       >
         <v-container>
           <v-card-text
@@ -111,7 +119,6 @@
         </v-container>
       </v-card>
     </v-flex>
-
   </v-layout>
 </template>
 
