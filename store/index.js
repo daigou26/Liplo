@@ -76,7 +76,7 @@ export const actions = {
   setLoading({commit}) {
     commit('setLoading')
   },
-  setAuthInfo({dispatch, commit}, {route, router, user, firstName, lastName, companyName, companyEmail}) {
+  setAuthInfo({dispatch, commit}, {route, router, user, firstName, lastName, companyName, companyEmail, position}) {
     if (user) {
       commit('setUser', user)
       firestore.collection('users').doc(user.uid).get()
@@ -84,34 +84,12 @@ export const actions = {
           if (!doc.exists) {
             // サインアップ時
             if (firstName != '' && lastName != '') {
-              if (companyName == '' && companyEmail == '') {
-                // user
-                const batch = firestore.batch()
-                const userRef = firestore.collection('users').doc(user.uid)
-                batch.set(userRef, {
-                  firstName: firstName,
-                  lastName: lastName,
-                })
-                const profileRef = firestore.collection('users')
-                  .doc(user.uid).collection('profile').doc(user.uid)
-                batch.set(profileRef, {
-                  firstName: firstName,
-                  lastName: lastName,
-                  email: user.email
-                })
-                batch.commit()
-                  .then(() => {
-                    dispatch('profile/setFirstName', firstName)
-                    dispatch('profile/setLastName', lastName)
-                  })
-                  .catch((error) => {
-                    console.error("Error adding document: ", error)
-                  })
-              } else {
+              if (companyName != '' && companyEmail != '' && position != '') {
                 // recruiter
                 const members = [{
                   uid: user.uid,
                   name: lastName + ' ' + firstName,
+                  position: position,
                 }]
                 const company = {
                   name: companyName,
@@ -132,6 +110,7 @@ export const actions = {
                 batch.set(profileRef, {
                   firstName: firstName,
                   lastName: lastName,
+                  position: position,
                   email: user.email
                 })
                 batch.commit()
@@ -140,6 +119,29 @@ export const actions = {
                     dispatch('profile/setLastName', lastName)
                     dispatch('profile/setType', 'recruiter')
                     router.replace('/recruiter/dashboard')
+                  })
+                  .catch((error) => {
+                    console.error("Error adding document: ", error)
+                  })
+              } else {
+                // user
+                const batch = firestore.batch()
+                const userRef = firestore.collection('users').doc(user.uid)
+                batch.set(userRef, {
+                  firstName: firstName,
+                  lastName: lastName,
+                })
+                const profileRef = firestore.collection('users')
+                  .doc(user.uid).collection('profile').doc(user.uid)
+                batch.set(profileRef, {
+                  firstName: firstName,
+                  lastName: lastName,
+                  email: user.email
+                })
+                batch.commit()
+                  .then(() => {
+                    dispatch('profile/setFirstName', firstName)
+                    dispatch('profile/setLastName', lastName)
                   })
                   .catch((error) => {
                     console.error("Error adding document: ", error)

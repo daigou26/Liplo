@@ -451,7 +451,7 @@ export default {
     })
   },
   mounted() {
-    // ログイン時、dbにuser(recruiter)情報保存(localStorageにも保存)
+    // ログイン時、dbにuser(recruiter)情報保存
     auth.onAuthStateChanged((user) => {
       this.setAuthInfo({
         route: this.$route,
