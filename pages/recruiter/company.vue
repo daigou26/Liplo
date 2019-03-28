@@ -1,0 +1,1397 @@
+<template>
+  <v-layout
+    row
+    white
+    wrap
+    align-start
+    align-content-start
+    :style="{ height: windowHeight + 'px' }"
+  >
+    <!-- Top Image -->
+    <v-flex xs12>
+      <v-img
+        v-if="topImageUrl"
+        :src="topImageUrl"
+        :aspect-ratio="imageRatio"
+        @click="topImageClicked"
+      ></v-img>
+      <div v-else class="grey" style="height: 200px;">
+        <v-btn
+          flat
+          @click="topImageClicked"
+          style="color: #ffffff"
+        >
+          トップ画像を設定
+        </v-btn>
+      </div>
+      <!-- TopImage編集 -->
+      <div>
+        <v-dialog
+          :value="isEditingTopImage"
+          :fullscreen="$vuetify.breakpoint.xsOnly"
+          persistent
+          width="500"
+        >
+          <v-card>
+            <v-card-title
+              class="headline orange lighten-3"
+              primary-title
+            >
+              トップ画像を変更
+            </v-card-title>
+            <v-flex xs10 offset-xs1 text-xs-center>
+              <div class="py-4">
+                <v-img v-if="selectedTopImage" :src="selectedTopImage" height="200" />
+                <v-img v-else-if="topImageUrl" :src="topImageUrl" height="200" />
+                <div v-else class="grey lighten-3" style="height: 200px;"></div>
+              </div>
+              <input type="file" v-on:change="onFileChange">
+              <p v-if="!imageFileSizeValid" class="warning-text-color">
+                {{ imageFileSizeWarning }}
+              </p>
+            </v-flex>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                flat
+                @click="updateIsEditingTopImage(false)"
+              >
+                キャンセル
+              </v-btn>
+              <v-btn
+                color="primary"
+                flat
+                :disabled ="selectedTopImage == null || !imageFileSizeValid"
+                @click="updateTopImage({companyId: companyId, imageFile: topImageFile})"
+              >
+                変更
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </div>
+    </v-flex>
+    <v-flex xs12 class="py-3 px-4 break">
+      <!-- CompanyImage & CompanyName -->
+      <div class="py-4 align-center">
+        <v-card flat>
+          <v-flex
+            layout
+          >
+            <v-avatar
+              :size="avatarSize"
+              class="grey lighten-3 clickable"
+              @click="companyImageClicked"
+            >
+              <img v-if="companyImageUrl" :src="companyImageUrl">
+            </v-avatar>
+            <div class="pt-2">
+              <div class="title textColor font-weight-bold break pl-4">
+                {{ companyName }}
+              </div>
+              <div>
+                <v-btn
+                  flat
+                  small
+                  @click="editCompanyNameButtonClicked"
+                >
+                  <v-icon :size="14">edit</v-icon>
+                  <span class="caption edit-text-color">編集する</span>
+                </v-btn>
+              </div>
+            </div>
+          </v-flex>
+        </v-card>
+        <!-- CompanyImage編集 -->
+        <div>
+          <v-dialog
+            :value="isEditingCompanyImage"
+            :fullscreen="$vuetify.breakpoint.xsOnly"
+            persistent
+            width="500"
+          >
+            <v-card>
+              <v-card-title
+                class="headline orange lighten-3"
+                primary-title
+              >
+                企業ロゴを変更
+              </v-card-title>
+              <v-flex xs10 offset-xs1 text-xs-center>
+                <div class="py-4">
+                  <v-avatar
+                    :size="selectedCompanyImageSize"
+                    class="grey lighten-3"
+                  >
+                    <v-img v-if="selectedCompanyImage" :src="selectedCompanyImage" />
+                    <v-img v-else-if="companyImageUrl" :src="companyImageUrl" />
+                    <!-- <v-icon v-else style="font-size: 150px">person</v-icon> -->
+                  </v-avatar>
+                </div>
+                <input type="file" v-on:change="onFileChange">
+                <p v-if="!imageFileSizeValid" class="warning-text-color">
+                  {{ imageFileSizeWarning }}
+                </p>
+              </v-flex>
+              <v-divider></v-divider>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  flat
+                  @click="updateIsEditingCompanyImage(false)"
+                >
+                  キャンセル
+                </v-btn>
+                <v-btn
+                  color="primary"
+                  flat
+                  :disabled ="selectedCompanyImage == null || !imageFileSizeValid"
+                  @click="updateCompanyImage({companyId: companyId, imageFile: companyImageFile})"
+                >
+                  変更
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </div>
+        <!-- CompanyName編集 -->
+        <v-form v-model="editCompanyNameValid">
+          <v-dialog
+            :value="isEditingCompanyName"
+            :fullscreen="$vuetify.breakpoint.xsOnly"
+            persistent
+            width="500"
+          >
+            <v-card>
+              <v-card-title
+                class="headline orange lighten-3"
+                primary-title
+              >
+                企業名を変更
+              </v-card-title>
+              <v-flex xs10 offset-xs1 py-3>
+                <v-text-field
+                  label="企業名"
+                  v-model="tempCompanyName"
+                  :rules="companyNameRules"
+                  required
+                ></v-text-field>
+              </v-flex>
+              <v-divider></v-divider>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  flat
+                  @click="updateIsEditingCompanyName(false)"
+                >
+                  キャンセル
+                </v-btn>
+                <v-btn
+                  color="primary"
+                  flat
+                  :disabled="!editCompanyNameValid"
+                  @click="updateCompanyName({companyId: companyId, companyName: tempCompanyName})"
+                >
+                  変更
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-form>
+      </div>
+      <!-- メンバー -->
+      <div v-if="members" class="py-4">
+        <p class="title font-weight-bold textColor">
+          メンバー({{ members.length }})
+        </p>
+        <div>
+          <v-card flat>
+            <v-card-text class="overflow-hidden py-0">
+              <v-layout class="horiz-scroll">
+                <div
+                  v-for="member in members"
+                  class="pr-4"
+                >
+                  <div class="text-xs-center" style="max-width: 150px;">
+                    <v-avatar
+                      :size="avatarSize"
+                      class="grey lighten-3"
+                    >
+                      <img v-if="member.imageUrl" :src="member.imageUrl">
+                    </v-avatar>
+                    <div class="sub-title1 py-2 font-weight-bold textColor">
+                      {{ member.name}}
+                    </div>
+                    <div v-if="member.position" class="textColor">
+                      {{ member.position}}
+                    </div>
+                  </div>
+                </div>
+              </v-layout>
+            </v-card-text>
+          </v-card>
+        </div>
+        <div class="py-3">
+          <v-btn
+            flat
+            small
+            @click="addMemberButtonClicked"
+          >
+            <span class="edit-text-color">メンバーを追加する</span>
+          </v-btn>
+        </div>
+        <v-dialog
+          v-model="addMemberDialog"
+          :fullscreen="$vuetify.breakpoint.xsOnly"
+          width="500"
+        >
+          <v-card class="pt-5 pb-3 px-3">
+            <v-toolbar flat color="white hidden-sm-and-up">
+              <v-toolbar-side-icon
+                @click="addMemberDialog=false"
+              ></v-toolbar-side-icon>
+            </v-toolbar>
+            <v-flex
+              xs12
+              class="text-xs-center"
+              :class="{'px-2': $vuetify.breakpoint.smAndUp, 'px-3 mt-4': $vuetify.breakpoint.xsOnly}"
+            >
+              <!-- ログインフォーム -->
+              <v-form v-model="addMemberValid">
+                <v-container>
+                  <v-layout
+                    column
+                    justify-center
+                  >
+                    <v-flex xs12>
+                      <!-- Error Message -->
+                      <!-- <v-alert
+                        :value="authError != null"
+                        type="error"
+                        class="mb-5"
+                      >
+                        {{ authError }}
+                      </v-alert> -->
+                      <!-- メールアドレス -->
+                      <v-text-field
+                        v-model="email"
+                        :rules="emailRules"
+                        label="メールアドレス"
+                        append-icon="mail_outline"
+                        solo
+                        required
+                      ></v-text-field>
+                    </v-flex>
+                    <!-- 招待ボタン -->
+                    <v-btn
+                      block
+                      :disabled="!addMemberValid || addMemberLoading"
+                      class="orange darken-1"
+                      @click="inviteMember"
+                    >
+                      <span
+                        class="font-weight-bold body-1"
+                        style="color: #ffffff;"
+                      >
+                        招待
+                      </span>
+                    </v-btn>
+                  </v-layout>
+                </v-container>
+              </v-form>
+            </v-flex>
+          </v-card>
+        </v-dialog>
+      </div>
+      <!-- Mission -->
+      <div>
+        <v-layout
+          align-center
+          justify-space-between
+          row
+          class="pt-4"
+        >
+          <v-card-title
+            class="font-weight-bold"
+            :class="{
+              'title': $vuetify.breakpoint.smAndUp,
+            }"
+          >
+            Mission
+          </v-card-title>
+          <div v-show="!isEditingMission">
+            <v-btn
+              flat
+              small
+              @click="editMissionButtonClicked"
+            >
+              <v-icon :size="14">edit</v-icon>
+              <span class="caption edit-text-color">編集する</span>
+            </v-btn>
+          </div>
+        </v-layout>
+        <v-flex xs12 sm10>
+          <v-divider></v-divider>
+        </v-flex>
+        <v-flex xs12 sm10 class="break">
+          <v-card-text v-if="!isEditingMission">
+            <p class="return">{{ mission }}</p>
+          </v-card-text>
+          <div v-else>
+            <v-form v-model="editMissionValid">
+              <v-textarea
+                solo
+                label="Mission"
+                v-model="tempMission"
+                :rules="missionRules"
+                required
+              ></v-textarea>
+              <v-btn
+                @click="updateIsEditingMission(false)"
+              >
+                キャンセル
+              </v-btn>
+              <v-btn
+                :disabled="!editMissionValid"
+                @click="updateMission({companyId: companyId, mission: tempMission})"
+              >
+                更新
+              </v-btn>
+            </v-form>
+          </div>
+        </v-flex>
+      </div>
+      <!-- Vision -->
+      <div>
+        <v-layout
+          align-center
+          justify-space-between
+          row
+          class="pt-4"
+        >
+          <v-card-title
+            class="font-weight-bold"
+            :class="{
+              'title': $vuetify.breakpoint.smAndUp,
+            }"
+          >
+            Vision
+          </v-card-title>
+          <div v-show="!isEditingVision">
+            <v-btn
+              flat
+              small
+              @click="editVisionButtonClicked"
+            >
+              <v-icon :size="14">edit</v-icon>
+              <span class="caption edit-text-color">編集する</span>
+            </v-btn>
+          </div>
+        </v-layout>
+        <v-flex xs12 sm10>
+          <v-divider></v-divider>
+        </v-flex>
+        <v-flex xs12 sm10 class="break">
+          <v-card-text v-if="!isEditingVision">
+            <p class="return">{{ vision }}</p>
+          </v-card-text>
+          <div v-else>
+            <v-form v-model="editVisionValid">
+              <v-textarea
+                solo
+                label="Vision"
+                v-model="tempVision"
+                :rules="visionRules"
+                required
+              ></v-textarea>
+              <v-btn
+                @click="updateIsEditingVision(false)"
+              >
+                キャンセル
+              </v-btn>
+              <v-btn
+                :disabled="!editVisionValid"
+                @click="updateVision({companyId: companyId, vision: tempVision})"
+              >
+                更新
+              </v-btn>
+            </v-form>
+          </div>
+        </v-flex>
+      </div>
+      <!-- value -->
+      <div>
+        <v-layout
+          align-center
+          justify-space-between
+          row
+          class="pt-4"
+        >
+          <v-card-title
+            class="font-weight-bold"
+            :class="{
+              'title': $vuetify.breakpoint.smAndUp,
+            }"
+          >
+            Value
+          </v-card-title>
+          <div v-show="!isEditingValue">
+            <v-btn
+              flat
+              small
+              @click="editValueButtonClicked"
+            >
+              <v-icon :size="14">edit</v-icon>
+              <span class="caption edit-text-color">編集する</span>
+            </v-btn>
+          </div>
+        </v-layout>
+        <v-flex xs12 sm10>
+          <v-divider></v-divider>
+        </v-flex>
+        <v-flex xs12 sm10 class="break">
+          <v-card-text v-if="!isEditingValue">
+            <p class="return">{{ value }}</p>
+          </v-card-text>
+          <div v-else>
+            <v-form v-model="editValueValid">
+              <v-textarea
+                solo
+                label="Value"
+                v-model="tempValue"
+                :rules="valueRules"
+                required
+              ></v-textarea>
+              <v-btn
+                @click="updateIsEditingValue(false)"
+              >
+                キャンセル
+              </v-btn>
+              <v-btn
+                :disabled="!editValueValid"
+                @click="updateValue({companyId: companyId, value: tempValue})"
+              >
+                更新
+              </v-btn>
+            </v-form>
+          </div>
+        </v-flex>
+      </div>
+      <!-- Culture -->
+      <div>
+        <v-layout
+          align-center
+          justify-space-between
+          row
+          class="pt-4"
+        >
+          <v-card-title
+            class="font-weight-bold"
+            :class="{
+              'title': $vuetify.breakpoint.smAndUp,
+            }"
+          >
+            Culture
+          </v-card-title>
+          <div v-show="!isEditingCulture">
+            <v-btn
+              flat
+              small
+              @click="editCultureButtonClicked"
+            >
+              <v-icon :size="14">edit</v-icon>
+              <span class="caption edit-text-color">編集する</span>
+            </v-btn>
+          </div>
+        </v-layout>
+        <v-flex xs12 sm10>
+          <v-divider></v-divider>
+        </v-flex>
+        <v-flex xs12 sm10 class="break">
+          <v-card-text v-if="!isEditingCulture">
+            <p class="return">{{ culture }}</p>
+          </v-card-text>
+          <div v-else>
+            <v-form v-model="editCultureValid">
+              <v-textarea
+                solo
+                label="Culture"
+                v-model="tempCulture"
+                :rules="cultureRules"
+                required
+              ></v-textarea>
+              <v-btn
+                @click="updateIsEditingCulture(false)"
+              >
+                キャンセル
+              </v-btn>
+              <v-btn
+                :disabled="!editCultureValid"
+                @click="updateCulture({companyId: companyId, culture: tempCulture})"
+              >
+                更新
+              </v-btn>
+            </v-form>
+          </div>
+        </v-flex>
+      </div>
+      <!-- System -->
+      <div>
+        <v-layout
+          align-center
+          justify-space-between
+          row
+          class="pt-4"
+        >
+          <v-card-title
+            class="font-weight-bold"
+            :class="{
+              'title': $vuetify.breakpoint.smAndUp,
+            }"
+          >
+            社内制度
+          </v-card-title>
+          <div v-show="!isEditingSystem">
+            <v-btn
+              flat
+              small
+              @click="editSystemButtonClicked"
+            >
+              <v-icon :size="14">edit</v-icon>
+              <span class="caption edit-text-color">編集する</span>
+            </v-btn>
+          </div>
+        </v-layout>
+        <v-flex xs12 sm10>
+          <v-divider></v-divider>
+        </v-flex>
+        <v-flex xs12 sm10 class="break">
+          <v-card-text v-if="!isEditingSystem">
+            <p class="return">{{ system }}</p>
+          </v-card-text>
+          <div v-else>
+            <v-form v-model="editSystemValid">
+              <v-textarea
+                solo
+                label="社内制度"
+                v-model="tempSystem"
+                :rules="systemRules"
+                required
+              ></v-textarea>
+              <v-btn
+                @click="updateIsEditingSystem(false)"
+              >
+                キャンセル
+              </v-btn>
+              <v-btn
+                :disabled="!editSystemValid"
+                @click="updateSystem({companyId: companyId, system: tempSystem})"
+              >
+                更新
+              </v-btn>
+            </v-form>
+          </div>
+        </v-flex>
+      </div>
+      <!-- Why -->
+      <div>
+        <v-layout
+          align-center
+          justify-space-between
+          row
+          class="pt-4"
+        >
+          <v-card-title
+            class="font-weight-bold"
+            :class="{
+              'title': $vuetify.breakpoint.smAndUp,
+            }"
+          >
+            なぜやるのか
+          </v-card-title>
+          <div v-show="!isEditingWhy">
+            <v-btn
+              flat
+              small
+              @click="editWhyButtonClicked"
+            >
+              <v-icon :size="14">edit</v-icon>
+              <span class="caption edit-text-color">編集する</span>
+            </v-btn>
+          </div>
+        </v-layout>
+        <v-flex xs12 sm10>
+          <v-divider></v-divider>
+        </v-flex>
+        <v-flex xs12 sm10 class="break">
+          <v-card-text v-if="!isEditingWhy">
+            <p class="return">{{ why }}</p>
+          </v-card-text>
+          <div v-else>
+            <v-form v-model="editWhyValid">
+              <v-textarea
+                solo
+                label="なぜやるのか"
+                v-model="tempWhy"
+                :rules="whyRules"
+                required
+              ></v-textarea>
+              <v-btn
+                @click="updateIsEditingWhy(false)"
+              >
+                キャンセル
+              </v-btn>
+              <v-btn
+                :disabled="!editWhyValid"
+                @click="updateWhy({companyId: companyId, why: tempWhy})"
+              >
+                更新
+              </v-btn>
+            </v-form>
+          </div>
+        </v-flex>
+      </div>
+      <!-- What -->
+      <div>
+        <v-layout
+          align-center
+          justify-space-between
+          row
+          class="pt-4"
+        >
+          <v-card-title
+            class="font-weight-bold"
+            :class="{
+              'title': $vuetify.breakpoint.smAndUp,
+            }"
+          >
+            何をやっているのか
+          </v-card-title>
+          <div v-show="!isEditingWhat">
+            <v-btn
+              flat
+              small
+              @click="editWhatButtonClicked"
+            >
+              <v-icon :size="14">edit</v-icon>
+              <span class="caption edit-text-color">編集する</span>
+            </v-btn>
+          </div>
+        </v-layout>
+        <v-flex xs12 sm10>
+          <v-divider></v-divider>
+        </v-flex>
+        <v-flex xs12 sm10 class="break">
+          <v-card-text v-if="!isEditingWhat">
+            <p class="return">{{ what }}</p>
+          </v-card-text>
+          <div v-else>
+            <v-form v-model="editWhatValid">
+              <v-textarea
+                solo
+                label="何をやっているのか"
+                v-model="tempWhat"
+                :rules="whatRules"
+                required
+              ></v-textarea>
+              <v-btn
+                @click="updateIsEditingWhat(false)"
+              >
+                キャンセル
+              </v-btn>
+              <v-btn
+                :disabled="!editWhatValid"
+                @click="updateWhat({companyId: companyId, what: tempWhat})"
+              >
+                更新
+              </v-btn>
+            </v-form>
+          </div>
+        </v-flex>
+      </div>
+      <!-- Services -->
+      <div>
+        <v-layout
+          align-center
+          justify-space-between
+          row
+          class="pt-4"
+        >
+          <v-card-title
+            class="font-weight-bold"
+            :class="{
+              'title': $vuetify.breakpoint.smAndUp,
+            }"
+          >
+            サービス
+          </v-card-title>
+          <div v-show="!isEditingServices">
+            <v-btn
+              flat
+              small
+              @click="editServicesButtonClicked(null)"
+            >
+              <v-icon :size="14">edit</v-icon>
+              <span class="caption edit-text-color">追加する</span>
+            </v-btn>
+          </div>
+        </v-layout>
+        <v-flex xs12 sm10>
+          <v-divider></v-divider>
+        </v-flex>
+        <v-flex xs12 sm10 pb-5>
+          <!-- サービス表示 -->
+          <v-list
+            v-if="!isEditingServices && this.services != null"
+            :class="{
+              'pl-4': $vuetify.breakpoint.smAndUp,
+            }"
+          >
+            <template v-for="(item, index) in this.services">
+                <v-layout layout class=" pb-3">
+                  <v-flex xs4 sm3 lg2>
+                    <v-img :src="item.imageUrl" height="100"></v-img>
+                  </v-flex>
+                  <v-flex
+                    xs8
+                    sm9
+                    lg10
+                    class="break"
+                    :class="{
+                      'px-4': $vuetify.breakpoint.smAndUp,
+                      'pl-4': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    <div>
+                      <span class="font-weight-bold subheading textColor">{{ item.title }}</span>
+                      <v-btn
+                        class="pa-0 ma-0"
+                        flat
+                        @click="editServicesButtonClicked(index)"
+                      >
+                        <v-icon :size="14">edit</v-icon>
+                        <span class="caption edit-text-color">編集する</span>
+                      </v-btn>
+                    </div>
+                    <p　class="textColor return">{{ item.content }}</p>
+                    <p class="textColor">
+                      {{ item.url }}
+                    </p>
+                  </v-flex>
+                </v-layout>
+            </template>
+          </v-list>
+          <!-- サービス編集画面 -->
+          <div v-if="isEditingServices">
+            <v-form v-model="editServicesValid">
+              <div class="d-flex pb-3">
+                <v-flex xs8 sm9 lg10 class="px-4 break">
+                  <div class="py-3">
+                    <v-img :src="tempServiceImageUrl" width="200" height="100" class="grey lighten-3"/>
+                    <input type="file" v-on:change="onFileChange">
+                    <p v-if="!imageFileSizeValid" class="warning-text-color">
+                      {{ imageFileSizeWarning }}
+                    </p>
+                  </div>
+                  <v-text-field
+                    solo
+                    label="タイトル"
+                    v-model="tempServiceTitle"
+                    :rules="serviceTitleRules"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    solo
+                    label="説明"
+                    v-model="tempServiceContent"
+                    :rules="serviceContentRules"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    solo
+                    label="URL"
+                    v-model="tempServiceUrl"
+                    :rules="serviceUrlRules"
+                    required
+                  ></v-text-field>
+                  <v-btn
+                    @click="updateIsEditingServices(false)"
+                  >
+                    キャンセル
+                  </v-btn>
+                  <v-btn
+                    v-if="selectedServiceIndex != null"
+                    @click="deleteService({
+                      companyId: companyId,
+                      selectedIndex: selectedServiceIndex,
+                      services: services,
+                      tempServices: tempServices
+                    })"
+                  >
+                    削除
+                  </v-btn>
+                  <v-btn
+                    :disabled="!editServicesValid || tempServiceUrl == null || !imageFileSizeValid"
+                    @click="updateServices({
+                      companyId: companyId,
+                      isServiceImageChanged: isServiceImageChanged,
+                      selectedIndex: selectedServiceIndex,
+                      services: services,
+                      tempServices: tempServices,
+                      imageFile: tempServiceImageFile,
+                      imageUrl: tempServiceImageUrl,
+                      title: tempServiceTitle,
+                      content: tempServiceContent,
+                      url: tempServiceUrl
+                    })"
+                  >
+                    更新
+                  </v-btn>
+                </v-flex>
+              </div>
+            </v-form>
+          </div>
+        </v-flex>
+      </div>
+      <!-- Welfare -->
+      <div>
+        <v-layout
+          align-center
+          justify-space-between
+          row
+          class="pt-4"
+        >
+          <v-card-title
+            class="font-weight-bold"
+            :class="{
+              'title': $vuetify.breakpoint.smAndUp,
+            }"
+          >
+            福利厚生
+          </v-card-title>
+          <div v-show="!isEditingWelfare">
+            <v-btn
+              flat
+              small
+              @click="editWelfareButtonClicked"
+            >
+              <v-icon :size="14">edit</v-icon>
+              <span class="caption edit-text-color">編集する</span>
+            </v-btn>
+          </div>
+        </v-layout>
+        <v-flex xs12 sm10>
+          <v-divider></v-divider>
+        </v-flex>
+        <v-flex xs12 sm10 class="break">
+          <v-card-text v-if="!isEditingWelfare">
+            <p class="return">{{ welfare }}</p>
+          </v-card-text>
+          <div v-else>
+            <v-form v-model="editWelfareValid">
+              <v-textarea
+                solo
+                label="福利厚生"
+                v-model="tempWelfare"
+                :rules="welfareRules"
+                required
+              ></v-textarea>
+              <v-btn
+                @click="updateIsEditingWelfare(false)"
+              >
+                キャンセル
+              </v-btn>
+              <v-btn
+                :disabled="!editWelfareValid"
+                @click="updateWelfare({companyId: companyId, welfare: tempWelfare})"
+              >
+                更新
+              </v-btn>
+            </v-form>
+          </div>
+        </v-flex>
+      </div>
+      <!-- 企業情報 -->
+      <div class="mb-5">
+        <v-layout
+          align-center
+          justify-space-between
+          row
+          class="pt-5"
+        >
+          <v-card-title
+            class="font-weight-bold"
+            :class="{
+              'title': $vuetify.breakpoint.smAndUp,
+            }"
+          >
+            企業情報
+          </v-card-title>
+          <v-btn
+            v-show="!isEditingCompanyInfo"
+            class="text-xs-left"
+            flat
+            @click="editCompanyInfoButtonClicked"
+          >
+            <v-icon :size="14">edit</v-icon>
+            <span class="caption edit-text-color">編集する</span>
+          </v-btn>
+        </v-layout>
+        <v-flex xs12 sm10>
+          <v-divider></v-divider>
+        </v-flex>
+        <v-flex xs12 sm10 class="break">
+          <!-- 企業情報の表示 -->
+          <v-list v-if="!isEditingCompanyInfo" class="pl-4">
+            <div class="pb-2">
+              <span>設立日:</span>
+              <span class="pl-2">{{ founded }}</span>
+            </div>
+            <div class="pb-2">
+              <span>所在地:</span>
+              <span class="pl-2">{{ location }}</span>
+            </div>
+            <div class="pb-2">
+              <span>社員数:</span>
+              <span class="pl-2">{{ employeesCount }}</span>
+            </div>
+            <div class="pb-2">
+              <span>メールアドレス:</span>
+              <span class="pl-2">{{ email }}</span>
+            </div>
+            <div class="pb-2">
+              <span>ホームページ:</span>
+              <span class="pl-2">{{ url }}</span>
+            </div>
+          </v-list>
+          <!-- 企業情報の編集画面 -->
+          <div v-else>
+            <v-form v-model="editCompanyInfoValid">
+              <v-card class="mb-4" style="padding-left: 12px; padding-right: 12px;">
+                <v-layout class="py-1" justify-space-between>
+                  <v-flex xs11>
+                    <datepicker
+                      v-model="tempFoundedDate"
+                      class="py-2"
+                      style="font-size: 16px;"
+                      placeholder="設立日"
+                    ></datepicker>
+                  </v-flex>
+                  <v-icon class="text-xs-right">business</v-icon>
+                </v-layout>
+              </v-card>
+              <v-text-field
+                solo
+                label="所在地"
+                append-icon="place"
+                v-model="tempLocation"
+                :rules="locationRules"
+                required
+              ></v-text-field>
+              <v-text-field
+                solo
+                label="社員数"
+                append-icon="person_outline"
+                v-model="tempEmployeesCount"
+                type="number"
+                required
+              ></v-text-field>
+              <v-text-field
+                solo
+                label="メールアドレス"
+                append-icon="email"
+                v-model="tempEmail"
+                :rules="emailRules"
+                required
+              ></v-text-field>
+              <v-text-field
+                solo
+                label="ホームページ"
+                append-icon="home"
+                v-model="tempUrl"
+                :rules="urlRules"
+                required
+              ></v-text-field>
+              <v-btn
+                @click="updateIsEditingCompanyInfo(false)"
+              >
+                キャンセル
+              </v-btn>
+              <v-btn
+                :disabled="!editCompanyInfoValid"
+                @click="updateCompanyInfo({
+                  companyId: companyId,
+                  location: tempLocation,
+                  employeesCount: Number(tempEmployeesCount),
+                  foundedDate: tempFoundedDate,
+                  email: tempEmail == email ? null : tempEmail,
+                  url: tempUrl,
+                })"
+              >
+                更新
+              </v-btn>
+            </v-form>
+          </div>
+        </v-flex>
+      </div>
+    </v-flex>
+  </v-layout>
+</template>
+
+<script>
+import { mapActions, mapState, mapGetters } from 'vuex'
+import { firestore, auth, storage, storageRef } from '@/plugins/firebase'
+import Datepicker from 'vuejs-datepicker'
+// import { en, ja } from 'vuejs-datepicker/dist/locale'
+
+export default {
+  components: {
+    Datepicker
+  },
+  data: () => ({
+    // datePickerFormat: 'yyyy/MM/dd',
+    // ja: ja,
+    isQueried: false,
+    windowHeight: 0,
+    imageFileSizeWarning: '2MB以下の画像を選択してください',
+    selectedTopImageSize: 200,
+    selectedTopImage: null,
+    topImageFile: null,
+    selectedCompanyImageSize: 200,
+    selectedCompanyImage: null,
+    companyImageFile: null,
+    tempCompanyName: '',
+    companyNameRules: [
+      v => !!v || '企業名を入力してください',
+      v => (v && v.length <= 50) || '50文字を超えています'
+    ],
+    editCompanyNameValid: true,
+    addMemberDialog: false,
+    addMemberValid: true,
+    tempEmail: '',
+    emailRules: [
+      v => /.+@.+/.test(v) || '無効なメールアドレスです'
+    ],
+    editMissionValid: true,
+    tempMission: '',
+    missionRules: [
+      v => (v.length <= 300) || '300字以内で入力してください'
+    ],
+    editVisionValid: true,
+    tempVision: '',
+    visionRules: [
+      v => (v.length <= 300) || '300字以内で入力してください'
+    ],
+    editValueValid: true,
+    tempValue: '',
+    valueRules: [
+      v => (v.length <= 300) || '300字以内で入力してください'
+    ],
+    editCultureValid: true,
+    tempCulture: '',
+    cultureRules: [
+      v => (v.length <= 300) || '300字以内で入力してください'
+    ],
+    editSystemValid: true,
+    tempSystem: '',
+    systemRules: [
+      v => (v.length <= 300) || '300字以内で入力してください'
+    ],
+    editWhyValid: true,
+    tempWhy: '',
+    whyRules: [
+      v => (v.length <= 300) || '300字以内で入力してください'
+    ],
+    editWhatValid: true,
+    tempWhat: '',
+    whatRules: [
+      v => (v.length <= 300) || '300字以内で入力してください'
+    ],
+    editServicesValid: true,
+    tempServices: null,
+    tempServiceImageUrl: '',
+    tempServiceTitle: '',
+    tempServiceContent: '',
+    tempServiceUrl: '',
+    tempServiceImageFile: null,
+    serviceTitleRules: [
+      v => !!v || 'タイトルを入力してください',
+      v => (v && v.length <= 20) || '20字以内で入力してください'
+    ],
+    serviceContentRules: [
+      v => !!v || '説明を入力してください',
+      v => (v && v.length <= 50) || '50字以内で入力してください'
+    ],
+    serviceUrlRules: [
+      v => !!v || 'URLを入力してください',
+      v => (v && v.length <= 50) || '50字以内で入力してください',
+      v => (v.includes('http://') || v.includes('https://')) || '無効なURLです'
+    ],
+    editWelfareValid: true,
+    tempWelfare: '',
+    welfareRules: [
+      v => (v.length <= 300) || '300字以内で入力してください'
+    ],
+    tempLocation: '',
+    locationRules: [
+      v => (v.length <= 50) || '50字以内で入力してください'
+    ],
+    tempFoundedDate: null,
+    tempUrl: '',
+    urlRules: [
+      v => (v.length <= 100) || '100字以内で入力してください',
+      v => (v.includes('http://') || v.includes('https://')) || '無効なURLです'
+    ],
+    tempEmployeesCount: null,
+    editCompanyInfoValid: true,
+  }),
+  computed: {
+    avatarSize() {
+      return (this.breakpoint == 'xs') ? 50 : 60
+    },
+    imageRatio() {
+      switch (this.breakpoint) {
+        case 'xs': return '2'
+        case 'sm': return '2.5'
+        case 'md': return '3'
+        case 'lg': return '3'
+        case 'xl': return '3'
+      }
+    },
+    breakpoint() {
+      return this.$vuetify.breakpoint.name
+    },
+    founded() {
+      let date = this.foundedDate
+      if (date) {
+        let year  = date.getFullYear()
+        let month = date.getMonth() + 1
+        let day  = date.getDate()
+        date = `${year}/${month}/${day}`
+        return date
+      }
+    },
+    ...mapState({
+      user: state => state.user,
+      companyId: state => state.profile.companyId,
+      imageFileSizeValid: state => state.companyProfile.imageFileSizeValid,
+      topImageUrl: state => state.companyProfile.topImageUrl,
+      isEditingTopImage: state => state.companyProfile.isEditingTopImage,
+      companyImageUrl: state => state.companyProfile.companyImageUrl,
+      isEditingCompanyImage: state => state.companyProfile.isEditingCompanyImage,
+      companyName: state => state.companyProfile.companyName,
+      isEditingCompanyName: state => state.companyProfile.isEditingCompanyName,
+      members: state => state.companyProfile.members,
+      addMemberError: state => state.companyProfile.addMemberError,
+      addMemberLoading: state => state.companyProfile.addMemberLoading,
+      mission: state => state.companyProfile.mission,
+      isEditingMission: state => state.companyProfile.isEditingMission,
+      vision: state => state.companyProfile.vision,
+      isEditingVision: state => state.companyProfile.isEditingVision,
+      value: state => state.companyProfile.value,
+      isEditingValue: state => state.companyProfile.isEditingValue,
+      culture: state => state.companyProfile.culture,
+      isEditingCulture: state => state.companyProfile.isEditingCulture,
+      system: state => state.companyProfile.system,
+      isEditingSystem: state => state.companyProfile.isEditingSystem,
+      why: state => state.companyProfile.why,
+      isEditingWhy: state => state.companyProfile.isEditingWhy,
+      what: state => state.companyProfile.what,
+      isEditingWhat: state => state.companyProfile.isEditingWhat,
+      services: state => state.companyProfile.services,
+      isServiceImageChanged: state => state.companyProfile.isServiceImageChanged,
+      selectedServiceIndex: state => state.companyProfile.selectedServiceIndex,
+      isEditingServices: state => state.companyProfile.isEditingServices,
+      welfare: state => state.companyProfile.welfare,
+      isEditingWelfare: state => state.companyProfile.isEditingWelfare,
+      location: state => state.companyProfile.location,
+      foundedDate: state => state.companyProfile.foundedDate,
+      email: state => state.companyProfile.email,
+      url: state => state.companyProfile.url,
+      employeesCount: state => state.companyProfile.employeesCount,
+      isEditingCompanyInfo: state => state.companyProfile.isEditingCompanyInfo,
+    }),
+  },
+  mounted() {
+    let toolbarHeight
+    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+      toolbarHeight = 48
+    } else {
+      toolbarHeight = 64
+    }
+    this.windowHeight = window.innerHeight - toolbarHeight
+
+    if (this.companyId != null && !this.isQueried) {
+      this.queryCompanyDetail(this.companyId)
+    }
+  },
+  watch: {
+    companyId(companyId) {
+      if (companyId != null) {
+        this.isQueried = true
+        this.queryCompanyDetail(companyId)
+      }
+    }
+  },
+  methods: {
+    topImageClicked() {
+      this.updateImageFileSizeValid(true)
+      this.updateIsEditingTopImage(true)
+      this.selectedTopImage = null
+      this.topImageFile = null
+    },
+    companyImageClicked() {
+      this.updateImageFileSizeValid(true)
+      this.updateIsEditingCompanyImage(true)
+      this.selectedCompanyImage = null
+      this.companyImageFile = null
+    },
+    onFileChange(e) {
+      this.updateImageFileSizeValid(true)
+      let files = e.target.files || e.dataTransfer.files
+      // 画像サイズは2MB以下のみ
+      if (files[0] != null && files[0].size/1024/1024 <= 2) {
+        if (this.isEditingTopImage) {
+          this.topImageFile = files[0]
+        } else if (this.isEditingCompanyImage) {
+          this.companyImageFile = files[0]
+        } else if (this.isEditingServices) {
+          this.updateIsServiceImageChanged(true)
+          this.tempServiceImageFile = files[0]
+        }
+      } else {
+        this.updateImageFileSizeValid(false)
+      }
+
+      if (this.imageFileSizeValid) {
+        this.createImage(files[0])
+      }
+    },
+    createImage(file) {
+      // アップロードした画像を表示
+      let reader = new FileReader()
+      reader.onload = (e) => {
+        if (this.isEditingTopImage) {
+          this.selectedTopImage = e.target.result
+        } else if (this.isEditingCompanyImage) {
+          this.selectedCompanyImage = e.target.result
+        } else if (this.isEditingServices) {
+          this.tempServiceImageUrl = e.target.result
+        }
+      }
+      reader.readAsDataURL(file)
+    },
+    editCompanyNameButtonClicked() {
+      this.updateIsEditingCompanyName(true)
+      this.tempCompanyName = this.companyName
+    },
+    addMemberButtonClicked() {
+      this.addMemberDialog = true
+      this.email = ''
+    },
+    inviteMember() {
+      // this.resetAddMemberError()
+      // this.updateAddMemberLoading(true)
+      // this.addMember({window: window, email: this.email})
+      this.addMemberDialog = false
+    },
+    editMissionButtonClicked() {
+      this.tempMission = this.mission
+      this.updateIsEditingMission(true)
+    },
+    editVisionButtonClicked() {
+      this.tempVision = this.vision
+      this.updateIsEditingVision(true)
+    },
+    editValueButtonClicked() {
+      this.tempValue = this.value
+      this.updateIsEditingValue(true)
+    },
+    editCultureButtonClicked() {
+      this.tempCulture = this.culture
+      this.updateIsEditingCulture(true)
+    },
+    editSystemButtonClicked() {
+      this.tempSystem = this.system
+      this.updateIsEditingSystem(true)
+    },
+    editWhyButtonClicked() {
+      this.tempWhy = this.why
+      this.updateIsEditingWhy(true)
+    },
+    editWhatButtonClicked() {
+      this.tempWhat = this.what
+      this.updateIsEditingWhat(true)
+    },
+    editServicesButtonClicked(index) {
+      // 初期化
+      this.updateImageFileSizeValid(true)
+      this.updateIsServiceImageChanged(false)
+      this.tempServiceImageFile = null
+      this.setSelectedServiceIndex(index)
+      this.tempServices = this.services
+      if (index != null) {
+        this.tempServiceImageUrl = this.services[index].imageUrl
+        this.tempServiceTitle = this.services[index].title
+        this.tempServiceContent = this.services[index].content
+        this.tempServiceUrl = this.services[index].url
+      } else {
+        this.tempServiceImageUrl = ''
+        this.tempServiceTitle = ''
+        this.tempServiceContent = ''
+        this.tempServiceUrl = ''
+      }
+      this.updateIsEditingServices(true)
+    },
+    editWelfareButtonClicked() {
+      this.tempWelfare = this.welfare
+      this.updateIsEditingWelfare(true)
+    },
+    editCompanyInfoButtonClicked() {
+      this.tempFoundedDate = this.foundedDate
+      this.tempLocation = this.location
+      this.tempEmployeesCount = this.employeesCount
+      this.tempEmail = this.email
+      this.tempUrl = this.url
+      this.updateIsEditingCompanyInfo(true)
+    },
+    ...mapActions({
+      queryCompanyDetail: 'companyProfile/queryCompanyDetail',
+      updateImageFileSizeValid: 'companyProfile/updateImageFileSizeValid',
+      updateIsEditingTopImage: 'companyProfile/updateIsEditingTopImage',
+      updateTopImage: 'companyProfile/updateTopImage',
+      updateIsEditingCompanyImage: 'companyProfile/updateIsEditingCompanyImage',
+      updateCompanyImage: 'companyProfile/updateCompanyImage',
+      updateIsEditingCompanyName: 'companyProfile/updateIsEditingCompanyName',
+      updateCompanyName: 'companyProfile/updateCompanyName',
+      resetAddMemberError: 'companyProfile/resetAddMemberError',
+      updateAddMemberLoading: 'companyProfile/updateAddMemberLoading',
+      addMember: 'companyProfile/addMember',
+      updateIsEditingMission: 'companyProfile/updateIsEditingMission',
+      updateMission: 'companyProfile/updateMission',
+      updateIsEditingVision: 'companyProfile/updateIsEditingVision',
+      updateVision: 'companyProfile/updateVision',
+      updateIsEditingValue: 'companyProfile/updateIsEditingValue',
+      updateValue: 'companyProfile/updateValue',
+      updateIsEditingCulture: 'companyProfile/updateIsEditingCulture',
+      updateCulture: 'companyProfile/updateCulture',
+      updateIsEditingSystem: 'companyProfile/updateIsEditingSystem',
+      updateSystem: 'companyProfile/updateSystem',
+      updateIsEditingWhy: 'companyProfile/updateIsEditingWhy',
+      updateWhy: 'companyProfile/updateWhy',
+      updateIsEditingWhat: 'companyProfile/updateIsEditingWhat',
+      updateWhat: 'companyProfile/updateWhat',
+      updateIsServiceImageChanged: 'companyProfile/updateIsServiceImageChanged',
+      setSelectedServiceIndex: 'companyProfile/setSelectedServiceIndex',
+      updateIsEditingServices: 'companyProfile/updateIsEditingServices',
+      updateServices: 'companyProfile/updateServices',
+      deleteService: 'companyProfile/deleteService',
+      updateIsEditingWelfare: 'companyProfile/updateIsEditingWelfare',
+      updateWelfare: 'companyProfile/updateWelfare',
+      updateIsEditingCompanyInfo: 'companyProfile/updateIsEditingCompanyInfo',
+      updateCompanyInfo: 'companyProfile/updateCompanyInfo',
+    }),
+  }
+}
+</script>

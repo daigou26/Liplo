@@ -206,10 +206,17 @@ export const actions = {
       // dbにurl保存
       uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
         console.log('File available at', downloadURL)
-        firestore.collection('users').doc(uid)
-          .update({
-            imageUrl: downloadURL
-          })
+        const batch = firestore.batch()
+        const userRef = firestore.collection('users').doc(uid)
+        batch.update(userRef, {
+          imageUrl: downloadURL
+        })
+        const profileRef = firestore.collection('users')
+          .doc(uid).collection('profile').doc(uid)
+        batch.update(profileRef, {
+          imageUrl: downloadURL
+        })
+        batch.commit()
           .then(() => {
             commit('updateIsEditingProfileImage', false)
             commit('setImageUrl', downloadURL)

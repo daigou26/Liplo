@@ -6,6 +6,7 @@ export const state = () => ({
   user: null,
   authError: null,
   loading: false,
+  
 })
 
 export const mutations = {
@@ -147,6 +148,8 @@ export const actions = {
                     console.error("Error adding document: ", error)
                   })
               }
+            } else {
+              // 招待でログインした user
             }
           } else {
             dispatch('profile/setFirstName', doc.data()['firstName'])

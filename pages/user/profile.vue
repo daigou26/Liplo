@@ -36,8 +36,9 @@
             <!-- ProfileImage編集 -->
             <div>
               <v-dialog
-                v-model="isEditingProfileImage"
+                :value="isEditingProfileImage"
                 :fullscreen="$vuetify.breakpoint.xsOnly"
+                persistent
                 width="500"
               >
                 <v-card>
@@ -75,7 +76,7 @@
                     <v-btn
                       color="primary"
                       flat
-                      :disabled ="selectedImage == null"
+                      :disabled ="selectedImage == null || !imageFileSizeValid"
                       @click="updateProfileImage({uid: user.uid, imageFile: imageFile})"
                     >
                       変更
@@ -87,8 +88,9 @@
             <!-- UserName編集 -->
             <v-form v-model="editUserNameValid">
               <v-dialog
-                v-model="isEditingUserName"
+                :value="isEditingUserName"
                 :fullscreen="$vuetify.breakpoint.xsOnly"
+                persistent
                 width="500"
               >
                 <v-card>
@@ -306,6 +308,9 @@
                         <div class="py-3">
                           <v-img :src="tempPortfolioItemImageUrl" width="200" height="100" class="grey lighten-3"/>
                           <input type="file" v-on:change="onFileChange">
+                          <p v-if="!imageFileSizeValid" class="warning-text-color">
+                            {{ imageFileSizeWarning }}
+                          </p>
                         </div>
                         <v-text-field
                           solo
@@ -345,7 +350,7 @@
                           削除
                         </v-btn>
                         <v-btn
-                          :disabled="!editPortfolioValid || tempPortfolioItemUrl == null"
+                          :disabled="!editPortfolioValid || tempPortfolioItemUrl == null || !imageFileSizeValid"
                           @click="updatePortfolio({
                             uid: user.uid,
                             isPortfolioImageChanged: isPortfolioImageChanged,
@@ -874,6 +879,7 @@ export default {
     },
     portfolioEditButtonClicked(index) {
       // 初期化
+      this.updateImageFileSizeValid(true)
       this.updateIsPortfolioImageChanged(false)
       this.tempPortfolioImageFile = null
       this.setSelectedPortfolioItemIndex(index)
