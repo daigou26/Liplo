@@ -9,19 +9,22 @@
   >
     <v-flex xs12 class="py-3 break">
       <!-- Profile画像 & UserName -->
-      <div class="d-flex py-4 align-center">
+      <div class="py-4 align-center">
         <v-card flat>
-          <div class="d-flex">
+          <v-flex
+            layout
+            px-4
+          >
             <v-avatar
               :size="avatarSize"
-              class="clickable"
+              class="grey lighten-3 clickable"
               @click="profileImageClicked"
             >
               <img v-if="imageUrl" :src="imageUrl" alt="avatar">
               <v-icon v-else :size="60">person</v-icon>
             </v-avatar>
             <div class="pt-2">
-              <div class="title textColor font-weight-bold break pl-3">
+              <div class="title textColor font-weight-bold break pl-4">
                 {{ name }}
               </div>
               <div>
@@ -35,14 +38,14 @@
                 </v-btn>
               </div>
             </div>
-          </div>
-
+          </v-flex>
         </v-card>
         <!-- ProfileImage編集 -->
         <div>
           <v-dialog
-            v-model="isEditingProfileImage"
+            :value="isEditingProfileImage"
             :fullscreen="$vuetify.breakpoint.xsOnly"
+            persistent
             width="500"
           >
             <v-card>
@@ -92,8 +95,9 @@
         <!-- UserName編集 -->
         <v-form v-model="editUserNameValid">
           <v-dialog
-            v-model="isEditingUserName"
+            :value="isEditingUserName"
             :fullscreen="$vuetify.breakpoint.xsOnly"
+            persistent
             width="500"
           >
             <v-card>
@@ -159,8 +163,9 @@
         <!-- 役職編集 -->
         <v-form v-model="editPositionValid">
           <v-dialog
-            v-model="isEditingPosition"
+            :value="isEditingPosition"
             :fullscreen="$vuetify.breakpoint.xsOnly"
+            persistent
             width="500"
           >
             <v-card>
@@ -300,7 +305,7 @@ export default {
   }),
   computed: {
     avatarSize() {
-      return (this.breakpoint == 'xs') ? 40 : 60
+      return (this.breakpoint == 'xs') ? 50 : 60
     },
     name() {
       return this.lastName + ' ' + this.firstName

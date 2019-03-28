@@ -451,8 +451,51 @@ export default {
     })
   },
   mounted() {
+    // Confirm the link is a sign-in with email link.
+    if (auth.isSignInWithEmailLink(window.location.href)) {
+      console.log('isSignInWithEmailLink');
+      // Additional state parameters can also be passed via URL.
+      // This can be used to continue the user's intended action before triggering
+      // the sign-in operation.
+      // Get the email if available. This should be available if the user completes
+      // the flow on the same device where they started it.
+      var loginEmail = window.localStorage.getItem('emailForSignIn')
+      if (!loginEmail) {
+        // User opened the link on a different device. To prevent session fixation
+        // attacks, ask the user to provide the associated email again. For example:
+        loginEmail = window.prompt('Please provide your email for confirmation');
+      }
+      console.log('email:', loginEmail);
+
+      // The client SDK will parse the code from the link for you.
+      auth.signInWithEmailLink(loginEmail, window.location.href)
+        .then(function(result) {
+          // Clear email from storage.
+          window.localStorage.removeItem('emailForSignIn')
+          console.log('login success')
+
+          this.resetCareerState()
+          this.resetChatState()
+          this.resetChatsState()
+          this.resetFeedbackState()
+          this.resetFeedbacksState()
+          this.resetState()
+          this.resetMessagesState()
+          this.resetProfileState()
+          this.resetReviewState()
+          this.resetReviewsState()
+          this.resetPassState()
+          this.resetPassesState()
+          this.resetCompanyProfileState()
+        })
+        .catch(function(error) {
+          // Some error occurred, you can inspect the code: error.code
+          // Common errors could be invalid email and invalid or expired OTPs.
+        });
+    }
     // ログイン時、dbにuser(recruiter)情報保存
     auth.onAuthStateChanged((user) => {
+      console.log('toolbar auth change');
       this.setAuthInfo({
         route: this.$route,
         router: this.$router,
@@ -553,6 +596,19 @@ export default {
     },
     ...mapActions({
       setAuthInfo: 'setAuthInfo',
+      resetCareerState: 'career/resetState',
+      resetChatState: 'chat/resetState',
+      resetChatsState: 'chats/resetState',
+      resetFeedbackState: 'feedback/resetState',
+      resetFeedbacksState: 'feedbacks/resetState',
+      resetState: 'resetState',
+      resetMessagesState: 'messages/resetState',
+      resetProfileState: 'profile/resetState',
+      resetReviewState: 'review/resetState',
+      resetReviewsState: 'reviews/resetState',
+      resetPassState: 'pass/resetState',
+      resetPassesState: 'passes/resetState',
+      resetCompanyProfileState: 'companyProfile/resetState',
     }),
   }
 }

@@ -38,7 +38,7 @@ export default {
       showDrawer: false,
       items: [
         { title: 'ダッシュボード', icon: 'dashboard', url: 'dashboard' },
-        { title: '企業・社員', icon: 'business' },
+        { title: '企業・社員', icon: 'business', url: 'company' },
         { title: '募集管理', icon: 'assignment' },
         { title: '候補者管理', icon: 'assignment_ind' },
         { title: 'メッセージ', icon: 'chat_bubble_outline' },

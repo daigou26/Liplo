@@ -1,5 +1,5 @@
 export const strict = false
-import { firestore } from '@/plugins/firebase'
+import { firestore, storageRef } from '@/plugins/firebase'
 
 export const state = () => ({
   imageUrl: '',
@@ -121,6 +121,7 @@ export const mutations = {
 }
 
 export const actions = {
+  // recruiter dashboard でのクエリ
   queryCompany({commit}, {nuxt, companyId}) {
     if (companyId != null && companyId != '') {
       return firestore.collection('companies').doc(companyId)
@@ -180,9 +181,9 @@ export const actions = {
                 elements: {
                   center: {
                     text: String(feedbackRate) + '%',
-                    color: '#36A2EB', //Default black
-                    fontStyle: 'Helvetica', //Default Arial
-                    sidePadding: 50 //Default 20 (as a percentage)
+                    color: '#36A2EB',
+                    fontStyle: 'Helvetica',
+                    sidePadding: 50
                   }
                 },
                 responsive: true,
@@ -213,6 +214,7 @@ export const actions = {
   },
   queryCompanyDetail({commit}, {nuxt, params}) {
     const companyId = params.id
+
     if (companyId != null && companyId != '') {
       return firestore.collection('companies').doc(companyId)
         .collection('detail')
@@ -231,7 +233,7 @@ export const actions = {
 
             commit('setImageUrl', doc.data()['imageUrl'])
             commit('setCompanyId', doc.id)
-            commit('setCompanyName', doc.data()['name'])
+            commit('setCompanyName', doc.data()['companyName'])
             commit('setCompanyImageUrl', doc.data()['companyImageUrl'])
             commit('setEmail', doc.data()['email'])
             commit('setMembers', doc.data()['members'])
