@@ -1,5 +1,5 @@
 export const strict = false
-import { firestore } from '@/plugins/firebase'
+import { firestore, storageRef } from '@/plugins/firebase'
 
 export const state = () => ({
   imageUrl: '',
@@ -131,7 +131,7 @@ export const actions = {
   queryJobDetail({commit}, {nuxt, params}) {
     const jobId = params.id
     if (jobId != null && jobId != '') {
-      return firestore.collection('jobs').doc(jobId).collection('detail').doc(jobId).get()
+      firestore.collection('jobs').doc(jobId).collection('detail').doc(jobId).get()
         .then(function(doc) {
           if (doc.exists) {
             commit('setImageUrl', doc.data()['imageUrl'])
@@ -221,7 +221,7 @@ export const actions = {
   apply({commit},{params, uid, imageUrl, firstName, lastName, companyId}) {
     const jobId = params.id
 
-    return firestore.collection('companies').doc(companyId)
+    firestore.collection('companies').doc(companyId)
       .collection('applicants')
       .add({
         uid: uid,
@@ -235,5 +235,63 @@ export const actions = {
       .catch((error) => {
         console.error("Error adding document: ", error)
       })
+  },
+  postJob({commit}, {
+    router,
+    companyId,
+    imageFile,
+    title,
+    content,
+    description,
+    wage,
+    requiredSkills,
+    idealSkills,
+    workweek,
+    period,
+    workday,
+    idealCandidate,
+    occupation,
+    features,
+    environment
+  }) {
+    const createdAt = new Date()
+    const timestamp = Math.floor( createdAt.getTime() / 1000 )
+    // image アップロード
+    const uploadTask = storageRef.child(`companies/${companyId}/jobs/${timestamp}.jpg`).put(imageFile)
+    uploadTask.on('state_changed', function(snapshot){
+      var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+      console.log('Upload is ' + progress + '% done')
+    }, function(error) {
+      // Handle unsuccessful uploads
+    }, function() {
+      // dbにurl保存
+      uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+        firestore.collection('jobs')
+          .add({
+            companyId: companyId,
+            imageUrl: downloadURL,
+            title: title,
+            content: content,
+            description: description,
+            wage: wage,
+            requiredSkills: requiredSkills,
+            idealSkills: idealSkills,
+            workweek: workweek,
+            period: period,
+            workday: workday,
+            idealCandidate: idealCandidate,
+            occupation: occupation,
+            features: features,
+            environment: environment,
+            createdAt: createdAt
+          })
+          .then(() => {
+            router.push('/recruiter/jobs')
+          })
+          .catch((error) => {
+            console.error("Error adding document: ", error)
+          })
+      })
+    })
   }
 }

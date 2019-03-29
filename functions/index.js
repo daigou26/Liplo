@@ -2,6 +2,104 @@ const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 admin.initializeApp()
 
+// 採用担当者が募集を投稿した時の処理
+exports.postJob = functions.region('asia-northeast1')
+  .firestore
+  .document('jobs/{jobId}')
+  .onCreate((snap, context) => {
+    const jobId = context.params.jobId
+    const companyId = snap.data().companyId
+    const title = snap.data().title
+    const imageUrl = snap.data().imageUrl
+    const description = snap.data().description
+    const wage = snap.data().wage
+    const requiredSkills = snap.data().requiredSkills
+    const idealSkills = snap.data().idealSkills
+    const environment = snap.data().environment
+    const workweek = snap.data().workweek
+    const period = snap.data().period
+    const workday = snap.data().workday
+    const idealCandidate = snap.data().idealCandidate
+    const occupation = snap.data().occupation
+    const features = snap.data().features
+    const createdAt = snap.data().createdAt
+
+    return admin.firestore()
+      .collection('companies')
+      .doc(companyId)
+      .collection('detail')
+      .doc(companyId)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          const companyName = doc.data().companyName
+          const companyImageUrl = doc.data().companyImageUrl
+          const mission = doc.data().mission
+          const vision = doc.data().vision
+          const value = doc.data().value
+          const culture = doc.data().culture
+          const system = doc.data().system
+          const why = doc.data().why
+          const what = doc.data().what
+          const services = doc.data().services
+          const welfare = doc.data().welfare
+
+          const jobData = {
+            companyName: companyName,
+            companyImageUrl: companyImageUrl,
+          }
+          if (doc.data().reviews) {
+            rating = doc.data().reviews.rating
+            jobData.rating = rating
+          }
+
+          // 投稿更新
+          const batch = admin.firestore().batch()
+          const jobsRef = admin.firestore().collection('jobs').doc(jobId)
+          batch.update(jobsRef, jobData)
+          const jobDetailRef = admin.firestore().collection('jobs').doc(jobId).collection('detail').doc(jobId)
+          batch.set(jobDetailRef, {
+            companyId: companyId,
+            companyName: companyName,
+            companyImageUrl: companyImageUrl,
+            title: title,
+            imageUrl: imageUrl,
+            mission: mission,
+            vision: vision,
+            value: value,
+            culture: culture,
+            system: system,
+            why: why,
+            what: what,
+            services: services,
+            welfare: welfare,
+            description: description,
+            wage: wage,
+            requiredSkills: requiredSkills,
+            idealSkills: idealSkills,
+            environment: environment,
+            workweek: workweek,
+            period: period,
+            workday: workday,
+            idealCandidate: idealCandidate,
+            occupation: occupation,
+            features: features,
+            createdAt: createdAt
+          })
+          batch.commit()
+            .then(() => {
+              console.log('postJob completed.')
+            })
+            .catch((error) => {
+              console.error("Error adding document: ", error)
+            })
+        }
+      })
+      .catch(err => {
+        console.log('Error getting document', err)
+      })
+  })
+
 // 採用担当者がプロフィールを編集した時の処理
 exports.editRecruiterProfile = functions.region('asia-northeast1')
   .firestore
