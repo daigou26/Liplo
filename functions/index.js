@@ -2,6 +2,81 @@ const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 admin.initializeApp()
 
+// 企業情報を編集した時の処理
+exports.editCompanyProfile = functions.region('asia-northeast1')
+  .firestore
+  .document('companies/{companyId}/detail/{companyDetailId}')
+  .onUpdate((change, context) => {
+    const previousValue = change.before.data()
+    const newValue = change.after.data()
+    const companyId = context.params.companyId
+    const companyName = newValue.companyName
+    const companyImageUrl = newValue.companyImageUrl
+    const mission = newValue.mission
+    const vision = newValue.vision
+    const value = newValue.value
+    const culture = newValue.culture
+    const system = newValue.system
+    const why = newValue.why
+    const what = newValue.what
+    const services = newValue.services
+    const welfare = newValue.welfare
+    var isCompanyNameChanged = false
+    var isCompanyImageUrlChanged = false
+
+    if (companyName != previousValue.companyName) {
+      isCompanyNameChanged = true
+    }
+    if (companyImageUrl != previousValue.companyImageUrl) {
+      isCompanyImageUrlChanged = true
+    }
+
+    return admin.firestore()
+      .collection('jobs')
+      .where('companyId', '==', companyId)
+      .get()
+      .then(function(snapshot) {
+        const batch = admin.firestore().batch()
+
+        snapshot.forEach(function(doc) {
+          if (isCompanyNameChanged || isCompanyImageUrlChanged) {
+            const jobRef = admin.firestore().collection('jobs').doc(doc.id)
+            batch.update(jobRef, {
+              companyName: companyName,
+              companyImageUrl: companyImageUrl
+            })
+          }
+          const jobDetailRef = admin.firestore().collection('jobs').doc(doc.id)
+            .collection('detail')
+            .doc(doc.id)
+
+          batch.update(jobDetailRef, {
+            companyName: companyName,
+            companyImageUrl: companyImageUrl,
+            mission: mission,
+            vision: vision,
+            value: value,
+            culture: culture,
+            system: system,
+            why: why,
+            what: what,
+            services: services,
+            welfare: welfare
+          })
+        })
+        batch.commit()
+          .then(() => {
+            console.log('editCompanyProfile completed.')
+          })
+          .catch((error) => {
+            console.error("Error adding document: ", error)
+          })
+      })
+      .catch(err => {
+        console.log('Error getting document', err)
+      })
+  })
+
 // 採用担当者が募集を投稿した時の処理
 exports.postJob = functions.region('asia-northeast1')
   .firestore
@@ -112,6 +187,10 @@ exports.editRecruiterProfile = functions.region('asia-northeast1')
     const firstName = newValue.firstName
     const lastName = newValue.lastName
     const selfIntro = newValue.selfIntro
+
+    if (companyId == null) {
+      return 0
+    }
 
     return admin.firestore()
       .collection('companies').doc(companyId)
