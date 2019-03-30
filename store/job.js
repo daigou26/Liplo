@@ -252,7 +252,8 @@ export const actions = {
     idealCandidate,
     occupation,
     features,
-    environment
+    environment,
+    status
   }) {
     const createdAt = new Date()
     const timestamp = Math.floor( createdAt.getTime() / 1000 )
@@ -283,7 +284,9 @@ export const actions = {
             occupation: occupation,
             features: features,
             environment: environment,
-            createdAt: createdAt
+            createdAt: createdAt,
+            status: 'creating',
+            initialStatus: status
           })
           .then(() => {
             router.push('/recruiter/jobs')

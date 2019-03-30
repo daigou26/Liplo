@@ -148,6 +148,14 @@
           required
         ></v-textarea>
         <div class="text-xs-right py-3">
+          <v-flex xs6 sm4 offset-xs6 offset-sm8>
+            <v-select
+              class="pt-4"
+              v-model="status"
+              :items="statusItems"
+              label="status"
+            ></v-select>
+          </v-flex>
           <v-btn
             :disabled="!valid || !imageFileSizeValid"
             @click="postButtonClicked"
@@ -245,6 +253,11 @@ export default {
     environmentRules: [
       v => (v.length <= 2000) || '2000字以内で入力してください'
     ],
+    status: '公開',
+    statusItems: [
+      '公開',
+      '下書き'
+    ]
   }),
   computed: {
     imageRatio() {
@@ -347,6 +360,8 @@ export default {
         hours: Number(this.workweek.hours)
       }
 
+      const status = this.status == '公開' ? 'published' : 'draft'
+
       this.postJob({
         router: this.$router,
         companyId: this.companyId,
@@ -363,7 +378,8 @@ export default {
         idealCandidate: this.idealCandidate,
         occupation: occupation,
         features: features,
-        environment: this.environment
+        environment: this.environment,
+        status: status,
       })
 
       this.valid = false

@@ -98,6 +98,7 @@ exports.postJob = functions.region('asia-northeast1')
     const occupation = snap.data().occupation
     const features = snap.data().features
     const createdAt = snap.data().createdAt
+    const initialStatus = snap.data().initialStatus
 
     return admin.firestore()
       .collection('companies')
@@ -122,6 +123,7 @@ exports.postJob = functions.region('asia-northeast1')
           const jobData = {
             companyName: companyName,
             companyImageUrl: companyImageUrl,
+            status: initialStatus,
           }
           if (doc.data().reviews) {
             rating = doc.data().reviews.rating
