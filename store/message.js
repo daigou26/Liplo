@@ -32,4 +32,26 @@ export const actions = {
         console.error("Error adding document: ", error)
       })
   },
+  postMessageFromPic({commit}, {params, message, uid, profileImageUrl, name}) {
+    const chatId = params.id
+    const pic = {
+      uid: uid,
+      profileImageUrl: profileImageUrl,
+      name: name,
+    }
+
+    return firestore.collection('chats').doc(chatId)
+      .collection('messages')
+      .add({
+        message: message,
+        pic: pic,
+        createdAt: new Date(),
+      })
+      .then(() => {
+
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error)
+      })
+  },
 }

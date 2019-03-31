@@ -56,7 +56,6 @@
 </template>
 
 <script>
-import { auth } from '@/plugins/firebase'
 import { mapActions, mapState } from 'vuex'
 export default {
   data() {

@@ -163,7 +163,9 @@ export const actions = {
             }
 
             if (doc.data()['type'] != null) {
-              if (route.path.includes('/user') || route.path.includes('/messages')) {
+              if (route.path.includes('/user')) {
+                router.replace('/recruiter/dashboard')
+              } else if (route.path.includes('/messages') && !route.path.includes('recruiter/messages')) {
                 router.replace('/recruiter/dashboard')
               }
             } else {

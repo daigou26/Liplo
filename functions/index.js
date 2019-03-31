@@ -509,6 +509,8 @@ exports.sendMessageFromUser = functions.region('asia-northeast1')
     const chatId = context.params.chatId
     const messageId = context.params.messageId
     const message = snap.data().message
+    const user = snap.data().user
+    const pic = snap.data().pic
 
     // chatのupdatedAt, picUnreadCountを更新
     return admin.firestore()
@@ -516,21 +518,40 @@ exports.sendMessageFromUser = functions.region('asia-northeast1')
       .get()
       .then(doc => {
         if (doc.exists) {
-          let picUnreadCount
-          // 更新されない
-          if (doc.data().picUnreadCount != null) {
-            picUnreadCount = doc.data().picUnreadCount
-          } else {
-            picUnreadCount = 0
+          var from
+          var picUnreadCount
+          var userUnreadCount
+
+          if (user != null && pic == null) {
+            from = 'user'
+            if (doc.data().picUnreadCount != null) {
+              picUnreadCount = doc.data().picUnreadCount
+            } else {
+              picUnreadCount = 0
+            }
+          } else if (user == null && pic != null) {
+            from = 'pic'
+            if (doc.data().userUnreadCount != null) {
+              userUnreadCount = doc.data().userUnreadCount
+            } else {
+              userUnreadCount = 0
+            }
+          }
+
+          const chatData = {
+            updatedAt: snap.data().createdAt,
+            lastMessage: message,
+          }
+
+          if (from == 'user') {
+            chatData.picUnreadCount = picUnreadCount + 1
+          } else if (from == 'pic') {
+            chatData.userUnreadCount = userUnreadCount + 1
           }
 
           admin.firestore()
             .collection('chats').doc(chatId)
-            .update({
-              updatedAt: snap.data().createdAt,
-              picUnreadCount: picUnreadCount + 1,
-              lastMessage: message,
-            })
+            .update(chatData)
             .then(() => {
               console.log('sendMessageFromUser completed.')
             })

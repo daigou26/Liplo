@@ -14,7 +14,7 @@ export const mutations = {
   resetChats(state) {
     state.chats = []
   },
-  updateLoading(state, isLoading) {
+  updateIsLoading(state, isLoading) {
     state.isLoading = isLoading
   },
   setAllChatsQueried(state) {
@@ -23,8 +23,8 @@ export const mutations = {
 }
 
 export const actions = {
-  updateLoading({commit}, isLoading) {
-    commit('updateLoading', isLoading)
+  updateIsLoading({commit}, isLoading) {
+    commit('updateIsLoading', isLoading)
   },
   queryChats({commit}, {uid, companyId, chats}) {
     // すでにクエリしているか
@@ -58,10 +58,10 @@ export const actions = {
           if (docCount == 0) {
             commit('setAllChatsQueried')
           }
-          commit('updateLoading', false)
+          commit('updateIsLoading', false)
         })
         .catch(function(error) {
-          commit('updateLoading', false)
+          commit('updateIsLoading', false)
           console.log("Error getting document:", error)
         })
     } else {
@@ -100,17 +100,17 @@ export const actions = {
           if (docCount == 0) {
             commit('setAllChatsQueried')
           }
-          commit('updateLoading', false)
+          commit('updateIsLoading', false)
         })
         .catch(function(error) {
-          commit('updateLoading', false)
+          commit('updateIsLoading', false)
           console.log("Error getting document:", error)
         })
     }
   },
   resetState({commit}) {
     commit('resetChats')
-    commit('updateLoading', false)
+    commit('updateIsLoading', false)
     commit('setAllChatsQueried', false)
   },
 }

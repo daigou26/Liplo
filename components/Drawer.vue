@@ -41,7 +41,7 @@ export default {
         { title: '企業・社員', icon: 'business', url: 'company' },
         { title: '募集管理', icon: 'assignment', url: 'jobs' },
         { title: '候補者管理', icon: 'assignment_ind' },
-        { title: 'メッセージ', icon: 'chat_bubble_outline' },
+        { title: 'メッセージ', icon: 'chat_bubble_outline', url: 'messages' },
         { title: 'レビュー', icon: 'bar_chart' },
       ],
     }

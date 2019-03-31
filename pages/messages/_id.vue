@@ -415,7 +415,7 @@ export default {
       if (!this.allChatsQueried) {
         if (!this.isLoading && this.user != null) {
           this.count += 1
-          this.updateLoading(true)
+          this.updateIsLoading(true)
           this.queryChats({uid: this.user.uid, companyId: null, chats: this.chats})
         }
         if (this.count > 20) {
@@ -443,7 +443,7 @@ export default {
     ...mapActions({
       queryChat: 'chat/queryChat',
       queryChats: 'chats/queryChats',
-      updateLoading: 'chats/updateLoading',
+      updateIsLoading: 'chats/updateIsLoading',
       addMessagesListener: 'messages/addMessagesListener',
       resetUnsubscribe: 'messages/resetUnsubscribe',
       postMessageFromUser: 'message/postMessageFromUser',
