@@ -8,7 +8,7 @@
   >
     <v-flex xs12 sm8 offset-sm2>
       <div class="title font-weight-bold py-3">
-        求人を投稿
+        求人を更新
       </div>
     </v-flex>
     <!-- Top Image -->
@@ -18,7 +18,11 @@
         :src="selectedImage"
         :aspect-ratio="imageRatio"
       ></v-img>
-      <div v-else class="grey lighten-2" style="height: 200px;"></div>
+      <v-img
+        v-else-if="imageUrl"
+        :src="imageUrl"
+        :aspect-ratio="imageRatio"
+      ></v-img>
       <input type="file" v-on:change="onFileChange">
       <p v-if="!imageFileSizeValid" class="warning-text-color">
         {{ imageFileSizeWarning }}
@@ -29,7 +33,7 @@
         <!-- Title -->
         <v-text-field
           class="pt-4"
-          v-model="title"
+          v-model="tempTitle"
           :rules="titleRules"
           counter="50"
           label="Title"
@@ -38,7 +42,7 @@
         ></v-text-field>
         <v-textarea
           class="pt-4"
-          v-model="content"
+          v-model="tempContent"
           :rules="contentRules"
           counter="100"
           rows="3"
@@ -48,7 +52,7 @@
         ></v-textarea>
         <v-textarea
           class="pt-4"
-          v-model="description"
+          v-model="tempDescription"
           :rules="descriptionRules"
           label="仕事内容"
           placeholder="仕事内容について"
@@ -56,7 +60,7 @@
         ></v-textarea>
         <v-textarea
           class="pt-4"
-          v-model="wage"
+          v-model="tempWage"
           :rules="wageRules"
           label="給料"
           placeholder="給料について"
@@ -64,7 +68,7 @@
         ></v-textarea>
         <v-textarea
           class="pt-4"
-          v-model="requiredSkills"
+          v-model="tempRequiredSkills"
           :rules="requiredSkillsRules"
           label="必要なスキル"
           placeholder="必要なスキルについて"
@@ -72,7 +76,7 @@
         ></v-textarea>
         <v-textarea
           class="pt-4"
-          v-model="idealSkills"
+          v-model="tempIdealSkills"
           :rules="idealSkillsRules"
           label="あると好ましいスキル"
           placeholder="あると好ましいスキルについて"
@@ -80,7 +84,7 @@
         ></v-textarea>
         <v-textarea
           class="pt-4"
-          v-model="idealCandidate"
+          v-model="tempIdealCandidate"
           :rules="idealCandidateRules"
           label="望ましい人物像"
           placeholder="望ましい人物像について"
@@ -88,7 +92,8 @@
         ></v-textarea>
         <v-flex sm6 pt-4>
           <v-text-field
-            v-model="workweek.days"
+            v-if="tempWorkweek"
+            v-model="tempWorkweek.days"
             :rules="workweekDaysRules"
             label="最低勤務日数（週）"
             suffix="日"
@@ -98,7 +103,8 @@
         </v-flex>
         <v-flex sm6 pt-4>
           <v-text-field
-            v-model="workweek.hours"
+            v-if="tempWorkweek"
+            v-model="tempWorkweek.hours"
             :rules="workweekHoursRules"
             label="最低勤務時間（週合計）"
             suffix="時間"
@@ -108,7 +114,7 @@
         </v-flex>
         <v-flex sm6 pt-4>
           <v-text-field
-            v-model="period"
+            v-model="tempPeriod"
             label="勤務期間（月）"
             suffix="ヶ月"
             type="number"
@@ -120,28 +126,28 @@
         </v-flex>
         <v-select
           class="pt-4"
-          v-model="workday"
+          v-model="tempWorkday"
           :items="workdayItems"
           label="勤務可能曜日"
         ></v-select>
         <v-select
           class="pt-4"
-          v-model="occupation"
+          v-model="tempOccupation"
           :items="occupationItems"
           label="募集職種"
         ></v-select>
         <v-select
           class="pt-4"
-          v-model="features"
+          v-model="tempFeatures"
           :items="featureItems"
           label="特徴"
           chips
           multiple
         ></v-select>
         <v-textarea
-          v-if="occupation == 'エンジニア'"
+          v-if="tempOccupation == 'エンジニア'"
           class="pt-4"
-          v-model="environment"
+          v-model="tempEnvironment"
           :rules="environmentRules"
           label="開発環境"
           placeholder="開発環境について"
@@ -150,17 +156,18 @@
         <div class="text-xs-right py-3">
           <v-flex xs6 sm4 offset-xs6 offset-sm8>
             <v-select
+              v-if="tempStatus != 'creating'"
               class="pt-4"
-              v-model="status"
+              v-model="tempStatus"
               :items="statusItems"
               label="status"
             ></v-select>
           </v-flex>
           <v-btn
             :disabled="!valid || !imageFileSizeValid"
-            @click="postButtonClicked"
+            @click="updateButtonClicked"
           >
-            投稿する
+            更新
           </v-btn>
         </div>
       </v-form>
@@ -174,46 +181,47 @@ import { firestore, auth, storage, storageRef } from '@/plugins/firebase'
 
 export default {
   data: () => ({
+    isQueried: false,
     valid: true,
     imageFileSizeValid: true,
     imageFileSizeWarning: '2MB以下の画像を選択してください',
     selectedImageSize: 200,
     selectedImage: null,
     imageFile: null,
-    title: '',
+    tempTitle: '',
     titleRules: [
       v => !!v || 'タイトルを入力してください',
       v => (v.length <= 50) || '50字以内で入力してください'
     ],
-    content: '',
+    tempContent: '',
     contentRules: [
       v => !!v || '概要を入力してください',
       v => (v.length <= 100) || '100字以内で入力してください'
     ],
-    description: '',
+    tempDescription: '',
     descriptionRules: [
       v => !!v || '仕事内容を入力してください',
       v => (v.length <= 2000) || '2000字以内で入力してください'
     ],
-    wage: '',
+    tempWage: '',
     wageRules: [
       v => !!v || '給料について入力してください',
       v => (v.length <= 1000) || '1000字以内で入力してください'
     ],
-    requiredSkills: '',
+    tempRequiredSkills: '',
     requiredSkillsRules: [
       v => !!v || '必要なスキルについて入力してください',
       v => (v.length <= 2000) || '2000字以内で入力してください'
     ],
-    idealSkills: '',
+    tempIdealSkills: '',
     idealSkillsRules: [
       v => (v.length <= 2000) || '2000字以内で入力してください'
     ],
-    idealCandidate: '',
+    tempIdealCandidate: '',
     idealCandidateRules: [
       v => (v.length <= 2000) || '2000字以内で入力してください'
     ],
-    workweek: {
+    tempWorkweek: {
       days: null,
       hours: null,
     },
@@ -223,22 +231,22 @@ export default {
     workweekHoursRules: [
       v => (v <= 100) || '100時間以内で指定してください'
     ],
-    period: null,
-    workday: null,
+    tempPeriod: null,
+    tempWorkday: '',
     workdayItems: [
       '平日のみ',
       '土曜可',
       '日曜可',
       '土日可',
     ],
-    occupation: '',
+    tempOccupation: '',
     occupationItems: [
       'エンジニア',
       'デザイナー',
       '営業',
       'その他',
     ],
-    features: null,
+    tempFeatures: [],
     featureItems: [
       '未経験OK',
       'メディア掲載実績あり',
@@ -247,17 +255,25 @@ export default {
       '海外進出中',
       '友人と応募OK'
     ],
-    environment: '',
+    tempEnvironment: '',
     environmentRules: [
       v => (v.length <= 2000) || '2000字以内で入力してください'
     ],
-    status: '公開',
-    statusItems: [
-      '公開',
-      '下書き'
-    ]
+    tempStatus: null,
   }),
   computed: {
+    statusItems() {
+      return this.status == 'draft'
+        ? [
+          '公開中',
+          '公開停止',
+          '下書き'
+        ]
+        : [
+          '公開中',
+          '公開停止',
+        ]
+    },
     imageRatio() {
       switch (this.breakpoint) {
         case 'xs': return '2'
@@ -272,10 +288,115 @@ export default {
     },
     ...mapState({
       companyId: state => state.profile.companyId,
+      imageUrl: state => state.companyJob.imageUrl,
+      title: state => state.companyJob.title,
+      content: state => state.companyJob.content,
+      description: state => state.companyJob.description,
+      wage: state => state.companyJob.wage,
+      requiredSkills: state => state.companyJob.requiredSkills,
+      idealSkills: state => state.companyJob.idealSkills,
+      environment: state => state.companyJob.environment,
+      workweek: state => state.companyJob.workweek,
+      period: state => state.companyJob.period,
+      workday: state => state.companyJob.workday,
+      idealCandidate: state => state.companyJob.idealCandidate,
+      occupation: state => state.companyJob.occupation,
+      features: state => state.companyJob.features,
+      status: state => state.companyJob.status
     }),
+  },
+  mounted() {
+    this.resetState()
+    this.queryJob(this.$route.params)
+  },
+  watch: {
+    title(title) {
+      this.tempTitle = title
+    },
+    content(content) {
+      this.tempContent = content
+    },
+    description(description) {
+      this.tempDescription = description
+    },
+    wage(wage) {
+      this.tempWage = wage
+    },
+    requiredSkills(requiredSkills) {
+      this.tempRequiredSkills = requiredSkills
+    },
+    idealSkills(idealSkills) {
+      this.tempIdealSkills = idealSkills
+    },
+    environment(environment) {
+      this.tempEnvironment = environment
+    },
+    workweek(workweek) {
+      this.tempWorkweek = workweek
+    },
+    period(period) {
+      this.tempPeriod = period
+    },
+    workday(workday) {
+      if (workday == 0) {
+        this.tempWorkday = '平日のみ'
+      } else if (workday == 1) {
+        this.tempWorkday = '土曜可'
+      } else if (workday == 2) {
+        this.tempWorkday = '日曜可'
+      } else if (workday == 3) {
+        this.tempWorkday = '土日可'
+      }
+    },
+    idealCandidate(idealCandidate) {
+      this.tempIdealCandidate = idealCandidate
+    },
+    occupation(occupation) {
+      if (occupation.engineer == true) {
+        this.tempOccupation = 'エンジニア'
+      } else if (occupation.designer == true) {
+        this.tempOccupation = 'デザイナー'
+      } else if (occupation.sales == true) {
+        this.tempOccupation = '営業'
+      } else if (occupation.other == true) {
+        this.tempOccupation = 'その他'
+      }
+    },
+    features(features) {
+      if (features.experience == true) {
+        this.tempFeatures.push('未経験OK')
+      }
+      if (features.media == true) {
+        this.tempFeatures.push('メディア掲載実績あり')
+      }
+      if (features.founder20s == true) {
+        this.tempFeatures.push('創業者が20代')
+      }
+      if (features.funding == true) {
+        this.tempFeatures.push('資金調達済み')
+      }
+      if (features.overseas == true) {
+        this.tempFeatures.push('海外進出中')
+      }
+      if (features.friend == true) {
+        this.tempFeatures.push('友人と応募OK')
+      }
+    },
+    status(status) {
+      if (status == 'published') {
+        this.tempStatus = '公開中'
+      } else if (status == 'private') {
+        this.tempStatus = '公開停止'
+      } else if (status == 'draft') {
+        this.tempStatus = '下書き'
+      } else if (status == 'creating') {
+        this.tempStatus = '作成中'
+      }
+    },
   },
   methods: {
     onFileChange(e) {
+      this.imageFileSizeValid = true
       let files = e.target.files || e.dataTransfer.files
       // 画像サイズは2MB以下のみ
       if (files[0] != null && files[0].size/1024/1024 <= 2) {
@@ -293,9 +414,9 @@ export default {
       }
       reader.readAsDataURL(file)
     },
-    postButtonClicked() {
+    updateButtonClicked() {
       let workday
-      switch (this.workday) {
+      switch (this.tempWorkday) {
         case '平日のみ': workday = 0; break
         case '土曜可': workday = 1; break
         case '日曜可': workday = 2; break
@@ -308,13 +429,12 @@ export default {
         sales: false,
         other: false,
       }
-      switch (this.occupation) {
+      switch (this.tempOccupation) {
         case 'エンジニア': occupation.engineer = true; break
         case 'デザイナー': occupation.designer = true; break
         case '営業': occupation.sales = true; break
         case 'その他': occupation.other = true; break
       }
-
 
       let features = {
         experience: false,
@@ -324,56 +444,59 @@ export default {
         overseas: false,
         friend: false,
       }
-      if (this.features.includes('未経験OK')) {
+      if (this.tempFeatures.includes('未経験OK')) {
         features.experience = true
       }
-      if (this.features.includes('メディア掲載実績あり')) {
+      if (this.tempFeatures.includes('メディア掲載実績あり')) {
         features.media = true
       }
-      if (this.features.includes('創業者が20代')) {
+      if (this.tempFeatures.includes('創業者が20代')) {
         features.founder20s = true
       }
-      if (this.features.includes('資金調達済み')) {
+      if (this.tempFeatures.includes('資金調達済み')) {
         features.funding = true
       }
-      if (this.features.includes('海外進出中')) {
+      if (this.tempFeatures.includes('海外進出中')) {
         features.overseas = true
       }
-      if (this.features.includes('友人と応募OK')) {
+      if (this.tempFeatures.includes('友人と応募OK')) {
         features.friend = true
       }
 
       const workweek = {
-        days: Number(this.workweek.days),
-        hours: Number(this.workweek.hours)
+        days: Number(this.tempWorkweek.days),
+        hours: Number(this.tempWorkweek.hours)
       }
 
-      const status = this.status == '公開' ? 'published' : 'draft'
+      const status = this.tempStatus == '公開中' ? 'published' : 'draft'
 
-      this.postJob({
+      this.updateJob({
+        params: this.$route.params,
         router: this.$router,
         companyId: this.companyId,
         imageFile: this.imageFile,
-        title: this.title,
-        content: this.content,
-        description: this.description,
-        wage: this.wage,
-        requiredSkills: this.requiredSkills,
-        idealSkills: this.idealSkills,
+        title: this.tempTitle,
+        content: this.tempContent,
+        description: this.tempDescription,
+        wage: this.tempWage,
+        requiredSkills: this.tempRequiredSkills,
+        idealSkills: this.tempIdealSkills,
         workweek: workweek,
-        period: Number(this.period),
+        period: Number(this.tempPeriod),
         workday: workday,
-        idealCandidate: this.idealCandidate,
+        idealCandidate: this.tempIdealCandidate,
         occupation: occupation,
         features: features,
-        environment: this.environment,
+        environment: this.tempEnvironment,
         status: status,
       })
 
       this.valid = false
     },
     ...mapActions({
-      postJob: 'companyJob/postJob',
+      queryJob: 'companyJob/queryJob',
+      updateJob: 'companyJob/updateJob',
+      resetState: 'companyJob/resetState',
     }),
   }
 }
