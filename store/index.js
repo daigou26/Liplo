@@ -6,7 +6,7 @@ export const state = () => ({
   user: null,
   authError: null,
   loading: false,
-  
+
 })
 
 export const mutations = {
@@ -67,6 +67,7 @@ export const actions = {
     dispatch('reviews/resetState')
     dispatch('pass/resetState')
     dispatch('passes/resetState')
+    dispatch('companyJobs/resetState')
   },
   setUser({commit}, user) {
     commit('setUser', user)

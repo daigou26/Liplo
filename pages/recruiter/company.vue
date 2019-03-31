@@ -1076,37 +1076,37 @@ export default {
     editMissionValid: true,
     tempMission: '',
     missionRules: [
-      v => (v.length <= 300) || '300字以内で入力してください'
+      v => (v.length <= 2000) || '2000字以内で入力してください'
     ],
     editVisionValid: true,
     tempVision: '',
     visionRules: [
-      v => (v.length <= 300) || '300字以内で入力してください'
+      v => (v.length <= 2000) || '2000字以内で入力してください'
     ],
     editValueValid: true,
     tempValue: '',
     valueRules: [
-      v => (v.length <= 300) || '300字以内で入力してください'
+      v => (v.length <= 2000) || '2000字以内で入力してください'
     ],
     editCultureValid: true,
     tempCulture: '',
     cultureRules: [
-      v => (v.length <= 300) || '300字以内で入力してください'
+      v => (v.length <= 2000) || '2000字以内で入力してください'
     ],
     editSystemValid: true,
     tempSystem: '',
     systemRules: [
-      v => (v.length <= 300) || '300字以内で入力してください'
+      v => (v.length <= 1000) || '1000字以内で入力してください'
     ],
     editWhyValid: true,
     tempWhy: '',
     whyRules: [
-      v => (v.length <= 300) || '300字以内で入力してください'
+      v => (v.length <= 2000) || '2000字以内で入力してください'
     ],
     editWhatValid: true,
     tempWhat: '',
     whatRules: [
-      v => (v.length <= 300) || '300字以内で入力してください'
+      v => (v.length <= 2000) || '2000字以内で入力してください'
     ],
     editServicesValid: true,
     tempServices: null,
@@ -1121,7 +1121,7 @@ export default {
     ],
     serviceContentRules: [
       v => !!v || '説明を入力してください',
-      v => (v && v.length <= 50) || '50字以内で入力してください'
+      v => (v && v.length <= 200) || '200字以内で入力してください'
     ],
     serviceUrlRules: [
       v => !!v || 'URLを入力してください',
@@ -1131,7 +1131,7 @@ export default {
     editWelfareValid: true,
     tempWelfare: '',
     welfareRules: [
-      v => (v.length <= 300) || '300字以内で入力してください'
+      v => (v.length <= 2000) || '2000字以内で入力してください'
     ],
     tempLocation: '',
     locationRules: [

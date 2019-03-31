@@ -1,5 +1,5 @@
 export const strict = false
-import { firestore } from '@/plugins/firebase'
+import { firestore, storageRef } from '@/plugins/firebase'
 
 export const state = () => ({
   imageUrl: '',
@@ -131,7 +131,7 @@ export const actions = {
   queryJobDetail({commit}, {nuxt, params}) {
     const jobId = params.id
     if (jobId != null && jobId != '') {
-      return firestore.collection('jobs').doc(jobId).collection('detail').doc(jobId).get()
+      firestore.collection('jobs').doc(jobId).collection('detail').doc(jobId).get()
         .then(function(doc) {
           if (doc.exists) {
             commit('setImageUrl', doc.data()['imageUrl'])
@@ -221,7 +221,7 @@ export const actions = {
   apply({commit},{params, uid, imageUrl, firstName, lastName, companyId}) {
     const jobId = params.id
 
-    return firestore.collection('companies').doc(companyId)
+    firestore.collection('companies').doc(companyId)
       .collection('applicants')
       .add({
         uid: uid,
@@ -235,5 +235,5 @@ export const actions = {
       .catch((error) => {
         console.error("Error adding document: ", error)
       })
-  }
+  },
 }
