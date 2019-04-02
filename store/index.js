@@ -132,6 +132,8 @@ export const actions = {
                 batch.set(userRef, {
                   firstName: firstName,
                   lastName: lastName,
+                  type: 'user',
+                  points: 0,
                 })
                 const profileRef = firestore.collection('users')
                   .doc(user.uid).collection('profile').doc(user.uid)
@@ -163,13 +165,13 @@ export const actions = {
             }
 
             if (doc.data()['type'] != null) {
-              if (route.path.includes('/user')) {
+              if (route.path.includes('/user') && !route.path.includes('users')) {
                 router.replace('/recruiter/dashboard')
               } else if (route.path.includes('/messages') && !route.path.includes('recruiter/messages')) {
                 router.replace('/recruiter/dashboard')
               }
             } else {
-              if (route.path.includes('/recruiter')) {
+              if (route.path.includes('/recruiter') || route.path.includes('/users')) {
                 router.replace('/')
               }
             }

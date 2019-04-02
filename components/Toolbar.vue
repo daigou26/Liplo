@@ -100,7 +100,7 @@
       </v-dialog>
     </div>
     <!-- filter extension -->
-    <v-flex xs12 slot="extension" v-if="toolbarExtension">
+    <v-flex xs12 slot="extension" v-if="jobsToolbarExtension">
       <filter-extension></filter-extension>
     </v-flex>
     <v-toolbar-title>
@@ -355,10 +355,17 @@
       </v-layout>
     </v-toolbar-items>
   </v-toolbar>
-  <v-toolbar v-else flat fixed app>
-      <v-toolbar-title v-if="!path.includes('recruiter') || breakpoint == 'xs'">Application</v-toolbar-title>
+  <v-toolbar v-else flat fixed app color="white">
+      <!-- filter extension -->
+      <v-flex xs12 slot="extension" v-if="usersToolbarExtension || jobsToolbarExtension">
+        <filter-extension></filter-extension>
+      </v-flex>
+      <v-toolbar-title v-if="(!path.includes('/recruiter') && !path.includes('/users')) || breakpoint == 'xs'">Application</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items>
+        <v-btn flat active-class to="/users">
+          <span class="font-weight-bold textColor">検索</span>
+        </v-btn>
         <v-layout row wrap align-center class="pl-5">
           <v-flex class="text-xs-center">
             <!-- ログイン中に表示される -->
@@ -447,7 +454,8 @@ export default {
       authError: state => state.authError,
       loading: state => state.loading,
       imageUrl: state => state.profile.imageUrl,
-      toolbarExtension: state => state.jobs.toolbarExtension,
+      jobsToolbarExtension: state => state.jobs.toolbarExtension,
+      usersToolbarExtension: state => state.users.toolbarExtension,
     })
   },
   mounted() {

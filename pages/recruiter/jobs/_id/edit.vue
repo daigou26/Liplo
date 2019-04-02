@@ -358,7 +358,7 @@ export default {
         this.tempOccupation = 'デザイナー'
       } else if (occupation.sales == true) {
         this.tempOccupation = '営業'
-      } else if (occupation.other == true) {
+      } else if (occupation.others == true) {
         this.tempOccupation = 'その他'
       }
     },
@@ -427,13 +427,13 @@ export default {
         engineer: false,
         designer: false,
         sales: false,
-        other: false,
+        others: false,
       }
       switch (this.tempOccupation) {
         case 'エンジニア': occupation.engineer = true; break
         case 'デザイナー': occupation.designer = true; break
         case '営業': occupation.sales = true; break
-        case 'その他': occupation.other = true; break
+        case 'その他': occupation.others = true; break
       }
 
       let features = {
