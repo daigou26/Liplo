@@ -344,7 +344,7 @@ export default {
       return companyImageUrl
     },
     ...mapState({
-      user: state => state.user,
+      uid: state => state.uid,
       type: state => state.profile.type,
       profileImageUrl: state => state.profile.imageUrl,
       firstName: state => state.profile.firstName,
@@ -413,10 +413,10 @@ export default {
   methods: {
     infiniteHandler($state) {
       if (!this.allChatsQueried) {
-        if (!this.isLoading && this.user != null) {
+        if (!this.isLoading && this.uid != null) {
           this.count += 1
           this.updateIsLoading(true)
-          this.queryChats({uid: this.user.uid, companyId: null, chats: this.chats})
+          this.queryChats({uid: this.uid, companyId: null, chats: this.chats})
         }
         if (this.count > 20) {
           $state.complete()
@@ -433,7 +433,7 @@ export default {
         this.postMessageFromUser({
           params: this.$route.params,
           message: this.message,
-          uid: this.user.uid,
+          uid: this.uid,
           profileImageUrl: this.profileImageUrl,
           name: this.lastName + ' ' + this.firstName,
         })

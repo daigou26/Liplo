@@ -77,7 +77,7 @@
                       color="primary"
                       flat
                       :disabled ="selectedImage == null || !imageFileSizeValid"
-                      @click="updateProfileImage({uid: user.uid, imageFile: imageFile})"
+                      @click="updateProfileImage({uid: uid, imageFile: imageFile})"
                     >
                       変更
                     </v-btn>
@@ -129,7 +129,7 @@
                       color="primary"
                       flat
                       :disabled="!editUserNameValid"
-                      @click="updateUserName({uid: user.uid, firstName: tempFirstName, lastName: tempLastName})"
+                      @click="updateUserName({uid: uid, firstName: tempFirstName, lastName: tempLastName})"
                     >
                       変更
                     </v-btn>
@@ -186,7 +186,7 @@
                     </v-btn>
                     <v-btn
                       :disabled="!editSelfIntroValid"
-                      @click="updateSelfIntro({uid: user.uid, selfIntro: tempSelfIntro})"
+                      @click="updateSelfIntro({uid: uid, selfIntro: tempSelfIntro})"
                     >
                       更新
                     </v-btn>
@@ -240,7 +240,7 @@
                     </v-btn>
                     <v-btn
                       :disabled="!editWhatWantToDoValid"
-                      @click="updateWhatWantToDo({uid: user.uid, whatWantToDo: tempWhatWantToDo})"
+                      @click="updateWhatWantToDo({uid: uid, whatWantToDo: tempWhatWantToDo})"
                     >
                       更新
                     </v-btn>
@@ -341,7 +341,7 @@
                         <v-btn
                           v-if="selectedPortfolioItemIndex != null"
                           @click="deletePortfolioItem({
-                            uid: user.uid,
+                            uid: uid,
                             selectedIndex: selectedPortfolioItemIndex,
                             portfolio: portfolio,
                             tempPortfolio: tempPortfolio
@@ -352,7 +352,7 @@
                         <v-btn
                           :disabled="!editPortfolioValid || tempPortfolioItemUrl == null || !imageFileSizeValid"
                           @click="updatePortfolio({
-                            uid: user.uid,
+                            uid: uid,
                             isPortfolioImageChanged: isPortfolioImageChanged,
                             selectedIndex: selectedPortfolioItemIndex,
                             portfolio: portfolio,
@@ -443,7 +443,7 @@
                         <v-btn
                           v-if="selectedSkillIndex != null"
                           @click="deleteSkill({
-                            uid: user.uid,
+                            uid: uid,
                             selectedIndex: selectedSkillIndex,
                             skills: tempSkills
                           })"
@@ -453,7 +453,7 @@
                         <v-btn
                           :disabled="!editSkillsValid"
                           @click="updateSkills({
-                            uid: user.uid,
+                            uid: uid,
                             selectedIndex: selectedSkillIndex,
                             skills: tempSkills,
                             title: tempSkillTitle,
@@ -541,7 +541,7 @@
                         <v-btn
                           v-if="selectedLinkIndex != null"
                           @click="deleteLink({
-                            uid: user.uid,
+                            uid: uid,
                             selectedIndex: selectedLinkIndex,
                             links: tempLinks
                           })"
@@ -551,7 +551,7 @@
                         <v-btn
                           :disabled="!editLinksValid"
                           @click="updateLinks({
-                            uid: user.uid,
+                            uid: uid,
                             selectedIndex: selectedLinkIndex,
                             links: tempLinks,
                             title: tempLinkTitle,
@@ -643,7 +643,7 @@
                     <v-btn
                       :disabled="!editUserInfoValid"
                       @click="updateUserInfo({
-                        uid: user.uid,
+                        uid: uid,
                         university: tempUniversity,
                         faculty: tempFaculty,
                         department: tempDepartment
@@ -749,6 +749,7 @@ export default {
   }),
   computed: {
     ...mapState({
+      uid: state => state.uid,
       imageUrl: state => state.profile.imageUrl,
       imageFileSizeValid: state => state.profile.imageFileSizeValid,
       isEditingProfileImage: state => state.profile.isEditingProfileImage,
@@ -776,9 +777,6 @@ export default {
       birthTimestamp: state => state.profile.birthTimestamp,
       isEditingUserInfo: state => state.profile.isEditingUserInfo,
     }),
-    ...mapGetters([
-      'user',
-    ]),
     name: function() {
       return this.lastName + ' ' + this.firstName
     },

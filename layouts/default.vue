@@ -150,5 +150,8 @@ i.v-icon {
   #job-apply.v-btn {
     width: 200px;
   }
+  #user-scout.v-btn {
+    width: 200px;
+  }
 }
 </style>

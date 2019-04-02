@@ -16,7 +16,7 @@
           class="pa-2"
         >
           <template v-for="(user, index) in users">
-            <v-card flat class="clickable pb-4">
+            <v-card flat class="clickable pb-4" :to="'/users/' + user.uid">
               <v-card-actions>
                 <v-list-tile
                   id="user-tile"

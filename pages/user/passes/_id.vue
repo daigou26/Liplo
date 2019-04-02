@@ -171,7 +171,7 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
-      user: state => state.user,
+      uid: state => state.uid,
       passes: state => state.passes.passes,
       isPassesLoading: state => state.passes.isPassesLoading,
       allPassesQueried: state => state.passes.allPassesQueried,
@@ -212,10 +212,10 @@ export default {
     },
     infiniteHandler($state) {
       if (!this.allPassesQueried) {
-        if (!this.isPassesLoading && this.user != null) {
+        if (!this.isPassesLoading && this.uid != null) {
           this.count += 1
           this.updatePassesLoading(true)
-          this.queryPasses({uid: this.user.uid, passes: this.passes})
+          this.queryPasses({uid: this.uid, passes: this.passes})
         }
         if (this.count > 20) {
           $state.complete()

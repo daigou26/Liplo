@@ -65,7 +65,7 @@
                 <v-divider class="mx-4"></v-divider>
                 <!-- 登録 -->
                 <v-list-tile
-                  v-if="!user"
+                  v-if="!uid"
                   class="px-3"
                   @click="signUpButtonClicked"
                 >
@@ -75,7 +75,7 @@
                 </v-list-tile>
                 <!-- ログイン -->
                 <v-list-tile
-                  v-if="!user"
+                  v-if="!uid"
                   class="px-3"
                   @click="signInButtonClicked"
                 >
@@ -85,7 +85,7 @@
                 </v-list-tile>
                 <!-- ログアウト -->
                 <v-list-tile
-                  v-if="user"
+                  v-if="uid"
                   class="px-3"
                   @click="signOut"
                 >
@@ -109,7 +109,7 @@
     <v-spacer></v-spacer>
     <v-toolbar-items class="hidden-xs-only">
       <v-btn
-        v-if="user"
+        v-if="uid"
         flat
         to="/messages"
         active-class
@@ -125,7 +125,7 @@
       <v-layout row wrap align-center class="pl-5">
         <v-flex class="text-xs-center">
           <!-- ログイン中に表示される -->
-          <div v-if="user" class="align-center">
+          <div v-if="uid" class="align-center">
             <div class="text-xs-left">
               <v-menu offset-y offset-x min-width="250">
                 <!-- Profile画像 -->
@@ -449,7 +449,7 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
-      user: state => state.user,
+      uid: state => state.uid,
       type: state => state.profile.type,
       authError: state => state.authError,
       loading: state => state.loading,

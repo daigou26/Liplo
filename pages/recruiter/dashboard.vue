@@ -171,7 +171,6 @@ export default {
     ...mapState({
       type: state => state.profile.type,
       companyId: state => state.profile.companyId,
-      user: state => state.user,
       rating: state => state.company.rating,
       count: state => state.company.count,
       feedback: state => state.company.feedback,

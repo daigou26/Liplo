@@ -126,7 +126,7 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
-      user: state => state.user,
+      uid: state => state.uid,
       recruiterImageUrl: state => state.profile.imageUrl,
       firstName: state => state.profile.firstName,
       lastName: state => state.profile.lastName,
@@ -208,7 +208,7 @@ export default {
         this.postMessageFromPic({
           params: this.$route.params,
           message: this.message,
-          uid: this.user.uid,
+          uid: this.uid,
           profileImageUrl: this.recruiterImageUrl,
           name: this.lastName + ' ' + this.firstName,
         })

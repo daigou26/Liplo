@@ -231,7 +231,7 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
-      user: state => state.user,
+      uid: state => state.uid,
       notReviewedLists: state => state.career.notReviewedLists,
       userReviews: state => state.reviews.userReviews,
       isUserReviewsLoading: state => state.reviews.isUserReviewsLoading,
@@ -274,10 +274,10 @@ export default {
   methods: {
     infiniteHandler($state) {
       if (!this.allUserReviewsQueried) {
-        if (!this.isUserReviewsLoading && this.user != null) {
+        if (!this.isUserReviewsLoading && this.uid != null) {
           this.count += 1
           this.updateUserReviewsLoading(true)
-          this.queryUserReviews({uid: this.user.uid, reviews: this.userReviews})
+          this.queryUserReviews({uid: this.uid, reviews: this.userReviews})
         }
         if (this.count > 20) {
           $state.complete()
