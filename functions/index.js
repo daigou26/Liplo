@@ -21,8 +21,6 @@ exports.scoutUser = functions.region('asia-northeast1')
       .then(userDetailDoc => {
         if (userDetailDoc.exists) {
           // user詳細にcountとcompanyIdを格納
-          const companyName = userDetailDoc.data().companyName
-          const companyImageUrl = userDetailDoc.data().companyImageUrl
           let count
           let companies
           let scouts
@@ -54,66 +52,81 @@ exports.scoutUser = functions.region('asia-northeast1')
               console.log('Error getting document', err)
             })
 
-          // chatにスカウト メッセージを送信(chatがなければ作成)
+          // company name, imageUrl を取得
           admin.firestore()
-            .collection('chats')
-            .where('companyId', '==', companyId)
-            .where('uid', '==', user.uid)
-            .get()
-            .then(function(snapshot) {
-              var docCount = 0
-              snapshot.forEach(function(chatDoc) {
-                docCount += 1
-                if (docCount == 1) {
-                  admin.firestore().collection('chats').doc(chatDoc.id)
-                    .collection('messages')
-                    .add({
-                      pic: pic,
-                      message: message,
-                      createdAt: scoutedAt,
+              .collection('companies')
+              .doc(companyId)
+              .get()
+              .then(companyDoc => {
+                if (companyDoc.exists) {
+                  const companyName = companyDoc.data().name
+                  const companyImageUrl = companyDoc.data().imageUrl
+
+                  // chatにスカウト メッセージを送信(chatがなければ作成)
+                  admin.firestore()
+                    .collection('chats')
+                    .where('companyId', '==', companyId)
+                    .where('uid', '==', user.uid)
+                    .get()
+                    .then(function(snapshot) {
+                      var docCount = 0
+                      snapshot.forEach(function(chatDoc) {
+                        docCount += 1
+                        if (docCount == 1) {
+                          admin.firestore().collection('chats').doc(chatDoc.id)
+                            .collection('messages')
+                            .add({
+                              pic: pic,
+                              message: message,
+                              createdAt: scoutedAt,
+                            })
+                            .then(() => {
+                              console.log('send scout message complete.')
+                            })
+                            .catch((error) => {
+                              console.error("Error adding document: ", error)
+                            })
+                        }
+                      })
+
+                      if (docCount == 0) {
+                        const chatId = admin.firestore().collection('chats').doc().id
+                        const batch = admin.firestore().batch()
+                        const chatsRef = admin.firestore().collection('chats').doc(chatId)
+                        batch.set(chatsRef, {
+                          uid: user.uid,
+                          profileImageUrl: user.imageUrl,
+                          userName: user.name,
+                          companyId: companyId,
+                          companyImageUrl: companyImageUrl,
+                          companyName: companyName,
+                          lastMessage: message,
+                          updatedAt: scoutedAt,
+                        })
+                        const messagesRef = admin.firestore().collection('chats').doc(chatId)
+                          .collection('messages').doc()
+                        batch.set(messagesRef, {
+                          pic: pic,
+                          message: message,
+                          createdAt: scoutedAt,
+                        })
+                        batch.commit()
+                          .then(() => {
+                            console.log('send scout message complete.')
+                          })
+                          .catch((error) => {
+                            console.error("Error adding document: ", error)
+                          })
+                      }
                     })
-                    .then(() => {
-                      console.log('send scout message complete.')
-                    })
-                    .catch((error) => {
-                      console.error("Error adding document: ", error)
+                    .catch(err => {
+                      console.log('Error getting document', err)
                     })
                 }
               })
-
-              if (docCount == 0) {
-                const chatId = admin.firestore().collection('chats').doc().id
-                const batch = admin.firestore().batch()
-                const chatsRef = admin.firestore().collection('chats').doc(chatId)
-                batch.set(chatsRef, {
-                  uid: user.uid,
-                  profileImageUrl: user.imageUrl,
-                  userName: user.name,
-                  companyId: companyId,
-                  companyImageUrl: companyImageUrl,
-                  companyName: companyName,
-                  lastMessage: message,
-                  updatedAt: scoutedAt,
-                })
-                const messagesRef = admin.firestore().collection('chats').doc(chatId)
-                  .collection('messages').doc()
-                batch.set(messagesRef, {
-                  pic: pic,
-                  message: message,
-                  createdAt: scoutedAt,
-                })
-                batch.commit()
-                  .then(() => {
-                    console.log('send scout message complete.')
-                  })
-                  .catch((error) => {
-                    console.error("Error adding document: ", error)
-                  })
-              }
-            })
-            .catch(err => {
-              console.log('Error getting document', err)
-            })
+              .catch(err => {
+                console.log('Error getting document', err)
+              })
         }
       })
       .then(() => {
@@ -167,14 +180,6 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
             batch.update(jobRef, {
               companyName: companyName,
               companyImageUrl: companyImageUrl
-            })
-
-            members.forEach((member, i) => {
-              const userRef = admin.firestore().collection('users').doc(member.uid)
-              batch.update(userRef, {
-                companyName: companyName,
-                companyImageUrl: companyImageUrl
-              })
             })
           }
           const jobDetailRef = admin.firestore().collection('jobs').doc(doc.id)
