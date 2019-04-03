@@ -112,9 +112,7 @@ export const actions = {
         .then(function(snapshot) {
           var docCount = 0
           snapshot.forEach(function(doc) {
-            console.log(doc.data());
             docCount += 1
-
             const user = {
               uid: doc.id,
               imageUrl: doc.data()['imageUrl'],
@@ -149,7 +147,6 @@ export const actions = {
           var docCount = 0
           snapshot.forEach(function(doc) {
             docCount += 1
-
             const user = {
               uid: doc.id,
               imageUrl: doc.data()['imageUrl'],

@@ -17,6 +17,7 @@ export const state = () => ({
   birthTimestamp: '',
   desiredOccupations: null,
   interestingFields: null,
+  scouts: null,
 })
 
 export const mutations = {
@@ -65,13 +66,16 @@ export const mutations = {
   setInterstingFields(state, fields) {
     state.interestingFields = fields
   },
+  setScouts(state, scouts) {
+    state.scouts = scouts
+  },
 }
 
 export const actions = {
   queryUser({commit, state}, uid) {
     firestore.collection('users')
       .doc(uid)
-      .collection('profile')
+      .collection('detail')
       .doc(uid)
       .get()
       .then(function(doc) {
@@ -91,10 +95,38 @@ export const actions = {
           commit('setBirthTimestamp', doc.data()['birthTimestamp'])
           commit('setDesiredOccupatins', doc.data()['desiredOccupations'])
           commit('setInterstingFields', doc.data()['interestingFields'])
+          commit('setScouts', doc.data()['scouts'])
         }
       })
       .catch(function(error) {
         console.log("Error getting document:", error)
+      })
+  },
+  scout({commit, state},{user, pic, companyId, message}) {
+    var scouts = state.scouts
+
+    firestore.collection('companies').doc(companyId)
+      .collection('scoutedUsers')
+      .add({
+        user: user,
+        pic: pic,
+        message: message,
+        scoutedAt: new Date()
+      })
+      .then(() => {
+        if (scouts) {
+          scouts.count += 1
+          scouts.companies.push(companyId)
+        } else {
+          scouts = {
+            count: 1,
+            companies: [companyId]
+          }
+        }
+        commit('setScouts', scouts)
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error)
       })
   },
   resetState({commit}) {
@@ -113,5 +145,6 @@ export const actions = {
     commit('setBirthTimestamp', '')
     commit('setDesiredOccupatins', null)
     commit('setInterstingFields', null)
+    commit('setScouts', null)
   },
 }

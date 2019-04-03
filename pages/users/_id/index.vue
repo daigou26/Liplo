@@ -19,7 +19,7 @@
               :size="avatarSize"
               class="grey lighten-3"
             >
-              <img v-if="imageUrl" :src="imageUrl" alt="avatar">
+              <img v-if="userImageUrl" :src="userImageUrl" alt="avatar">
               <v-icon v-else :size="60">person</v-icon>
             </v-avatar>
             <div class="title textColor font-weight-bold break pl-4 ">
@@ -264,14 +264,75 @@
       <v-card v-if="type == 'recruiter'" class="text-xs-right py-2">
           <v-btn
             large
+            :disabled="companyId == null || scouted"
             class="warning"
             id="user-scout"
+            @click="scoutDialogButtonClicked"
           >
-            <span class="font-weight-bold">
+            <span v-if="!scouted" class="font-weight-bold">
               スカウトを送る
+            </span>
+            <span v-else class="font-weight-bold">
+              スカウト済み
             </span>
           </v-btn>
       </v-card>
+      <!-- scout dialog -->
+      <div class="text-xs-center">
+        <v-dialog
+          v-model="scoutDialog"
+          :fullscreen="$vuetify.breakpoint.xsOnly"
+          width="500"
+        >
+          <v-card class="pt-5 pb-3 px-3">
+            <v-toolbar flat color="white hidden-sm-and-up">
+              <v-toolbar-side-icon
+                @click="dialog=false"
+              ></v-toolbar-side-icon>
+            </v-toolbar>
+            <v-flex
+              xs12
+              class="text-xs-center"
+              :class="{'px-2': $vuetify.breakpoint.smAndUp, 'px-3 mt-4': $vuetify.breakpoint.xsOnly}"
+            >
+              <!-- フォーム -->
+                <v-form v-model="valid">
+                  <v-container>
+                    <v-layout
+                      column
+                      justify-center
+                    >
+                      <v-flex xs12>
+                        <!-- メールアドレス -->
+                        <v-textarea
+                          v-model="message"
+                          :rules="messageRules"
+                          label="メッセージ"
+                          solo
+                          required
+                        ></v-textarea>
+                      </v-flex>
+                      <!-- ログインボタン -->
+                      <v-btn
+                        block
+                        :disabled="!valid || !companyId"
+                        class="orange darken-1"
+                        @click="scoutButtonClicked"
+                      >
+                        <span
+                          class="font-weight-bold body-1"
+                          style="color: #ffffff;"
+                        >
+                          スカウトを送信
+                        </span>
+                      </v-btn>
+                    </v-layout>
+                  </v-container>
+                </v-form>
+            </v-flex>
+          </v-card>
+        </v-dialog>
+      </div>
     </v-flex>
   </v-layout>
 </template>
@@ -284,11 +345,21 @@ export default {
   data: () => ({
     isQueried: false,
     avatarSize: 50,
+    scoutDialog: false,
+    valid: true,
+    message: '',
+    messageRules: [
+      v => !!v || 'メッセージを入力してください',
+      v => (v.length <= 300) || '300字以内で入力してください'
+    ],
   }),
   computed: {
+    scouted() {
+      return this.scouts != null && this.scouts.companies.includes(this.companyId)
+    },
     name: function() {
-      if (this.lastName && this.firstName) {
-        return this.lastName + ' ' + this.firstName
+      if (this.userLastName && this.userFirstName) {
+        return this.userLastName + ' ' + this.userFirstName
       }
     },
     birthDate: function() {
@@ -309,9 +380,13 @@ export default {
     ...mapState({
       type: state => state.profile.type,
       companyId: state => state.profile.companyId,
-      imageUrl: state => state.user.imageUrl,
-      firstName: state => state.user.firstName,
-      lastName: state => state.user.lastName,
+      picUid: state => state.uid,
+      picImageUrl: state => state.profile.imageUrl,
+      picFirstName: state => state.profile.firstName,
+      picLastName: state => state.profile.lastName,
+      userImageUrl: state => state.user.imageUrl,
+      userFirstName: state => state.user.firstName,
+      userLastName: state => state.user.lastName,
       selfIntro: state => state.user.selfIntro,
       whatWantToDo: state => state.user.whatWantToDo,
       portfolio: state => state.user.portfolio,
@@ -323,6 +398,7 @@ export default {
       department: state => state.user.department,
       birthTimestamp: state => state.user.birthTimestamp,
       desiredOccupations: state => state.user.desiredOccupations,
+      scouts: state => state.user.scouts,
     }),
   },
   mounted() {
@@ -334,9 +410,35 @@ export default {
     })
   },
   methods: {
+    scoutDialogButtonClicked() {
+      this.message = ''
+      this.scoutDialog = true
+    },
+    scoutButtonClicked() {
+      const user = {
+        uid: this.$route.params.id,
+        imageUrl: this.userImageUrl,
+        name: this.userLastName + ' ' + this.userFirstName
+      }
+      const pic = {
+        uid: this.picUid,
+        imageUrl: this.picImageUrl,
+        name: this.picLastName + ' ' + this.picFirstName
+      }
+
+      this.scout({
+        user: user,
+        pic : pic,
+        companyId: this.companyId,
+        message: this.message,
+      })
+
+      this.scoutDialog = false
+    },
     ...mapActions({
       queryUser: 'user/queryUser',
       resetState: 'user/resetState',
+      scout: 'user/scout',
     }),
   }
 }

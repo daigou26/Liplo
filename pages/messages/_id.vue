@@ -112,7 +112,7 @@
                         class="grey lighten-3 mx-2"
                         :size="40"
                       >
-                        <img v-if="message.pic.profileImageUrl" :src="message.pic.profileImageUrl">
+                        <img v-if="message.pic.imageUrl" :src="message.pic.imageUrl">
                       </v-avatar>
                       <div class="px-3 py-2 white message-border-radius return">{{ message.message }}</div>
                       <!-- ユーザーのプロフィール画像は右に -->
@@ -121,7 +121,7 @@
                         class="grey lighten-3 mx-2"
                         :size="40"
                       >
-                        <img v-if="message.user.profileImageUrl" :src="message.user.profileImageUrl">
+                        <img v-if="message.user.imageUrl" :src="message.user.imageUrl">
                       </v-avatar>
                     </div>
                   </v-flex>
@@ -246,7 +246,7 @@
                         class="grey lighten-3 mx-2"
                         :size="40"
                       >
-                        <img v-if="message.pic.profileImageUrl" :src="message.pic.profileImageUrl">
+                        <img v-if="message.pic.imageUrl" :src="message.pic.imageUrl">
                       </v-avatar>
                       <div class="px-3 py-2 white message-border-radius return">{{ message.message }}</div>
                       <!-- ユーザーのプロフィール画像は右に -->
@@ -255,7 +255,7 @@
                         class="grey lighten-3 mx-2"
                         :size="40"
                       >
-                        <img v-if="message.user.profileImageUrl" :src="message.user.profileImageUrl">
+                        <img v-if="message.user.imageUrl" :src="message.user.imageUrl">
                       </v-avatar>
                     </div>
                   </v-flex>
@@ -434,7 +434,7 @@ export default {
           params: this.$route.params,
           message: this.message,
           uid: this.uid,
-          profileImageUrl: this.profileImageUrl,
+          imageUrl: this.profileImageUrl,
           name: this.lastName + ' ' + this.firstName,
         })
       }

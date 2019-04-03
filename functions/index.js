@@ -2,6 +2,128 @@ const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 admin.initializeApp()
 
+
+// recruiterがスカウトした時の処理
+exports.scoutUser = functions.region('asia-northeast1')
+  .firestore
+  .document('companies/{companyId}/scoutedUsers/{scoutedUserId}')
+  .onCreate((snap, context) => {
+    const user = snap.data().user
+    const pic = snap.data().pic
+    const message = snap.data().message
+    const scoutedAt = snap.data().scoutedAt
+    const companyId = context.params.companyId
+
+    return admin.firestore()
+      .collection('users').doc(user.uid)
+      .collection('detail').doc(user.uid)
+      .get()
+      .then(userDetailDoc => {
+        if (userDetailDoc.exists) {
+          // user詳細にcountとcompanyIdを格納
+          const companyName = userDetailDoc.data().companyName
+          const companyImageUrl = userDetailDoc.data().companyImageUrl
+          let count
+          let companies
+          let scouts
+
+          if (userDetailDoc.data().scouts) {
+            count = userDetailDoc.data().scouts.count
+            companies = userDetailDoc.data().scouts.companies
+            companies.push(companyId)
+          } else {
+            count = 0
+            companies = [companyId]
+          }
+
+          scouts = {
+            count: count + 1,
+            companies: companies
+          }
+
+          admin.firestore()
+            .collection('users').doc(user.uid)
+            .collection('detail').doc(user.uid)
+            .update({
+              scouts: scouts
+            })
+            .then(() => {
+              console.log('add scoutedUser to user/detail completed.')
+            })
+            .catch(err => {
+              console.log('Error getting document', err)
+            })
+
+          // chatにスカウト メッセージを送信(chatがなければ作成)
+          admin.firestore()
+            .collection('chats')
+            .where('companyId', '==', companyId)
+            .where('uid', '==', user.uid)
+            .get()
+            .then(function(snapshot) {
+              var docCount = 0
+              snapshot.forEach(function(chatDoc) {
+                docCount += 1
+                if (docCount == 1) {
+                  admin.firestore().collection('chats').doc(chatDoc.id)
+                    .collection('messages')
+                    .add({
+                      pic: pic,
+                      message: message,
+                      createdAt: scoutedAt,
+                    })
+                    .then(() => {
+                      console.log('send scout message complete.')
+                    })
+                    .catch((error) => {
+                      console.error("Error adding document: ", error)
+                    })
+                }
+              })
+
+              if (docCount == 0) {
+                const chatId = admin.firestore().collection('chats').doc().id
+                const batch = admin.firestore().batch()
+                const chatsRef = admin.firestore().collection('chats').doc(chatId)
+                batch.set(chatsRef, {
+                  uid: user.uid,
+                  profileImageUrl: user.imageUrl,
+                  userName: user.name,
+                  companyId: companyId,
+                  companyImageUrl: companyImageUrl,
+                  companyName: companyName,
+                  lastMessage: message,
+                  updatedAt: scoutedAt,
+                })
+                const messagesRef = admin.firestore().collection('chats').doc(chatId)
+                  .collection('messages').doc()
+                batch.set(messagesRef, {
+                  pic: pic,
+                  message: message,
+                  createdAt: scoutedAt,
+                })
+                batch.commit()
+                  .then(() => {
+                    console.log('send scout message complete.')
+                  })
+                  .catch((error) => {
+                    console.error("Error adding document: ", error)
+                  })
+              }
+            })
+            .catch(err => {
+              console.log('Error getting document', err)
+            })
+        }
+      })
+      .then(() => {
+        console.log('scoutUser completed.')
+      })
+      .catch(err => {
+        console.log('Error getting document', err)
+      })
+  })
+
 // 企業情報を編集した時の処理
 exports.editCompanyProfile = functions.region('asia-northeast1')
   .firestore
@@ -21,6 +143,7 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
     const what = newValue.what
     const services = newValue.services
     const welfare = newValue.welfare
+    const members = newValue.members
     var isCompanyNameChanged = false
     var isCompanyImageUrlChanged = false
 
@@ -44,6 +167,14 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
             batch.update(jobRef, {
               companyName: companyName,
               companyImageUrl: companyImageUrl
+            })
+
+            members.forEach((member, i) => {
+              const userRef = admin.firestore().collection('users').doc(member.uid)
+              batch.update(userRef, {
+                companyName: companyName,
+                companyImageUrl: companyImageUrl
+              })
             })
           }
           const jobDetailRef = admin.firestore().collection('jobs').doc(doc.id)
@@ -417,7 +548,7 @@ exports.acceptJobOffer = functions.region('asia-northeast1')
       user: {
         uid: uid,
         name: userName,
-        profileImageUrl: profileImageUrl
+        imageUrl: imageUrl
       }
     }
 

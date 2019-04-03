@@ -218,8 +218,9 @@ export const actions = {
         nuxt.error({ statusCode: 404, message: 'not found' })
       }
   },
-  apply({commit},{params, uid, imageUrl, firstName, lastName, companyId}) {
+  apply({commit, state},{params, uid, imageUrl, firstName, lastName, companyId}) {
     const jobId = params.id
+    var applicants = state.applicants
 
     firestore.collection('companies').doc(companyId)
       .collection('applicants')
@@ -230,7 +231,16 @@ export const actions = {
         name: lastName + ' ' + firstName,
       })
       .then(() => {
-        commit('setApplied')
+        if (applicants) {
+          applicants.count += 1
+          applicants.users.push(uid)
+        } else {
+          applicants = {
+            count: 1,
+            users: [uid]
+          }
+        }
+        commit('setApplicants', applicants)
       })
       .catch((error) => {
         console.error("Error adding document: ", error)
