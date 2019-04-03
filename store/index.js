@@ -80,7 +80,7 @@ export const actions = {
   },
   setAuthInfo({dispatch, commit}, {route, router, user, firstName, lastName, companyName, companyEmail, position}) {
     if (user) {
-      commit('setUid', user)
+      commit('setUid', user.uid)
       firestore.collection('users').doc(user.uid).get()
         .then(function(doc) {
           if (!doc.exists) {
@@ -142,6 +142,13 @@ export const actions = {
                   lastName: lastName,
                   email: user.email
                 })
+                const detailRef = firestore.collection('users')
+                  .doc(user.uid).collection('detail').doc(user.uid)
+                batch.set(detailRef, {
+                  firstName: firstName,
+                  lastName: lastName,
+                  email: user.email
+                })
                 batch.commit()
                   .then(() => {
                     dispatch('profile/setFirstName', firstName)
@@ -164,7 +171,7 @@ export const actions = {
               dispatch('profile/setImageUrl', doc.data()['imageUrl'])
             }
 
-            if (doc.data()['type'] != null) {
+            if (doc.data()['type'] == 'recruiter') {
               if (route.path.includes('/user') && !route.path.includes('users')) {
                 router.replace('/recruiter/dashboard')
               } else if (route.path.includes('/messages') && !route.path.includes('recruiter/messages')) {

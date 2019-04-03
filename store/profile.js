@@ -216,6 +216,11 @@ export const actions = {
         batch.update(profileRef, {
           imageUrl: downloadURL
         })
+        const detailRef = firestore.collection('users')
+          .doc(uid).collection('detail').doc(uid)
+        batch.update(detailRef, {
+          imageUrl: downloadURL
+        })
         batch.commit()
           .then(() => {
             commit('updateIsEditingProfileImage', false)
@@ -241,6 +246,9 @@ export const actions = {
     const profileRef = firestore.collection('users')
       .doc(uid).collection('profile').doc(uid)
     batch.update(profileRef, nameData)
+    const detailRef = firestore.collection('users')
+      .doc(uid).collection('detail').doc(uid)
+    batch.update(detailRef, nameData)
     batch.commit()
       .then(() => {
         commit('setFirstName', firstName)
@@ -255,11 +263,18 @@ export const actions = {
     commit('updateIsEditingSelfIntro', isEditing)
   },
   updateSelfIntro({commit}, {uid, selfIntro}) {
-    firestore.collection('users').doc(uid)
-      .collection('profile').doc(uid)
-      .update({
-        selfIntro: selfIntro,
-      })
+    const batch = firestore.batch()
+    const profileRef = firestore.collection('users')
+      .doc(uid).collection('profile').doc(uid)
+    batch.update(profileRef, {
+      selfIntro: selfIntro,
+    })
+    const detailRef = firestore.collection('users')
+      .doc(uid).collection('detail').doc(uid)
+    batch.update(detailRef, {
+      selfIntro: selfIntro,
+    })
+    batch.commit()
       .then(() => {
         commit('setSelfIntro', selfIntro)
         commit('updateIsEditingSelfIntro', false)
@@ -272,11 +287,18 @@ export const actions = {
     commit('updateIsEditingWhatWantToDo', isEditing)
   },
   updateWhatWantToDo({commit}, {uid, whatWantToDo}) {
-    firestore.collection('users').doc(uid)
-      .collection('profile').doc(uid)
-      .update({
-        whatWantToDo: whatWantToDo,
-      })
+    const batch = firestore.batch()
+    const profileRef = firestore.collection('users')
+      .doc(uid).collection('profile').doc(uid)
+    batch.update(profileRef, {
+      whatWantToDo: whatWantToDo,
+    })
+    const detailRef = firestore.collection('users')
+      .doc(uid).collection('detail').doc(uid)
+    batch.update(detailRef, {
+      whatWantToDo: whatWantToDo,
+    })
+    batch.commit()
       .then(() => {
         commit('setWhatWantToDo', whatWantToDo)
         commit('updateIsEditingWhatWantToDo', false)
@@ -335,11 +357,18 @@ export const actions = {
             tempPortfolio.push(tempPortfolioItem)
           }
           // dbに保存
-          firestore.collection('users').doc(uid)
-            .collection('profile').doc(uid)
-            .update({
-              portfolio: tempPortfolio,
-            })
+          const batch = firestore.batch()
+          const profileRef = firestore.collection('users')
+            .doc(uid).collection('profile').doc(uid)
+          batch.update(profileRef, {
+            portfolio: tempPortfolio,
+          })
+          const detailRef = firestore.collection('users')
+            .doc(uid).collection('detail').doc(uid)
+          batch.update(detailRef, {
+            portfolio: tempPortfolio,
+          })
+          batch.commit()
             .then(() => {
               commit('setPortfolio', tempPortfolio)
               commit('updateIsEditingPortfolio', false)
@@ -360,11 +389,18 @@ export const actions = {
         tempPortfolio.splice(selectedIndex, 1)
         tempPortfolio.splice(selectedIndex, 0, tempPortfolioItem)
       }
-      firestore.collection('users').doc(uid)
-        .collection('profile').doc(uid)
-        .update({
-          portfolio: tempPortfolio,
-        })
+      const batch = firestore.batch()
+      const profileRef = firestore.collection('users')
+        .doc(uid).collection('profile').doc(uid)
+      batch.update(profileRef, {
+        portfolio: tempPortfolio,
+      })
+      const detailRef = firestore.collection('users')
+        .doc(uid).collection('detail').doc(uid)
+      batch.update(detailRef, {
+        portfolio: tempPortfolio,
+      })
+      batch.commit()
         .then(() => {
           commit('setPortfolio', tempPortfolio)
           commit('updateIsEditingPortfolio', false)
@@ -381,11 +417,18 @@ export const actions = {
       storageRef.child(`users/${uid}/portfolio/${fileName}.jpg`).delete()
     }
     tempPortfolio.splice(selectedIndex, 1)
-    firestore.collection('users').doc(uid)
-      .collection('profile').doc(uid)
-      .update({
-        portfolio: tempPortfolio,
-      })
+    const batch = firestore.batch()
+    const profileRef = firestore.collection('users')
+      .doc(uid).collection('profile').doc(uid)
+    batch.update(profileRef, {
+      portfolio: tempPortfolio,
+    })
+    const detailRef = firestore.collection('users')
+      .doc(uid).collection('detail').doc(uid)
+    batch.update(detailRef, {
+      portfolio: tempPortfolio,
+    })
+    batch.commit()
       .then(() => {
         commit('setPortfolio', tempPortfolio)
         commit('updateIsEditingPortfolio', false)
@@ -417,11 +460,18 @@ export const actions = {
       skills.push(tempSkill)
     }
     // dbに保存
-    firestore.collection('users').doc(uid)
-      .collection('profile').doc(uid)
-      .update({
-        skills: skills,
-      })
+    const batch = firestore.batch()
+    const profileRef = firestore.collection('users')
+      .doc(uid).collection('profile').doc(uid)
+    batch.update(profileRef, {
+      skills: skills,
+    })
+    const detailRef = firestore.collection('users')
+      .doc(uid).collection('detail').doc(uid)
+    batch.update(detailRef, {
+      skills: skills,
+    })
+    batch.commit()
       .then(() => {
         commit('setSkills', skills)
         commit('updateIsEditingSkills', false)
@@ -432,11 +482,18 @@ export const actions = {
   },
   deleteSkill({commit}, {uid, selectedIndex, skills}) {
     skills.splice(selectedIndex, 1)
-    firestore.collection('users').doc(uid)
-      .collection('profile').doc(uid)
-      .update({
-        skills: skills,
-      })
+    const batch = firestore.batch()
+    const profileRef = firestore.collection('users')
+      .doc(uid).collection('profile').doc(uid)
+    batch.update(profileRef, {
+      skills: skills,
+    })
+    const detailRef = firestore.collection('users')
+      .doc(uid).collection('detail').doc(uid)
+    batch.update(detailRef, {
+      skills: skills,
+    })
+    batch.commit()
       .then(() => {
         commit('setSkills', skills)
         commit('updateIsEditingSkills', false)
@@ -468,11 +525,18 @@ export const actions = {
       links.push(tempLink)
     }
     // dbに保存
-    firestore.collection('users').doc(uid)
-      .collection('profile').doc(uid)
-      .update({
-        links: links,
-      })
+    const batch = firestore.batch()
+    const profileRef = firestore.collection('users')
+      .doc(uid).collection('profile').doc(uid)
+    batch.update(profileRef, {
+      links: links,
+    })
+    const detailRef = firestore.collection('users')
+      .doc(uid).collection('detail').doc(uid)
+    batch.update(detailRef, {
+      links: links,
+    })
+    batch.commit()
       .then(() => {
         commit('setLinks', links)
         commit('updateIsEditingLinks', false)
@@ -483,11 +547,18 @@ export const actions = {
   },
   deleteLink({commit}, {uid, selectedIndex, links}) {
     links.splice(selectedIndex, 1)
-    firestore.collection('users').doc(uid)
-      .collection('profile').doc(uid)
-      .update({
-        links: links,
-      })
+    const batch = firestore.batch()
+    const profileRef = firestore.collection('users')
+      .doc(uid).collection('profile').doc(uid)
+    batch.update(profileRef, {
+      links: links,
+    })
+    const detailRef = firestore.collection('users')
+      .doc(uid).collection('detail').doc(uid)
+    batch.update(detailRef, {
+      links: links,
+    })
+    batch.commit()
       .then(() => {
         commit('setLinks', links)
         commit('updateIsEditingLinks', false)
@@ -500,13 +571,22 @@ export const actions = {
     commit('updateIsEditingUserInfo', isEditing)
   },
   updateUserInfo({commit}, {uid, university, faculty, department}) {
-    firestore.collection('users').doc(uid)
-      .collection('profile').doc(uid)
-      .update({
-        university: university,
-        faculty: faculty,
-        department: department,
-      })
+    const batch = firestore.batch()
+    const profileRef = firestore.collection('users')
+      .doc(uid).collection('profile').doc(uid)
+    batch.update(profileRef, {
+      university: university,
+      faculty: faculty,
+      department: department,
+    })
+    const detailRef = firestore.collection('users')
+      .doc(uid).collection('detail').doc(uid)
+    batch.update(detailRef, {
+      university: university,
+      faculty: faculty,
+      department: department,
+    })
+    batch.commit()
       .then(() => {
         commit('setUniversity', university)
         commit('setFaculty', faculty)
