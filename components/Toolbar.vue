@@ -65,7 +65,7 @@
                 <v-divider class="mx-4"></v-divider>
                 <!-- 登録 -->
                 <v-list-tile
-                  v-if="!user"
+                  v-if="!uid"
                   class="px-3"
                   @click="signUpButtonClicked"
                 >
@@ -75,7 +75,7 @@
                 </v-list-tile>
                 <!-- ログイン -->
                 <v-list-tile
-                  v-if="!user"
+                  v-if="!uid"
                   class="px-3"
                   @click="signInButtonClicked"
                 >
@@ -85,7 +85,7 @@
                 </v-list-tile>
                 <!-- ログアウト -->
                 <v-list-tile
-                  v-if="user"
+                  v-if="uid"
                   class="px-3"
                   @click="signOut"
                 >
@@ -100,7 +100,7 @@
       </v-dialog>
     </div>
     <!-- filter extension -->
-    <v-flex xs12 slot="extension" v-if="toolbarExtension">
+    <v-flex xs12 slot="extension" v-if="jobsToolbarExtension">
       <filter-extension></filter-extension>
     </v-flex>
     <v-toolbar-title>
@@ -109,7 +109,7 @@
     <v-spacer></v-spacer>
     <v-toolbar-items class="hidden-xs-only">
       <v-btn
-        v-if="user"
+        v-if="uid"
         flat
         to="/messages"
         active-class
@@ -125,7 +125,7 @@
       <v-layout row wrap align-center class="pl-5">
         <v-flex class="text-xs-center">
           <!-- ログイン中に表示される -->
-          <div v-if="user" class="align-center">
+          <div v-if="uid" class="align-center">
             <div class="text-xs-left">
               <v-menu offset-y offset-x min-width="250">
                 <!-- Profile画像 -->
@@ -355,10 +355,17 @@
       </v-layout>
     </v-toolbar-items>
   </v-toolbar>
-  <v-toolbar v-else flat fixed app>
-      <v-toolbar-title v-if="!path.includes('recruiter') || breakpoint == 'xs'">Application</v-toolbar-title>
+  <v-toolbar v-else flat fixed app color="white">
+      <!-- filter extension -->
+      <v-flex xs12 slot="extension" v-if="usersToolbarExtension || jobsToolbarExtension">
+        <filter-extension></filter-extension>
+      </v-flex>
+      <v-toolbar-title v-if="(!path.includes('/recruiter') && !path.includes('/users')) || breakpoint == 'xs'">Application</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items>
+        <v-btn flat active-class to="/users">
+          <span class="font-weight-bold textColor">検索</span>
+        </v-btn>
         <v-layout row wrap align-center class="pl-5">
           <v-flex class="text-xs-center">
             <!-- ログイン中に表示される -->
@@ -442,12 +449,13 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
-      user: state => state.user,
+      uid: state => state.uid,
       type: state => state.profile.type,
       authError: state => state.authError,
       loading: state => state.loading,
       imageUrl: state => state.profile.imageUrl,
-      toolbarExtension: state => state.jobs.toolbarExtension,
+      jobsToolbarExtension: state => state.jobs.toolbarExtension,
+      usersToolbarExtension: state => state.users.toolbarExtension,
     })
   },
   mounted() {

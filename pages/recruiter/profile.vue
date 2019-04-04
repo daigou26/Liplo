@@ -84,7 +84,7 @@
                   color="primary"
                   flat
                   :disabled ="selectedImage == null"
-                  @click="updateProfileImage({uid: user.uid, imageFile: imageFile})"
+                  @click="updateProfileImage({uid: uid, imageFile: imageFile})"
                 >
                   変更
                 </v-btn>
@@ -136,7 +136,7 @@
                   color="primary"
                   flat
                   :disabled="!editUserNameValid"
-                  @click="updateUserName({uid: user.uid, firstName: tempFirstName, lastName: tempLastName})"
+                  @click="updateUserName({uid: uid, firstName: tempFirstName, lastName: tempLastName})"
                 >
                   変更
                 </v-btn>
@@ -194,7 +194,7 @@
                 </v-btn>
                 <v-btn
                   :disabled="!editPositionValid"
-                  @click="updatePosition({uid: user.uid, position: tempPosition})"
+                  @click="updatePosition({uid: uid, position: tempPosition})"
                 >
                   更新
                 </v-btn>
@@ -257,7 +257,7 @@
                 </v-btn>
                 <v-btn
                   :disabled="!editSelfIntroValid"
-                  @click="updateSelfIntro({uid: user.uid, selfIntro: tempSelfIntro})"
+                  @click="updateSelfIntro({uid: uid, selfIntro: tempSelfIntro})"
                 >
                   更新
                 </v-btn>
@@ -314,7 +314,7 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
-      user: state => state.user,
+      uid: state => state.uid,
       imageUrl: state => state.profile.imageUrl,
       imageFileSizeValid: state => state.profile.imageFileSizeValid,
       isEditingProfileImage: state => state.profile.isEditingProfileImage,

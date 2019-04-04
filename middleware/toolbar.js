@@ -4,4 +4,10 @@ export default function ({ store, route, redirect }) {
   } else {
     store.dispatch('jobs/resetToolbarExtension')
   }
+
+  if (route.path === '/users') {
+    store.dispatch('users/setToolbarExtension')
+  } else {
+    store.dispatch('users/resetToolbarExtension')
+  }
 }

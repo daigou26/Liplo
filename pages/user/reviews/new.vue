@@ -225,7 +225,7 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
-      user: state => state.user,
+      uid: state => state.uid,
       firstName: state => state.profile.firstName,
       lastName: state => state.profile.lastName,
       profileImageUrl: state => state.profile.imageUrl,
@@ -256,7 +256,7 @@ export default {
       this.reviewValid = false
       const all = Math.round((this.atmosphere + this.job + this.discretion + this.flexibleSchedule + this.flexibility + this.mentor + this.mentor) / 7 * 10) / 10
       const review = {
-        uid: this.user.uid,
+        uid: this.uid,
         userName: this.lastName + ' ' + this.firstName,
         profileImageUrl: this.profileImageUrl,
         jobId: this.notReviewedCompany.jobId,

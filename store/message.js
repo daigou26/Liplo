@@ -10,11 +10,11 @@ export const mutations = {
 }
 
 export const actions = {
-  postMessageFromUser({commit}, {params, message, uid, profileImageUrl, name}) {
+  postMessageFromUser({commit}, {params, message, uid, imageUrl, name}) {
     const chatId = params.id
     const user = {
       uid: uid,
-      profileImageUrl: profileImageUrl,
+      imageUrl: imageUrl,
       name: name,
     }
 
@@ -32,11 +32,11 @@ export const actions = {
         console.error("Error adding document: ", error)
       })
   },
-  postMessageFromPic({commit}, {params, message, uid, profileImageUrl, name}) {
+  postMessageFromPic({commit}, {params, message, uid, imageUrl, name}) {
     const chatId = params.id
     const pic = {
       uid: uid,
-      profileImageUrl: profileImageUrl,
+      imageUrl: imageUrl,
       name: name,
     }
 

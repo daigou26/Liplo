@@ -1173,7 +1173,6 @@ export default {
       }
     },
     ...mapState({
-      user: state => state.user,
       companyId: state => state.profile.companyId,
       imageFileSizeValid: state => state.companyProfile.imageFileSizeValid,
       topImageUrl: state => state.companyProfile.topImageUrl,

@@ -1,4 +1,4 @@
-<template>
+imageUrl<template>
   <v-layout
     white
     row
@@ -66,7 +66,7 @@
                         class="grey lighten-3 mx-2"
                         :size="40"
                       >
-                        <img v-if="message.user.profileImageUrl" :src="message.user.profileImageUrl">
+                        <img v-if="message.user.imageUrl" :src="message.user.imageUrl">
                       </v-avatar>
                       <div class="px-3 py-2 white message-border-radius return">{{ message.message }}</div>
                       <!-- 担当者のプロフィール画像は右に -->
@@ -75,7 +75,7 @@
                         class="grey lighten-3 mx-2"
                         :size="40"
                       >
-                        <img v-if="message.pic.profileImageUrl" :src="message.pic.profileImageUrl">
+                        <img v-if="message.pic.imageUrl" :src="message.pic.imageUrl">
                       </v-avatar>
                     </div>
                   </v-flex>
@@ -126,7 +126,7 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
-      user: state => state.user,
+      uid: state => state.uid,
       recruiterImageUrl: state => state.profile.imageUrl,
       firstName: state => state.profile.firstName,
       lastName: state => state.profile.lastName,
@@ -208,7 +208,7 @@ export default {
         this.postMessageFromPic({
           params: this.$route.params,
           message: this.message,
-          uid: this.user.uid,
+          uid: this.uid,
           profileImageUrl: this.recruiterImageUrl,
           name: this.lastName + ' ' + this.firstName,
         })

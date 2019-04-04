@@ -306,13 +306,13 @@ export default {
         engineer: false,
         designer: false,
         sales: false,
-        other: false,
+        others: false,
       }
       switch (this.occupation) {
         case 'エンジニア': occupation.engineer = true; break
         case 'デザイナー': occupation.designer = true; break
         case '営業': occupation.sales = true; break
-        case 'その他': occupation.other = true; break
+        case 'その他': occupation.others = true; break
       }
 
 

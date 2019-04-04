@@ -96,7 +96,7 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
-      user: state => state.user,
+      uid: state => state.uid,
       career: state => state.career.career,
     }),
   },

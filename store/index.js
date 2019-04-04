@@ -3,15 +3,15 @@ import { firestore, auth, GoogleProvider } from '@/plugins/firebase'
 
 
 export const state = () => ({
-  user: null,
+  uid: null,
   authError: null,
   loading: false,
 
 })
 
 export const mutations = {
-  setUser(state, user) {
-    state.user = user
+  setUid(state, uid) {
+    state.uid = uid
   },
   setAuthError(state, error) {
     state.authError = error
@@ -69,8 +69,8 @@ export const actions = {
     dispatch('passes/resetState')
     dispatch('companyJobs/resetState')
   },
-  setUser({commit}, user) {
-    commit('setUser', user)
+  setUid({commit}, uid) {
+    commit('setUid', uid)
   },
   resetAuthError({commit}) {
     commit('resetAuthError')
@@ -80,7 +80,7 @@ export const actions = {
   },
   setAuthInfo({dispatch, commit}, {route, router, user, firstName, lastName, companyName, companyEmail, position}) {
     if (user) {
-      commit('setUser', user)
+      commit('setUid', user.uid)
       firestore.collection('users').doc(user.uid).get()
         .then(function(doc) {
           if (!doc.exists) {
@@ -132,10 +132,19 @@ export const actions = {
                 batch.set(userRef, {
                   firstName: firstName,
                   lastName: lastName,
+                  type: 'user',
+                  points: 0,
                 })
                 const profileRef = firestore.collection('users')
                   .doc(user.uid).collection('profile').doc(user.uid)
                 batch.set(profileRef, {
+                  firstName: firstName,
+                  lastName: lastName,
+                  email: user.email
+                })
+                const detailRef = firestore.collection('users')
+                  .doc(user.uid).collection('detail').doc(user.uid)
+                batch.set(detailRef, {
                   firstName: firstName,
                   lastName: lastName,
                   email: user.email
@@ -162,14 +171,14 @@ export const actions = {
               dispatch('profile/setImageUrl', doc.data()['imageUrl'])
             }
 
-            if (doc.data()['type'] != null) {
-              if (route.path.includes('/user')) {
+            if (doc.data()['type'] == 'recruiter') {
+              if (route.path.includes('/user') && !route.path.includes('users')) {
                 router.replace('/recruiter/dashboard')
               } else if (route.path.includes('/messages') && !route.path.includes('recruiter/messages')) {
                 router.replace('/recruiter/dashboard')
               }
             } else {
-              if (route.path.includes('/recruiter')) {
+              if (route.path.includes('/recruiter') || route.path.includes('/users')) {
                 router.replace('/')
               }
             }
@@ -177,27 +186,15 @@ export const actions = {
         })
 
     } else {
-      commit('setUser', null)
+      commit('setUid', null)
       if (route.path !== '/' && route.name !== 'jobs-id') {
         router.push('/')
       }
     }
   },
   resetState({commit}) {
-    commit('setUser', null)
+    commit('setUid', null)
     commit('setAuthError', null)
     commit('resetLoading')
-  },
-}
-
-export const getters = {
-  user(state) {
-    return state.user
-  },
-  authError(state) {
-    return state.authError
-  },
-  loading(state) {
-    return state.loading
   },
 }

@@ -1,8 +1,8 @@
 <template>
   <v-app light>
-    <drawer v-if="path.includes('recruiter')"></drawer>
+    <drawer v-if="path.includes('/recruiter') || path.includes('/users')"></drawer>
     <toolbar></toolbar>
-    <v-content>
+    <v-content class="white">
       <v-container fluid pa-0>
         <nuxt />
       </v-container>
@@ -148,6 +148,9 @@ i.v-icon {
 }
 @media screen and (min-width: 600px) {
   #job-apply.v-btn {
+    width: 200px;
+  }
+  #user-scout.v-btn {
     width: 200px;
   }
 }

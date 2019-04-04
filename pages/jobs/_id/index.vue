@@ -397,7 +397,7 @@
           }"
         >
           <v-btn
-            v-if="user"
+            v-if="uid"
             large
             :disabled="applied"
             class="warning"
@@ -515,7 +515,7 @@ export default {
   }),
   computed: {
     applied() {
-      return this.applicants != null && this.applicants.users.includes(this.user.uid)
+      return this.applicants != null && this.applicants.users.includes(this.uid)
     },
     imageRatio() {
       switch (this.$vuetify.breakpoint.name) {
@@ -531,7 +531,7 @@ export default {
       profileImageUrl: state => state.profile.imageUrl,
       firstName: state => state.profile.firstName,
       lastName: state => state.profile.lastName,
-      user: state => state.user,
+      uid: state => state.uid,
       imageUrl: state => state.job.imageUrl,
       title: state => state.job.title,
       companyId: state => state.job.companyId,
@@ -573,7 +573,7 @@ export default {
   //   console.log('fetch')
   //   const store = context.store
   //   // query job
-  //   store.dispatch('job/queryJob', {params: context.params, uid: store.state.user.uid})
+  //   store.dispatch('job/queryJob', {params: context.params, uid: store.state.uid})
   // },
   methods: {
     reviewsButtonClicked() {
@@ -585,7 +585,7 @@ export default {
     applyButtonClicked() {
       this.apply({
         params: this.$route.params,
-        uid: this.user.uid,
+        uid: this.uid,
         imageUrl: this.profileImageUrl,
         firstName: this.firstName,
         lastName: this.lastName,

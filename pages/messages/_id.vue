@@ -112,7 +112,7 @@
                         class="grey lighten-3 mx-2"
                         :size="40"
                       >
-                        <img v-if="message.pic.profileImageUrl" :src="message.pic.profileImageUrl">
+                        <img v-if="message.pic.imageUrl" :src="message.pic.imageUrl">
                       </v-avatar>
                       <div class="px-3 py-2 white message-border-radius return">{{ message.message }}</div>
                       <!-- ユーザーのプロフィール画像は右に -->
@@ -121,7 +121,7 @@
                         class="grey lighten-3 mx-2"
                         :size="40"
                       >
-                        <img v-if="message.user.profileImageUrl" :src="message.user.profileImageUrl">
+                        <img v-if="message.user.imageUrl" :src="message.user.imageUrl">
                       </v-avatar>
                     </div>
                   </v-flex>
@@ -246,7 +246,7 @@
                         class="grey lighten-3 mx-2"
                         :size="40"
                       >
-                        <img v-if="message.pic.profileImageUrl" :src="message.pic.profileImageUrl">
+                        <img v-if="message.pic.imageUrl" :src="message.pic.imageUrl">
                       </v-avatar>
                       <div class="px-3 py-2 white message-border-radius return">{{ message.message }}</div>
                       <!-- ユーザーのプロフィール画像は右に -->
@@ -255,7 +255,7 @@
                         class="grey lighten-3 mx-2"
                         :size="40"
                       >
-                        <img v-if="message.user.profileImageUrl" :src="message.user.profileImageUrl">
+                        <img v-if="message.user.imageUrl" :src="message.user.imageUrl">
                       </v-avatar>
                     </div>
                   </v-flex>
@@ -344,7 +344,7 @@ export default {
       return companyImageUrl
     },
     ...mapState({
-      user: state => state.user,
+      uid: state => state.uid,
       type: state => state.profile.type,
       profileImageUrl: state => state.profile.imageUrl,
       firstName: state => state.profile.firstName,
@@ -413,10 +413,10 @@ export default {
   methods: {
     infiniteHandler($state) {
       if (!this.allChatsQueried) {
-        if (!this.isLoading && this.user != null) {
+        if (!this.isLoading && this.uid != null) {
           this.count += 1
           this.updateIsLoading(true)
-          this.queryChats({uid: this.user.uid, companyId: null, chats: this.chats})
+          this.queryChats({uid: this.uid, companyId: null, chats: this.chats})
         }
         if (this.count > 20) {
           $state.complete()
@@ -433,8 +433,8 @@ export default {
         this.postMessageFromUser({
           params: this.$route.params,
           message: this.message,
-          uid: this.user.uid,
-          profileImageUrl: this.profileImageUrl,
+          uid: this.uid,
+          imageUrl: this.profileImageUrl,
           name: this.lastName + ' ' + this.firstName,
         })
       }
