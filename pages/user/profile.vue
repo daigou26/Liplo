@@ -139,6 +139,69 @@
             </v-form>
           </div>
           <div :class="{'px-5': $vuetify.breakpoint.smAndUp}">
+            <!-- 志望する職種 -->
+            <div>
+              <v-layout
+                align-center
+                justify-space-between
+                row
+                class="pt-5"
+              >
+                <!-- タイトル&編集ボタン -->
+                <v-flex xs8 sm10>
+                  <v-card-title class="title font-weight-bold">志望する職種</v-card-title>
+                </v-flex>
+                <v-flex xs4 sm2 v-show="!isEditingDesiredOccupations">
+                  <v-btn
+                    flat
+                    @click="desiredOccupationsEditButtonClicked"
+                  >
+                    <v-icon :size="14">edit</v-icon>
+                    <span class="caption edit-text-color">編集する</span>
+                  </v-btn>
+                </v-flex>
+              </v-layout>
+              <v-flex xs12 sm10>
+                <v-divider></v-divider>
+              </v-flex>
+              <v-flex xs12 sm10 class="break">
+                <div v-if="!isEditingDesiredOccupations && desiredOccupations">
+                  <v-chip v-if="desiredOccupations.engineer">
+                    <span>エンジニア</span>
+                  </v-chip>
+                  <v-chip v-if="desiredOccupations.designer">
+                    <span>デザイナー</span>
+                  </v-chip>
+                  <v-chip v-if="desiredOccupations.sales">
+                    <span>営業</span>
+                  </v-chip>
+                  <v-chip v-if="desiredOccupations.others">
+                    <span>その他</span>
+                  </v-chip>
+                </div>
+                <!-- 志望する職種の編集画面 -->
+                <div v-if="isEditingDesiredOccupations">
+                  <v-select
+                    v-model="tempDesiredOccupations"
+                    :items="desiredOccupationsItems"
+                    attach
+                    chips
+                    solo
+                    multiple
+                  ></v-select>
+                  <v-btn
+                    @click="updateIsEditingDesiredOccupations(false)"
+                  >
+                    キャンセル
+                  </v-btn>
+                  <v-btn
+                    @click="updateDesiredOccupations({uid: uid, desiredOccupations: tempDesiredOccupations})"
+                  >
+                    更新
+                  </v-btn>
+                </div>
+              </v-flex>
+            </div>
             <!-- 紹介文 -->
             <div>
               <v-layout
@@ -389,7 +452,7 @@
                     @click="skillsEditButtonClicked(null)"
                   >
                     <v-icon :size="14">edit</v-icon>
-                    <span class="caption edit-text-color">追加する</span>
+                    <span class="caption edit-text-color">編集する</span>
                   </v-btn>
                 </v-flex>
               </v-layout>
@@ -400,64 +463,46 @@
                 <!-- スキル表示 -->
                 <v-list v-if="!isEditingSkills && skills != null" class="pl-4">
                   <template v-for="(item, index) in skills">
-                    <div class="py-2">
-                      <div class="font-weight-bold body-2 textColor">
-                        {{ item.title }}
-                        <v-btn
-                          class="pa-0 ma-0"
-                          flat
-                          @click="skillsEditButtonClicked(index)"
-                        >
-                          <v-icon :size="14">edit</v-icon>
-                          <span class="caption edit-text-color">編集する</span>
-                        </v-btn>
-                      </div>
-                      <p class="return">{{ item.content }}</p>
-                    </div>
+                    <v-chip>
+                      <span>{{ item }}</span>
+                    </v-chip>
                   </template>
                 </v-list>
                 <!-- スキルの編集画面 -->
                 <div v-if="isEditingSkills">
                   <v-form v-model="editSkillsValid">
                     <div class="d-flex pb-3">
-                      <v-flex xs8 sm9 lg10 class="px-4 break">
-                        <v-text-field
+                      <v-flex xs12 class="px-4 break">
+                        <v-combobox
+                          v-model="tempSkills"
+                          chips
+                          clearable
                           solo
-                          label="タイトル"
-                          v-model="tempSkillTitle"
-                          :rules="skillTitleRules"
+                          multiple
+                          hide-no-data
+                          hint="スキルを入力後、enterを押すことで入力が確定します"
+                          :rules="skillRules"
                           required
-                        ></v-text-field>
-                        <v-text-field
-                          solo
-                          label="説明"
-                          v-model="tempSkillContent"
-                          :rules="skillContentRules"
-                          required
-                        ></v-text-field>
+                        >
+                          <template v-slot:selection="data">
+                            <v-chip
+                              close
+                              @input="removeSkill(data.item)"
+                            >
+                              <strong>{{ data.item }}</strong>
+                            </v-chip>
+                          </template>
+                        </v-combobox>
                         <v-btn
                           @click="updateIsEditingSkills(false)"
                         >
                           キャンセル
                         </v-btn>
                         <v-btn
-                          v-if="selectedSkillIndex != null"
-                          @click="deleteSkill({
-                            uid: uid,
-                            selectedIndex: selectedSkillIndex,
-                            skills: tempSkills
-                          })"
-                        >
-                          削除
-                        </v-btn>
-                        <v-btn
                           :disabled="!editSkillsValid"
                           @click="updateSkills({
                             uid: uid,
-                            selectedIndex: selectedSkillIndex,
                             skills: tempSkills,
-                            title: tempSkillTitle,
-                            content: tempSkillContent
                           })"
                         >
                           更新
@@ -684,6 +729,13 @@ export default {
       v => (v && v.length <= 30) || '30文字を超えています'
     ],
     editUserNameValid: true,
+    tempDesiredOccupations: [],
+    desiredOccupationsItems: [
+      'エンジニア',
+      'デザイナー',
+      '営業',
+      'その他'
+    ],
     tempSelfIntro: '',
     selfIntroRules: [
       v => (v.length <= 300) || '300字以内で入力してください'
@@ -715,15 +767,9 @@ export default {
     ],
     editPortfolioValid: true,
     tempSkills: null,
-    tempSkillTitle: '',
-    tempSkillContent: '',
-    skillTitleRules: [
-      v => !!v || 'タイトルを入力してください',
-      v => (v && v.length <= 30) || '20字以内で入力してください'
-    ],
-    skillContentRules: [
-      v => !!v || '説明を入力してください',
-      v => (v && v.length <= 100) || '100字以内で入力してください',
+    skillRules: [
+      v => (v && !(/\s/.test(v))) || 'スペースを含めないでください',
+      v => (v && v.length <= 20) || '20字以内で入力してください'
     ],
     editSkillsValid: true,
     tempLinks: null,
@@ -756,6 +802,8 @@ export default {
       firstName: state => state.profile.firstName,
       lastName: state => state.profile.lastName,
       isEditingUserName: state => state.profile.isEditingUserName,
+      desiredOccupations: state => state.profile.desiredOccupations,
+      isEditingDesiredOccupations: state => state.profile.isEditingDesiredOccupations,
       selfIntro: state => state.profile.selfIntro,
       isEditingSelfIntro: state => state.profile.isEditingSelfIntro,
       whatWantToDo: state => state.profile.whatWantToDo,
@@ -765,7 +813,6 @@ export default {
       selectedPortfolioItemIndex: state => state.profile.selectedPortfolioItemIndex,
       isEditingPortfolio: state => state.profile.isEditingPortfolio,
       skills: state => state.profile.skills,
-      selectedSkillIndex: state => state.profile.selectedSkillIndex,
       isEditingSkills: state => state.profile.isEditingSkills,
       links: state => state.profile.links,
       selectedLinkIndex: state => state.profile.selectedLinkIndex,
@@ -798,33 +845,6 @@ export default {
     })
   },
   methods: {
-    ...mapActions({
-      queryProfile: 'profile/queryProfile',
-      updateImageFileSizeValid: 'profile/updateImageFileSizeValid',
-      updateIsEditingProfileImage: 'profile/updateIsEditingProfileImage',
-      updateProfileImage: 'profile/updateProfileImage',
-      updateIsEditingUserName: 'profile/updateIsEditingUserName',
-      updateUserName: 'profile/updateUserName',
-      updateIsEditingSelfIntro: 'profile/updateIsEditingSelfIntro',
-      updateSelfIntro: 'profile/updateSelfIntro',
-      updateIsEditingWhatWantToDo: 'profile/updateIsEditingWhatWantToDo',
-      updateWhatWantToDo: 'profile/updateWhatWantToDo',
-      updateIsPortfolioImageChanged: 'profile/updateIsPortfolioImageChanged',
-      setSelectedPortfolioItemIndex: 'profile/setSelectedPortfolioItemIndex',
-      updateIsEditingPortfolio: 'profile/updateIsEditingPortfolio',
-      updatePortfolio: 'profile/updatePortfolio',
-      deletePortfolioItem: 'profile/deletePortfolioItem',
-      setSelectedSkillIndex: 'profile/setSelectedSkillIndex',
-      updateIsEditingSkills: 'profile/updateIsEditingSkills',
-      updateSkills: 'profile/updateSkills',
-      deleteSkill: 'profile/deleteSkill',
-      setSelectedLinkIndex: 'profile/setSelectedLinkIndex',
-      updateIsEditingLinks: 'profile/updateIsEditingLinks',
-      updateLinks: 'profile/updateLinks',
-      deleteLink: 'profile/deleteLink',
-      updateIsEditingUserInfo: 'profile/updateIsEditingUserInfo',
-      updateUserInfo: 'profile/updateUserInfo',
-    }),
     profileImageClicked() {
       this.updateImageFileSizeValid(true)
       this.updateIsEditingProfileImage(true)
@@ -867,6 +887,25 @@ export default {
       this.tempFirstName = this.firstName
       this.tempLastName = this.lastName
     },
+    desiredOccupationsEditButtonClicked() {
+      this.tempDesiredOccupations = []
+      if (this.desiredOccupations) {
+        if (this.desiredOccupations.engineer == true) {
+          this.tempDesiredOccupations.push('エンジニア')
+        }
+        if (this.desiredOccupations.designer == true) {
+          this.tempDesiredOccupations.push('デザイナー')
+        }
+        if (this.desiredOccupations.sales == true) {
+          this.tempDesiredOccupations.push('営業')
+        }
+        if (this.desiredOccupations.others == true) {
+          this.tempDesiredOccupations.push('その他')
+        }
+      }
+
+      this.updateIsEditingDesiredOccupations(true)
+    },
     selfIntroEditButtonClicked() {
       this.tempSelfIntro = this.selfIntro
       this.updateIsEditingSelfIntro(true)
@@ -896,17 +935,12 @@ export default {
       this.updateIsEditingPortfolio(true)
     },
     skillsEditButtonClicked(index) {
-      // 初期化
-      this.setSelectedSkillIndex(index)
       this.tempSkills = this.skills
-      if (index != null) {
-        this.tempSkillTitle = this.skills[index].title
-        this.tempSkillContent = this.skills[index].content
-      } else {
-        this.tempSkillTitle = ''
-        this.tempSkillContent = ''
-      }
       this.updateIsEditingSkills(true)
+    },
+    removeSkill (item) {
+      this.tempSkills.splice(this.tempSkills.indexOf(item), 1)
+      this.tempSkills = [...this.tempSkills]
     },
     linksEditButtonClicked(index) {
       // 初期化
@@ -927,6 +961,33 @@ export default {
       this.tempDepartment = this.department
       this.updateIsEditingUserInfo(true)
     },
+    ...mapActions({
+      queryProfile: 'profile/queryProfile',
+      updateImageFileSizeValid: 'profile/updateImageFileSizeValid',
+      updateIsEditingProfileImage: 'profile/updateIsEditingProfileImage',
+      updateProfileImage: 'profile/updateProfileImage',
+      updateIsEditingUserName: 'profile/updateIsEditingUserName',
+      updateUserName: 'profile/updateUserName',
+      updateIsEditingDesiredOccupations: 'profile/updateIsEditingDesiredOccupations',
+      updateDesiredOccupations: 'profile/updateDesiredOccupations',
+      updateIsEditingSelfIntro: 'profile/updateIsEditingSelfIntro',
+      updateSelfIntro: 'profile/updateSelfIntro',
+      updateIsEditingWhatWantToDo: 'profile/updateIsEditingWhatWantToDo',
+      updateWhatWantToDo: 'profile/updateWhatWantToDo',
+      updateIsPortfolioImageChanged: 'profile/updateIsPortfolioImageChanged',
+      setSelectedPortfolioItemIndex: 'profile/setSelectedPortfolioItemIndex',
+      updateIsEditingPortfolio: 'profile/updateIsEditingPortfolio',
+      updatePortfolio: 'profile/updatePortfolio',
+      deletePortfolioItem: 'profile/deletePortfolioItem',
+      updateIsEditingSkills: 'profile/updateIsEditingSkills',
+      updateSkills: 'profile/updateSkills',
+      setSelectedLinkIndex: 'profile/setSelectedLinkIndex',
+      updateIsEditingLinks: 'profile/updateIsEditingLinks',
+      updateLinks: 'profile/updateLinks',
+      deleteLink: 'profile/deleteLink',
+      updateIsEditingUserInfo: 'profile/updateIsEditingUserInfo',
+      updateUserInfo: 'profile/updateUserInfo',
+    }),
   }
 }
 </script>

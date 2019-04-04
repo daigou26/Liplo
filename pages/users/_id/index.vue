@@ -53,11 +53,11 @@
               px-2
               :class="{'pb-4': $vuetify.breakpoint.xsOnly}"
             >
-              <v-chip>
-                <span v-if="desiredOccupations.engineer">エンジニア</span>
+              <v-chip v-if="desiredOccupations.engineer">
+                <span>エンジニア</span>
               </v-chip>
-              <v-chip>
-                <span v-if="desiredOccupations.designer">デザイナー</span>
+              <v-chip v-if="desiredOccupations.designer">
+                <span>デザイナー</span>
               </v-chip>
               <v-chip v-if="desiredOccupations.sales">
                 <span>営業</span>
@@ -184,12 +184,9 @@
             <!-- スキル表示 -->
             <v-list class="pl-4">
               <template v-for="(item, index) in skills">
-                <div class="py-2">
-                  <div class="font-weight-bold body-2 textColor">
-                    {{ item.title }}
-                  </div>
-                  <p class="return">{{ item.content }}</p>
-                </div>
+                <v-chip>
+                  <span>{{ item }}</span>
+                </v-chip>
               </template>
             </v-list>
           </v-flex>
