@@ -30,10 +30,10 @@ exports.scoutUser = functions.region('asia-northeast1')
 
           // company の応募者数の更新、応募者の情報格納
           if (currentCandidates) {
-            currentCandidates.scout += 1
+            currentCandidates.scouted += 1
           } else {
             currentCandidates = {
-              scout: 1,
+              scouted: 1,
               inbox: 0,
               inProcess: 0,
               intern: 0,
@@ -48,10 +48,10 @@ exports.scoutUser = functions.region('asia-northeast1')
             application: 0,
           }
           if (allCandidates) {
-            allCandidates.scout += 1
+            allCandidates.scouted += 1
           } else {
             allCandidates = {
-              scout: 1,
+              scouted: 1,
               inbox: 0,
               inProcess: initialValue,
               intern: initialValue,
@@ -144,127 +144,6 @@ exports.scoutUser = functions.region('asia-northeast1')
               console.log('Error getting document', err)
             })
         }
-      })
-      .catch(err => {
-        console.log('Error getting document', err)
-      })
-    return admin.firestore()
-      .collection('users').doc(user.uid)
-      .collection('detail').doc(user.uid)
-      .get()
-      .then(userDetailDoc => {
-        if (userDetailDoc.exists) {
-          // user詳細にcountとcompanyIdを格納
-          let count
-          let companies
-          let scouts
-
-          if (userDetailDoc.data().scouts) {
-            count = userDetailDoc.data().scouts.count
-            companies = userDetailDoc.data().scouts.companies
-            companies.push(companyId)
-          } else {
-            count = 0
-            companies = [companyId]
-          }
-
-          scouts = {
-            count: count + 1,
-            companies: companies
-          }
-
-          admin.firestore()
-            .collection('users').doc(user.uid)
-            .collection('detail').doc(user.uid)
-            .update({
-              scouts: scouts
-            })
-            .then(() => {
-              console.log('add scoutedUser to user/detail completed.')
-            })
-            .catch(err => {
-              console.log('Error getting document', err)
-            })
-
-          // company name, imageUrl を取得
-          admin.firestore()
-              .collection('companies')
-              .doc(companyId)
-              .get()
-              .then(companyDoc => {
-                if (companyDoc.exists) {
-                  const companyName = companyDoc.data().name
-                  const companyImageUrl = companyDoc.data().imageUrl
-
-                  // chatにスカウト メッセージを送信(chatがなければ作成)
-                  admin.firestore()
-                    .collection('chats')
-                    .where('companyId', '==', companyId)
-                    .where('uid', '==', user.uid)
-                    .get()
-                    .then(function(snapshot) {
-                      var docCount = 0
-                      snapshot.forEach(function(chatDoc) {
-                        docCount += 1
-                        if (docCount == 1) {
-                          admin.firestore().collection('chats').doc(chatDoc.id)
-                            .collection('messages')
-                            .add({
-                              pic: pic,
-                              message: message,
-                              createdAt: scoutedAt,
-                            })
-                            .then(() => {
-                              console.log('send scout message complete.')
-                            })
-                            .catch((error) => {
-                              console.error("Error adding document: ", error)
-                            })
-                        }
-                      })
-
-                      if (docCount == 0) {
-                        const chatId = admin.firestore().collection('chats').doc().id
-                        const batch = admin.firestore().batch()
-                        const chatsRef = admin.firestore().collection('chats').doc(chatId)
-                        batch.set(chatsRef, {
-                          uid: user.uid,
-                          profileImageUrl: user.imageUrl,
-                          userName: user.name,
-                          companyId: companyId,
-                          companyImageUrl: companyImageUrl,
-                          companyName: companyName,
-                          lastMessage: message,
-                          updatedAt: scoutedAt,
-                        })
-                        const messagesRef = admin.firestore().collection('chats').doc(chatId)
-                          .collection('messages').doc()
-                        batch.set(messagesRef, {
-                          pic: pic,
-                          message: message,
-                          createdAt: scoutedAt,
-                        })
-                        batch.commit()
-                          .then(() => {
-                            console.log('send scout message complete.')
-                          })
-                          .catch((error) => {
-                            console.error("Error adding document: ", error)
-                          })
-                      }
-                    })
-                    .catch(err => {
-                      console.log('Error getting document', err)
-                    })
-                }
-              })
-              .catch(err => {
-                console.log('Error getting document', err)
-              })
-        }
-      })
-      .then(() => {
-        console.log('scoutUser completed.')
       })
       .catch(err => {
         console.log('Error getting document', err)
@@ -746,7 +625,7 @@ exports.applyForJob = functions.region('asia-northeast1')
             currentCandidates.inbox += 1
           } else {
             currentCandidates = {
-              scout: 0,
+              scouted: 0,
               inbox: 1,
               inProcess: 0,
               intern: 0,
@@ -765,7 +644,7 @@ exports.applyForJob = functions.region('asia-northeast1')
             allCandidates.inbox += 1
           } else {
             allCandidates = {
-              scout: 0,
+              scouted: 0,
               inbox: 1,
               inProcess: initialValue,
               intern: initialValue,
