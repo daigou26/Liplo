@@ -26,7 +26,7 @@
               }"
             >
               <div class="headline font-weight-bold">
-                <span v-if="count">{{ count[item.prop] }}</span>
+                <span v-if="currentCandidates">{{ currentCandidates[item.prop] }}</span>
                 <span v-else>0</span>
               </div>
               <div class="pt-2">
@@ -37,7 +37,9 @@
         </v-card>
       </v-flex>
     </template>
-    <v-flex xs12 hidden-md-and-up><v-divider></v-divider></v-flex>
+    <v-flex xs12 hidden-md-and-up>
+      <v-divider></v-divider>
+    </v-flex>
     <v-flex
       sm6
       xs12
@@ -172,7 +174,8 @@ export default {
       type: state => state.profile.type,
       companyId: state => state.profile.companyId,
       rating: state => state.company.rating,
-      count: state => state.company.count,
+      currentCandidates: state => state.company.currentCandidates,
+      allCandidates: state => state.company.allCandidates,
       feedback: state => state.company.feedback,
       reviewChartData: state => state.company.reviewChartData,
       feedbackChartData: state => state.company.feedbackChartData,
