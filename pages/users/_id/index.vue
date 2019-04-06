@@ -6,329 +6,337 @@
     align-start
     align-content-start
   >
-    <v-flex xs12 class="break">
-      <!-- Profile画像 & UserName -->
-      <div class="py-4 align-center">
-        <v-card flat>
-          <v-flex
-            layout
-            align-center
-            px-4
-          >
-            <v-avatar
-              :size="avatarSize"
-              class="grey lighten-3"
-            >
-              <img v-if="userImageUrl" :src="userImageUrl" alt="avatar">
-              <v-icon v-else :size="60">person</v-icon>
-            </v-avatar>
-            <div class="title textColor font-weight-bold break pl-4 ">
-              {{ name }}
-            </div>
-          </v-flex>
-        </v-card>
-      </div>
-      <div
-        class="pb-4"
-        :class="{'px-5': $vuetify.breakpoint.smAndUp}"
-      >
-        <!-- 志望する職種 -->
-        <div v-if="desiredOccupations">
-          <v-layout row wrap hidden-xs-only>
-            <!-- 志望する職種 -->
+    <v-flex xs12 v-if="!isLoading">
+      <v-flex xs12 class="break">
+        <!-- Profile画像 & UserName -->
+        <div class="py-4 align-center">
+          <v-card flat>
             <v-flex
-              v-if="desiredOccupations"
-              sm4
-              xs4
-              :class="{
-                'pl-3': $vuetify.breakpoint.xsOnly,
-                'pl-5': $vuetify.breakpoint.smAndUp
-              }"
+              layout
+              align-center
+              px-4
             >
+              <v-avatar
+                :size="avatarSize"
+                class="grey lighten-3"
+              >
+                <img v-if="userImageUrl" :src="userImageUrl" alt="avatar">
+                <v-icon v-else :size="60">person</v-icon>
+              </v-avatar>
+              <div class="title textColor font-weight-bold break pl-4 ">
+                {{ name }}
+              </div>
+            </v-flex>
+          </v-card>
+        </div>
+        <div
+          class="pb-4"
+          :class="{'px-5': $vuetify.breakpoint.smAndUp}"
+        >
+          <!-- 志望する職種 -->
+          <div v-if="desiredOccupations">
+            <v-layout row wrap hidden-xs-only>
+              <!-- 志望する職種 -->
+              <v-flex
+                v-if="desiredOccupations"
+                sm4
+                xs4
+                :class="{
+                  'pl-3': $vuetify.breakpoint.xsOnly,
+                  'pl-5': $vuetify.breakpoint.smAndUp
+                }"
+              >
+                <div class="textColor font-weight-bold">志望する職種</div>
+              </v-flex>
+              <v-flex
+                v-if="desiredOccupations"
+                xs7
+                px-2
+                :class="{'pb-4': $vuetify.breakpoint.xsOnly}"
+              >
+                <v-chip v-if="desiredOccupations.engineer">
+                  <span>エンジニア</span>
+                </v-chip>
+                <v-chip v-if="desiredOccupations.designer">
+                  <span>デザイナー</span>
+                </v-chip>
+                <v-chip v-if="desiredOccupations.sales">
+                  <span>営業</span>
+                </v-chip>
+                <v-chip v-if="desiredOccupations.others">
+                  <span>その他</span>
+                </v-chip>
+              </v-flex>
+            </v-layout>
+            <div class="hidden-sm-and-up pl-4">
               <div class="textColor font-weight-bold">志望する職種</div>
-            </v-flex>
-            <v-flex
-              v-if="desiredOccupations"
-              xs7
-              px-2
-              :class="{'pb-4': $vuetify.breakpoint.xsOnly}"
-            >
-              <v-chip v-if="desiredOccupations.engineer">
-                <span>エンジニア</span>
-              </v-chip>
-              <v-chip v-if="desiredOccupations.designer">
-                <span>デザイナー</span>
-              </v-chip>
-              <v-chip v-if="desiredOccupations.sales">
-                <span>営業</span>
-              </v-chip>
-              <v-chip v-if="desiredOccupations.others">
-                <span>その他</span>
-              </v-chip>
-            </v-flex>
-          </v-layout>
-          <div class="hidden-sm-and-up pl-4">
-            <div class="textColor font-weight-bold">志望する職種</div>
-            <div>
-              <v-chip>
-                <span v-if="desiredOccupations.engineer">エンジニア</span>
-              </v-chip>
-              <v-chip>
-                <span v-if="desiredOccupations.designer">デザイナー</span>
-              </v-chip>
-              <v-chip v-if="desiredOccupations.sales">
-                <span>営業</span>
-              </v-chip>
-              <v-chip v-if="desiredOccupations.others">
-                <span>その他</span>
-              </v-chip>
+              <div>
+                <v-chip>
+                  <span v-if="desiredOccupations.engineer">エンジニア</span>
+                </v-chip>
+                <v-chip>
+                  <span v-if="desiredOccupations.designer">デザイナー</span>
+                </v-chip>
+                <v-chip v-if="desiredOccupations.sales">
+                  <span>営業</span>
+                </v-chip>
+                <v-chip v-if="desiredOccupations.others">
+                  <span>その他</span>
+                </v-chip>
+              </div>
             </div>
           </div>
-        </div>
-        <!-- 紹介文 -->
-        <div v-if="selfIntro">
-          <v-layout
-            align-center
-            justify-space-between
-            row
-            class="pt-5"
-          >
-            <!-- タイトル&編集ボタン -->
-            <v-flex xs8 sm10>
-              <v-card-title class="title font-weight-bold">紹介文</v-card-title>
+          <!-- 紹介文 -->
+          <div v-if="selfIntro">
+            <v-layout
+              align-center
+              justify-space-between
+              row
+              class="pt-5"
+            >
+              <!-- タイトル&編集ボタン -->
+              <v-flex xs8 sm10>
+                <v-card-title class="title font-weight-bold">紹介文</v-card-title>
+              </v-flex>
+            </v-layout>
+            <v-flex xs12 sm10>
+              <v-divider></v-divider>
             </v-flex>
-          </v-layout>
-          <v-flex xs12 sm10>
-            <v-divider></v-divider>
-          </v-flex>
-          <v-flex xs12 sm10 class="break">
-            <!-- 自己紹介の表示 -->
-            <v-card-text>
-              <p class="return">{{ selfIntro }}</p>
-            </v-card-text>
-          </v-flex>
-        </div>
-        <!-- やりたいこと -->
-        <div v-if="whatWantToDo">
-          <v-layout
-            align-center
-            justify-space-between
-            row
-            class="pt-5"
-          >
-            <v-flex xs8 sm10>
-              <v-card-title class="title font-weight-bold">やりたいこと・実現したいこと</v-card-title>
+            <v-flex xs12 sm10 class="break">
+              <!-- 自己紹介の表示 -->
+              <v-card-text>
+                <p class="return">{{ selfIntro }}</p>
+              </v-card-text>
             </v-flex>
-          </v-layout>
-          <v-flex xs12 sm10>
-            <v-divider></v-divider>
-          </v-flex>
-          <v-flex xs12 sm10 class="break">
-            <!-- やりたいことの表示 -->
-            <v-card-text>
-              <p class="return">{{ whatWantToDo }}</p>
-            </v-card-text>
-          </v-flex>
-        </div>
-        <!-- ポートフォリオ -->
-        <div v-if="portfolio">
-          <v-layout
-            align-center
-            justify-space-between
-            row
-            class="pt-5"
-          >
-            <v-flex xs8 sm10>
-              <v-card-title class="title font-weight-bold">ポートフォリオ</v-card-title>
+          </div>
+          <!-- やりたいこと -->
+          <div v-if="whatWantToDo">
+            <v-layout
+              align-center
+              justify-space-between
+              row
+              class="pt-5"
+            >
+              <v-flex xs8 sm10>
+                <v-card-title class="title font-weight-bold">やりたいこと・実現したいこと</v-card-title>
+              </v-flex>
+            </v-layout>
+            <v-flex xs12 sm10>
+              <v-divider></v-divider>
             </v-flex>
-          </v-layout>
-          <v-flex xs12 sm10>
-            <v-divider></v-divider>
-          </v-flex>
-          <v-flex xs12 sm10>
-            <!-- ポートフォリオ表示 -->
-            <v-list class="pl-4">
-              <template v-for="(item, index) in portfolio">
-                  <div class="d-flex pb-3">
-                    <v-flex xs4 sm3 lg2>
-                      <v-img :src="item.imageUrl" height="100"></v-img>
-                    </v-flex>
-                    <v-flex xs8 sm9 lg10 class="px-4 break">
-                      <div>
-                        <span class="font-weight-bold subheading textColor">{{ item.title }}</span>
-                      </div>
-                      <p　class="textColor return">{{ item.content }}</p>
-                      <a :href="item.url">{{ item.url }}</a>
-                    </v-flex>
+            <v-flex xs12 sm10 class="break">
+              <!-- やりたいことの表示 -->
+              <v-card-text>
+                <p class="return">{{ whatWantToDo }}</p>
+              </v-card-text>
+            </v-flex>
+          </div>
+          <!-- ポートフォリオ -->
+          <div v-if="portfolio">
+            <v-layout
+              align-center
+              justify-space-between
+              row
+              class="pt-5"
+            >
+              <v-flex xs8 sm10>
+                <v-card-title class="title font-weight-bold">ポートフォリオ</v-card-title>
+              </v-flex>
+            </v-layout>
+            <v-flex xs12 sm10>
+              <v-divider></v-divider>
+            </v-flex>
+            <v-flex xs12 sm10>
+              <!-- ポートフォリオ表示 -->
+              <v-list class="pl-4">
+                <template v-for="(item, index) in portfolio">
+                    <div class="d-flex pb-3">
+                      <v-flex xs4 sm3 lg2>
+                        <v-img :src="item.imageUrl" height="100"></v-img>
+                      </v-flex>
+                      <v-flex xs8 sm9 lg10 class="px-4 break">
+                        <div>
+                          <span class="font-weight-bold subheading textColor">{{ item.title }}</span>
+                        </div>
+                        <p　class="textColor return">{{ item.content }}</p>
+                        <a :href="item.url">{{ item.url }}</a>
+                      </v-flex>
+                    </div>
+                </template>
+              </v-list>
+            </v-flex>
+          </div>
+          <!-- スキル -->
+          <div v-if="skills">
+            <v-layout
+              align-center
+              justify-space-between
+              row
+              class="pt-5"
+            >
+              <v-flex xs8 sm10>
+                <v-card-title class="title font-weight-bold">スキル</v-card-title>
+              </v-flex>
+            </v-layout>
+            <v-flex xs12 sm10>
+              <v-divider></v-divider>
+            </v-flex>
+            <v-flex xs12 sm10 class="break">
+              <!-- スキル表示 -->
+              <v-list class="pl-4">
+                <template v-for="(item, index) in skills">
+                  <v-chip>
+                    <span>{{ item }}</span>
+                  </v-chip>
+                </template>
+              </v-list>
+            </v-flex>
+          </div>
+          <!-- 関連リンク -->
+          <div v-if="links">
+            <v-layout
+              align-center
+              justify-space-between
+              row
+              class="pt-5"
+            >
+              <v-flex xs8 sm10>
+                <v-card-title class="title font-weight-bold">関連リンク</v-card-title>
+              </v-flex>
+            </v-layout>
+            <v-flex xs12 sm10>
+              <v-divider></v-divider>
+            </v-flex>
+            <v-flex xs12 sm10 class="break">
+              <!-- 関連リンク表示 -->
+              <v-list class="pl-4">
+                <template v-for="(item, index) in links">
+                  <div class="py-2">
+                    <div class="font-weight-bold body-2 textColor">
+                      {{ item.title }}
+                    </div>
+                    <a :href="item.url">{{ item.url }}</a>
                   </div>
-              </template>
-            </v-list>
-          </v-flex>
-        </div>
-        <!-- スキル -->
-        <div v-if="skills">
-          <v-layout
-            align-center
-            justify-space-between
-            row
-            class="pt-5"
-          >
-            <v-flex xs8 sm10>
-              <v-card-title class="title font-weight-bold">スキル</v-card-title>
+                </template>
+              </v-list>
             </v-flex>
-          </v-layout>
-          <v-flex xs12 sm10>
-            <v-divider></v-divider>
-          </v-flex>
-          <v-flex xs12 sm10 class="break">
-            <!-- スキル表示 -->
-            <v-list class="pl-4">
-              <template v-for="(item, index) in skills">
-                <v-chip>
-                  <span>{{ item }}</span>
-                </v-chip>
-              </template>
-            </v-list>
-          </v-flex>
-        </div>
-        <!-- 関連リンク -->
-        <div v-if="links">
-          <v-layout
-            align-center
-            justify-space-between
-            row
-            class="pt-5"
-          >
-            <v-flex xs8 sm10>
-              <v-card-title class="title font-weight-bold">関連リンク</v-card-title>
+          </div>
+          <!-- 基本情報 -->
+          <div>
+            <v-layout
+              align-center
+              justify-space-between
+              row
+              class="pt-5"
+            >
+              <v-flex xs8 sm10>
+                <v-card-title class="title font-weight-bold">基本情報</v-card-title>
+              </v-flex>
+            </v-layout>
+            <v-flex xs12 sm10>
+              <v-divider></v-divider>
             </v-flex>
-          </v-layout>
-          <v-flex xs12 sm10>
-            <v-divider></v-divider>
-          </v-flex>
-          <v-flex xs12 sm10 class="break">
-            <!-- 関連リンク表示 -->
-            <v-list class="pl-4">
-              <template v-for="(item, index) in links">
-                <div class="py-2">
-                  <div class="font-weight-bold body-2 textColor">
-                    {{ item.title }}
-                  </div>
-                  <a :href="item.url">{{ item.url }}</a>
+            <v-flex xs12 sm10 class="break">
+              <!-- 基本情報の表示 -->
+              <v-list class="pl-4">
+                <div v-if="university" class="pb-2">
+                  <span>大学:</span>
+                  <span class="pl-2">{{ university }}</span>
                 </div>
-              </template>
-            </v-list>
-          </v-flex>
-        </div>
-        <!-- 基本情報 -->
-        <div>
-          <v-layout
-            align-center
-            justify-space-between
-            row
-            class="pt-5"
-          >
-            <v-flex xs8 sm10>
-              <v-card-title class="title font-weight-bold">基本情報</v-card-title>
+                <div v-if="faculty" class="pb-2">
+                  <span>学部:</span>
+                  <span class="pl-2">{{ faculty }}</span>
+                </div>
+                <div v-if="department" class="pb-2">
+                  <span>学科:</span>
+                  <span class="pl-2">{{ department }}</span>
+                </div>
+                <div class="pb-2">
+                  <span>生年月日:</span>
+                  <span class="pl-2">{{ birthDate }}</span>
+                </div>
+              </v-list>
             </v-flex>
-          </v-layout>
-          <v-flex xs12 sm10>
-            <v-divider></v-divider>
-          </v-flex>
-          <v-flex xs12 sm10 class="break">
-            <!-- 基本情報の表示 -->
-            <v-list class="pl-4">
-              <div v-if="university" class="pb-2">
-                <span>大学:</span>
-                <span class="pl-2">{{ university }}</span>
-              </div>
-              <div v-if="faculty" class="pb-2">
-                <span>学部:</span>
-                <span class="pl-2">{{ faculty }}</span>
-              </div>
-              <div v-if="department" class="pb-2">
-                <span>学科:</span>
-                <span class="pl-2">{{ department }}</span>
-              </div>
-              <div class="pb-2">
-                <span>生年月日:</span>
-                <span class="pl-2">{{ birthDate }}</span>
-              </div>
-            </v-list>
-          </v-flex>
+          </div>
         </div>
-      </div>
-      <v-card v-if="type == 'recruiter'" class="text-xs-right py-2">
+        <v-card v-if="type == 'recruiter'" class="text-xs-right py-2 pr-2">
           <v-btn
             large
-            :disabled="companyId == null || scouted"
+            :disabled="companyId == null || isCandidate"
             class="warning"
             id="user-scout"
             @click="scoutDialogButtonClicked"
           >
-            <span v-if="!scouted" class="font-weight-bold">
+            <span class="font-weight-bold">
               スカウトを送る
             </span>
-            <span v-else class="font-weight-bold">
-              スカウト済み
-            </span>
           </v-btn>
-      </v-card>
-      <!-- scout dialog -->
-      <div class="text-xs-center">
-        <v-dialog
-          v-model="scoutDialog"
-          :fullscreen="$vuetify.breakpoint.xsOnly"
-          width="500"
-        >
-          <v-card class="pt-5 pb-3 px-3">
-            <v-toolbar flat color="white hidden-sm-and-up">
-              <v-toolbar-side-icon
-                @click="dialog=false"
-              ></v-toolbar-side-icon>
-            </v-toolbar>
-            <v-flex
-              xs12
-              class="text-xs-center"
-              :class="{'px-2': $vuetify.breakpoint.smAndUp, 'px-3 mt-4': $vuetify.breakpoint.xsOnly}"
-            >
-              <!-- フォーム -->
-                <v-form v-model="valid">
-                  <v-container>
-                    <v-layout
-                      column
-                      justify-center
-                    >
-                      <v-flex xs12>
-                        <!-- メールアドレス -->
-                        <v-textarea
-                          v-model="message"
-                          :rules="messageRules"
-                          label="メッセージ"
-                          solo
-                          required
-                        ></v-textarea>
-                      </v-flex>
-                      <!-- ログインボタン -->
-                      <v-btn
-                        block
-                        :disabled="!valid || !companyId"
-                        class="orange darken-1"
-                        @click="scoutButtonClicked"
+        </v-card>
+        <!-- scout dialog -->
+        <div class="text-xs-center">
+          <v-dialog
+            v-model="scoutDialog"
+            :fullscreen="$vuetify.breakpoint.xsOnly"
+            width="500"
+          >
+            <v-card class="pt-5 pb-3 px-3">
+              <v-toolbar flat color="white hidden-sm-and-up">
+                <v-toolbar-side-icon
+                  @click="dialog=false"
+                ></v-toolbar-side-icon>
+              </v-toolbar>
+              <v-flex
+                xs12
+                class="text-xs-center"
+                :class="{'px-2': $vuetify.breakpoint.smAndUp, 'px-3 mt-4': $vuetify.breakpoint.xsOnly}"
+              >
+                <!-- フォーム -->
+                  <v-form v-model="valid">
+                    <v-container>
+                      <v-layout
+                        column
+                        justify-center
                       >
-                        <span
-                          class="font-weight-bold body-1"
-                          style="color: #ffffff;"
+                        <v-flex xs12>
+                          <!-- メールアドレス -->
+                          <v-textarea
+                            v-model="message"
+                            :rules="messageRules"
+                            label="メッセージ"
+                            solo
+                            required
+                          ></v-textarea>
+                        </v-flex>
+                        <!-- ログインボタン -->
+                        <v-btn
+                          block
+                          :disabled="!valid || !companyId"
+                          class="orange darken-1"
+                          @click="scoutButtonClicked"
                         >
-                          スカウトを送信
-                        </span>
-                      </v-btn>
-                    </v-layout>
-                  </v-container>
-                </v-form>
-            </v-flex>
-          </v-card>
-        </v-dialog>
+                          <span
+                            class="font-weight-bold body-1"
+                            style="color: #ffffff;"
+                          >
+                            スカウトを送信
+                          </span>
+                        </v-btn>
+                      </v-layout>
+                    </v-container>
+                  </v-form>
+              </v-flex>
+            </v-card>
+          </v-dialog>
+        </div>
+      </v-flex>
+    </v-flex>
+    <v-flex v-else>
+      <div class="text-xs-center">
+        <v-progress-circular
+         :size="50"
+         color="primary"
+         indeterminate
+       ></v-progress-circular>
       </div>
     </v-flex>
   </v-layout>
@@ -351,9 +359,6 @@ export default {
     ],
   }),
   computed: {
-    scouted() {
-      return this.scouts != null && this.scouts.companies.includes(this.companyId)
-    },
     name: function() {
       if (this.userLastName && this.userFirstName) {
         return this.userLastName + ' ' + this.userFirstName
@@ -395,16 +400,24 @@ export default {
       department: state => state.user.department,
       birthTimestamp: state => state.user.birthTimestamp,
       desiredOccupations: state => state.user.desiredOccupations,
-      scouts: state => state.user.scouts,
+      isCandidate: state => state.user.isCandidate,
+      isLoading: state => state.user.isLoading,
     }),
   },
   mounted() {
-    auth.onAuthStateChanged((user) => {
-      if (user && this.params.id) {
+    if (this.companyId != null && !this.isQueried) {
+      this.resetState()
+      this.queryUser({uid: this.params.id, companyId: this.companyId})
+    }
+  },
+  watch: {
+    companyId(companyId) {
+      if (companyId != null) {
+        this.isQueried = true
         this.resetState()
-        this.queryUser(this.params.id)
+        this.queryUser({uid: this.params.id, companyId: companyId})
       }
-    })
+    }
   },
   methods: {
     scoutDialogButtonClicked() {

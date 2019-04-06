@@ -66,7 +66,6 @@ export const actions = {
         .get()
         .then(function(snapshot) {
           var docCount = 0
-          console.log('add initial message');
           snapshot.forEach(function(doc) {
             docCount += 1
             const message = {

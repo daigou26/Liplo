@@ -139,10 +139,12 @@ export const mutations = {
 export const actions = {
   queryProfile({commit}, uid) {
     // profile情報取得
+    console.log('uid', uid);
     firestore.collection('users').doc(uid).collection('profile').doc(uid)
       .get()
       .then(function(doc) {
         if (doc.exists) {
+          console.log(doc.data());
           commit('setPosition', doc.data()['position'])
           commit('setFirstName', doc.data()['firstName'])
           commit('setLastName', doc.data()['lastName'])

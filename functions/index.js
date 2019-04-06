@@ -6,14 +6,148 @@ admin.initializeApp()
 // recruiterがスカウトした時の処理
 exports.scoutUser = functions.region('asia-northeast1')
   .firestore
-  .document('companies/{companyId}/scoutedUsers/{scoutedUserId}')
+  .document('companies/{companyId}/candidates/{candidateId}')
   .onCreate((snap, context) => {
     const user = snap.data().user
     const pic = snap.data().pic
     const message = snap.data().message
-    const scoutedAt = snap.data().scoutedAt
+    const createdAt = snap.data().createdAt
     const companyId = context.params.companyId
 
+    // company の応募者数の更新、応募者の情報格納, スカウトメッセージ送信
+    return admin.firestore()
+      .collection('companies').doc(companyId)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          const companyName = doc.data().name
+          const companyImageUrl = doc.data().imageUrl
+          var currentCandidates = doc.data().currentCandidates
+          var allCandidates = doc.data().allCandidates
+          // 処理が完了したかのフラグ
+          var isUpdatedCandidates = false
+          var isSendedMessage = false
+
+          // company の応募者数の更新、応募者の情報格納
+          if (currentCandidates) {
+            currentCandidates.scout += 1
+          } else {
+            currentCandidates = {
+              scout: 1,
+              inbox: 0,
+              inProcess: 0,
+              intern: 0,
+              extendedIntern: 0,
+              hired: 0
+            }
+          }
+
+          const initialValue = {
+            all: 0,
+            scout: 0,
+            application: 0,
+          }
+          if (allCandidates) {
+            allCandidates.scout += 1
+          } else {
+            allCandidates = {
+              scout: 1,
+              inbox: 0,
+              inProcess: initialValue,
+              intern: initialValue,
+              extendedIntern: initialValue,
+              hired: initialValue,
+              rejected: initialValue,
+            }
+          }
+
+          const batch = admin.firestore().batch()
+          const companyRef = admin.firestore().collection('companies').doc(companyId)
+          batch.update(companyRef, {
+            currentCandidates: currentCandidates,
+            allCandidates: allCandidates,
+          })
+          const companyScoutedUsersRef = admin.firestore().collection('companies').doc(companyId).collection('scoutedUsers').doc()
+          batch.set(companyScoutedUsersRef, {
+            user: user,
+            createdAt: createdAt,
+          })
+          batch.commit()
+            .then(() => {
+              isUpdatedCandidates = true
+              if (isUpdatedCandidates && isSendedMessage) {
+                console.log('scoutUser completed.')
+              }
+            })
+            .catch((error) => {
+              console.error("Error adding document: ", error)
+            })
+
+          // chatにスカウト メッセージを送信(chatがなければ作成)
+          admin.firestore()
+            .collection('chats')
+            .where('companyId', '==', companyId)
+            .where('uid', '==', user.uid)
+            .get()
+            .then(function(snapshot) {
+              if (!snapshot.empty) {
+                admin.firestore().collection('chats').doc(chatDoc.id)
+                  .collection('messages')
+                  .add({
+                    pic: pic,
+                    message: message,
+                    createdAt: scoutedAt,
+                  })
+                  .then(() => {
+                    isSendedMessage = true
+                    if (isUpdatedCandidates && isSendedMessage) {
+                      console.log('scoutUser completed.')
+                    }
+                  })
+                  .catch((error) => {
+                    console.error("Error adding document: ", error)
+                  })
+              } else {
+                const chatId = admin.firestore().collection('chats').doc().id
+                const batch = admin.firestore().batch()
+                const chatsRef = admin.firestore().collection('chats').doc(chatId)
+                batch.set(chatsRef, {
+                  uid: user.uid,
+                  profileImageUrl: user.imageUrl,
+                  userName: user.name,
+                  companyId: companyId,
+                  companyImageUrl: companyImageUrl,
+                  companyName: companyName,
+                  lastMessage: message,
+                  updatedAt: createdAt,
+                })
+                const messagesRef = admin.firestore().collection('chats').doc(chatId)
+                  .collection('messages').doc()
+                batch.set(messagesRef, {
+                  pic: pic,
+                  message: message,
+                  createdAt: createdAt,
+                })
+                batch.commit()
+                  .then(() => {
+                    isSendedMessage = true
+                    if (isUpdatedCandidates && isSendedMessage) {
+                      console.log('scoutUser completed.')
+                    }
+                  })
+                  .catch((error) => {
+                    console.error("Error adding document: ", error)
+                  })
+              }
+            })
+            .catch(err => {
+              console.log('Error getting document', err)
+            })
+        }
+      })
+      .catch(err => {
+        console.log('Error getting document', err)
+      })
     return admin.firestore()
       .collection('users').doc(user.uid)
       .collection('detail').doc(user.uid)
@@ -621,37 +755,23 @@ exports.applyForJob = functions.region('asia-northeast1')
             }
           }
 
+          const initialValue = {
+            all: 0,
+            scout: 0,
+            application: 0,
+          }
+
           if (allCandidates) {
             allCandidates.inbox += 1
           } else {
             allCandidates = {
               scout: 0,
               inbox: 1,
-              inProcess: {
-                all: 0,
-                scout: 0,
-                application: 0,
-              },
-              intern: {
-                all: 0,
-                scout: 0,
-                application: 0,
-              },
-              extendedIntern: {
-                all: 0,
-                scout: 0,
-                application: 0,
-              },
-              hired: {
-                all: 0,
-                scout: 0,
-                application: 0,
-              },
-              rejected: {
-                all: 0,
-                scout: 0,
-                application: 0,
-              },
+              inProcess: initialValue,
+              intern: initialValue,
+              extendedIntern: initialValue,
+              hired: initialValue,
+              rejected: initialValue,
             }
           }
 

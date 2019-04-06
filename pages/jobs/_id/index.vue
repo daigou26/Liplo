@@ -5,7 +5,7 @@
     align-center
     wrap
   >
-    <div v-if="!isLoading" :style="'width: ' + windowWidth + 'px'">
+    <v-flex xs12 v-if="!isLoading">
       <v-flex>
         <v-img
           :src="imageUrl"
@@ -471,7 +471,7 @@
           </v-card>
         </v-dialog>
       </div>
-    </div>
+    </v-flex>
     <v-flex v-else>
       <div class="text-xs-center">
         <v-progress-circular
@@ -489,7 +489,6 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   data: () => ({
-    windowWidth: 0,
     isQueried: false,
     reviewsDialog: false,
     reviewChartOptions: {
@@ -567,7 +566,6 @@ export default {
     }),
   },
   mounted() {
-    this.windowWidth = window.innerWidth
     this.showChart = true
 
     if (this.uid != null && !this.isQueried) {
