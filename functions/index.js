@@ -588,47 +588,91 @@ exports.acceptJobOffer = functions.region('asia-northeast1')
 // ユーザーが応募した時の処理
 exports.applyForJob = functions.region('asia-northeast1')
   .firestore
-  .document('companies/{companyId}/applicants/{applicantId}')
+  .document('companies/{companyId}/candidates/{candidateId}')
   .onCreate((snap, context) => {
-    const uid = snap.data().uid
+    if (snap.data().status.inbox == false) {
+      return 0
+    }
+    const companyId = context.params.companyId
+    const uid = snap.data().user.uid
+    const user = snap.data().user
     const jobId = snap.data().jobId
+    const createdAt = snap.data().createdAt
 
-    // 求人詳細に応募数とuidを格納
+    // company の応募者数の更新、応募者の情報格納
     return admin.firestore()
-      .collection('jobs').doc(jobId)
-      .collection('detail').doc(jobId)
+      .collection('companies').doc(companyId)
       .get()
       .then(doc => {
         if (doc.exists) {
-          let count
-          let users
-          let applicants
+          var currentCandidates = doc.data().currentCandidates
+          var allCandidates = doc.data().allCandidates
 
-          if (doc.data().applicants) {
-            count = doc.data().applicants.count
-            users = doc.data().applicants.users
-            users.push(uid)
+          if (currentCandidates) {
+            currentCandidates.inbox += 1
           } else {
-            count = 0
-            users = [uid]
+            currentCandidates = {
+              scout: 0,
+              inbox: 1,
+              inProcess: 0,
+              intern: 0,
+              extendedIntern: 0,
+              hired: 0
+            }
           }
 
-          applicants = {
-            count: count + 1,
-            users: users
+          if (allCandidates) {
+            allCandidates.inbox += 1
+          } else {
+            allCandidates = {
+              scout: 0,
+              inbox: 1,
+              inProcess: {
+                all: 0,
+                scout: 0,
+                application: 0,
+              },
+              intern: {
+                all: 0,
+                scout: 0,
+                application: 0,
+              },
+              extendedIntern: {
+                all: 0,
+                scout: 0,
+                application: 0,
+              },
+              hired: {
+                all: 0,
+                scout: 0,
+                application: 0,
+              },
+              rejected: {
+                all: 0,
+                scout: 0,
+                application: 0,
+              },
+            }
           }
 
-          admin.firestore()
-            .collection('jobs').doc(jobId)
-            .collection('detail').doc(jobId)
-            .update({
-              applicants: applicants
-            })
+          const batch = admin.firestore().batch()
+          const companyRef = admin.firestore().collection('companies').doc(companyId)
+          batch.update(companyRef, {
+            currentCandidates: currentCandidates,
+            allCandidates: allCandidates,
+          })
+          const companyApplicantsRef = admin.firestore().collection('companies').doc(companyId).collection('applicants').doc()
+          batch.set(companyApplicantsRef, {
+            user: user,
+            createdAt: createdAt,
+            jobId: jobId
+          })
+          batch.commit()
             .then(() => {
               console.log('applyForJob completed.')
             })
-            .catch(err => {
-              console.log('Error getting document', err)
+            .catch((error) => {
+              console.error("Error adding document: ", error)
             })
         }
       })

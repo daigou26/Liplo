@@ -29,9 +29,10 @@ export const state = () => ({
   features: '',
   field: '',
   createdAt: '',
-  applicants: null,
   reviews: null,
   reviewChartData: null,
+  isCandidate: false,
+  isLoading: true,
 })
 
 export const mutations = {
@@ -116,27 +117,34 @@ export const mutations = {
   setCreatedAt(state, createdAt) {
     state.createdAt = createdAt
   },
-  setApplicants(state, applicants) {
-    state.applicants = applicants
-  },
   setReviews(state, reviews) {
     state.reviews = reviews
   },
   setReviewChartData(state, data) {
     state.reviewChartData = data
   },
+  updateIsCandidate(state, isCandidate) {
+    state.isCandidate = isCandidate
+  },
+  updateIsLoading(state, isLoading) {
+    state.isLoading = isLoading
+  },
 }
 
 export const actions = {
-  queryJobDetail({commit}, {nuxt, params}) {
+  queryJobDetail({commit}, {nuxt, params, uid}) {
     const jobId = params.id
     if (jobId != null && jobId != '') {
       firestore.collection('jobs').doc(jobId).collection('detail').doc(jobId).get()
         .then(function(doc) {
           if (doc.exists) {
+            var isQueriedCompanyDetail = false
+            var isQueriedCandidates = false
+            const companyId = doc.data()['companyId']
+
             commit('setImageUrl', doc.data()['imageUrl'])
             commit('setTitle', doc.data()['title'])
-            commit('setCompanyId', doc.data()['companyId'])
+            commit('setCompanyId', companyId)
             commit('setCompanyName', doc.data()['companyName'])
             commit('setCompanyImageUrl', doc.data()['companyImageUrl'])
             commit('setMission', doc.data()['mission'] ? doc.data()['mission'] : null)
@@ -157,51 +165,90 @@ export const actions = {
             commit('setPeriod', doc.data()['period'])
             commit('setWorkday', doc.data()['workday'])
             commit('setIdealCandidate', doc.data()['idealCandidate'])
-            // commit('setOccupation', doc.data()['occupation'])
+            commit('setOccupation', doc.data()['occupation'])
             // commit('setFeatures', doc.data()['features'])
             commit('setCreatedAt', doc.data()['createdAt'])
-            commit('setApplicants', doc.data()['applicants'])
-            // commit('setReviews', doc.data()['reviews'])
 
+            // レビュー情報取得
             firestore.collection('companies')
-              .doc(doc.data()['companyId'])
+              .doc(companyId)
               .collection('detail')
-              .doc(doc.data()['companyId'])
+              .doc(companyId)
               .get()
               .then(function(companyDoc) {
                 if (companyDoc.exists) {
                   commit('setReviews', companyDoc.data()['reviews'])
                   // chart Data
                   const reviews = companyDoc.data()['reviews']
-                  const reviewChartData = {
-                    labels: [
-                      '成長できるか',
-                      '仕事内容',
-                      '裁量度',
-                      '勤務中の自由度',
-                      '出勤時間の柔軟性',
-                      'メンター',
-                      '雰囲気',
-                    ],
-                    datasets: [
-                      {
-                        borderColor: '#f87979',
-                        backgroundColor: 'rgba(248, 121, 121, 0.1)',
-                        data: [
-                          reviews.rating.growth,
-                          reviews.rating.job,
-                          reviews.rating.discretion,
-                          reviews.rating.flexibility,
-                          reviews.rating.flexibleSchedule,
-                          reviews.rating.mentor,
-                          reviews.rating.atmosphere
-                        ]
-                      }
-                    ]
+                  if (reviews) {
+                    const reviewChartData = {
+                      labels: [
+                        '成長できるか',
+                        '仕事内容',
+                        '裁量度',
+                        '勤務中の自由度',
+                        '出勤時間の柔軟性',
+                        'メンター',
+                        '雰囲気',
+                      ],
+                      datasets: [
+                        {
+                          borderColor: '#f87979',
+                          backgroundColor: 'rgba(248, 121, 121, 0.1)',
+                          data: [
+                            reviews.rating.growth,
+                            reviews.rating.job,
+                            reviews.rating.discretion,
+                            reviews.rating.flexibility,
+                            reviews.rating.flexibleSchedule,
+                            reviews.rating.mentor,
+                            reviews.rating.atmosphere
+                          ]
+                        }
+                      ]
+                    }
+                    commit('setReviewChartData', reviewChartData)
                   }
-                  commit('setReviewChartData', reviewChartData)
+
+                  isQueriedCompanyDetail = true
+                  if (isQueriedCandidates && isQueriedCompanyDetail) {
+                    commit('updateIsLoading', false)
+                  }
                 }
               })
+              .catch(function(error) {
+                console.log("Error getting document:", error)
+                isQueriedCompanyDetail = true
+                if (isQueriedCandidates && isQueriedCompanyDetail) {
+                  commit('updateIsLoading', false)
+                }
+              })
+              // すでに候補者になっているか
+              firestore.collection('companies')
+                .doc(companyId)
+                .collection('candidates')
+                .where('user.uid', '==', uid)
+                .where('status.rejected', '==', false)
+                .get()
+                .then(function(snapshot) {
+                  if (snapshot.empty) {
+                    commit('updateIsCandidate', false)
+                  } else {
+                    commit('updateIsCandidate', true)
+                  }
+
+                  isQueriedCandidates = true
+                  if (isQueriedCandidates && isQueriedCompanyDetail) {
+                    commit('updateIsLoading', false)
+                  }
+                })
+                .catch(function(error) {
+                  console.log("Error getting document:", error)
+                  isQueriedCandidates = true
+                  if (isQueriedCandidates && isQueriedCompanyDetail) {
+                    commit('updateIsLoading', false)
+                  }
+                })
           } else {
             // 404
             console.log('404')
@@ -220,27 +267,32 @@ export const actions = {
   },
   apply({commit, state},{params, uid, imageUrl, firstName, lastName, companyId}) {
     const jobId = params.id
-    var applicants = state.applicants
+    const user = {
+      uid: uid,
+      name: lastName + ' ' + firstName,
+      imageUrl: imageUrl
+    }
+    const status = {
+      scouted: false,
+      inbox: true,
+      inProcess: false,
+      intern: false,
+      extendedIntern: false,
+      pass: false,
+      hired: false,
+      rejected: false,
+    }
 
     firestore.collection('companies').doc(companyId)
-      .collection('applicants')
+      .collection('candidates')
       .add({
-        uid: uid,
+        user: user,
         jobId: jobId,
-        imageUrl: imageUrl,
-        name: lastName + ' ' + firstName,
+        status: status,
+        createdAt: new Date()
       })
       .then(() => {
-        if (applicants) {
-          applicants.count += 1
-          applicants.users.push(uid)
-        } else {
-          applicants = {
-            count: 1,
-            users: [uid]
-          }
-        }
-        commit('setApplicants', applicants)
+        commit('updateIsCandidate', true)
       })
       .catch((error) => {
         console.error("Error adding document: ", error)
