@@ -1,16 +1,13 @@
 <template>
-  <v-layout
-    white
-  >
+  <v-layout>
     <v-flex xs12 v-if="!isLoading">
       <v-layout
         row
         white
         wrap
-        align-start
-        align-content-start
+        fill-height
       >
-      <v-flex xs12>
+      <!-- <v-flex xs12>
         <v-card flat>
           <v-card-actions>
             <v-list-tile>
@@ -28,12 +25,26 @@
             </v-list-tile>
           </v-card-actions>
         </v-card>
-        <v-divider></v-divider>
-      </v-flex>
+      </v-flex> -->
       <v-flex md6 hidden-sm-and-down>
         <div>
+          <v-card flat class="pt-2">
+            <v-list-tile two-line>
+              <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
+                <v-img
+                  v-if="user"
+                  :src="user.imageUrl"
+                ></v-img>
+              </v-list-tile-avatar>
+              <v-list-tile-content>
+                <v-list-tile-title class="title textColor font-weight-bold">
+                  {{ user.name }}
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-card>
           <!-- タグ -->
-          <v-flex class="px-3 break text-xs-left">
+          <v-flex class="px-3 pt-3 break text-xs-left">
             <span class="textColor font-weight-bold">
               タグ
             </span>
@@ -89,7 +100,7 @@
           </v-form>
         </div>
       </v-flex>
-      <v-flex md6 xs12 class="border">
+      <v-flex md6 xs12 class="border-left">
         <v-tabs>
           <v-tab
             v-for="item in tabItems"
@@ -123,7 +134,7 @@
                 <v-flex v-if="!isEditingTags" class="px-3 break text-xs-left">
                   <v-chip v-if="tags && tags.length > 0" v-for="tag in tags" :key="tag">{{ tag }}</v-chip>
                   <div v-if="tags == null || tags.length == 0">
-                    タグは設定されていません
+                    タグは設定されていません。タグには、候補者の職種や役職を指定してください。(複数可)
                   </div>
                 </v-flex>
                 <!-- タグ編集 -->
@@ -266,6 +277,10 @@
                   更新
                 </v-btn>
               </div>
+            </v-card>
+            <!-- messages -->
+            <v-card v-if="item.value == 'messages' && status" flat>
+
             </v-card>
           </v-tab-item>
         </v-tabs>

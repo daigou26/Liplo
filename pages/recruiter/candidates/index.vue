@@ -73,7 +73,6 @@ export default {
   data() {
     return {
       count: 0,
-      windowHeight: 0,
       showInfiniteLoading: false,
       isQueried: false,
       headers: [
@@ -107,13 +106,6 @@ export default {
     }),
   },
   mounted() {
-    let toolbarHeight
-    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
-      toolbarHeight = 48
-    } else {
-      toolbarHeight = 64
-    }
-    this.windowHeight = window.innerHeight - toolbarHeight
     this.showInfiniteLoading = true
 
     if (this.companyId != null && !this.isQueried) {

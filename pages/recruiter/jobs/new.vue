@@ -3,8 +3,6 @@
     row
     white
     wrap
-    align-start
-    align-content-start
   >
     <v-flex xs12 sm8 offset-sm2>
       <div class="title font-weight-bold py-3">

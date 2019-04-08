@@ -3,8 +3,6 @@
     row
     white
     wrap
-    align-start
-    align-content-start
   >
     <v-flex xs12 v-if="!isLoading">
       <v-flex xs12 class="break">

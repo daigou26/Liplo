@@ -2,10 +2,7 @@
   <v-layout
     row
     white
-    align-start
-    align-content-start
     wrap
-    :style="{ height: windowHeight + 'px' }"
   >
     <template v-for="(item, index) in items">
       <v-flex
@@ -127,7 +124,6 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
-      windowHeight: 0,
       isQueried: false,
       items: [
         {
@@ -183,13 +179,6 @@ export default {
     }),
   },
   mounted() {
-    let toolbarHeight
-    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
-      toolbarHeight = 48
-    } else {
-      toolbarHeight = 64
-    }
-    this.windowHeight = window.innerHeight - toolbarHeight
     this.showChart = true
 
     if (this.companyId != null && !this.isQueried) {

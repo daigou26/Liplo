@@ -2,21 +2,17 @@
   <v-layout
     white
     row
-    align-center
     wrap
-    :style="{ height: windowHeight + 'px' }"
   >
     <v-flex
       xs12
       md10
       offset-md1
       class="break"
-      style="height: 100%"
     >
       <v-layout
         row
         wrap
-        style="height: 100%"
       >
         <!-- chat lists (lg, md)-->
         <v-flex
@@ -363,15 +359,15 @@ export default {
     } else {
       toolbarHeight = 64
     }
-    this.windowHeight = window.innerHeight - toolbarHeight
+    const windowHeight = window.innerHeight - toolbarHeight
 
     if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
-      this.chatsHeight = this.windowHeight - 40
+      this.chatsHeight = windowHeight - 40
     } else {
-      this.chatsHeight = this.windowHeight * 2 / 3
+      this.chatsHeight = windowHeight * 2 / 3
     }
     // companyName section = 48  userInput section = 63
-    this.messagesHeight = this.windowHeight - 48 - 63 - 20
+    this.messagesHeight = windowHeight - 48 - 63 - 20
     // 最新のメッセージが表示されるようにscrollTopを設定
     // this.$refs.messageScroll.scrollTop = this.$refs.messageScroll.scrollHeight
 

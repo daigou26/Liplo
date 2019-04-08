@@ -2,21 +2,17 @@
   <v-layout
     white
     row
-    align-center
     wrap
-    :style="{ height: windowHeight + 'px' }"
   >
     <v-flex
       xs12
       md10
       offset-md1
       class="break"
-      style="height: 100%"
     >
       <v-layout
         row
         wrap
-        style="height: 100%"
       >
         <!-- menu (lg, md)-->
         <v-flex
@@ -86,7 +82,6 @@ export default {
       'feedbacks',
       'reviews'
     ],
-    windowHeight: 0,
   }),
   computed: {
     path() {
@@ -101,14 +96,6 @@ export default {
     }),
   },
   mounted() {
-    let toolbarHeight
-    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
-      toolbarHeight = 48
-    } else {
-      toolbarHeight = 64
-    }
-    this.windowHeight = window.innerHeight - toolbarHeight
-
     auth.onAuthStateChanged((user) => {
       if (user) {
         this.queryCareer(user.uid)

@@ -3,9 +3,6 @@
     row
     white
     wrap
-    align-start
-    align-content-start
-    :style="{ height: windowHeight + 'px' }"
   >
     <v-flex xs12 class="py-3 break">
       <!-- Profile画像 & UserName -->
@@ -276,7 +273,6 @@ import { firestore, auth, storage, storageRef } from '@/plugins/firebase'
 
 export default {
   data: () => ({
-    windowHeight: 0,
     imageFileSizeWarning: '2MB以下の画像を選択してください',
     selectedImageSize: 200,
     selectedImage: null,
@@ -328,14 +324,6 @@ export default {
     }),
   },
   mounted() {
-    let toolbarHeight
-    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
-      toolbarHeight = 48
-    } else {
-      toolbarHeight = 64
-    }
-    this.windowHeight = window.innerHeight - toolbarHeight
-
     auth.onAuthStateChanged((user) => {
       if (user) {
         this.queryProfile(user.uid)
