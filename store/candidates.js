@@ -29,18 +29,17 @@ export const actions = {
   queryCandidates({commit, state}, companyId) {
     const candidates = state.candidates
     if (candidates.length == 0) {
-      console.log('query', companyId);
       return firestore.collection('companies')
         .doc(companyId)
         .collection('candidates')
         .where('status.rejected', '==', false)
+        .where('status.hired', '==', false)
         .orderBy('createdAt', 'desc')
         .limit(10)
         .get()
         .then(function(snapshot) {
           var docCount = 0
           snapshot.forEach(function(doc) {
-            console.log(doc.data());
             docCount += 1
             let timestamp = doc.data()['updatedAt'] != null
               ? doc.data()['updatedAt']
@@ -81,6 +80,7 @@ export const actions = {
         .doc(companyId)
         .collection('candidates')
         .where('status.rejected', '==', false)
+        .where('status.hired', '==', false)
         .orderBy('createdAt', 'desc')
         .startAfter(lastDate)
         .limit(10)

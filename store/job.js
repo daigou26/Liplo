@@ -223,32 +223,32 @@ export const actions = {
                   commit('updateIsLoading', false)
                 }
               })
-              // すでに候補者になっているか
-              firestore.collection('companies')
-                .doc(companyId)
-                .collection('candidates')
-                .where('user.uid', '==', uid)
-                .where('status.rejected', '==', false)
-                .get()
-                .then(function(snapshot) {
-                  if (snapshot.empty) {
-                    commit('updateIsCandidate', false)
-                  } else {
-                    commit('updateIsCandidate', true)
-                  }
+            // すでに候補者になっているか
+            firestore.collection('companies')
+              .doc(companyId)
+              .collection('candidates')
+              .where('user.uid', '==', uid)
+              .where('status.rejected', '==', false)
+              .get()
+              .then(function(snapshot) {
+                if (snapshot.empty) {
+                  commit('updateIsCandidate', false)
+                } else {
+                  commit('updateIsCandidate', true)
+                }
 
-                  isQueriedCandidates = true
-                  if (isQueriedCandidates && isQueriedCompanyDetail) {
-                    commit('updateIsLoading', false)
-                  }
-                })
-                .catch(function(error) {
-                  console.log("Error getting document:", error)
-                  isQueriedCandidates = true
-                  if (isQueriedCandidates && isQueriedCompanyDetail) {
-                    commit('updateIsLoading', false)
-                  }
-                })
+                isQueriedCandidates = true
+                if (isQueriedCandidates && isQueriedCompanyDetail) {
+                  commit('updateIsLoading', false)
+                }
+              })
+              .catch(function(error) {
+                console.log("Error getting document:", error)
+                isQueriedCandidates = true
+                if (isQueriedCandidates && isQueriedCompanyDetail) {
+                  commit('updateIsLoading', false)
+                }
+              })
           } else {
             // 404
             console.log('404')
@@ -279,6 +279,7 @@ export const actions = {
       intern: false,
       extendedIntern: false,
       pass: false,
+      contracted: false,
       hired: false,
       rejected: false,
     }
@@ -289,7 +290,8 @@ export const actions = {
         user: user,
         jobId: jobId,
         status: status,
-        createdAt: new Date()
+        createdAt: new Date(),
+        type: 'application',
       })
       .then(() => {
         commit('updateIsCandidate', true)

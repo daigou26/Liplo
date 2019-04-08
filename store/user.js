@@ -134,18 +134,24 @@ export const actions = {
       intern: false,
       extendedIntern: false,
       pass: false,
+      contracted: false,
       hired: false,
       rejected: false,
+    }
+
+    const scout = {
+      pic: pic,
+      message: message,
     }
 
     firestore.collection('companies').doc(companyId)
       .collection('candidates')
       .add({
         user: user,
-        pic: pic,
-        message: message,
+        scout: scout,
         status: status,
-        createdAt: new Date()
+        createdAt: new Date(),
+        type: 'scout',
       })
       .then(() => {
         commit('updateIsCandidate', true)

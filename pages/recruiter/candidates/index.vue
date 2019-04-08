@@ -10,7 +10,7 @@
       hide-actions
     >
       <template v-slot:items="props">
-        <tr class="clickable" @click="">
+        <n-link class="clickable" tag="tr" :to="'/recruiter/candidates/' + props.item.candidateId">
           <td class="py-1">
             <v-avatar
               size="50"
@@ -31,7 +31,7 @@
             <span v-else-if="props.item.status.intern == true" class="font-weight-bold orange--text text--darken-1">インターン</span>
             <span v-else-if="props.item.status.extendedIntern == true" class="font-weight-bold orange--text text--darken-1">インターン延長</span>
             <span v-else-if="props.item.status.pass == true" class="font-weight-bold teal--text text--lighten-1">内定パス</span>
-            <span v-else-if="props.item.status.hired == true" class="font-weight-bold green--text text--lighten-1">入社予定(契約完了)</span>
+            <span v-else-if="props.item.status.contracted == true" class="font-weight-bold green--text text--lighten-1">入社予定(契約完了)</span>
           </td>
           <td class="text-xs-left">
             <v-rating
@@ -51,10 +51,10 @@
             </div>
           </td>
           <td class="text-xs-left">
-            <span>CEO, エンジニア, デザイナー</span>
+            <v-chip v-for="tag in props.item.tags" :key="tag">{{ tag }}</v-chip>
           </td>
           <td class="text-xs-left">{{ props.item.timestamp }}</td>
-        </tr>
+        </n-link>
       </template>
     </v-data-table>
     <infinite-loading

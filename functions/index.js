@@ -3,14 +3,265 @@ const admin = require('firebase-admin')
 admin.initializeApp()
 
 
+// 候補者のステータスが internから変わった時、フィードバックを送る処理
+exports.sendFeedback = functions.region('asia-northeast1')
+  .firestore
+  .document('companies/{companyId}/candidates/{candidateId}')
+  .onUpdate((change, context) => {
+    const newValue = change.after.data()
+    const previousValue = change.before.data()
+    if (newValue.status == previousValue.status) {
+      return 0
+    }
+    if (!previousValue.status.intern || newValue.feedback == null) {
+      return 0
+    }
+
+    const companyId = context.params.companyId
+    const feedback = newValue.feedback
+    const updatedAt = newValue.updatedAt
+    const user = newValue.user
+
+
+    return admin.firestore()
+      .collection('companies')
+      .doc(companyId)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          const companyName = doc.data().name
+          const companyImageUrl = doc.data().imageUrl
+
+          admin.firestore().collection('feedbacks')
+            .add({
+              uid: user.uid,
+              userName: user.name,
+              profileImageUrl: user.imageUrl,
+              companyId: companyId,
+              companyName: companyName,
+              companyImageUrl: companyImageUrl,
+              createdAt: updatedAt,
+              goodPoint: feedback.goodPoint,
+              advice: feedback.advice,
+            })
+            .then(() => {
+              console.log('sendFeedback completed.')
+            })
+            .catch((error) => {
+              console.error("Error adding document: ", error)
+            })
+        }
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error)
+      })
+  })
+
+// 候補者のステータスが pass になった時、内定パスを送る処理
+exports.sendPass = functions.region('asia-northeast1')
+  .firestore
+  .document('companies/{companyId}/candidates/{candidateId}')
+  .onUpdate((change, context) => {
+    const newValue = change.after.data()
+    const previousValue = change.before.data()
+    if (newValue.status == previousValue.status) {
+      return 0
+    }
+    if (previousValue.status.pass || !newValue.status.pass) {
+      return 0
+    }
+
+    const companyId = context.params.companyId
+    const pass = newValue.pass
+    const updatedAt = newValue.updatedAt
+    const user = newValue.user
+
+
+    return admin.firestore()
+      .collection('companies')
+      .doc(companyId)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          const companyName = doc.data().name
+          const companyImageUrl = doc.data().imageUrl
+
+          admin.firestore().collection('passes')
+            .add({
+              uid: user.uid,
+              userName: user.name,
+              profileImageUrl: user.imageUrl,
+              companyId: companyId,
+              companyName: companyName,
+              companyImageUrl: companyImageUrl,
+              createdAt: updatedAt,
+              expirationDate: pass.expirationDate,
+              occupation: pass.occupation,
+              picMessage: pass.message,
+              pic: pass.pic,
+              isAccepted: false,
+              isContracted: false,
+              isValid: true,
+            })
+            .then(() => {
+              console.log('sendPass completed.')
+            })
+            .catch((error) => {
+              console.error("Error adding document: ", error)
+            })
+        }
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error)
+      })
+  })
+
+// 候補者のステータスが変更した時、候補者数を更新する処理
+exports.updateCandidatesCount = functions.region('asia-northeast1')
+  .firestore
+  .document('companies/{companyId}/candidates/{candidateId}')
+  .onUpdate((change, context) => {
+    const newValue = change.after.data()
+    const previousValue = change.before.data()
+    const beforeStatus = previousValue.status
+    const newStatus = newValue.status
+
+    // ステータス変化なし
+    if (
+      newStatus.scouted == beforeStatus.scouted &&
+      newStatus.inbox == beforeStatus.inbox &&
+      newStatus.inProcess == beforeStatus.inProcess &&
+      newStatus.intern == beforeStatus.intern &&
+      newStatus.extendedIntern == beforeStatus.extendedIntern &&
+      newStatus.pass == beforeStatus.pass &&
+      newStatus.contracted == beforeStatus.contracted &&
+      newStatus.hired == beforeStatus.hired &&
+      newStatus.rejected == beforeStatus.rejected
+    ) {
+      return 0
+    }
+
+    if (newValue.status.scouted == true || newValue.status.inbox == true ||
+      previousValue.status.rejected == true || previousValue.status.hired == true) {
+      return 0
+    }
+
+    const companyId = context.params.companyId
+    const candidateId = context.params.candidateId
+    const type = newValue.type
+
+    return admin.firestore()
+      .collection('companies')
+      .doc(companyId)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          var currentCandidates = doc.data().currentCandidates
+          var allCandidates = doc.data().allCandidates
+
+          if (beforeStatus.scouted) {
+            currentCandidates.scouted -= 1
+          } else if (beforeStatus.inbox) {
+            currentCandidates.inbox -= 1
+          } else if (beforeStatus.inProcess) {
+            currentCandidates.inProcess -= 1
+          } else if (beforeStatus.intern) {
+            currentCandidates.intern -= 1
+          } else if (beforeStatus.extendedIntern) {
+            currentCandidates.extendedIntern -= 1
+          } else if (beforeStatus.pass) {
+            currentCandidates.pass -= 1
+          } else if (beforeStatus.contracted) {
+            currentCandidates.contracted -= 1
+          }
+
+          if (newStatus.inProcess) {
+            currentCandidates.inProcess += 1
+            allCandidates.inProcess.all += 1
+            if (type == 'scout') {
+              allCandidates.inProcess.scout += 1
+            } else {
+              allCandidates.inProcess.application += 1
+            }
+          } else if (newStatus.intern) {
+            currentCandidates.intern += 1
+            allCandidates.intern.all += 1
+            if (type == 'scout') {
+              allCandidates.intern.scout += 1
+            } else {
+              allCandidates.intern.application += 1
+            }
+          } else if (newStatus.extendedIntern) {
+            currentCandidates.extendedIntern += 1
+            allCandidates.extendedIntern.all += 1
+            if (type == 'scout') {
+              allCandidates.extendedIntern.scout += 1
+            } else {
+              allCandidates.extendedIntern.application += 1
+            }
+          } else if (newStatus.pass) {
+            currentCandidates.pass += 1
+            allCandidates.pass.all += 1
+            if (type == 'scout') {
+              allCandidates.pass.scout += 1
+            } else {
+              allCandidates.pass.application += 1
+            }
+          }  else if (newStatus.contracted) {
+            currentCandidates.contracted += 1
+            allCandidates.contracted.all += 1
+            if (type == 'scout') {
+              allCandidates.contracted.scout += 1
+            } else {
+              allCandidates.contracted.application += 1
+            }
+          } else if (newStatus.hired) {
+            currentCandidates.hired += 1
+            allCandidates.hired.all += 1
+            if (type == 'scout') {
+              allCandidates.hired.scout += 1
+            } else {
+              allCandidates.hired.application += 1
+            }
+          } else if (newStatus.rejected) {
+            allCandidates.rejected.all += 1
+            if (type == 'scout') {
+              allCandidates.rejected.scout += 1
+            } else {
+              allCandidates.rejected.application += 1
+            }
+          }
+
+          admin.firestore().collection('companies')
+            .doc(companyId)
+            .update({
+              currentCandidates: currentCandidates,
+              allCandidates: allCandidates
+            })
+            .then(() => {
+              console.log('updateCandidatesCount completed.')
+            })
+            .catch((error) => {
+              console.error("Error adding document: ", error)
+            })
+        }
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error)
+      })
+  })
+
 // recruiterがスカウトした時の処理
 exports.scoutUser = functions.region('asia-northeast1')
   .firestore
   .document('companies/{companyId}/candidates/{candidateId}')
   .onCreate((snap, context) => {
+    if (snap.data().status.scouted == false) {
+      return 0
+    }
     const user = snap.data().user
-    const pic = snap.data().pic
-    const message = snap.data().message
+    const pic = snap.data().scout.pic
+    const message = snap.data().scout.message
     const createdAt = snap.data().createdAt
     const companyId = context.params.companyId
 
@@ -38,6 +289,8 @@ exports.scoutUser = functions.region('asia-northeast1')
               inProcess: 0,
               intern: 0,
               extendedIntern: 0,
+              pass: 0,
+              contracted: 0,
               hired: 0
             }
           }
@@ -56,6 +309,8 @@ exports.scoutUser = functions.region('asia-northeast1')
               inProcess: initialValue,
               intern: initialValue,
               extendedIntern: initialValue,
+              pass :initialValue,
+              contracted: initialValue,
               hired: initialValue,
               rejected: initialValue,
             }
@@ -96,7 +351,8 @@ exports.scoutUser = functions.region('asia-northeast1')
                   .add({
                     pic: pic,
                     message: message,
-                    createdAt: scoutedAt,
+                    createdAt: createdAt,
+                    type: 'scout',
                   })
                   .then(() => {
                     isSendedMessage = true
@@ -127,6 +383,7 @@ exports.scoutUser = functions.region('asia-northeast1')
                   pic: pic,
                   message: message,
                   createdAt: createdAt,
+                  type: 'scout',
                 })
                 batch.commit()
                   .then(() => {
@@ -630,6 +887,8 @@ exports.applyForJob = functions.region('asia-northeast1')
               inProcess: 0,
               intern: 0,
               extendedIntern: 0,
+              pass: 0,
+              contracted: 0,
               hired: 0
             }
           }
@@ -649,6 +908,8 @@ exports.applyForJob = functions.region('asia-northeast1')
               inProcess: initialValue,
               intern: initialValue,
               extendedIntern: initialValue,
+              pass: initialValue,
+              contracted: initialValue,
               hired: initialValue,
               rejected: initialValue,
             }
