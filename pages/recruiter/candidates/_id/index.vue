@@ -5,11 +5,11 @@
         row
         white
         wrap
-        fill-height
+        :class="{'fill-height': $vuetify.breakpoint.mdAndUp}"
       >
-      <!-- <v-flex xs12>
+      <v-flex xs12 hidden-md-and-up>
         <v-card flat>
-          <v-card-actions>
+          <v-list two-line>
             <v-list-tile>
               <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
                 <v-img
@@ -21,27 +21,45 @@
                 <v-list-tile-title class="textColor font-weight-bold">
                   {{ user.name }}
                 </v-list-tile-title>
+                <v-list-tile-sub-title>
+                  <v-rating
+                    small
+                    half-increments
+                    readonly
+                    :value="reviews == null ? 0 : reviews.rating"
+                  />
+                </v-list-tile-sub-title>
               </v-list-tile-content>
             </v-list-tile>
-          </v-card-actions>
+          </v-list>
         </v-card>
-      </v-flex> -->
+      </v-flex>
       <v-flex md6 hidden-sm-and-down>
         <div>
-          <v-card flat class="pt-2">
-            <v-list-tile two-line>
-              <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
-                <v-img
-                  v-if="user"
-                  :src="user.imageUrl"
-                ></v-img>
-              </v-list-tile-avatar>
-              <v-list-tile-content>
-                <v-list-tile-title class="title textColor font-weight-bold">
-                  {{ user.name }}
-                </v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
+          <v-card flat>
+            <v-list two-line>
+              <v-list-tile>
+                <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
+                  <v-img
+                    v-if="user"
+                    :src="user.imageUrl"
+                  ></v-img>
+                </v-list-tile-avatar>
+                <v-list-tile-content>
+                  <v-list-tile-title class="textColor font-weight-bold">
+                    {{ user.name }}
+                  </v-list-tile-title>
+                  <v-list-tile-sub-title>
+                    <v-rating
+                      small
+                      half-increments
+                      readonly
+                      :value="reviews == null ? 0 : reviews.rating"
+                    />
+                  </v-list-tile-sub-title>
+                </v-list-tile-content>
+              </v-list-tile>
+            </v-list>
           </v-card>
           <!-- タグ -->
           <v-flex class="px-3 pt-3 break text-xs-left">
@@ -100,7 +118,11 @@
           </v-form>
         </div>
       </v-flex>
-      <v-flex md6 xs12 class="border-left">
+      <v-flex
+        md6
+        xs12
+        :class="{'border-left': $vuetify.breakpoint.mdAndUp}"
+      >
         <v-tabs>
           <v-tab
             v-for="item in tabItems"
@@ -111,10 +133,10 @@
           <v-tab-item
             v-for="item in tabItems"
             :key="item.value"
-            class="py-4 px-3"
+            class="mt-3"
           >
             <!-- summary -->
-            <v-card v-if="item.value == 'summary'" flat>
+            <div v-if="item.value == 'summary'" class="pa-3">
               <div>
                 <!-- タグ -->
                 <v-flex class="px-3 break text-xs-left">
@@ -172,9 +194,9 @@
                   </v-btn>
                 </v-form>
               </div>
-            </v-card>
+            </div>
             <!-- status -->
-            <v-card v-if="item.value == 'status' && status" flat>
+            <div v-if="item.value == 'status' && status" class="pa-3">
               <v-select
                 v-model="tempStatus"
                 :items="statusItems"
@@ -271,15 +293,77 @@
               </div>
               <div class="text-xs-right">
                 <v-btn
-                  :disabled="updateButtonDisabled"
+                  :disabled="updateStatusButtonDisabled"
                   @click="updateStatusButtonClicked"
                 >
                   更新
                 </v-btn>
               </div>
-            </v-card>
+            </div>
+            <!-- reviews -->
+            <div v-if="item.value == 'reviews'">
+              <v-form v-model="reviewValid" class="pa-3">
+                <v-rating
+                  v-model="rating"
+                  hover
+                  half-increments
+                  background-color="orange lighten-3"
+                  color="orange"
+                />
+                <v-textarea
+                  label="レビュー"
+                  v-model="review"
+                  rows="3"
+                  :rules="messageRules"
+                  required
+                ></v-textarea>
+                <div class="text-xs-right">
+                  <v-btn
+                    :disabled="!reviewValid || rating == 0"
+                    color="warning"
+                    @click="sendReviewButtonClicked">
+                    {{ sendReviewButtonText }}
+                  </v-btn>
+                </div>
+              </v-form>
+              <div v-if="reviews" class="pb-4 grey lighten-4">
+                <template v-for="(comment, index) in reviews.comments">
+                  <v-card flat class="grey lighten-4">
+                    <v-list two-line class="grey lighten-4">
+                      <v-list-tile>
+                        <v-list-tile-avatar color="grey darken-3">
+                          <v-img
+                            v-if="comment.pic.imageUrl"
+                            :src="comment.pic.imageUrl"
+                          ></v-img>
+                        </v-list-tile-avatar>
+                        <v-list-tile-content>
+                          <v-list-tile-title class="textColor font-weight-bold">
+                            {{ comment.pic.name }}
+                          </v-list-tile-title>
+                          <v-list-tile-sub-title>
+                            <v-rating
+                              small
+                              half-increments
+                              readonly
+                              :value="comment.rating == null ? 0 : comment.rating"
+                            />
+                          </v-list-tile-sub-title>
+                        </v-list-tile-content>
+                      </v-list-tile>
+                    </v-list>
+                    <div class="pb-3" style="padding-left: 72px">
+                      {{ comment.content }}
+                    </div>
+                  </v-card>
+                  <v-divider
+                    v-if="reviews.comments.length != index + 1"
+                  ></v-divider>
+                </template>
+              </div>
+            </div>
             <!-- messages -->
-            <v-card v-if="item.value == 'messages' && status" flat>
+            <v-card v-if="item.value == 'messages'" flat>
 
             </v-card>
           </v-tab-item>
@@ -329,9 +413,21 @@ export default {
       v => (v && v.length <= 10) || '10字以内で入力してください'
     ],
     editTagsValid: true,
+    reviewValid: true,
+    rating: 0,
+    review: '',
+    sendReviewButtonText: 'レビュー送信',
   }),
   computed: {
-    updateButtonDisabled() {
+    isReviewed() {
+      for (const comment of this.reviews.comments) {
+        if (comment.pic.uid == this.uid) {
+          return true
+        }
+      }
+      return false
+    },
+    updateStatusButtonDisabled() {
       var disabled = false
       let currentStatus
       if (this.status.scouted == true) {
@@ -412,41 +508,25 @@ export default {
       return items
     },
     tabItems() {
-      let items
+      var items = [
+        {
+          title: 'ステータス',
+          value: 'status'
+        },
+        {
+          title: 'レビュー',
+          value: 'reviews'
+        },
+        {
+          title: 'メッセージ',
+          value: 'messages'
+        },
+      ]
       if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
-        items = [
-          {
-            title: '概要',
-            value: 'summary'
-          },
-          {
-            title: 'ステータス',
-            value: 'status'
-          },
-          {
-            title: 'レビュー',
-            value: 'reviews'
-          },
-          {
-            title: 'メッセージ',
-            value: 'messages'
-          },
-        ]
-      } else {
-        items = [
-          {
-            title: 'ステータス',
-            value: 'status'
-          },
-          {
-            title: 'レビュー',
-            value: 'reviews'
-          },
-          {
-            title: 'メッセージ',
-            value: 'messages'
-          },
-        ]
+        items.unshift({
+          title: '概要',
+          value: 'summary'
+        })
       }
 
       return items
@@ -502,7 +582,29 @@ export default {
           this.tempStatus = '入社予定'
         }
       }
-    }
+    },
+    uid(uid) {
+      if (uid && this.reviews) {
+        for (const comment of reviews.comments) {
+          if (comment.pic.uid == this.uid) {
+            this.rating = comment.rating
+            this.review = comment.content
+            this.sendReviewButtonText = 'レビューを編集'
+          }
+        }
+      }
+    },
+    reviews(reviews) {
+      if (reviews && this.uid) {
+        for (const comment of reviews.comments) {
+          if (comment.pic.uid == this.uid) {
+            this.rating = comment.rating
+            this.review = comment.content
+            this.sendReviewButtonText = 'レビューを編集'
+          }
+        }
+      }
+    },
   },
   methods: {
     tagsEditButtonClicked() {
@@ -571,11 +673,33 @@ export default {
 
       this.updateStatus(candidateData)
     },
+    sendReviewButtonClicked() {
+      let reviewData = {
+        params: this.params,
+        companyId: this.companyId,
+        pic: {
+          uid: this.uid,
+          name: this.lastName + ' ' + this.firstName,
+          imageUrl: this.imageUrl,
+        },
+        rating: this.rating,
+        content: this.review
+      }
+
+      if (this.isReviewed) {
+        reviewData.type = 'edit'
+      } else {
+        reviewData.type = 'new'
+      }
+
+      this.sendReview(reviewData)
+    },
     ...mapActions({
       queryCandidate: 'candidate/queryCandidate',
       updateIsEditingTags: 'candidate/updateIsEditingTags',
       updateTags: 'candidate/updateTags',
       updateStatus: 'candidate/updateStatus',
+      sendReview: 'candidate/sendReview',
       resetState: 'candidate/resetState',
     }),
   }

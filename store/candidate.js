@@ -173,6 +173,58 @@ export const actions = {
         console.error("Error adding document: ", error)
       })
   },
+  sendReview({commit, state}, {params, companyId, type, pic, rating, content}) {
+    const candidateId = params.id
+    var reviews = state.reviews
+
+    const comment = {
+      pic: pic,
+      content: content,
+      rating: rating,
+      createdAt: new Date()
+    }
+
+    if (reviews) {
+      // 新規レビュー or 編集
+      if (type == 'new') {
+        reviews.count += 1
+        reviews.comments.push(comment)
+      } else if (type == 'edit') {
+        reviews.comments.forEach((item, index) => {
+          if (item.pic.uid == pic.uid) {
+            reviews.comments.splice(index, 1)
+            reviews.comments.splice(index, 0, comment)
+          }
+        })
+      }
+
+      var ratingSum = 0
+      for (const item of reviews.comments) {
+        ratingSum += item.rating
+      }
+      reviews.rating = Math.round(ratingSum / reviews.count * 10) / 10
+    } else {
+      reviews = {
+        count: 1,
+        rating: rating,
+        comments: [comment]
+      }
+    }
+
+    firestore.collection('companies')
+      .doc(companyId)
+      .collection('candidates')
+      .doc(candidateId)
+      .update({
+        reviews: reviews
+      })
+      .then(() => {
+        commit('setReviews', reviews)
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error)
+      })
+  },
   resetState({commit}) {
     commit('setUser', null)
     commit('setStatus', null)
