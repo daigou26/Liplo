@@ -6,10 +6,12 @@ export const state = () => ({
   status: null,
   reviews: null,
   tags: null,
+  pass: null,
   type: null,
   jobId: null,
   chatId: null,
   isEditingTags: false,
+  isEditingPass: false,
   isLoading: true,
   messages: [],
   isInitialQuery: true,
@@ -32,6 +34,9 @@ export const mutations = {
   setTags(state, tags) {
     state.tags = tags
   },
+  setPass(state, pass) {
+    state.pass = pass
+  },
   setType(state, type) {
     state.type = type
   },
@@ -43,6 +48,9 @@ export const mutations = {
   },
   updateIsEditingTags(state, isEditing) {
     state.isEditingTags = isEditing
+  },
+  updateIsEditingPass(state, isEditing) {
+    state.isEditingPass = isEditing
   },
   updateIsLoading(state, isLoading) {
     state.isLoading = isLoading
@@ -87,10 +95,13 @@ export const actions = {
       .get()
       .then(function(doc) {
         if (doc.exists) {
+          var pass = doc.data()['pass']
+          pass.expirationDate = new Date( doc.data()['pass'].expirationDate.seconds * 1000 )
           commit('setUser', doc.data()['user'])
           commit('setStatus', doc.data()['status'])
           commit('setReviews', doc.data()['reviews'])
           commit('setTags', doc.data()['tags'])
+          commit('setPass', pass)
           commit('setType', doc.data()['type'])
           commit('setJobId', doc.data()['jobId'])
           commit('setChatId', doc.data()['chatId'])
@@ -131,6 +142,38 @@ export const actions = {
         console.error("Error adding document: ", error)
       })
   },
+  updateIsEditingPass({commit}, isEditing) {
+    commit('updateIsEditingPass', isEditing)
+  },
+  updatePass({commit, state}, {params, companyId, expirationDate, occupation}) {
+    const candidateId = params.id
+    var pass = state.pass
+    pass.expirationDate = expirationDate
+    pass.occupation = occupation
+
+    const batch = firestore.batch()
+    const candidateRef = firestore.collection('companies').doc(companyId)
+      .collection('candidates').doc(candidateId)
+    batch.update(candidateRef, {
+      pass: pass,
+    })
+
+    const passRef = firestore.collection('passes').doc(pass.passId)
+    batch.update(passRef, {
+      expirationDate: expirationDate,
+      occupation: occupation,
+    })
+
+    batch.commit()
+      .then(() => {
+        commit('setPass', null)
+        commit('setPass', pass)
+        commit('updateIsEditingPass', false)
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error)
+      })
+  },
   updateStatus({commit, state}, {
     router,
     params,
@@ -145,15 +188,16 @@ export const actions = {
     const jobId = state.jobId
     const candidateId = params.id
 
+    // candidate 更新
     var candidateData = {
       status: newStatus,
       updatedAt: new Date()
     }
 
-    if (newStatus.pass == true) {
+    if (newStatus.pass) {
       candidateData.pass = pass
     }
-    if (currentStatus.intern == true && feedback) {
+    if (currentStatus.intern && feedback) {
       candidateData.feedback = feedback
     }
 
@@ -162,25 +206,41 @@ export const actions = {
       .collection('candidates').doc(candidateId)
     batch.update(candidateRef, candidateData)
 
+    // pass更新
+    const passRef = firestore.collection('passes').doc(state.pass.passId)
+    if (newStatus.rejected && currentStatus.pass) {
+      batch.update(passRef, {
+        isContracted: false,
+        isValid: false,
+      })
+    }
+    if (newStatus.contracted && currentStatus.pass) {
+      batch.update(passRef, {
+        isContracted: true,
+        isAccepted: true,
+        isValid: false,
+      })
+    }
+
     var setData = false
     let ref
-    if (newStatus.intern == true) {
+    if (newStatus.intern) {
       setData = true
       ref = firestore.collection('companies').doc(companyId)
         .collection('interns').doc()
-    } else if (newStatus.extendedIntern == true) {
+    } else if (newStatus.extendedIntern) {
       setData = true
       ref = firestore.collection('companies').doc(companyId)
         .collection('extendedInterns').doc()
-    } else if (newStatus.pass == true) {
+    } else if (newStatus.pass) {
       setData = true
       ref = firestore.collection('companies').doc(companyId)
         .collection('passedUsers').doc()
-    } else if (newStatus.contracted == true) {
+    } else if (newStatus.contracted) {
       setData = true
       ref = firestore.collection('companies').doc(companyId)
         .collection('contractedUsers').doc()
-    } else if (newStatus.hired == true) {
+    } else if (newStatus.hired) {
       setData = true
       ref = firestore.collection('companies').doc(companyId)
         .collection('hiredUsers').doc()
@@ -202,6 +262,9 @@ export const actions = {
 
     batch.commit()
       .then(() => {
+        if (newStatus.pass) {
+          commit('setPass', pass)
+        }
         if (newStatus.rejected || newStatus.hired) {
           router.replace({path: '/recruiter/candidates'})
         } else {

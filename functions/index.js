@@ -72,10 +72,10 @@ exports.sendPass = functions.region('asia-northeast1')
     }
 
     const companyId = context.params.companyId
-    const pass = newValue.pass
+    const candidateId = context.params.candidateId
+    var pass = newValue.pass
     const updatedAt = newValue.updatedAt
     const user = newValue.user
-
 
     return admin.firestore()
       .collection('companies')
@@ -85,24 +85,34 @@ exports.sendPass = functions.region('asia-northeast1')
         if (doc.exists) {
           const companyName = doc.data().name
           const companyImageUrl = doc.data().imageUrl
+          const passId = admin.firestore().collection('passes').doc().id
 
-          admin.firestore().collection('passes')
-            .add({
-              uid: user.uid,
-              userName: user.name,
-              profileImageUrl: user.imageUrl,
-              companyId: companyId,
-              companyName: companyName,
-              companyImageUrl: companyImageUrl,
-              createdAt: updatedAt,
-              expirationDate: pass.expirationDate,
-              occupation: pass.occupation,
-              picMessage: pass.message,
-              pic: pass.pic,
-              isAccepted: false,
-              isContracted: false,
-              isValid: true,
-            })
+          const batch = admin.firestore().batch()
+          const passRef = admin.firestore().collection('passes').doc(passId)
+          batch.set(passRef, {
+            uid: user.uid,
+            userName: user.name,
+            profileImageUrl: user.imageUrl,
+            companyId: companyId,
+            companyName: companyName,
+            companyImageUrl: companyImageUrl,
+            createdAt: updatedAt,
+            expirationDate: pass.expirationDate,
+            occupation: pass.occupation,
+            picMessage: pass.message,
+            pic: pass.pic,
+            isAccepted: false,
+            isContracted: false,
+            isValid: true,
+          })
+          const candidateRef = admin.firestore().collection('companies')
+            .doc(companyId).collection('candidates').doc(candidateId)
+
+          pass.passId = passId
+          batch.update(candidateRef, {
+            pass: pass
+          })
+          batch.commit()
             .then(() => {
               console.log('sendPass completed.')
             })
@@ -363,7 +373,7 @@ exports.scoutUser = functions.region('asia-northeast1')
                     const candidateRef = admin.firestore().collection('companies').doc(companyId)
                       .collection('candidates').doc(candidateId)
                     batch.update(candidateRef, {
-                      chatId: chatId
+                      chatId: chatDoc.id
                     })
                     batch.commit()
                       .then(() => {
