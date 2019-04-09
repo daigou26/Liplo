@@ -10,6 +10,7 @@ export const state = () => ({
   expirationDate: null,
   isAccepted: false,
   isContracted: false,
+  isValid: false,
 })
 
 export const mutations = {
@@ -37,6 +38,9 @@ export const mutations = {
   setIsContracted(state, isContracted) {
     state.isContracted = isContracted
   },
+  setIsValid(state, isValid) {
+    state.isValid = isValid
+  },
 }
 
 export const actions = {
@@ -47,7 +51,6 @@ export const actions = {
       .doc(passId)
       .update({
         isAccepted: true,
-        isContracted: false,
         userMessage: message,
         acceptedAt: new Date(),
       })
@@ -84,6 +87,7 @@ export const actions = {
           commit('setExpirationDate', expirationDate)
           commit('setIsAccepted', doc.data()['isAccepted'])
           commit('setIsContracted', doc.data()['isContracted'])
+          commit('setIsValid', doc.data()['isValid'])
         } else {
           // 404
           console.log('404')
@@ -104,5 +108,6 @@ export const actions = {
     commit('setExpirationDate', null)
     commit('setIsAccepted', false)
     commit('setIsContracted', false)
+    commit('setIsValid', false)
   },
 }

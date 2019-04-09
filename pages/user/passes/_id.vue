@@ -97,15 +97,21 @@
                   </v-list-tile>
                 </v-card-actions>
               </v-card>
-              <div class="">
+              <div class="pb-5">
                 <span class="font-weight-bold textColor">職種:</span>
                 <p v-if="occupation" class="font-weight-medium body-text">{{ occupation }}</p>
               </div>
-              <div class="py-5">
+              <div class="pb-5">
                 <span class="font-weight-bold textColor">メッセージ</span>
                 <p v-if="message" class="body-text return">{{ message }}</p>
               </div>
-              <div class="text-xs-right">
+              <div v-if="isContracted" class="pb-5">
+                <span class="font-weight-bold textColor">内定契約済みです。　おめでとうございます！</span>
+              </div>
+              <div v-if="!isContracted && !isAccepted && !isValid" class="pb-5">
+                <span class="font-weight-bold textColor">無効になりました。</span>
+              </div>
+              <div v-if="!isContracted && isValid" class="text-xs-right">
                 <v-form v-model="acceptOfferValid">
                   <v-textarea
                     v-if="!isAccepted"
@@ -119,7 +125,8 @@
                     :disabled="!acceptOfferValid || isAccepted"
                     color="warning"
                     @click="acceptButtonClicked">
-                    受諾する
+                    <span v-if="!isAccepted">受諾する</span>
+                    <span v-else>受諾済み</span>
                   </v-btn>
                 </v-form>
               </div>
@@ -177,7 +184,8 @@ export default {
       occupation: state => state.pass.occupation,
       expirationDate: state => state.pass.expirationDate,
       isAccepted: state => state.pass.isAccepted,
-
+      isContracted: state => state.pass.isContracted,
+      isValid: state => state.pass.isValid,
     }),
   },
   mounted() {
