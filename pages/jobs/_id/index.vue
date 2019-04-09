@@ -9,7 +9,6 @@
         <v-img
           :src="imageUrl"
           :aspect-ratio="imageRatio"
-          :width="windowWidth"
         ></v-img>
       </v-flex>
       <v-flex xs10 offset-xs1 class="break">

@@ -8,8 +8,15 @@ export const state = () => ({
   tags: null,
   type: null,
   jobId: null,
+  chatId: null,
   isEditingTags: false,
   isLoading: true,
+  messages: [],
+  isInitialQuery: true,
+  isMessagesLoading: false,
+  allMessagesQueried: false,
+  unsubscribe: null,
+  isNewMessage: false,
 })
 
 export const mutations = {
@@ -31,12 +38,43 @@ export const mutations = {
   setJobId(state, jobId) {
     state.jobId = jobId
   },
+  setChatId(state, chatId) {
+    state.chatId = chatId
+  },
   updateIsEditingTags(state, isEditing) {
     state.isEditingTags = isEditing
   },
   updateIsLoading(state, isLoading) {
     state.isLoading = isLoading
   },
+  // messages
+  pushMessage(state, message) {
+    state.messages.push(message)
+  },
+  unshiftMessage(state, message) {
+    state.messages.unshift(message)
+  },
+  resetMessages(state) {
+    state.messages = []
+  },
+  updateIsInitialQuery(state, isInitialQuery) {
+    state.isInitialQuery = isInitialQuery
+  },
+  updateIsMessagesLoading(state, isLoading) {
+    state.isMessagesLoading = isLoading
+  },
+  setAllMessagesQueried(state) {
+    state.allMessagesQueried = true
+  },
+  resetAllMessagesQueried(state) {
+    state.allMessagesQueried = false
+  },
+  updateUnsubscribe(state, unsubscribe) {
+    state.unsubscribe = unsubscribe
+  },
+  updateIsNewMessage(state, isNew) {
+    state.isNewMessage = isNew
+  }
 }
 
 export const actions = {
@@ -55,6 +93,7 @@ export const actions = {
           commit('setTags', doc.data()['tags'])
           commit('setType', doc.data()['type'])
           commit('setJobId', doc.data()['jobId'])
+          commit('setChatId', doc.data()['chatId'])
           commit('updateIsLoading', false)
 
           if (doc.data()['status'].rejected || doc.data()['status'].hired) {
@@ -225,6 +264,116 @@ export const actions = {
         console.error("Error adding document: ", error)
       })
   },
+  updateIsMessagesLoading({commit}, isLoading) {
+    commit('updateIsMessagesLoading', isLoading)
+  },
+  updateIsNewMessage({commit}, isNew) {
+    commit('updateIsNewMessage', isNew)
+  },
+  queryMessages({commit, state}, infiniteState) {
+    const messages = state.messages
+    const chatId = state.chatId
+    // すでにクエリしているか
+    if (messages.length == 0) {
+      return firestore.collection('chats').doc(chatId)
+        .collection('messages')
+        .orderBy("createdAt", "desc")
+        .limit(10)
+        .get()
+        .then(function(snapshot) {
+          var docCount = 0
+          snapshot.forEach(function(doc) {
+            docCount += 1
+            const message = {
+              message: doc.data()['message'],
+              createdAt: doc.data()['createdAt'],
+              pic: doc.data()['pic'],
+              user: doc.data()['user'],
+            }
+            commit('unshiftMessage', message)
+          })
+          if (docCount == 0) {
+            commit('setAllMessagesQueried')
+          }
+          commit('updateIsMessagesLoading', false)
+
+          // listenerがあればremove
+          if (state.unsubscribe) {
+            state.unsubscribe()
+            commit('updateUnsubscribe', null)
+          }
+          // listener set
+          var lastDate
+          if (state.messages.length == 0) {
+            lastDate = new Date()
+          } else {
+            const lastIndex = state.messages.length - 1
+            lastDate = state.messages[lastIndex].createdAt
+          }
+          const listener = firestore.collection("chats").doc(chatId)
+            .collection('messages')
+            .orderBy('createdAt', 'asc')
+            .startAfter(lastDate)
+            .onSnapshot(function(snapshot) {
+              if (snapshot.docChanges().length != 0) {
+                commit('updateIsNewMessage', true)
+              }
+
+              snapshot.docChanges().forEach(function(change) {
+                if (change.type === "added") {
+                  const message = {
+                    message: change.doc.data()['message'],
+                    createdAt: change.doc.data()['createdAt'],
+                    pic: change.doc.data()['pic'],
+                    user: change.doc.data()['user'],
+                  }
+                  commit('pushMessage', message)
+                }
+              })
+            })
+            commit('updateUnsubscribe', listener)
+        })
+        .catch(function(error) {
+          commit('updateIsMessagesLoading', false)
+          console.log("Error getting document:", error)
+        })
+    } else {
+      const lastDate = messages[0].createdAt
+      return firestore.collection('chats').doc(chatId)
+        .collection('messages')
+        .orderBy('createdAt', 'desc')
+        .startAfter(lastDate)
+        .limit(10)
+        .get()
+        .then(function(snapshot) {
+          var docCount = 0
+          snapshot.forEach(function(doc) {
+            docCount += 1
+            const message = {
+              message: doc.data()['message'],
+              createdAt: doc.data()['createdAt'],
+              pic: doc.data()['pic'],
+              user: doc.data()['user'],
+            }
+            commit('unshiftMessage', message)
+          })
+          // infinite loading
+          infiniteState.loaded()
+
+          if (docCount == 0) {
+            commit('setAllMessagesQueried')
+          }
+          commit('updateIsMessagesLoading', false)
+        })
+        .catch(function(error) {
+          commit('updateIsLoading', false)
+          console.log("Error getting document:", error)
+        })
+    }
+  },
+  resetUnsubscribe({commit}) {
+    commit('updateUnsubscribe', null)
+  },
   resetState({commit}) {
     commit('setUser', null)
     commit('setStatus', null)
@@ -234,5 +383,10 @@ export const actions = {
     commit('setJobId', null)
     commit('updateIsEditingTags', false)
     commit('updateIsLoading', true)
+    commit('resetMessages')
+    commit('updateIsInitialQuery', true)
+    commit('updateIsMessagesLoading', false)
+    commit('resetAllMessagesQueried')
+    commit('updateUnsubscribe', null)
   }
 }

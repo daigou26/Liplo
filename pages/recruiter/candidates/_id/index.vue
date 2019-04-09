@@ -123,7 +123,7 @@
         xs12
         :class="{'border-left': $vuetify.breakpoint.mdAndUp}"
       >
-        <v-tabs>
+        <v-tabs @change="changeInput">
           <v-tab
             v-for="item in tabItems"
             :key="item.title"
@@ -134,6 +134,8 @@
             v-for="item in tabItems"
             :key="item.value"
             class="mt-3"
+            :class="{'scroll-y': $vuetify.breakpoint.mdAndUp}"
+            :style="{ height: tabItemHeight + 'px' }"
           >
             <!-- summary -->
             <div v-if="item.value == 'summary'" class="pa-3">
@@ -276,7 +278,7 @@
                     <!-- メッセージ -->
                     <v-textarea
                       label="メッセージ"
-                      v-model="message"
+                      v-model="passMessage"
                       :rules="messageRules"
                       required
                     ></v-textarea>
@@ -363,8 +365,81 @@
               </div>
             </div>
             <!-- messages -->
-            <v-card v-if="item.value == 'messages'" flat>
-
+            <v-card v-if="item.value == 'messages' && isShowMessage" flat>
+              <div v-if="isMessagesLoading">
+                Now Loading...
+              </div>
+              <div v-else>
+                <v-layout
+                  row
+                  align-center
+                  wrap
+                  class="border-bottom"
+                >
+                  <!-- message -->
+                  <v-flex
+                    xs12
+                    grey lighten-4
+                    class="scroll-y"
+                    :style="{ height: messagesHeight + 'px' }"
+                    ref="messagesScroll"
+                  >
+                    <infinite-loading
+                      v-if="showInfiniteLoading && messages && messages.length >= 10 && !isMessagesLoading"
+                      direction="top"
+                      spinner="waveDots"
+                      @infinite="infiniteHandler">
+                      <div slot="no-results"></div>
+                    </infinite-loading>
+                    <template v-for="(message, index) in messages" v-if="messages != null && messages.length != 0">
+                      <v-layout>
+                        <v-flex
+                          xs10
+                          class="py-3"
+                          :class="{ 'offset-xs2 text-xs-right': message.pic != null }"
+                        >
+                          <div class="d-inline-flex">
+                            <!-- ユーザーのプロフィール画像は左に -->
+                            <v-avatar
+                              v-if="message.user != null"
+                              class="grey lighten-3 mx-2"
+                              :size="40"
+                            >
+                              <img v-if="message.user.imageUrl" :src="message.user.imageUrl">
+                            </v-avatar>
+                            <div class="px-3 py-2 white message-border-radius return">{{ message.message }}</div>
+                            <!-- 担当者のプロフィール画像は右に -->
+                            <v-avatar
+                              v-if="message.pic != null"
+                              class="grey lighten-3 mx-2"
+                              :size="40"
+                            >
+                              <img v-if="message.pic.imageUrl" :src="message.pic.imageUrl">
+                            </v-avatar>
+                          </div>
+                        </v-flex>
+                      </v-layout>
+                    </template>
+                  </v-flex>
+                  <!-- userInput -->
+                  <v-flex xs12 px-2>
+                    <v-card class="pr-2" flat>
+                      <v-textarea
+                        v-model="message"
+                        flat
+                        row-height="20"
+                        rows="2"
+                        no-resize
+                        solo
+                        label="message"
+                        hide-details
+                        append-outer-icon="send"
+                        @click:append-outer="sendButtonClicked"
+                      ></v-textarea>
+                    </v-card>
+                  </v-flex>
+                </v-layout>
+              </div>
             </v-card>
           </v-tab-item>
         </v-tabs>
@@ -388,12 +463,17 @@ export default {
   },
   data: () => ({
     isQueried: false,
+    isMessagesQueried: false,
+    showInfiniteLoading: false,
+    count: 0,
+    tabItemHeight: 0,
+    messagesHeight: 0,
     passValid: true,
     feedbackValid: true,
     tempStatus: '',
-    message: '',
+    passMessage: '',
     messageRules: [
-      v => !!v || '職種を入力してください',
+      v => !!v || '入力されていません',
       v => (v && v.length <= 200) || '200字以内で入力してください'
     ],
     expirationDate: null,
@@ -417,6 +497,8 @@ export default {
     rating: 0,
     review: '',
     sendReviewButtonText: 'レビュー送信',
+    message: '',
+    isShowMessage: false,
   }),
   computed: {
     isReviewed() {
@@ -546,15 +628,45 @@ export default {
       user: state => state.candidate.user,
       status: state => state.candidate.status,
       reviews: state => state.candidate.reviews,
+      chatId: state => state.candidate.chatId,
       tags: state => state.candidate.tags,
       isLoading: state => state.candidate.isLoading,
       isEditingTags: state => state.candidate.isEditingTags,
+      messages: state => state.candidate.messages,
+      isMessagesLoading: state => state.candidate.isMessagesLoading,
+      allMessagesQueried: state => state.candidate.allMessagesQueried,
+      unsubscribe: state => state.candidate.unsubscribe,
+      isNewMessage: state => state.candidate.isNewMessage,
     }),
   },
   mounted() {
+    let toolbarHeight
+    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+      toolbarHeight = 48
+    } else {
+      toolbarHeight = 64
+    }
+    // tab menu = 48  margin = 16
+    this.tabItemHeight = window.innerHeight - toolbarHeight - 48 - 16
+    this.messagesHeight = window.innerHeight - toolbarHeight - 48 - 63 - 18
+
+    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+      this.tabItemHeight -= 88
+      this.messagesHeight -= 88
+    }
+
+    this.showInfiniteLoading = true
+
     if (this.companyId != null && !this.isQueried) {
       this.resetState()
       this.queryCandidate({nuxt: this.$nuxt, params: this.$route.params, companyId: this.companyId})
+    }
+  },
+  destroyed () {
+    // listenerがあればデタッチ
+    if (this.unsubscribe) {
+      this.unsubscribe()
+      this.resetState()
     }
   },
   watch: {
@@ -605,6 +717,17 @@ export default {
         }
       }
     },
+    messages(messages) {
+      // 最下部へスクロール
+      if (messages.length <= 10 || this.isNewMessage) {
+        this.$nextTick(() => {
+          if (this.$refs.messagesScroll) {
+            this.$refs.messagesScroll[0].scrollTop = this.$refs.messagesScroll[0].scrollHeight
+            this.updateIsNewMessage(false)
+          }
+        })
+      }
+    }
   },
   methods: {
     tagsEditButtonClicked() {
@@ -694,12 +817,65 @@ export default {
 
       this.sendReview(reviewData)
     },
+    changeInput(index) {
+      // messages クエリ
+      if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+        if (index == 3 && !this.isMessagesQueried) {
+          this.isMessagesQueried = true
+          this.updateIsMessagesLoading(true)
+          this.isShowMessage = true
+          this.queryMessages({params: this.params})
+        }
+      } else {
+        if (index == 2 && !this.isMessagesQueried) {
+          this.isMessagesQueried = true
+          this.updateIsMessagesLoading(true)
+          this.isShowMessage = true
+          this.queryMessages({params: this.params})
+        }
+      }
+    },
+    infiniteHandler($state) {
+      console.log('infinite');
+      if (!this.allMessagesQueried) {
+        console.log('infinite all not');
+        if (!this.isMessagesLoading && this.companyId != null) {
+          console.log('infinite query');
+          this.count += 1
+          this.updateIsMessagesLoading(true)
+          this.queryMessages({params: this.params, infiniteState: $state})
+
+          if (this.count > 20) {
+            $state.complete()
+          }
+        }
+      } else {
+        $state.complete()
+      }
+    },
+    sendButtonClicked() {
+      if (this.chatId && this.message) {
+        this.postMessageFromPic({
+          chatId: this.chatId,
+          message: this.message,
+          uid: this.uid,
+          imageUrl: this.imageUrl,
+          name: this.lastName + ' ' + this.firstName,
+        })
+      }
+      this.message = ''
+    },
     ...mapActions({
       queryCandidate: 'candidate/queryCandidate',
       updateIsEditingTags: 'candidate/updateIsEditingTags',
       updateTags: 'candidate/updateTags',
       updateStatus: 'candidate/updateStatus',
       sendReview: 'candidate/sendReview',
+      queryMessages: 'candidate/queryMessages',
+      resetUnsubscribe: 'candidate/resetUnsubscribe',
+      updateIsMessagesLoading: 'candidate/updateIsMessagesLoading',
+      updateIsNewMessage: 'candidate/updateIsNewMessage',
+      postMessageFromPic: 'message/postMessageFromPic',
       resetState: 'candidate/resetState',
     }),
   }

@@ -199,10 +199,10 @@ export default {
     sendButtonClicked() {
       if (this.params.id != null && this.message) {
         this.postMessageFromPic({
-          params: this.$route.params,
+          chatId: this.$route.params.id,
           message: this.message,
           uid: this.uid,
-          profileImageUrl: this.recruiterImageUrl,
+          imageUrl: this.recruiterImageUrl,
           name: this.lastName + ' ' + this.firstName,
         })
       }

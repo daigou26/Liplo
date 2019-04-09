@@ -264,6 +264,7 @@ exports.scoutUser = functions.region('asia-northeast1')
     const message = snap.data().scout.message
     const createdAt = snap.data().createdAt
     const companyId = context.params.companyId
+    const candidateId = context.params.candidateId
 
     // company の応募者数の更新、応募者の情報格納, スカウトメッセージ送信
     return admin.firestore()
@@ -346,23 +347,36 @@ exports.scoutUser = functions.region('asia-northeast1')
             .get()
             .then(function(snapshot) {
               if (!snapshot.empty) {
-                admin.firestore().collection('chats').doc(chatDoc.id)
-                  .collection('messages')
-                  .add({
-                    pic: pic,
-                    message: message,
-                    createdAt: createdAt,
-                    type: 'scout',
-                  })
-                  .then(() => {
-                    isSendedMessage = true
-                    if (isUpdatedCandidates && isSendedMessage) {
-                      console.log('scoutUser completed.')
-                    }
-                  })
-                  .catch((error) => {
-                    console.error("Error adding document: ", error)
-                  })
+                var docCount = 0
+                snapshot.forEach(function(chatDoc) {
+                  docCount += 1
+                  if (docCount == 1) {
+                    const batch = admin.firestore().batch()
+                    const messagesRef = admin.firestore().collection('chats').doc(chatDoc.id)
+                      .collection('messages').doc()
+                    batch.set(messagesRef, {
+                      pic: pic,
+                      message: message,
+                      createdAt: createdAt,
+                      type: 'scout',
+                    })
+                    const candidateRef = admin.firestore().collection('companies').doc(companyId)
+                      .collection('candidates').doc(candidateId)
+                    batch.update(candidateRef, {
+                      chatId: chatId
+                    })
+                    batch.commit()
+                      .then(() => {
+                        isSendedMessage = true
+                        if (isUpdatedCandidates && isSendedMessage) {
+                          console.log('scoutUser completed.')
+                        }
+                      })
+                      .catch((error) => {
+                        console.error("Error adding document: ", error)
+                      })
+                  }
+                })
               } else {
                 const chatId = admin.firestore().collection('chats').doc().id
                 const batch = admin.firestore().batch()
@@ -375,6 +389,7 @@ exports.scoutUser = functions.region('asia-northeast1')
                   companyImageUrl: companyImageUrl,
                   companyName: companyName,
                   lastMessage: message,
+                  messagesExist: true,
                   updatedAt: createdAt,
                 })
                 const messagesRef = admin.firestore().collection('chats').doc(chatId)
@@ -384,6 +399,11 @@ exports.scoutUser = functions.region('asia-northeast1')
                   message: message,
                   createdAt: createdAt,
                   type: 'scout',
+                })
+                const candidateRef = admin.firestore().collection('companies').doc(companyId)
+                  .collection('candidates').doc(candidateId)
+                batch.update(candidateRef, {
+                  chatId: chatId
                 })
                 batch.commit()
                   .then(() => {
@@ -864,6 +884,7 @@ exports.applyForJob = functions.region('asia-northeast1')
       return 0
     }
     const companyId = context.params.companyId
+    const candidateId = context.params.candidateId
     const uid = snap.data().user.uid
     const user = snap.data().user
     const jobId = snap.data().jobId
@@ -875,8 +896,13 @@ exports.applyForJob = functions.region('asia-northeast1')
       .get()
       .then(doc => {
         if (doc.exists) {
+          const companyName = doc.data().name
+          const companyImageUrl = doc.data().imageUrl
           var currentCandidates = doc.data().currentCandidates
           var allCandidates = doc.data().allCandidates
+          // 処理が完了したかのフラグ
+          var isUpdatedCandidates = false
+          var setChatId = false
 
           if (currentCandidates) {
             currentCandidates.inbox += 1
@@ -929,10 +955,78 @@ exports.applyForJob = functions.region('asia-northeast1')
           })
           batch.commit()
             .then(() => {
-              console.log('applyForJob completed.')
+              isUpdatedCandidates = true
+              if (isUpdatedCandidates && setChatId) {
+                console.log('applyForJob completed.')
+              }
             })
             .catch((error) => {
               console.error("Error adding document: ", error)
+            })
+
+          // chat作成、chatIdをcandidateに格納
+          admin.firestore()
+            .collection('chats')
+            .where('companyId', '==', companyId)
+            .where('uid', '==', user.uid)
+            .get()
+            .then(function(snapshot) {
+              if (!snapshot.empty) {
+                var docCount = 0
+                snapshot.forEach(function(chatDoc) {
+                  docCount += 1
+                  if (docCount == 1) {
+                    admin.firestore().collection('companies')
+                      .doc(companyId)
+                      .collection('candidates')
+                      .doc(candidateId)
+                      .update({
+                        chatId: chatDoc.id
+                      })
+                      .then(() => {
+                        setChatId = true
+                        if (isUpdatedCandidates && setChatId) {
+                          console.log('applyForJob completed.')
+                        }
+                      })
+                      .catch((error) => {
+                        console.error("Error adding document: ", error)
+                      })
+                  }
+                })
+              } else {
+                const chatId = admin.firestore().collection('chats').doc().id
+                const batch = admin.firestore().batch()
+                const chatsRef = admin.firestore().collection('chats').doc(chatId)
+                batch.set(chatsRef, {
+                  uid: user.uid,
+                  profileImageUrl: user.imageUrl,
+                  userName: user.name,
+                  companyId: companyId,
+                  companyImageUrl: companyImageUrl,
+                  companyName: companyName,
+                  messagesExist: false,
+                  updatedAt: createdAt,
+                })
+                const candidateRef = admin.firestore().collection('companies').doc(companyId)
+                  .collection('candidates').doc(candidateId)
+                batch.update(candidateRef, {
+                  chatId: chatId
+                })
+                batch.commit()
+                  .then(() => {
+                    setChatId = true
+                    if (isUpdatedCandidates && setChatId) {
+                      console.log('applyForJob completed.')
+                    }
+                  })
+                  .catch((error) => {
+                    console.error("Error adding document: ", error)
+                  })
+              }
+            })
+            .catch(err => {
+              console.log('Error getting document', err)
             })
         }
       })
@@ -981,6 +1075,7 @@ exports.sendMessageFromUser = functions.region('asia-northeast1')
           const chatData = {
             updatedAt: snap.data().createdAt,
             lastMessage: message,
+            messagesExist: true,
           }
 
           if (from == 'user') {

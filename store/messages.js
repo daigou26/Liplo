@@ -54,7 +54,7 @@ export const actions = {
   updateIsNewMessage({commit}, isNew) {
     commit('updateIsNewMessage', isNew)
   },
-  queryMessages({commit, state}, {params, infiniteState, uid, companyId}) {
+  queryMessages({commit, state}, {params, infiniteState}) {
     const messages = state.messages
     const chatId = params.id
     // すでにクエリしているか
