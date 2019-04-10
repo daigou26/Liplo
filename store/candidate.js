@@ -99,7 +99,7 @@ export const actions = {
           if (pass) {
             pass.expirationDate = new Date( doc.data()['pass'].expirationDate.seconds * 1000 )
           }
-          
+
           commit('setUser', doc.data()['user'])
           commit('setStatus', doc.data()['status'])
           commit('setReviews', doc.data()['reviews'])
@@ -210,14 +210,15 @@ export const actions = {
     batch.update(candidateRef, candidateData)
 
     // pass更新
-    const passRef = firestore.collection('passes').doc(state.pass.passId)
     if (newStatus.rejected && currentStatus.pass) {
+      const passRef = firestore.collection('passes').doc(state.pass.passId)
       batch.update(passRef, {
         isContracted: false,
         isValid: false,
       })
     }
     if (newStatus.contracted && currentStatus.pass) {
+      const passRef = firestore.collection('passes').doc(state.pass.passId)
       batch.update(passRef, {
         isContracted: true,
         isAccepted: true,

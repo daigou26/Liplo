@@ -10,10 +10,23 @@ exports.sendFeedback = functions.region('asia-northeast1')
   .onUpdate((change, context) => {
     const newValue = change.after.data()
     const previousValue = change.before.data()
-    if (newValue.status == previousValue.status) {
+    const beforeStatus = previousValue.status
+    const newStatus = newValue.status
+    // ステータス変化なし
+    if (
+      newStatus.scouted == beforeStatus.scouted &&
+      newStatus.inbox == beforeStatus.inbox &&
+      newStatus.inProcess == beforeStatus.inProcess &&
+      newStatus.intern == beforeStatus.intern &&
+      newStatus.extendedIntern == beforeStatus.extendedIntern &&
+      newStatus.pass == beforeStatus.pass &&
+      newStatus.contracted == beforeStatus.contracted &&
+      newStatus.hired == beforeStatus.hired &&
+      newStatus.rejected == beforeStatus.rejected
+    ) {
       return 0
     }
-    if (!previousValue.status.intern || newValue.feedback == null) {
+    if (!previousValue.status.intern) {
       return 0
     }
 
@@ -21,7 +34,6 @@ exports.sendFeedback = functions.region('asia-northeast1')
     const feedback = newValue.feedback
     const updatedAt = newValue.updatedAt
     const user = newValue.user
-
 
     return admin.firestore()
       .collection('companies')
@@ -32,18 +44,26 @@ exports.sendFeedback = functions.region('asia-northeast1')
           const companyName = doc.data().name
           const companyImageUrl = doc.data().imageUrl
 
+          var feedbackData = {
+            uid: user.uid,
+            userName: user.name,
+            profileImageUrl: user.imageUrl,
+            companyId: companyId,
+            companyName: companyName,
+            companyImageUrl: companyImageUrl,
+            createdAt: updatedAt,
+          }
+
+          if (newValue.feedback == null) {
+            feedbackData.isWritten = false
+          } else {
+            feedbackData.isWritten = true
+            feedbackData.goodPoint = feedback.goodPoint
+            feedbackData.advice = feedback.advice
+          }
+
           admin.firestore().collection('feedbacks')
-            .add({
-              uid: user.uid,
-              userName: user.name,
-              profileImageUrl: user.imageUrl,
-              companyId: companyId,
-              companyName: companyName,
-              companyImageUrl: companyImageUrl,
-              createdAt: updatedAt,
-              goodPoint: feedback.goodPoint,
-              advice: feedback.advice,
-            })
+            .add(feedbackData)
             .then(() => {
               console.log('sendFeedback completed.')
             })
@@ -64,7 +84,20 @@ exports.sendPass = functions.region('asia-northeast1')
   .onUpdate((change, context) => {
     const newValue = change.after.data()
     const previousValue = change.before.data()
-    if (newValue.status == previousValue.status) {
+    const beforeStatus = previousValue.status
+    const newStatus = newValue.status
+    // ステータス変化なし
+    if (
+      newStatus.scouted == beforeStatus.scouted &&
+      newStatus.inbox == beforeStatus.inbox &&
+      newStatus.inProcess == beforeStatus.inProcess &&
+      newStatus.intern == beforeStatus.intern &&
+      newStatus.extendedIntern == beforeStatus.extendedIntern &&
+      newStatus.pass == beforeStatus.pass &&
+      newStatus.contracted == beforeStatus.contracted &&
+      newStatus.hired == beforeStatus.hired &&
+      newStatus.rejected == beforeStatus.rejected
+    ) {
       return 0
     }
     if (previousValue.status.pass || !newValue.status.pass) {
