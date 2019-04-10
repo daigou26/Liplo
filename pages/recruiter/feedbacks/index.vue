@@ -14,7 +14,7 @@
       no-data-text="記入可能なフィードバックはありません。"
     >
       <template v-slot:items="props">
-        <n-link class="clickable" tag="tr" :to="'/recruiter/feedbacks/' + props.item.feedbackId">
+        <n-link class="clickable" tag="tr" :to="'/recruiter/feedbacks/' + props.item.feedbackId + '/new'">
           <td class="py-1">
             <v-avatar
               size="50"
