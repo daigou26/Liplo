@@ -43,6 +43,7 @@ export default {
         { title: '候補者管理', icon: 'assignment_ind', url: 'candidates' },
         { title: 'メッセージ', icon: 'chat_bubble_outline', url: 'messages' },
         { title: 'レビュー', icon: 'bar_chart', url: 'reviews' },
+        { title: 'フィードバック', icon: 'create', url: 'feedbacks' },
       ],
     }
   },
