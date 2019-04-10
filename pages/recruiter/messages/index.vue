@@ -1,7 +1,6 @@
 <template>
   <v-layout
     row
-    align-center
     wrap
   >
     <v-flex

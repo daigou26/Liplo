@@ -40,7 +40,7 @@ export default {
         { title: 'ダッシュボード', icon: 'dashboard', url: 'dashboard' },
         { title: '企業・社員', icon: 'business', url: 'company' },
         { title: '募集管理', icon: 'assignment', url: 'jobs' },
-        { title: '候補者管理', icon: 'assignment_ind' },
+        { title: '候補者管理', icon: 'assignment_ind', url: 'candidates' },
         { title: 'メッセージ', icon: 'chat_bubble_outline', url: 'messages' },
         { title: 'レビュー', icon: 'bar_chart' },
       ],

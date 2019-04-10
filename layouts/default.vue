@@ -3,7 +3,7 @@
     <drawer v-if="path.includes('/recruiter') || path.includes('/users')"></drawer>
     <toolbar></toolbar>
     <v-content class="white">
-      <v-container fluid pa-0>
+      <v-container fluid pa-0 fill-height>
         <nuxt />
       </v-container>
     </v-content>
@@ -96,6 +96,10 @@ export default {
 }
 .border {
   border: 1px solid;
+  border-color: #E0E0E0;
+}
+.border-left {
+  border-left: 1px solid;
   border-color: #E0E0E0;
 }
 .border-side {

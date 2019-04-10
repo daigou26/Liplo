@@ -503,61 +503,15 @@ export default {
     }
     // ログイン時、dbにuser(recruiter)情報保存
     auth.onAuthStateChanged((user) => {
-      console.log('toolbar auth change');
       this.setAuthInfo({
         route: this.$route,
         router: this.$router,
         user: user,
+        type: 'user',
         firstName: this.firstName,
         lastName: this.lastName
       })
       this.resetData()
-      // if (user) {
-      //   this.$store.dispatch('setUser', user)
-      //   const self = this
-      //   firestore.collection('users').doc(user.uid).get()
-      //     .then(function(doc) {
-      //       if (!doc.exists) {
-      //         const batch = firestore.batch()
-      //         const userRef = firestore.collection('users').doc(user.uid)
-      //         batch.set(userRef, {
-      //           firstName: self.firstName,
-      //           lastName: self.lastName,
-      //         })
-      //         const profileRef = firestore.collection('users')
-      //           .doc(user.uid).collection('profile').doc(user.uid)
-      //         batch.set(profileRef, {
-      //           firstName: self.firstName,
-      //           lastName: self.lastName,
-      //           email: user.email
-      //         })
-      //         batch.commit()
-      //           .then(() => {
-      //             self.resetData()
-      //             self.$store.dispatch('profile/setFirstName', self.firstName)
-      //             self.$store.dispatch('profile/setLastName', self.lastName)
-      //           })
-      //           .catch((error) => {
-      //             console.error("Error adding document: ", error)
-      //           })
-      //       } else {
-      //         self.resetData()
-      //         self.$store.dispatch('profile/setFirstName', doc.data()['firstName'])
-      //         self.$store.dispatch('profile/setLastName', doc.data()['lastName'])
-      //
-      //         if (doc.data()['imageUrl'] != null) {
-      //           self.$store.dispatch('profile/setImageUrl', doc.data()['imageUrl'])
-      //         }
-      //       }
-      //     })
-      //
-      // } else {
-      //   this.resetData()
-      //   this.$store.dispatch('setUser', null)
-      //   if (this.$route.path !== '/' && this.$route.name !== 'jobs-id') {
-      //     this.$router.push('/')
-      //   }
-      // }
     })
   },
   methods: {

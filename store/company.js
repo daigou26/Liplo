@@ -7,7 +7,8 @@ export const state = () => ({
   companyName: '',
   companyImageUrl: '',
   rating: null,
-  count: null,
+  currentCandidates: null,
+  allCandidates: null,
   feedback: null,
   email: '',
   members: null,
@@ -49,8 +50,11 @@ export const mutations = {
   setRating(state, rating) {
     state.rating = rating
   },
-  setCount(state, count) {
-    state.count = count
+  setCurrentCandidates(state, candidates) {
+    state.currentCandidates = candidates
+  },
+  setAllCandidates(state, candidates) {
+    state.allCandidates = candidates
   },
   setFeedback(state, feedback) {
     state.feedback = feedback
@@ -129,7 +133,8 @@ export const actions = {
         .then(function(doc) {
           if (doc.exists) {
             commit('setRating', doc.data()['rating'])
-            commit('setCount', doc.data()['count'])
+            commit('setCurrentCandidates', doc.data()['currentCandidates'])
+            commit('setAllCandidates', doc.data()['allCandidates'])
             commit('setFeedback', doc.data()['feedback'])
 
             // chart Data

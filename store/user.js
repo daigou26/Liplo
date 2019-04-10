@@ -17,7 +17,8 @@ export const state = () => ({
   birthTimestamp: '',
   desiredOccupations: null,
   interestingFields: null,
-  scouts: null,
+  isCandidate: false,
+  isLoading: true,
 })
 
 export const mutations = {
@@ -66,13 +67,16 @@ export const mutations = {
   setInterstingFields(state, fields) {
     state.interestingFields = fields
   },
-  setScouts(state, scouts) {
-    state.scouts = scouts
+  updateIsCandidate(state, isCandidate) {
+    state.isCandidate = isCandidate
+  },
+  updateIsLoading(state, isLoading) {
+    state.isLoading = isLoading
   },
 }
 
 export const actions = {
-  queryUser({commit, state}, uid) {
+  queryUser({commit, state}, {uid, companyId}) {
     firestore.collection('users')
       .doc(uid)
       .collection('detail')
@@ -95,7 +99,26 @@ export const actions = {
           commit('setBirthTimestamp', doc.data()['birthTimestamp'])
           commit('setDesiredOccupatins', doc.data()['desiredOccupations'])
           commit('setInterstingFields', doc.data()['interestingFields'])
-          commit('setScouts', doc.data()['scouts'])
+
+          // すでに候補者になっているか
+          firestore.collection('companies')
+            .doc(companyId)
+            .collection('candidates')
+            .where('user.uid', '==', uid)
+            .where('status.rejected', '==', false)
+            .get()
+            .then(function(snapshot) {
+              if (snapshot.empty) {
+                commit('updateIsCandidate', false)
+              } else {
+                commit('updateIsCandidate', true)
+              }
+              commit('updateIsLoading', false)
+            })
+            .catch(function(error) {
+              console.log("Error getting document:", error)
+              commit('updateIsLoading', false)
+            })
         }
       })
       .catch(function(error) {
@@ -104,26 +127,34 @@ export const actions = {
   },
   scout({commit, state},{user, pic, companyId, message}) {
     var scouts = state.scouts
+    const status = {
+      scouted: true,
+      inbox: false,
+      inProcess: false,
+      intern: false,
+      extendedIntern: false,
+      pass: false,
+      contracted: false,
+      hired: false,
+      rejected: false,
+    }
+
+    const scout = {
+      pic: pic,
+      message: message,
+    }
 
     firestore.collection('companies').doc(companyId)
-      .collection('scoutedUsers')
+      .collection('candidates')
       .add({
         user: user,
-        pic: pic,
-        message: message,
-        scoutedAt: new Date()
+        scout: scout,
+        status: status,
+        createdAt: new Date(),
+        type: 'scout',
       })
       .then(() => {
-        if (scouts) {
-          scouts.count += 1
-          scouts.companies.push(companyId)
-        } else {
-          scouts = {
-            count: 1,
-            companies: [companyId]
-          }
-        }
-        commit('setScouts', scouts)
+        commit('updateIsCandidate', true)
       })
       .catch((error) => {
         console.error("Error adding document: ", error)
@@ -145,6 +176,5 @@ export const actions = {
     commit('setBirthTimestamp', '')
     commit('setDesiredOccupatins', null)
     commit('setInterstingFields', null)
-    commit('setScouts', null)
   },
 }

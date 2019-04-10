@@ -3,9 +3,6 @@
     row
     white
     wrap
-    align-start
-    align-content-start
-    :style="{ height: windowHeight + 'px' }"
   >
     <!-- Top Image -->
     <v-flex xs12>
@@ -1053,7 +1050,6 @@ export default {
     // datePickerFormat: 'yyyy/MM/dd',
     // ja: ja,
     isQueried: false,
-    windowHeight: 0,
     imageFileSizeWarning: '2MB以下の画像を選択してください',
     selectedTopImageSize: 200,
     selectedTopImage: null,
@@ -1213,14 +1209,6 @@ export default {
     }),
   },
   mounted() {
-    let toolbarHeight
-    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
-      toolbarHeight = 48
-    } else {
-      toolbarHeight = 64
-    }
-    this.windowHeight = window.innerHeight - toolbarHeight
-
     if (this.companyId != null && !this.isQueried) {
       this.queryCompanyDetail(this.companyId)
     }

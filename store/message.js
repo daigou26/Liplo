@@ -32,8 +32,7 @@ export const actions = {
         console.error("Error adding document: ", error)
       })
   },
-  postMessageFromPic({commit}, {params, message, uid, imageUrl, name}) {
-    const chatId = params.id
+  postMessageFromPic({commit}, {chatId, message, uid, imageUrl, name}) {
     const pic = {
       uid: uid,
       imageUrl: imageUrl,

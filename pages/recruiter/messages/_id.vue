@@ -1,22 +1,18 @@
-imageUrl<template>
+<template>
   <v-layout
     white
     row
-    align-center
     wrap
-    :style="{ height: windowHeight + 'px' }"
   >
     <v-flex
       xs12
       md10
       offset-md1
       class="break"
-      style="height: 100%"
     >
       <v-layout
         row
         wrap
-        style="height: 100%"
       >
         <v-flex
           xs12
@@ -31,7 +27,6 @@ imageUrl<template>
             align-center
             wrap
             class="border"
-            style="height: 100%"
           >
             <!-- userName -->
             <div>
@@ -84,7 +79,7 @@ imageUrl<template>
             </v-flex>
             <!-- userInput -->
             <v-flex xs12 px-2>
-              <v-card class="pr-2">
+              <v-card class="pr-2" flat>
                 <v-textarea
                   v-model="message"
                   flat
@@ -114,7 +109,6 @@ export default {
     isQueried: false,
     message: '',
     showInfiniteLoading: false,
-    windowHeight: 0,
     messagesHeight: 0,
     count: 0,
   }),
@@ -147,9 +141,8 @@ export default {
     } else {
       toolbarHeight = 64
     }
-    this.windowHeight = window.innerHeight - toolbarHeight
     // companyName section = 48  userInput section = 63
-    this.messagesHeight = this.windowHeight - 48 - 63 - 30
+    this.messagesHeight = window.innerHeight - toolbarHeight - 48 - 63 -10
 
     this.showInfiniteLoading = true
 
@@ -206,10 +199,10 @@ export default {
     sendButtonClicked() {
       if (this.params.id != null && this.message) {
         this.postMessageFromPic({
-          params: this.$route.params,
+          chatId: this.$route.params.id,
           message: this.message,
           uid: this.uid,
-          profileImageUrl: this.recruiterImageUrl,
+          imageUrl: this.recruiterImageUrl,
           name: this.lastName + ' ' + this.firstName,
         })
       }

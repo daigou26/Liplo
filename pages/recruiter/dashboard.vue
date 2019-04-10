@@ -2,10 +2,7 @@
   <v-layout
     row
     white
-    align-start
-    align-content-start
     wrap
-    :style="{ height: windowHeight + 'px' }"
   >
     <template v-for="(item, index) in items">
       <v-flex
@@ -26,7 +23,7 @@
               }"
             >
               <div class="headline font-weight-bold">
-                <span v-if="count">{{ count[item.prop] }}</span>
+                <span v-if="currentCandidates">{{ currentCandidates[item.prop] }}</span>
                 <span v-else>0</span>
               </div>
               <div class="pt-2">
@@ -37,7 +34,9 @@
         </v-card>
       </v-flex>
     </template>
-    <v-flex xs12 hidden-md-and-up><v-divider></v-divider></v-flex>
+    <v-flex xs12 hidden-md-and-up>
+      <v-divider></v-divider>
+    </v-flex>
     <v-flex
       sm6
       xs12
@@ -125,7 +124,6 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
-      windowHeight: 0,
       isQueried: false,
       items: [
         {
@@ -172,7 +170,8 @@ export default {
       type: state => state.profile.type,
       companyId: state => state.profile.companyId,
       rating: state => state.company.rating,
-      count: state => state.company.count,
+      currentCandidates: state => state.company.currentCandidates,
+      allCandidates: state => state.company.allCandidates,
       feedback: state => state.company.feedback,
       reviewChartData: state => state.company.reviewChartData,
       feedbackChartData: state => state.company.feedbackChartData,
@@ -180,13 +179,6 @@ export default {
     }),
   },
   mounted() {
-    let toolbarHeight
-    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
-      toolbarHeight = 48
-    } else {
-      toolbarHeight = 64
-    }
-    this.windowHeight = window.innerHeight - toolbarHeight
     this.showChart = true
 
     if (this.companyId != null && !this.isQueried) {

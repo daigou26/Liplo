@@ -2,7 +2,6 @@
   <v-layout
     white
     row
-    align-center
     wrap
   >
     <v-flex xs12>

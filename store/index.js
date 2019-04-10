@@ -78,7 +78,7 @@ export const actions = {
   setLoading({commit}) {
     commit('setLoading')
   },
-  setAuthInfo({dispatch, commit}, {route, router, user, firstName, lastName, companyName, companyEmail, position}) {
+  setAuthInfo({dispatch, commit}, {route, router, user, type, firstName, lastName, companyName, companyEmail, position}) {
     if (user) {
       commit('setUid', user.uid)
       firestore.collection('users').doc(user.uid).get()
@@ -86,7 +86,8 @@ export const actions = {
           if (!doc.exists) {
             // サインアップ時
             if (firstName != '' && lastName != '') {
-              if (companyName != '' && companyEmail != '' && position != '') {
+
+              if (type == 'recruiter') {
                 // recruiter
                 const members = [{
                   uid: user.uid,
@@ -125,7 +126,7 @@ export const actions = {
                   .catch((error) => {
                     console.error("Error adding document: ", error)
                   })
-              } else {
+              } else if (type == 'user') {
                 // user
                 const batch = firestore.batch()
                 const userRef = firestore.collection('users').doc(user.uid)

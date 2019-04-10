@@ -3,7 +3,6 @@
     <v-layout
       row
       justify-center
-      align-center
     >
       <v-flex xs12>
         <v-card>
@@ -840,6 +839,7 @@ export default {
   mounted() {
     auth.onAuthStateChanged((user) => {
       if (user) {
+        console.log('profile');
         this.queryProfile(user.uid)
       }
     })

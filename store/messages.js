@@ -54,7 +54,7 @@ export const actions = {
   updateIsNewMessage({commit}, isNew) {
     commit('updateIsNewMessage', isNew)
   },
-  queryMessages({commit, state}, {params, infiniteState, uid, companyId}) {
+  queryMessages({commit, state}, {params, infiniteState}) {
     const messages = state.messages
     const chatId = params.id
     // すでにクエリしているか
@@ -66,7 +66,6 @@ export const actions = {
         .get()
         .then(function(snapshot) {
           var docCount = 0
-          console.log('add initial message');
           snapshot.forEach(function(doc) {
             docCount += 1
             const message = {

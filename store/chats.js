@@ -29,7 +29,7 @@ export const actions = {
   queryChats({commit}, {uid, companyId, chats}) {
     // すでにクエリしているか
     if (chats.length == 0) {
-      var chatsRef = firestore.collection('chats')
+      var chatsRef = firestore.collection('chats').where('messagesExist', '==', true)
       if (uid != null && companyId == null) {
         chatsRef = chatsRef.where('uid', '==', uid)
       } else if (uid == null && companyId != null) {
@@ -65,7 +65,7 @@ export const actions = {
           console.log("Error getting document:", error)
         })
     } else {
-      var chatsRef = firestore.collection('chats')
+      var chatsRef = firestore.collection('chats').where('messagesExist', '==', true)
       if (uid != null && companyId == null) {
         chatsRef = chatsRef.where('uid', '==', uid)
       } else if (uid == null && companyId != null) {
