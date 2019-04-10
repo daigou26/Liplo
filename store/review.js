@@ -14,6 +14,7 @@ export const state = () => ({
   flexibility: null,
   mentor: null,
   growth: null,
+  chartData: null,
 })
 
 export const mutations = {
@@ -53,6 +54,9 @@ export const mutations = {
   setGrowth(state, growth) {
     state.growth = growth
   },
+  setChartData(state, data) {
+    state.chartData = data
+  },
 }
 
 export const actions = {
@@ -66,7 +70,7 @@ export const actions = {
         console.error("Error adding document: ", error)
       })
   },
-  queryUserReview({commit}, {nuxt, params}) {
+  queryReview({commit}, {nuxt, params, companyId}) {
     const reviewId = params.id
 
     return firestore.collection('reviews')
@@ -86,6 +90,40 @@ export const actions = {
           commit('setFlexibility', doc.data()['flexibility'])
           commit('setMentor', doc.data()['mentor'])
           commit('setGrowth', doc.data()['growth'])
+
+          // chart Data
+          const chartData = {
+            labels: [
+              '成長できるか',
+              '仕事内容',
+              '裁量度',
+              '勤務中の自由度',
+              '出勤時間の柔軟性',
+              'メンター',
+              '雰囲気',
+            ],
+            datasets: [
+              {
+                borderColor: '#f87979',
+                backgroundColor: 'rgba(248, 121, 121, 0.1)',
+                data: [
+                  doc.data()['growth'],
+                  doc.data()['job'],
+                  doc.data()['discretion'],
+                  doc.data()['flexibility'],
+                  doc.data()['flexibleSchedule'],
+                  doc.data()['mentor'],
+                  doc.data()['atmosphere']
+                ]
+              }
+            ]
+          }
+          commit('setChartData', chartData)
+
+          if (companyId != doc.data()['companyId']) {
+            console.log('404')
+            nuxt.error({ statusCode: 404, message: 'not found' })
+          }
         } else {
           // 404
           console.log('404')
@@ -110,5 +148,6 @@ export const actions = {
     commit('setFlexibility', null)
     commit('setMentor', null)
     commit('setGrowth', null)
+    commit('setChartData', null)
   },
 }

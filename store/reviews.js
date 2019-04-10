@@ -3,6 +3,9 @@ import { firestore } from '@/plugins/firebase'
 
 export const state = () => ({
   reviews: null,
+  companyReviews: [],
+  isCompanyReviewsLoading: false,
+  allCompanyReviewsQueried: false,
   userReviews: [],
   isUserReviewsLoading: false,
   allUserReviewsQueried: false,
@@ -14,6 +17,18 @@ export const mutations = {
   },
   addReview(state, review) {
     state.reviews.push(review)
+  },
+  addCompanyReview(state, review) {
+    state.companyReviews.push(review)
+  },
+  resetCompanyReviews(state) {
+    state.companyReviews = []
+  },
+  updateIsCompanyReviewsLoading(state, isLoading) {
+    state.iscompanyReviewsLoading = isLoading
+  },
+  setAllCompanyReviewsQueried(state) {
+    state.allcompanyReviewsQueried = true
   },
   addUserReview(state, review) {
     state.userReviews.push(review)
@@ -77,6 +92,106 @@ export const actions = {
           console.log("Error getting document:", error);
         })
     }
+  },
+  queryCompanyReviews({commit, state}, companyId) {
+    const reviews = state.companyReviews
+    if (reviews.length == 0) {
+      return firestore.collection('reviews')
+        .where('companyId', '==', companyId)
+        .orderBy('createdAt', 'desc')
+        .limit(10)
+        .get()
+        .then(function(snapshot) {
+          var docCount = 0
+          snapshot.forEach(function(doc) {
+            docCount += 1
+
+            var timestamp = doc.data()['createdAt']
+            if (timestamp) {
+              let date = new Date( timestamp.seconds * 1000 )
+              let year  = date.getFullYear()
+              let month = date.getMonth() + 1
+              let day  = date.getDate()
+              timestamp = `${year}/${month}/${day}`
+            }
+
+            const review = {
+              reviewId: doc.id,
+              all: doc.data()['all'],
+              content: doc.data()['content'],
+              occupation: doc.data()['occupation'],
+              atmosphere: doc.data()['atmosphere'],
+              job: doc.data()['job'],
+              discretion: doc.data()['discretion'],
+              flexibleSchedule: doc.data()['flexibleSchedule'],
+              flexibility: doc.data()['flexibility'],
+              mentor: doc.data()['mentor'],
+              growth: doc.data()['growth'],
+              createdAt: doc.data()['createdAt'],
+              timestamp: timestamp,
+            }
+            commit('addCompanyReview', review)
+          })
+          if (docCount == 0) {
+            commit('setAllCompanyReviewsQueried')
+          }
+          commit('updateIsCompanyReviewsLoading', false)
+        })
+        .catch(function(error) {
+          console.log("Error getting document:", error);
+        })
+    } else if (reviews.length != 0) {
+      const lastIndex = reviews.length - 1
+      const lastDate = reviews[lastIndex].createdAt
+      return firestore.collection('reviews')
+        .where('companyId', '==', companyId)
+        .orderBy('createdAt', 'desc')
+        .startAfter(lastDate)
+        .limit(10)
+        .get()
+        .then(function(snapshot) {
+          var docCount = 0
+          snapshot.forEach(function(doc) {
+            docCount += 1
+
+            var timestamp = doc.data()['createdAt']
+            if (timestamp) {
+              let date = new Date( timestamp.seconds * 1000 )
+              let year  = date.getFullYear()
+              let month = date.getMonth() + 1
+              let day  = date.getDate()
+              timestamp = `${year}/${month}/${day}`
+            }
+
+            const review = {
+              reviewId: doc.id,
+              all: doc.data()['all'],
+              content: doc.data()['content'],
+              occupation: doc.data()['occupation'],
+              atmosphere: doc.data()['atmosphere'],
+              job: doc.data()['job'],
+              discretion: doc.data()['discretion'],
+              flexibleSchedule: doc.data()['flexibleSchedule'],
+              flexibility: doc.data()['flexibility'],
+              mentor: doc.data()['mentor'],
+              growth: doc.data()['growth'],
+              createdAt: doc.data()['createdAt'],
+              timestamp: timestamp,
+            }
+            commit('addCompanyReview', review)
+          })
+          if (docCount == 0) {
+            commit('setAllCompanyReviewsQueried')
+          }
+          commit('updateIsCompanyReviewsLoading', false)
+        })
+        .catch(function(error) {
+          console.log("Error getting document:", error);
+        })
+    }
+  },
+  updateIsCompanyReviewsLoading({commit}, isLoading) {
+    commit('updateIsCompanyReviewsLoading', isLoading)
   },
   queryUserReviews({commit}, {uid, reviews}) {
     if (reviews.length == 0) {
@@ -143,6 +258,9 @@ export const actions = {
   },
   resetState({commit}) {
     commit('setReviews', null)
+    commit('resetCompanyReviews')
+    commit('updateIsCompanyReviewsLoading', false)
+    commit('setAllCompanyReviewsQueried', false)
     commit('resetUserReviews')
     commit('updateUserReviewsLoading', false)
     commit('setAllUserReviewsQueried', false)

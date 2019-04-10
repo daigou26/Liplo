@@ -254,7 +254,7 @@ export default {
           this.queryUserReviews({uid: user.uid, reviews: this.userReviews})
           this.queryNotReviewedLists(user.uid)
         } else {
-          this.queryUserReview({nuxt: this.$nuxt, params: this.$route.params})
+          this.queryReview({nuxt: this.$nuxt, params: this.$route.params})
         }
       }
     })
@@ -279,7 +279,7 @@ export default {
     ...mapActions({
       queryUserReviews: 'reviews/queryUserReviews',
       updateUserReviewsLoading: 'reviews/updateUserReviewsLoading',
-      queryUserReview: 'review/queryUserReview',
+      queryReview: 'review/queryReview',
       queryNotReviewedLists: 'career/queryNotReviewedLists',
     }),
   }
