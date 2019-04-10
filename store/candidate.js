@@ -96,7 +96,10 @@ export const actions = {
       .then(function(doc) {
         if (doc.exists) {
           var pass = doc.data()['pass']
-          pass.expirationDate = new Date( doc.data()['pass'].expirationDate.seconds * 1000 )
+          if (pass) {
+            pass.expirationDate = new Date( doc.data()['pass'].expirationDate.seconds * 1000 )
+          }
+          
           commit('setUser', doc.data()['user'])
           commit('setStatus', doc.data()['status'])
           commit('setReviews', doc.data()['reviews'])
