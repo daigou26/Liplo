@@ -84,29 +84,20 @@ exports.updateCareer = functions.region('asia-northeast1')
         .catch((error) => {
           console.error("Error adding document: ", error)
         })
-    } else if (newStatus.extendedIntern) {
+    } else if (newStatus.extendedIntern || newStatus.pass || newStatus.rejected) {
+      var careerData = {
+        end: true,
+        endedAt: new Date()
+      }
+      if (newStatus.extendedIntern) {
+        careerData.isInternExtended = true
+      }
+
       return admin.firestore().collection('users')
         .doc(user.uid)
         .collection('career')
         .doc(career.careerId)
-        .update({
-          isInternExtended: true
-        })
-        .then(() => {
-          console.log('sendFeedback completed.')
-        })
-        .catch((error) => {
-          console.error("Error adding document: ", error)
-        })
-    } else if (newStatus.pass || newStatus.rejected) {
-      return admin.firestore().collection('users')
-        .doc(user.uid)
-        .collection('career')
-        .doc(career.careerId)
-        .update({
-          end: true,
-          endedAt: new Date()
-        })
+        .update(careerData)
         .then(() => {
           console.log('sendFeedback completed.')
         })
@@ -114,7 +105,6 @@ exports.updateCareer = functions.region('asia-northeast1')
           console.error("Error adding document: ", error)
         })
     }
-
   })
 
 // 候補者のステータスが internから変わった時、フィードバックを送る処理
