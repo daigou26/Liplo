@@ -165,7 +165,7 @@
                     required
                   ></v-textarea>
                   <v-btn
-                    :disabled="!reviewValid"
+                    :disabled="!reviewValid || notReviewedCompany.isWritten"
                     color="warning"
                     @click="reviewButtonClicked">
                     レビューを送信
@@ -221,17 +221,14 @@ export default {
     },
     ...mapState({
       uid: state => state.uid,
-      firstName: state => state.profile.firstName,
-      lastName: state => state.profile.lastName,
-      profileImageUrl: state => state.profile.imageUrl,
       notReviewedCompany: state => state.career.notReviewedCompany,
     }),
   },
   mounted() {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        if (this.$route.query.companyId != null) {
-          this.queryNotReviewedCompany({nuxt: this.$nuxt, uid: user.uid, companyId: this.$route.query.companyId})
+        if (this.$route.query.id != null) {
+          this.queryNotReviewedCompany({nuxt: this.$nuxt, uid: user.uid, careerId: this.$route.query.id})
         } else {
           this.$router.replace({ path: '/user/reviews'})
         }
@@ -244,9 +241,7 @@ export default {
       const all = Math.round((this.atmosphere + this.job + this.discretion + this.flexibleSchedule + this.flexibility + this.mentor + this.mentor) / 7 * 10) / 10
       const review = {
         uid: this.uid,
-        userName: this.lastName + ' ' + this.firstName,
-        profileImageUrl: this.profileImageUrl,
-        jobId: this.notReviewedCompany.jobId,
+        careerId: this.notReviewedCompany.careerId,
         companyId: this.notReviewedCompany.companyId,
         companyName: this.notReviewedCompany.companyName,
         companyImageUrl: this.notReviewedCompany.companyImageUrl,
@@ -262,7 +257,7 @@ export default {
         growth: this.growth,
         createdAt: new Date(),
       }
-      this.postReview(review)
+      this.postReview({router: this.$router, careerId: this.$route.query.id, review: review})
     },
     ...mapActions({
       postReview: 'review/postReview',

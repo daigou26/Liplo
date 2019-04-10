@@ -41,7 +41,7 @@
             <v-timeline dense>
               <v-timeline-item
                 v-for="item in career"
-                :key="item.jobId"
+                :key="item.careerId"
                 large
                 class="py-4"
               >

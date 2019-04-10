@@ -60,11 +60,18 @@ export const mutations = {
 }
 
 export const actions = {
-  postReview({commit}, review) {
-    return firestore.collection('reviews')
-      .add(review)
+  postReview({commit}, {router, careerId, review}) {
+    const batch = firestore.batch()
+    const careerRef = firestore.collection('users')
+      .doc(review.uid).collection('career').doc(careerId)
+    batch.update(careerRef, {
+      isReviewWritten: true
+    })
+    const reviewRef = firestore.collection('reviews').doc()
+    batch.set(reviewRef, review)
+    batch.commit()
       .then(() => {
-        console.log('post review')
+        router.replace({path: '/user/reviews'})
       })
       .catch((error) => {
         console.error("Error adding document: ", error)
