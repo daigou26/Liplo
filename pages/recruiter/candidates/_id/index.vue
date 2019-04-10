@@ -141,7 +141,7 @@
                 <span>有効期限:　</span>{{ passExpirationDate }}
               </div>
               <div>
-                <span>職種:　</span>{{ occupation }}
+                <span>職種:　</span>{{ passOccupation }}
               </div>
 
             </v-flex>
@@ -163,9 +163,9 @@
               <!-- 職種 -->
               <v-text-field
                 label="職種"
-                v-model="tempOccupation"
+                v-model="tempPasspassOccupation"
                 solo
-                :rules="occupationRules"
+                :rules="passOccupationRules"
                 required
               ></v-text-field>
               <v-btn
@@ -179,7 +179,7 @@
                   params: params,
                   companyId: companyId,
                   expirationDate: tempExpirationDate,
-                  occupation: tempOccupation
+                  occupation: tempPasspassOccupation
                 })"
               >
                 更新
@@ -286,7 +286,7 @@
                       <span>有効期限:　</span>{{ passExpirationDate }}
                     </div>
                     <div>
-                      <span>職種:　</span>{{ occupation }}
+                      <span>職種:　</span>{{ passOccupation }}
                     </div>
 
                   </v-flex>
@@ -308,7 +308,7 @@
                     <!-- 職種 -->
                     <v-text-field
                       label="職種"
-                      v-model="tempOccupation"
+                      v-model="tempPassOccupation"
                       solo
                       :rules="occupationRules"
                       required
@@ -324,7 +324,7 @@
                         params: params,
                         companyId: companyId,
                         expirationDate: tempExpirationDate,
-                        occupation: tempOccupation
+                        passOccupation: tempPasspassOccupation
                       })"
                     >
                       更新
@@ -339,24 +339,35 @@
                   :items="statusItems"
                   solo
                 ></v-select>
-                <div v-if="status.scouted == true">
+                <div v-if="status.scouted">
                   メッセージのやりとりが始まり次第、ステータスを<span class="font-weight-bold cyan--text text--lighten-1">選考中</span>に更新してください。
                 </div>
-                <div v-if="status.inbox == true">
+                <div v-if="status.inbox">
                   この応募者を選考する場合は、ステータスを<span class="font-weight-bold cyan--text text--lighten-1">選考中</span>に変え、メッセージを送りましょう。
                 </div>
-                <div v-if="status.inProcess == true">
+                <div v-if="status.inProcess">
                   ステータスを<span class="font-weight-bold orange--text text--darken-1">インターン</span>に変更する場合は、インターンが確定してからお願いします。
                   ステータスを切り替えた翌月に請求書をお送り致します。
+                  <div v-if="tempStatus == 'インターン'" class="py-3">
+                    <v-form v-model="internValid">
+                      <!-- 職種 -->
+                      <v-text-field
+                        label="職種"
+                        v-model="internOccupation"
+                        :rules="occupationRules"
+                        required
+                      ></v-text-field>
+                    </v-form>
+                  </div>
                 </div>
-                <div v-if="status.intern == true">
+                <div v-if="status.intern">
                   インターンを延長する場合は<span class="font-weight-bold orange--text text--darken-1">インターン延長</span>に、
                 </div>
-                <div v-if="status.intern == true || status.extendedIntern == true">
+                <div v-if="status.intern || status.extendedIntern">
                   内定パスを送る場合は<span class="font-weight-bold teal--text text--lighten-1">内定パス</span>に変更してください。
                 </div>
                 <!-- feedback -->
-                <div v-if="status.intern == true" class="py-3">
+                <div v-if="status.intern" class="py-3">
                   <div class="pt-3 subheading font-weight-bold">
                     フィードバック
                   </div>
@@ -405,7 +416,7 @@
                       <!-- 職種 -->
                       <v-text-field
                         label="職種"
-                        v-model="occupation"
+                        v-model="passOccupation"
                         solo
                         :rules="occupationRules"
                         required
@@ -608,6 +619,8 @@ export default {
     count: 0,
     tabItemHeight: 0,
     messagesHeight: 0,
+    internValid: true,
+    internOccupation: '',
     passValid: true,
     feedbackValid: true,
     tempStatus: '',
@@ -617,7 +630,7 @@ export default {
       v => (v && v.length <= 200) || '200字以内で入力してください'
     ],
     expirationDate: null,
-    occupation: '',
+    passOccupation: '',
     occupationRules: [
       v => !!v || '職種を入力してください',
       v => (v && v.length <= 20) || '20字以内で入力してください'
@@ -634,7 +647,7 @@ export default {
     ],
     editTagsValid: true,
     tempExpirationDate: null,
-    tempOccupation: '',
+    tempPassOccupation: '',
     editPassValid: true,
     reviewValid: true,
     rating: 0,
@@ -683,7 +696,9 @@ export default {
       if (currentStatus == this.tempStatus) {
         return true
       }
-      if (this.status.intern && this.tempStatus == '内定パス') {
+      if (this.status.inProcess && this.tempStatus == 'インターン') {
+        return !this.internValid
+      } else if (this.status.intern && this.tempStatus == '内定パス') {
         return !this.feedbackValid || !this.passValid || this.expirationDate == null
       } else if (this.status.intern && this.tempStatus != '内定パス') {
         return !this.feedbackValid
@@ -874,7 +889,7 @@ export default {
     pass(pass) {
       if (pass) {
         this.expirationDate = pass.expirationDate
-        this.occupation = pass.occupation
+        this.passOccupation = pass.occupation
       }
     },
     messages(messages) {
@@ -896,7 +911,7 @@ export default {
     },
     passEditButtonClicked() {
       this.tempExpirationDate = this.expirationDate
-      this.tempOccupation = this.occupation
+      this.tempPassOccupation = this.passOccupation
       this.updateIsEditingPass(true)
     },
     removeSkill(item) {
@@ -934,11 +949,15 @@ export default {
         newStatus: newStatus,
       }
 
+      if (this.tempStatus == 'インターン') {
+        candidateData.occupation = this.internOccupation
+      }
+
       if (this.tempStatus == '内定パス') {
         const pass = {
           expirationDate: this.expirationDate,
           message: this.passMessage,
-          occupation: this.occupation,
+          occupation: this.passOccupation,
           pic: {
             uid: this.uid,
             name: this.lastName + ' ' + this.firstName,

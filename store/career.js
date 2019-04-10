@@ -20,19 +20,16 @@ export const mutations = {
 }
 
 export const actions = {
-  queryNotReviewedCompany({commit}, {nuxt, uid, companyId}) {
-    return firestore.collection('users').doc(uid)
+  queryNotReviewedCompany({commit}, {nuxt, uid, careerId}) {
+    firestore.collection('users')
+      .doc(uid)
       .collection('career')
-      .where('companyId', '==', companyId)
-      .where('end', '==', true)
-      .where('isReviewWritten', '==', false)
+      .doc(careerId)
       .get()
-      .then(function(snapshot) {
-        var docCount = 0
-        snapshot.forEach(function(doc) {
-          docCount += 1
+      .then(function(doc) {
+        if (doc.exists) {
           const company = {
-            jobId: doc.id,
+            careerId: doc.id,
             occupation: doc.data()['occupation'],
             companyId: doc.data()['companyId'],
             companyImageUrl: doc.data()['companyImageUrl'],
@@ -41,18 +38,17 @@ export const actions = {
             end: doc.data()['end'],
             isReviewWritten: doc.data()['isReviewWritten'],
           }
-          if (doc.data()['isReviewWritten'] == true) {
+          if (doc.data()['isReviewWritten']) {
             nuxt.error({ statusCode: 404, message: 'not found' })
           }
           commit('setNotReviewedCompany', company)
-        })
-        if (docCount == 0) {
+        } else {
           nuxt.error({ statusCode: 404, message: 'not found' })
         }
       })
       .catch(function(error) {
-        nuxt.error({ statusCode: 404, message: 'not found' })
         console.log("Error getting document:", error)
+        nuxt.error({ statusCode: 404, message: 'not found' })
       })
   },
   queryNotReviewedLists({commit}, uid) {
@@ -65,7 +61,7 @@ export const actions = {
         const data = []
         snapshot.forEach(function(doc) {
           const company = {
-            jobId: doc.id,
+            careerId: doc.id,
             occupation: doc.data()['occupation'],
             companyId: doc.data()['companyId'],
             companyImageUrl: doc.data()['companyImageUrl'],
@@ -98,7 +94,7 @@ export const actions = {
             startedAt = `${year}/${month}/${day}`
           }
           const job = {
-            jobId: doc.id,
+            careerId: doc.id,
             occupation: doc.data()['occupation'],
             companyId: doc.data()['companyId'],
             companyImageUrl: doc.data()['companyImageUrl'],

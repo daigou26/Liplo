@@ -45,7 +45,7 @@
               </div>
               <v-list v-if="notReviewedLists != null && notReviewedLists.length != 0" two-line class="border">
                 <template v-for="(item, index) in notReviewedLists">
-                  <v-list-tile :to="'/user/reviews/new?companyId=' + item.companyId" >
+                  <v-list-tile :to="'/user/reviews/new?id=' + item.careerId" >
                     <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
                       <v-img
                         :src="item.companyImageUrl"

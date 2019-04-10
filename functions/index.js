@@ -3,6 +3,120 @@ const admin = require('firebase-admin')
 admin.initializeApp()
 
 
+// 候補者のステータスが internに変わった時、user の career を更新
+exports.updateCareer = functions.region('asia-northeast1')
+  .firestore
+  .document('companies/{companyId}/candidates/{candidateId}')
+  .onUpdate((change, context) => {
+    const newValue = change.after.data()
+    const previousValue = change.before.data()
+    const beforeStatus = previousValue.status
+    const newStatus = newValue.status
+    // ステータス変化なし
+    if (
+      newStatus.scouted == beforeStatus.scouted &&
+      newStatus.inbox == beforeStatus.inbox &&
+      newStatus.inProcess == beforeStatus.inProcess &&
+      newStatus.intern == beforeStatus.intern &&
+      newStatus.extendedIntern == beforeStatus.extendedIntern &&
+      newStatus.pass == beforeStatus.pass &&
+      newStatus.contracted == beforeStatus.contracted &&
+      newStatus.hired == beforeStatus.hired &&
+      newStatus.rejected == beforeStatus.rejected
+    ) {
+      return 0
+    }
+    // 前のステータスが選考中、インターン、インターン延長でなければ終了
+    if (!(beforeStatus.inProcess || beforeStatus.intern || beforeStatus.extendedIntern)) {
+      return 0
+    }
+
+    const companyId = context.params.companyId
+    const candidateId = context.params.candidateId
+    const createdAt = newValue.updatedAt
+    const user = newValue.user
+    const career = newValue.career
+    const occupation = career.internOccupation
+
+    if (newStatus.intern) {
+      return admin.firestore()
+        .collection('companies')
+        .doc(companyId)
+        .get()
+        .then(doc => {
+          if (doc.exists) {
+            const companyName = doc.data().name
+            const companyImageUrl = doc.data().imageUrl
+            const careerId = admin.firestore().collection('users').doc(user.uid)
+              .collection('career').doc().id
+
+            var careerData = {
+              occupation: occupation,
+              companyId: companyId,
+              companyName: companyName,
+              companyImageUrl: companyImageUrl,
+              startedAt: createdAt,
+              end: false,
+              isReviewWritten: false,
+              isInternExtended: false,
+            }
+
+            const batch = admin.firestore().batch()
+            const careerRef = admin.firestore().collection('users').doc(user.uid)
+              .collection('career').doc(careerId)
+            batch.set(careerRef, careerData)
+            const candidateRef = admin.firestore().collection('companies')
+              .doc(companyId).collection('candidates').doc(candidateId)
+
+            career.careerId = careerId
+            batch.update(candidateRef, {
+              career: career
+            })
+            batch.commit()
+              .then(() => {
+                console.log('updateCareer completed.')
+              })
+              .catch((error) => {
+                console.error("Error adding document: ", error)
+              })
+          }
+        })
+        .catch((error) => {
+          console.error("Error adding document: ", error)
+        })
+    } else if (newStatus.extendedIntern) {
+      return admin.firestore().collection('users')
+        .doc(user.uid)
+        .collection('career')
+        .doc(career.careerId)
+        .update({
+          isInternExtended: true
+        })
+        .then(() => {
+          console.log('sendFeedback completed.')
+        })
+        .catch((error) => {
+          console.error("Error adding document: ", error)
+        })
+    } else if (newStatus.pass || newStatus.rejected) {
+      return admin.firestore().collection('users')
+        .doc(user.uid)
+        .collection('career')
+        .doc(career.careerId)
+        .update({
+          end: true,
+          endedAt: new Date()
+        })
+        .then(() => {
+          console.log('sendFeedback completed.')
+        })
+        .catch((error) => {
+          console.error("Error adding document: ", error)
+        })
+    }
+
+  })
+
 // 候補者のステータスが internから変わった時、フィードバックを送る処理
 exports.sendFeedback = functions.region('asia-northeast1')
   .firestore
@@ -755,7 +869,6 @@ exports.addReview = functions.region('asia-northeast1')
   .onCreate((snap, context) => {
 
     const uid = snap.data().uid
-    const jobId = snap.data().jobId
     const companyId = snap.data().companyId
     const content = snap.data().content
     const occupation = snap.data().occupation
@@ -776,35 +889,58 @@ exports.addReview = functions.region('asia-northeast1')
       .get()
       .then(doc => {
         if (doc.exists) {
-          const reviewCount = doc.data().reviews.rating.count
-          const atmosphere = Math.round((doc.data().reviews.rating.atmosphere * reviewCount + snap.data().atmosphere) / (reviewCount + 1) * 10) / 10
-          const job = Math.round((doc.data().reviews.rating.job * reviewCount + snap.data().job) / (reviewCount + 1) * 10) / 10
-          const discretion = Math.round((doc.data().reviews.rating.discretion * reviewCount + snap.data().discretion) / (reviewCount + 1) * 10) / 10
-          const flexibleSchedule = Math.round((doc.data().reviews.rating.flexibleSchedule * reviewCount + snap.data().flexibleSchedule) / (reviewCount + 1) * 10) / 10
-          const flexibility = Math.round((doc.data().reviews.rating.flexibility * reviewCount + snap.data().flexibility) / (reviewCount + 1) * 10) / 10
-          const mentor = Math.round((doc.data().reviews.rating.mentor * reviewCount + snap.data().mentor) / (reviewCount + 1) * 10) / 10
-          const growth = Math.round((doc.data().reviews.rating.growth * reviewCount + snap.data().growth) / (reviewCount + 1) * 10) / 10
-          const all = Math.round((atmosphere + job + discretion + flexibleSchedule + flexibility + mentor + growth) / 7 * 10) / 10
-          const comments = doc.data().reviews.comments
-          console.log('comments length:', comments.length)
-          console.log('comments :', comments)
+          var reviewCount
+          var atmosphere
+          var job
+          var discretion
+          var flexibleSchedule
+          var flexibility
+          var mentor
+          var growth
+          var all
+          var comments
 
-          if (comments == null) {
+          if (doc.data().reviews) {
+            reviewCount = doc.data().reviews.rating.count
+            atmosphere = Math.round((doc.data().reviews.rating.atmosphere * reviewCount + snap.data().atmosphere) / (reviewCount + 1) * 10) / 10
+            job = Math.round((doc.data().reviews.rating.job * reviewCount + snap.data().job) / (reviewCount + 1) * 10) / 10
+            discretion = Math.round((doc.data().reviews.rating.discretion * reviewCount + snap.data().discretion) / (reviewCount + 1) * 10) / 10
+            flexibleSchedule = Math.round((doc.data().reviews.rating.flexibleSchedule * reviewCount + snap.data().flexibleSchedule) / (reviewCount + 1) * 10) / 10
+            flexibility = Math.round((doc.data().reviews.rating.flexibility * reviewCount + snap.data().flexibility) / (reviewCount + 1) * 10) / 10
+            mentor = Math.round((doc.data().reviews.rating.mentor * reviewCount + snap.data().mentor) / (reviewCount + 1) * 10) / 10
+            growth = Math.round((doc.data().reviews.rating.growth * reviewCount + snap.data().growth) / (reviewCount + 1) * 10) / 10
+            all = Math.round((atmosphere + job + discretion + flexibleSchedule + flexibility + mentor + growth) / 7 * 10) / 10
+            comments = doc.data().reviews.comments
+
+            if (comments == null) {
+              comments = [comment]
+            } else if (comments.length < 3) {
+              comments.push(comment)
+            } else if (comments.length >= 3) {
+              var date
+              var index
+              comments.forEach((comment, i) => {
+                if (date == null || date > comment.createdAt.seconds * 1000) {
+                  date = comment.createdAt.seconds * 1000
+                  index = i
+                }
+              })
+              comments.splice(index, 1)
+              comments.push(comment)
+            }
+          } else {
+            reviewCount = 0
+            atmosphere = snap.data().atmosphere
+            job = snap.data().job
+            discretion = snap.data().discretion
+            flexibleSchedule = snap.data().flexibleSchedule
+            flexibility = snap.data().flexibility
+            mentor = snap.data().mentor
+            growth = snap.data().growth
+            all = Math.round((atmosphere + job + discretion + flexibleSchedule + flexibility + mentor + growth) / 7 * 10) / 10
             comments = [comment]
-          } else if (comments.length < 3) {
-            comments.push(comment)
-          } else if (comments.length >= 3) {
-            var date
-            var index
-            comments.forEach((comment, i) => {
-              if (date == null || date > comment.createdAt.seconds * 1000) {
-                date = comment.createdAt.seconds * 1000
-                index = i
-              }
-            })
-            comments.splice(index, 1)
-            comments.push(comment)
           }
+
           const rating = {
             all: all,
             count: reviewCount + 1,
@@ -830,10 +966,6 @@ exports.addReview = functions.region('asia-northeast1')
           })
           const companyDetailRef = admin.firestore().collection('companies').doc(companyId).collection('detail').doc(companyId)
           batch.update(companyDetailRef, reviews)
-          const careerRef = admin.firestore().collection('users').doc(uid).collection('career').doc(jobId)
-          batch.update(careerRef, {
-            isReviewWritten: true
-          })
           batch.commit()
             .then(() => {
               console.log('addReview completed.')

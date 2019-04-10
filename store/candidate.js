@@ -182,6 +182,7 @@ export const actions = {
     params,
     companyId,
     newStatus,
+    occupation,
     feedback,
     pass
   }) {
@@ -197,6 +198,11 @@ export const actions = {
       updatedAt: new Date()
     }
 
+    if (newStatus.intern) {
+      candidateData.career = {
+        internOccupation: occupation,
+      }
+    }
     if (newStatus.pass) {
       candidateData.pass = pass
     }
