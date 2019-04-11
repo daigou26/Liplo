@@ -574,76 +574,160 @@ exports.scoutUser = functions.region('asia-northeast1')
       })
   })
 
-// 企業情報を編集した時の処理
-exports.editCompanyProfile = functions.region('asia-northeast1')
+// ユーザーが応募した時の処理
+exports.applyForJob = functions.region('asia-northeast1')
   .firestore
-  .document('companies/{companyId}/detail/{companyDetailId}')
-  .onUpdate((change, context) => {
-    const previousValue = change.before.data()
-    const newValue = change.after.data()
+  .document('companies/{companyId}/candidates/{candidateId}')
+  .onCreate((snap, context) => {
+    if (snap.data().status.inbox == false) {
+      return 0
+    }
     const companyId = context.params.companyId
-    const companyName = newValue.companyName
-    const companyImageUrl = newValue.companyImageUrl
-    const mission = newValue.mission
-    const vision = newValue.vision
-    const value = newValue.value
-    const culture = newValue.culture
-    const system = newValue.system
-    const why = newValue.why
-    const what = newValue.what
-    const services = newValue.services
-    const welfare = newValue.welfare
-    const members = newValue.members
-    var isCompanyNameChanged = false
-    var isCompanyImageUrlChanged = false
+    const candidateId = context.params.candidateId
+    const uid = snap.data().user.uid
+    const user = snap.data().user
+    const jobId = snap.data().jobId
+    const createdAt = snap.data().createdAt
 
-    if (companyName != previousValue.companyName) {
-      isCompanyNameChanged = true
-    }
-    if (companyImageUrl != previousValue.companyImageUrl) {
-      isCompanyImageUrlChanged = true
-    }
-
+    // company の応募者数の更新、応募者の情報格納
     return admin.firestore()
-      .collection('jobs')
-      .where('companyId', '==', companyId)
+      .collection('companies').doc(companyId)
       .get()
-      .then(function(snapshot) {
-        const batch = admin.firestore().batch()
+      .then(doc => {
+        if (doc.exists) {
+          const companyName = doc.data().name
+          const companyImageUrl = doc.data().imageUrl
+          var currentCandidates = doc.data().currentCandidates
+          var allCandidates = doc.data().allCandidates
+          // 処理が完了したかのフラグ
+          var isUpdatedCandidates = false
+          var setChatId = false
 
-        snapshot.forEach(function(doc) {
-          if (isCompanyNameChanged || isCompanyImageUrlChanged) {
-            const jobRef = admin.firestore().collection('jobs').doc(doc.id)
-            batch.update(jobRef, {
-              companyName: companyName,
-              companyImageUrl: companyImageUrl
-            })
+          if (currentCandidates) {
+            currentCandidates.inbox += 1
+          } else {
+            currentCandidates = {
+              scouted: 0,
+              inbox: 1,
+              inProcess: 0,
+              intern: 0,
+              extendedIntern: 0,
+              pass: 0,
+              contracted: 0,
+              hired: 0
+            }
           }
-          const jobDetailRef = admin.firestore().collection('jobs').doc(doc.id)
-            .collection('detail')
-            .doc(doc.id)
 
-          batch.update(jobDetailRef, {
-            companyName: companyName,
-            companyImageUrl: companyImageUrl,
-            mission: mission,
-            vision: vision,
-            value: value,
-            culture: culture,
-            system: system,
-            why: why,
-            what: what,
-            services: services,
-            welfare: welfare
+          const initialValue = {
+            all: 0,
+            scout: 0,
+            application: 0,
+          }
+
+          if (allCandidates) {
+            allCandidates.inbox += 1
+          } else {
+            allCandidates = {
+              scouted: 0,
+              inbox: 1,
+              inProcess: initialValue,
+              intern: initialValue,
+              extendedIntern: initialValue,
+              pass: initialValue,
+              contracted: initialValue,
+              hired: initialValue,
+              rejected: initialValue,
+            }
+          }
+
+          const batch = admin.firestore().batch()
+          const companyRef = admin.firestore().collection('companies').doc(companyId)
+          batch.update(companyRef, {
+            currentCandidates: currentCandidates,
+            allCandidates: allCandidates,
           })
-        })
-        batch.commit()
-          .then(() => {
-            console.log('editCompanyProfile completed.')
+          const companyApplicantsRef = admin.firestore().collection('companies').doc(companyId).collection('applicants').doc()
+          batch.set(companyApplicantsRef, {
+            user: user,
+            createdAt: createdAt,
+            jobId: jobId
           })
-          .catch((error) => {
-            console.error("Error adding document: ", error)
-          })
+          batch.commit()
+            .then(() => {
+              isUpdatedCandidates = true
+              if (isUpdatedCandidates && setChatId) {
+                console.log('applyForJob completed.')
+              }
+            })
+            .catch((error) => {
+              console.error("Error adding document: ", error)
+            })
+
+          // chat作成、chatIdをcandidateに格納
+          admin.firestore()
+            .collection('chats')
+            .where('companyId', '==', companyId)
+            .where('uid', '==', user.uid)
+            .get()
+            .then(function(snapshot) {
+              if (!snapshot.empty) {
+                var docCount = 0
+                snapshot.forEach(function(chatDoc) {
+                  docCount += 1
+                  if (docCount == 1) {
+                    admin.firestore().collection('companies')
+                      .doc(companyId)
+                      .collection('candidates')
+                      .doc(candidateId)
+                      .update({
+                        chatId: chatDoc.id
+                      })
+                      .then(() => {
+                        setChatId = true
+                        if (isUpdatedCandidates && setChatId) {
+                          console.log('applyForJob completed.')
+                        }
+                      })
+                      .catch((error) => {
+                        console.error("Error adding document: ", error)
+                      })
+                  }
+                })
+              } else {
+                const chatId = admin.firestore().collection('chats').doc().id
+                const batch = admin.firestore().batch()
+                const chatsRef = admin.firestore().collection('chats').doc(chatId)
+                batch.set(chatsRef, {
+                  uid: user.uid,
+                  profileImageUrl: user.imageUrl,
+                  userName: user.name,
+                  companyId: companyId,
+                  companyImageUrl: companyImageUrl,
+                  companyName: companyName,
+                  messagesExist: false,
+                  updatedAt: createdAt,
+                })
+                const candidateRef = admin.firestore().collection('companies').doc(companyId)
+                  .collection('candidates').doc(candidateId)
+                batch.update(candidateRef, {
+                  chatId: chatId
+                })
+                batch.commit()
+                  .then(() => {
+                    setChatId = true
+                    if (isUpdatedCandidates && setChatId) {
+                      console.log('applyForJob completed.')
+                    }
+                  })
+                  .catch((error) => {
+                    console.error("Error adding document: ", error)
+                  })
+              }
+            })
+            .catch(err => {
+              console.log('Error getting document', err)
+            })
+        }
       })
       .catch(err => {
         console.log('Error getting document', err)
@@ -750,68 +834,199 @@ exports.postJob = functions.region('asia-northeast1')
       })
   })
 
-// 採用担当者がプロフィールを編集した時の処理
-exports.editRecruiterProfile = functions.region('asia-northeast1')
+// 企業情報を編集した時の処理
+exports.editCompanyProfile = functions.region('asia-northeast1')
+  .firestore
+  .document('companies/{companyId}/detail/{companyDetailId}')
+  .onUpdate((change, context) => {
+    const previousValue = change.before.data()
+    const newValue = change.after.data()
+    const companyId = context.params.companyId
+    const companyName = newValue.companyName
+    const companyImageUrl = newValue.companyImageUrl
+    const mission = newValue.mission
+    const vision = newValue.vision
+    const value = newValue.value
+    const culture = newValue.culture
+    const system = newValue.system
+    const why = newValue.why
+    const what = newValue.what
+    const services = newValue.services
+    const welfare = newValue.welfare
+    const members = newValue.members
+    var isCompanyNameChanged = false
+    var isCompanyImageUrlChanged = false
+
+    if (companyName != previousValue.companyName) {
+      isCompanyNameChanged = true
+    }
+    if (companyImageUrl != previousValue.companyImageUrl) {
+      isCompanyImageUrlChanged = true
+    }
+
+    return admin.firestore()
+      .collection('jobs')
+      .where('companyId', '==', companyId)
+      .get()
+      .then(function(snapshot) {
+        const batch = admin.firestore().batch()
+
+        snapshot.forEach(function(doc) {
+          if (isCompanyNameChanged || isCompanyImageUrlChanged) {
+            const jobRef = admin.firestore().collection('jobs').doc(doc.id)
+            batch.update(jobRef, {
+              companyName: companyName,
+              companyImageUrl: companyImageUrl
+            })
+          }
+          const jobDetailRef = admin.firestore().collection('jobs').doc(doc.id)
+            .collection('detail')
+            .doc(doc.id)
+
+          batch.update(jobDetailRef, {
+            companyName: companyName,
+            companyImageUrl: companyImageUrl,
+            mission: mission,
+            vision: vision,
+            value: value,
+            culture: culture,
+            system: system,
+            why: why,
+            what: what,
+            services: services,
+            welfare: welfare
+          })
+        })
+        batch.commit()
+          .then(() => {
+            console.log('editCompanyProfile completed.')
+          })
+          .catch((error) => {
+            console.error("Error adding document: ", error)
+          })
+      })
+      .catch(err => {
+        console.log('Error getting document', err)
+      })
+  })
+
+// プロフィールを編集した時の処理
+exports.editProfile = functions.region('asia-northeast1')
   .firestore
   .document('users/{uid}/profile/{profile}')
   .onUpdate((change, context) => {
+    const previousValue = change.before.data()
     const newValue = change.after.data()
     const uid = context.params.uid
     const companyId = newValue.companyId
     const position = newValue.position
     const firstName = newValue.firstName
     const lastName = newValue.lastName
+    const imageUrl = newValue.imageUrl
     const selfIntro = newValue.selfIntro
 
     if (companyId == null) {
-      return 0
-    }
+      // name, imageUrl どれも変わっていない場合はreturn
+      if (
+        firstName == previousValue.firstName &&
+        lastName == previousValue.lastName &&
+        imageUrl == previousValue.imageUrl
+      ) {
+        return 0
+      }
 
-    return admin.firestore()
-      .collection('companies').doc(companyId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          let members = doc.data().members
+      var userData = {
+        userName: lastName + ' ' + firstName,
+      }
+      if (imageUrl) {
+        userData.profileImageUrl = imageUrl
+      }
 
-          var index
-          members.forEach((member, i) => {
-            if (member.uid == uid) {
-              index = i
-            }
-          })
-
-          const member = {
-            uid: uid,
-            position: position,
-            name: lastName + ' ' + firstName,
-            selfIntro: selfIntro,
-          }
-          members.splice(index, 1)
-          members.push(member)
-
-          // members更新
+      // user が profile を編集した時
+      // chats のみ
+      return admin.firestore()
+        .collection('chats')
+        .where('uid', '==', uid)
+        .get()
+        .then(function(snapshot) {
           const batch = admin.firestore().batch()
-          const companyRef = admin.firestore().collection('companies').doc(companyId)
-          batch.update(companyRef, {
-            members: members,
+
+          snapshot.forEach(function(doc) {
+            const chatRef = admin.firestore().collection('chats').doc(doc.id)
+            batch.update(chatRef, userData)
           })
-          const companyDetailRef = admin.firestore().collection('companies').doc(companyId).collection('detail').doc(companyId)
-          batch.update(companyDetailRef, {
-            members: members,
-          })
+
           batch.commit()
             .then(() => {
-              console.log('editRecruiterProfile completed.')
+              console.log('user editProfile completed.')
             })
             .catch((error) => {
               console.error("Error adding document: ", error)
             })
-        }
-      })
-      .catch(err => {
-        console.log('Error getting document', err)
-      })
+        })
+        .catch((error) => {
+          console.error("Error adding document: ", error)
+        })
+    } else {
+      // name, imageUrl, position, selfIntro どれも変わっていない場合はreturn
+      if (
+        firstName == previousValue.firstName &&
+        lastName == previousValue.lastName &&
+        imageUrl == previousValue.imageUrl &&
+        position == previousValue.position &&
+        selfIntro == previousValue.selfIntro
+      ) {
+        return 0
+      }
+
+      // recruiter が profile を編集した時
+      // 企業の member 内の情報更新
+      return admin.firestore()
+        .collection('companies').doc(companyId)
+        .get()
+        .then(doc => {
+          if (doc.exists) {
+            let members = doc.data().members
+
+            var index
+            members.forEach((member, i) => {
+              if (member.uid == uid) {
+                index = i
+              }
+            })
+
+            const member = {
+              uid: uid,
+              position: position,
+              name: lastName + ' ' + firstName,
+              selfIntro: selfIntro,
+            }
+            members.splice(index, 1)
+            members.push(member)
+
+            // members更新
+            const batch = admin.firestore().batch()
+            const companyRef = admin.firestore().collection('companies').doc(companyId)
+            batch.update(companyRef, {
+              members: members,
+            })
+            const companyDetailRef = admin.firestore().collection('companies').doc(companyId).collection('detail').doc(companyId)
+            batch.update(companyDetailRef, {
+              members: members,
+            })
+            batch.commit()
+              .then(() => {
+                console.log('recruiter editProfile completed.')
+              })
+              .catch((error) => {
+                console.error("Error adding document: ", error)
+              })
+          }
+        })
+        .catch(err => {
+          console.log('Error getting document', err)
+        })
+    }
   })
 
 // 企業が登録された時の処理
@@ -1034,166 +1249,6 @@ exports.acceptJobOffer = functions.region('asia-northeast1')
               })
           }
         })
-      })
-      .catch(err => {
-        console.log('Error getting document', err)
-      })
-  })
-
-// ユーザーが応募した時の処理
-exports.applyForJob = functions.region('asia-northeast1')
-  .firestore
-  .document('companies/{companyId}/candidates/{candidateId}')
-  .onCreate((snap, context) => {
-    if (snap.data().status.inbox == false) {
-      return 0
-    }
-    const companyId = context.params.companyId
-    const candidateId = context.params.candidateId
-    const uid = snap.data().user.uid
-    const user = snap.data().user
-    const jobId = snap.data().jobId
-    const createdAt = snap.data().createdAt
-
-    // company の応募者数の更新、応募者の情報格納
-    return admin.firestore()
-      .collection('companies').doc(companyId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          const companyName = doc.data().name
-          const companyImageUrl = doc.data().imageUrl
-          var currentCandidates = doc.data().currentCandidates
-          var allCandidates = doc.data().allCandidates
-          // 処理が完了したかのフラグ
-          var isUpdatedCandidates = false
-          var setChatId = false
-
-          if (currentCandidates) {
-            currentCandidates.inbox += 1
-          } else {
-            currentCandidates = {
-              scouted: 0,
-              inbox: 1,
-              inProcess: 0,
-              intern: 0,
-              extendedIntern: 0,
-              pass: 0,
-              contracted: 0,
-              hired: 0
-            }
-          }
-
-          const initialValue = {
-            all: 0,
-            scout: 0,
-            application: 0,
-          }
-
-          if (allCandidates) {
-            allCandidates.inbox += 1
-          } else {
-            allCandidates = {
-              scouted: 0,
-              inbox: 1,
-              inProcess: initialValue,
-              intern: initialValue,
-              extendedIntern: initialValue,
-              pass: initialValue,
-              contracted: initialValue,
-              hired: initialValue,
-              rejected: initialValue,
-            }
-          }
-
-          const batch = admin.firestore().batch()
-          const companyRef = admin.firestore().collection('companies').doc(companyId)
-          batch.update(companyRef, {
-            currentCandidates: currentCandidates,
-            allCandidates: allCandidates,
-          })
-          const companyApplicantsRef = admin.firestore().collection('companies').doc(companyId).collection('applicants').doc()
-          batch.set(companyApplicantsRef, {
-            user: user,
-            createdAt: createdAt,
-            jobId: jobId
-          })
-          batch.commit()
-            .then(() => {
-              isUpdatedCandidates = true
-              if (isUpdatedCandidates && setChatId) {
-                console.log('applyForJob completed.')
-              }
-            })
-            .catch((error) => {
-              console.error("Error adding document: ", error)
-            })
-
-          // chat作成、chatIdをcandidateに格納
-          admin.firestore()
-            .collection('chats')
-            .where('companyId', '==', companyId)
-            .where('uid', '==', user.uid)
-            .get()
-            .then(function(snapshot) {
-              if (!snapshot.empty) {
-                var docCount = 0
-                snapshot.forEach(function(chatDoc) {
-                  docCount += 1
-                  if (docCount == 1) {
-                    admin.firestore().collection('companies')
-                      .doc(companyId)
-                      .collection('candidates')
-                      .doc(candidateId)
-                      .update({
-                        chatId: chatDoc.id
-                      })
-                      .then(() => {
-                        setChatId = true
-                        if (isUpdatedCandidates && setChatId) {
-                          console.log('applyForJob completed.')
-                        }
-                      })
-                      .catch((error) => {
-                        console.error("Error adding document: ", error)
-                      })
-                  }
-                })
-              } else {
-                const chatId = admin.firestore().collection('chats').doc().id
-                const batch = admin.firestore().batch()
-                const chatsRef = admin.firestore().collection('chats').doc(chatId)
-                batch.set(chatsRef, {
-                  uid: user.uid,
-                  profileImageUrl: user.imageUrl,
-                  userName: user.name,
-                  companyId: companyId,
-                  companyImageUrl: companyImageUrl,
-                  companyName: companyName,
-                  messagesExist: false,
-                  updatedAt: createdAt,
-                })
-                const candidateRef = admin.firestore().collection('companies').doc(companyId)
-                  .collection('candidates').doc(candidateId)
-                batch.update(candidateRef, {
-                  chatId: chatId
-                })
-                batch.commit()
-                  .then(() => {
-                    setChatId = true
-                    if (isUpdatedCandidates && setChatId) {
-                      console.log('applyForJob completed.')
-                    }
-                  })
-                  .catch((error) => {
-                    console.error("Error adding document: ", error)
-                  })
-              }
-            })
-            .catch(err => {
-              console.log('Error getting document', err)
-            })
-        }
       })
       .catch(err => {
         console.log('Error getting document', err)
