@@ -519,7 +519,8 @@
               <!-- messages -->
               <v-card v-if="item.value == 'messages' && isShowMessage" flat>
                 <div v-if="isMessagesLoading">
-                  Now Loading...
+                  Now Loading...(ローディングが終わらない場合はリロードしてください。)
+
                 </div>
                 <div v-else>
                   <v-layout
@@ -1008,14 +1009,14 @@ export default {
           this.isMessagesQueried = true
           this.updateIsMessagesLoading(true)
           this.isShowMessage = true
-          this.queryMessages({params: this.params})
+          this.queryMessages({type: 'recruiter'})
         }
       } else {
         if (index == 2 && !this.isMessagesQueried) {
           this.isMessagesQueried = true
           this.updateIsMessagesLoading(true)
           this.isShowMessage = true
-          this.queryMessages({params: this.params})
+          this.queryMessages({type: 'recruiter'})
         }
       }
     },
@@ -1024,7 +1025,7 @@ export default {
         if (!this.isMessagesLoading && this.companyId != null) {
           this.count += 1
           this.updateIsMessagesLoading(true)
-          this.queryMessages({params: this.params, infiniteState: $state})
+          this.queryMessages({infiniteState: $state})
 
           if (this.count > 20) {
             $state.complete()

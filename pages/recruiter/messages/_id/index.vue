@@ -150,7 +150,7 @@ export default {
       this.resetState()
       this.updateIsLoading(true)
       this.queryChat({nuxt: this.$nuxt, params: this.$route.params})
-      this.queryMessages({params: this.params})
+      this.queryMessages({params: this.params, type: 'recruiter'})
     }
   },
   destroyed () {
@@ -167,7 +167,7 @@ export default {
         this.isQueried = true
         this.updateIsLoading(true)
         this.queryChat({nuxt: this.$nuxt, params: this.$route.params})
-        this.queryMessages({params: this.params})
+        this.queryMessages({params: this.params, type: 'recruiter'})
       }
     },
     messages(messages) {

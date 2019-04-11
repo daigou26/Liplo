@@ -50,6 +50,11 @@
                     <v-list-tile-title>{{ chat.companyName }}</v-list-tile-title>
                     <v-list-tile-sub-title >{{ chat.lastMessage }}</v-list-tile-sub-title>
                   </v-list-tile-content>
+                  <v-list-tile-action v-if="chat.userUnreadCount && chat.userUnreadCount != 0">
+                    <v-avatar size="27" color="red">
+                      <span class="white--text" style="font-size: 14px">{{ chat.userUnreadCount > 99 ? '99+' : chat.userUnreadCount }}</span>
+                    </v-avatar>
+                  </v-list-tile-action>
                 </v-list-tile>
                 <v-divider
                   v-if="chats.length != index + 1"
@@ -57,22 +62,26 @@
                 ></v-divider>
               </template>
             </v-list>
+            <div v-else>
+              メッセージがありません
+            </div>
             <infinite-loading
-              v-if="showInfiniteLoading && chats && chats.length >= 2 && !isLoading"
+              v-if="showInfiniteLoading && chats && chats.length >= 20 && !isChatsLoading"
               :distance="50"
               spinner="waveDots"
-              @infinite="infiniteHandler">
+              @infinite="chatsInfiniteHandler">
               <div slot="no-results"></div>
             </infinite-loading>
           </v-flex>
         </v-flex>
         <!-- messages (lg, md) -->
         <v-flex
+          v-if="params.id"
           md8
           hidden-sm-and-down
           :class="{
-            'px-5 pb-3': $vuetify.breakpoint.lgAndUp,
-            'px-3 pb-3': $vuetify.breakpoint.mdOnly,
+            'px-5': $vuetify.breakpoint.lgAndUp,
+            'px-3': $vuetify.breakpoint.mdOnly,
           }"
         >
           <v-layout
@@ -80,7 +89,6 @@
             align-center
             wrap
             class="border"
-            style="height: 100%"
           >
             <!-- companyName -->
             <div>
@@ -92,8 +100,15 @@
               grey lighten-4
               class="scroll-y"
               :style="{ height: messagesHeight + 'px' }"
-              ref="messageScroll"
+              ref="messagesLScroll"
             >
+              <infinite-loading
+                v-if="showInfiniteLoading && messages && messages.length >= 10 && !isMessagesLoading"
+                direction="top"
+                spinner="waveDots"
+                @infinite="messagesInfiniteHandler">
+                <div slot="no-results"></div>
+              </infinite-loading>
               <template v-for="(message, index) in messages" v-if="messages != null && messages.length != 0">
                 <v-layout>
                   <v-flex
@@ -141,6 +156,23 @@
             </v-flex>
           </v-layout>
         </v-flex>
+        <!-- /chats の場合 -->
+        <v-flex
+          v-else
+          md8
+          hidden-sm-and-down
+          class="grey lighten-3 mt-3"
+          :class="{
+            'px-5 pb-3': $vuetify.breakpoint.lgAndUp,
+            'px-3 pb-3': $vuetify.breakpoint.mdOnly,
+          }"
+          :style="{ height: messagesHeight + 'px' }"
+        >
+          <div class="pt-3">
+            左からチャットを選択してください
+          </div>
+
+        </v-flex>
         <!-- urlが /messages の場合: chat lists (sm, xs)-->
         <v-flex
           v-if="params.id == null"
@@ -182,6 +214,11 @@
                     <v-list-tile-title>{{ chat.companyName }}</v-list-tile-title>
                     <v-list-tile-sub-title >{{ chat.lastMessage }}</v-list-tile-sub-title>
                   </v-list-tile-content>
+                  <v-list-tile-action v-if="chat.userUnreadCount && chat.userUnreadCount != 0">
+                    <v-avatar size="27" color="red">
+                      <span class="white--text" style="font-size: 14px">{{ chat.userUnreadCount > 99 ? '99+' : chat.userUnreadCount }}</span>
+                    </v-avatar>
+                  </v-list-tile-action>
                 </v-list-tile>
                 <v-divider
                   v-if="chats.length != index + 1"
@@ -190,10 +227,10 @@
               </template>
             </v-list>
             <infinite-loading
-              v-if="showInfiniteLoading && chats.length >= 2 && !isLoading"
+              v-if="showInfiniteLoading && chats.length >= 20 && !isChatsLoading"
               :distance="50"
               spinner="waveDots"
-              @infinite="infiniteHandler">
+              @infinite="chatsInfiniteHandler">
               <div slot="no-results"></div>
             </infinite-loading>
           </v-flex>
@@ -206,15 +243,15 @@
           offset-sm1
           hidden-md-and-up
           :class="{
-            'px-5 pb-3': $vuetify.breakpoint.smOnly,
+            'px-5': $vuetify.breakpoint.smOnly,
           }"
         >
           <v-layout
             row
-            align-center
             wrap
-            class="border"
-            style="height: 100%"
+            :class="{
+              'border': $vuetify.breakpoint.smOnly,
+            }"
           >
             <!-- companyName -->
             <div>
@@ -226,8 +263,15 @@
               grey lighten-4
               class="scroll-y"
               :style="{ height: messagesHeight + 'px' }"
-              ref="messageScroll"
+              ref="messagesScroll"
             >
+              <infinite-loading
+                v-if="showInfiniteLoading && messages && messages.length >= 10 && !isMessagesLoading"
+                direction="top"
+                spinner="waveDots"
+                @infinite="messagesInfiniteHandler">
+                <div slot="no-results"></div>
+              </infinite-loading>
               <template v-for="(message, index) in messages" v-if="messages != null && messages.length != 0">
                 <v-layout>
                   <v-flex
@@ -346,10 +390,13 @@ export default {
       firstName: state => state.profile.firstName,
       lastName: state => state.profile.lastName,
       chats: state => state.chats.chats,
-      isLoading: state => state.chats.isLoading,
+      isChatsLoading: state => state.chats.isLoading,
       allChatsQueried: state => state.chats.allChatsQueried,
       messages: state => state.messages.messages,
+      isMessagesLoading: state => state.messages.isLoading,
+      allMessagesQueried: state => state.messages.allMessagesQueried,
       unsubscribe: state => state.messages.unsubscribe,
+      isNewMessage: state => state.messages.isNewMessage,
     }),
   },
   mounted() {
@@ -367,32 +414,30 @@ export default {
       this.chatsHeight = windowHeight * 2 / 3
     }
     // companyName section = 48  userInput section = 63
-    this.messagesHeight = windowHeight - 48 - 63 - 20
-    // 最新のメッセージが表示されるようにscrollTopを設定
-    // this.$refs.messageScroll.scrollTop = this.$refs.messageScroll.scrollHeight
+    this.messagesHeight = windowHeight - 48 - 63 - 4
 
     this.showInfiniteLoading = true
     auth.onAuthStateChanged((user) => {
       if (user) {
         if (this.params.id == null) {
+          this.resetChatsState()
           this.queryChats({uid: user.uid, companyId: null, chats: this.chats})
         } else {
-          // listenerがあればデタッチ
-          if (this.unsubscribe) {
-            console.log('remove listener')
-            this.unsubscribe()
-            this.resetUnsubscribe()
-          }
-          // listener追加
-          this.addMessagesListener(this.params)
+          this.resetMessagesState()
+          this.updateIsMessagesLoading(true)
+          this.queryMessages({params: this.params, type: 'user'})
+
           if (this.breakpoint == 'md' || this.breakpoint == 'lg' || this.breakpoint == 'xl') {
             // すでにchatsがある場合はクエリしない
             if (this.chats == null || this.chats.length == 0) {
               // urlに直接アクセスした場合
               this.queryChats({uid: user.uid, companyId: null, chats: this.chats})
+            } else {
+              // unreadCount 更新(local)
+              this.updateUnreadCount(this.params)
             }
           } else {
-            this.queryChat({nuxt: this.$nuxt, params: this.$route.params})
+            this.queryChat({nuxt: this.$nuxt, params: this.params})
           }
         }
       }
@@ -401,28 +446,57 @@ export default {
   destroyed () {
     // listenerがあればデタッチ
     if (this.unsubscribe) {
-      console.log('remove listener in destroyed')
       this.unsubscribe()
       this.resetUnsubscribe()
     }
   },
+  watch: {
+    messages(messages) {
+      // 最下部へスクロール
+      if (messages.length <= 10 || this.isNewMessage) {
+        this.$nextTick(() => {
+          if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+            this.$refs.messagesScroll.scrollTop = this.$refs.messagesScroll.scrollHeight
+          } else {
+            this.$refs.messagesLScroll.scrollTop = this.$refs.messagesLScroll.scrollHeight
+          }
+          this.updateIsNewMessage(false)
+        })
+      }
+    }
+  },
   methods: {
-    infiniteHandler($state) {
+    chatsInfiniteHandler($state) {
       if (!this.allChatsQueried) {
-        if (!this.isLoading && this.uid != null) {
+        if (!this.isChatsLoading && this.uid != null) {
           this.count += 1
-          this.updateIsLoading(true)
+          this.updateIsChatsLoading(true)
           this.queryChats({uid: this.uid, companyId: null, chats: this.chats})
-        }
-        if (this.count > 20) {
-          $state.complete()
-        } else {
-          $state.loaded()
+
+          if (this.count > 20) {
+            $state.complete()
+          } else {
+            $state.loaded()
+          }
         }
       } else {
         $state.complete()
       }
+    },
+    messagesInfiniteHandler($state) {
+      if (!this.allMessagesQueried) {
+        if (!this.isMessagesLoading && this.uid != null) {
+          this.count += 1
+          this.updateIsMessagesLoading(true)
+          this.queryMessages({params: this.params, infiniteState: $state})
 
+          if (this.count > 20) {
+            $state.complete()
+          }
+        }
+      } else {
+        $state.complete()
+      }
     },
     sendButtonClicked() {
       if (this.params.id != null && this.message) {
@@ -439,10 +513,15 @@ export default {
     ...mapActions({
       queryChat: 'chat/queryChat',
       queryChats: 'chats/queryChats',
-      updateIsLoading: 'chats/updateIsLoading',
-      addMessagesListener: 'messages/addMessagesListener',
+      updateUnreadCount: 'chats/updateUnreadCount',
+      updateIsChatsLoading: 'chats/updateIsLoading',
+      queryMessages: 'messages/queryMessages',
+      updateIsMessagesLoading: 'messages/updateIsLoading',
+      updateIsNewMessage: 'messages/updateIsNewMessage',
       resetUnsubscribe: 'messages/resetUnsubscribe',
       postMessageFromUser: 'message/postMessageFromUser',
+      resetChatsState: 'chats/resetState',
+      resetMessagesState: 'messages/resetState',
     }),
   }
 }

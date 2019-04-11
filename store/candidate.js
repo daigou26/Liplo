@@ -343,105 +343,123 @@ export const actions = {
   updateIsNewMessage({commit}, isNew) {
     commit('updateIsNewMessage', isNew)
   },
-  queryMessages({commit, state}, infiniteState) {
+  queryMessages({commit, state}, {infiniteState, type}) {
     const messages = state.messages
     const chatId = state.chatId
-    // すでにクエリしているか
-    if (messages.length == 0) {
-      return firestore.collection('chats').doc(chatId)
-        .collection('messages')
-        .orderBy("createdAt", "desc")
-        .limit(10)
-        .get()
-        .then(function(snapshot) {
-          var docCount = 0
-          snapshot.forEach(function(doc) {
-            docCount += 1
-            const message = {
-              message: doc.data()['message'],
-              createdAt: doc.data()['createdAt'],
-              pic: doc.data()['pic'],
-              user: doc.data()['user'],
-            }
-            commit('unshiftMessage', message)
-          })
-          if (docCount == 0) {
-            commit('setAllMessagesQueried')
-          }
-          commit('updateIsMessagesLoading', false)
-
-          // listenerがあればremove
-          if (state.unsubscribe) {
-            state.unsubscribe()
-            commit('updateUnsubscribe', null)
-          }
-          // listener set
-          var lastDate
-          if (state.messages.length == 0) {
-            lastDate = new Date()
-          } else {
-            const lastIndex = state.messages.length - 1
-            lastDate = state.messages[lastIndex].createdAt
-          }
-          const listener = firestore.collection("chats").doc(chatId)
-            .collection('messages')
-            .orderBy('createdAt', 'asc')
-            .startAfter(lastDate)
-            .onSnapshot(function(snapshot) {
-              if (snapshot.docChanges().length != 0) {
-                commit('updateIsNewMessage', true)
+    if (chatId) {
+      // すでにクエリしているか
+      if (messages.length == 0) {
+        return firestore.collection('chats').doc(chatId)
+          .collection('messages')
+          .orderBy("createdAt", "desc")
+          .limit(10)
+          .get()
+          .then(function(snapshot) {
+            var docCount = 0
+            snapshot.forEach(function(doc) {
+              docCount += 1
+              const message = {
+                message: doc.data()['message'],
+                createdAt: doc.data()['createdAt'],
+                pic: doc.data()['pic'],
+                user: doc.data()['user'],
               }
-
-              snapshot.docChanges().forEach(function(change) {
-                if (change.type === "added") {
-                  const message = {
-                    message: change.doc.data()['message'],
-                    createdAt: change.doc.data()['createdAt'],
-                    pic: change.doc.data()['pic'],
-                    user: change.doc.data()['user'],
-                  }
-                  commit('pushMessage', message)
-                }
-              })
+              commit('unshiftMessage', message)
             })
-            commit('updateUnsubscribe', listener)
-        })
-        .catch(function(error) {
-          commit('updateIsMessagesLoading', false)
-          console.log("Error getting document:", error)
-        })
-    } else {
-      const lastDate = messages[0].createdAt
-      return firestore.collection('chats').doc(chatId)
-        .collection('messages')
-        .orderBy('createdAt', 'desc')
-        .startAfter(lastDate)
-        .limit(10)
-        .get()
-        .then(function(snapshot) {
-          var docCount = 0
-          snapshot.forEach(function(doc) {
-            docCount += 1
-            const message = {
-              message: doc.data()['message'],
-              createdAt: doc.data()['createdAt'],
-              pic: doc.data()['pic'],
-              user: doc.data()['user'],
+            if (docCount == 0) {
+              commit('setAllMessagesQueried')
             }
-            commit('unshiftMessage', message)
-          })
-          // infinite loading
-          infiniteState.loaded()
+            commit('updateIsMessagesLoading', false)
 
-          if (docCount == 0) {
-            commit('setAllMessagesQueried')
-          }
-          commit('updateIsMessagesLoading', false)
-        })
-        .catch(function(error) {
-          commit('updateIsLoading', false)
-          console.log("Error getting document:", error)
-        })
+            // listenerがあればremove
+            if (state.unsubscribe) {
+              state.unsubscribe()
+              commit('updateUnsubscribe', null)
+            }
+            // listener set
+            var lastDate
+            if (state.messages.length == 0) {
+              lastDate = new Date()
+            } else {
+              const lastIndex = state.messages.length - 1
+              lastDate = state.messages[lastIndex].createdAt
+            }
+            const listener = firestore.collection("chats").doc(chatId)
+              .collection('messages')
+              .orderBy('createdAt', 'asc')
+              .startAfter(lastDate)
+              .onSnapshot(function(snapshot) {
+                // unreadCount更新
+                if (type) {
+                  var data
+                  if (type == 'recruiter') {
+                    data = {
+                      picUnreadCount: 0
+                    }
+                  }
+                  firestore.collection('chats')
+                    .doc(chatId)
+                    .update(data)
+                    .catch(err => {
+                      console.log('Error getting document', err)
+                    })
+                }
+
+                if (snapshot.docChanges().length != 0) {
+                  commit('updateIsNewMessage', true)
+                }
+
+                snapshot.docChanges().forEach(function(change) {
+                  if (change.type === "added") {
+                    const message = {
+                      message: change.doc.data()['message'],
+                      createdAt: change.doc.data()['createdAt'],
+                      pic: change.doc.data()['pic'],
+                      user: change.doc.data()['user'],
+                    }
+                    commit('pushMessage', message)
+                  }
+                })
+              })
+              commit('updateUnsubscribe', listener)
+          })
+          .catch(function(error) {
+            commit('updateIsMessagesLoading', false)
+            console.log("Error getting document:", error)
+          })
+      } else {
+        const lastDate = messages[0].createdAt
+        return firestore.collection('chats').doc(chatId)
+          .collection('messages')
+          .orderBy('createdAt', 'desc')
+          .startAfter(lastDate)
+          .limit(10)
+          .get()
+          .then(function(snapshot) {
+            var docCount = 0
+            snapshot.forEach(function(doc) {
+              docCount += 1
+              const message = {
+                message: doc.data()['message'],
+                createdAt: doc.data()['createdAt'],
+                pic: doc.data()['pic'],
+                user: doc.data()['user'],
+              }
+              commit('unshiftMessage', message)
+            })
+            // infinite loading
+            infiniteState.loaded()
+
+            if (docCount == 0) {
+              commit('setAllMessagesQueried')
+            }
+            commit('updateIsMessagesLoading', false)
+          })
+          .catch(function(error) {
+            commit('updateIsLoading', false)
+            console.log("Error getting document:", error)
+          })
+      }
     }
   },
   resetUnsubscribe({commit}) {
