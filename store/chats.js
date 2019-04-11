@@ -8,6 +8,9 @@ export const state = () => ({
 })
 
 export const mutations = {
+  setChats(state, chats) {
+    state.chats = chats
+  },
   addChat(state, chat) {
     state.chats.push(chat)
   },
@@ -23,6 +26,16 @@ export const mutations = {
 }
 
 export const actions = {
+  updateUnreadCount({commit, state}, params) {
+    var chats = state.chats
+    const chatId = params.id
+    chats.forEach((chat, i) => {
+      if (chat.chatId == chatId) {
+        chat.userUnreadCount = 0
+      }
+    })
+    commit('setChats', chats)
+  },
   updateIsLoading({commit}, isLoading) {
     commit('updateIsLoading', isLoading)
   },
@@ -50,7 +63,8 @@ export const actions = {
               companyImageUrl: doc.data()['companyImageUrl'],
               companyName: doc.data()['companyName'],
               lastMessage: doc.data()['lastMessage'],
-              unreadCount: doc.data()['unreadCount'],
+              picUnreadCount: doc.data()['picUnreadCount'],
+              userUnreadCount: doc.data()['userUnreadCount'],
               updatedAt: doc.data()['updatedAt']
             }
             commit('addChat', chat)
@@ -92,7 +106,8 @@ export const actions = {
               companyImageUrl: doc.data()['companyImageUrl'],
               companyName: doc.data()['companyName'],
               lastMessage: doc.data()['lastMessage'],
-              unreadCount: doc.data()['unreadCount'],
+              picUnreadCount: doc.data()['picUnreadCount'],
+              userUnreadCount: doc.data()['userUnreadCount'],
               updatedAt: doc.data()['updatedAt']
             }
             commit('addChat', chat)

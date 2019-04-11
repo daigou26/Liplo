@@ -54,12 +54,12 @@ export const actions = {
   updateIsNewMessage({commit}, isNew) {
     commit('updateIsNewMessage', isNew)
   },
-  queryMessages({commit, state}, {params, infiniteState}) {
+  queryMessages({commit, state}, {params, infiniteState, type}) {
     const messages = state.messages
     const chatId = params.id
     // すでにクエリしているか
     if (messages.length == 0) {
-      return firestore.collection('chats').doc(chatId)
+      firestore.collection('chats').doc(chatId)
         .collection('messages')
         .orderBy("createdAt", "desc")
         .limit(10)
@@ -99,6 +99,26 @@ export const actions = {
             .orderBy('createdAt', 'asc')
             .startAfter(lastDate)
             .onSnapshot(function(snapshot) {
+              // unreadCount更新
+              if (type) {
+                var data
+                if (type == 'user') {
+                  data = {
+                    userUnreadCount: 0
+                  }
+                } else {
+                  data = {
+                    picUnreadCount: 0
+                  }
+                }
+                firestore.collection('chats')
+                  .doc(chatId)
+                  .update(data)
+                  .catch(err => {
+                    console.log('Error getting document', err)
+                  })
+              }
+
               if (snapshot.docChanges().length != 0) {
                 commit('updateIsNewMessage', true)
               }
@@ -142,7 +162,9 @@ export const actions = {
             commit('unshiftMessage', message)
           })
           // infinite loading
-          infiniteState.loaded()
+          if (infiniteState) {
+            infiniteState.loaded()
+          }
 
           if (docCount == 0) {
             commit('setAllMessagesQueried')
@@ -154,32 +176,6 @@ export const actions = {
           console.log("Error getting document:", error)
         })
     }
-  },
-  addMessagesListener({commit}, params) {
-
-    commit('updateIsInitialQuery', true)
-    commit('resetMessages')
-
-    console.log('add listener')
-    const chatId = params.id
-    const listener = firestore.collection("chats").doc(chatId)
-      .collection('messages')
-      .orderBy('createdAt', 'desc')
-      .onSnapshot(function(snapshot) {
-        snapshot.docChanges().forEach(function(change) {
-          if (change.type === "added") {
-            commit('addMessage', change.doc.data())
-          }
-          // if (change.type === "modified") {
-          //   console.log("Modified: ", change.doc.data());
-          // }
-          // if (change.type === "removed") {
-          //   console.log("Removed: ", change.doc.data());
-          // }
-        })
-        commit('updateIsInitialQuery', false)
-      })
-    commit('updateUnsubscribe', listener)
   },
   resetUnsubscribe({commit}) {
     commit('updateUnsubscribe', null)

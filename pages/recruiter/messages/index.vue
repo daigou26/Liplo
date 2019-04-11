@@ -32,6 +32,11 @@
                 <v-list-tile-title>{{ chat.userName }}</v-list-tile-title>
                 <v-list-tile-sub-title >{{ chat.lastMessage }}</v-list-tile-sub-title>
               </v-list-tile-content>
+              <v-list-tile-action v-if="chat.picUnreadCount && chat.picUnreadCount != 0">
+                <v-avatar size="30" color="red">
+                  <span class="white--text" style="font-size: 14px">{{ chat.picUnreadCount > 99 ? '99+' : chat.picUnreadCount }}</span>
+                </v-avatar>
+              </v-list-tile-action>
             </v-list-tile>
             <v-divider
               v-if="chats.length != index + 1"
