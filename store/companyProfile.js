@@ -243,8 +243,10 @@ export const actions = {
     commit('updateIsEditingCompanyImage', isEditing)
   },
   updateCompanyImage({commit}, {companyId, imageFile}) {
+    const date = new Date()
+    var timestamp = Math.floor( date.getTime() / 1000 )
     // アップロード
-    const uploadTask = storageRef.child(`companies/${companyId}/logo.jpg`).put(imageFile)
+    const uploadTask = storageRef.child(`companies/${companyId}/logo/${timestamp}.jpg`).put(imageFile)
     uploadTask.on('state_changed', function(snapshot){
       var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
       console.log('Upload is ' + progress + '% done')

@@ -139,12 +139,10 @@ export const mutations = {
 export const actions = {
   queryProfile({commit}, uid) {
     // profile情報取得
-    console.log('uid', uid);
     firestore.collection('users').doc(uid).collection('profile').doc(uid)
       .get()
       .then(function(doc) {
         if (doc.exists) {
-          console.log(doc.data());
           commit('setPosition', doc.data()['position'])
           commit('setFirstName', doc.data()['firstName'])
           commit('setLastName', doc.data()['lastName'])
@@ -201,9 +199,12 @@ export const actions = {
   updateIsEditingProfileImage({commit}, isEditing) {
     commit('updateIsEditingProfileImage', isEditing)
   },
-  updateProfileImage({commit}, {uid, imageFile}) {
+  updateProfileImage({commit, state}, {uid, imageFile}) {
+    const date = new Date()
+    var timestamp = Math.floor( date.getTime() / 1000 )
+
     // アップロード
-    const uploadTask = storageRef.child(`users/${uid}/profile.jpg`).put(imageFile)
+    const uploadTask = storageRef.child(`users/${uid}/profile/${timestamp}.jpg`).put(imageFile)
     uploadTask.on('state_changed', function(snapshot){
       var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
       console.log('Upload is ' + progress + '% done')
@@ -223,11 +224,14 @@ export const actions = {
         batch.update(profileRef, {
           imageUrl: downloadURL
         })
-        const detailRef = firestore.collection('users')
-          .doc(uid).collection('detail').doc(uid)
-        batch.update(detailRef, {
-          imageUrl: downloadURL
-        })
+        if (state.type == 'user') {
+          const detailRef = firestore.collection('users')
+            .doc(uid).collection('detail').doc(uid)
+          batch.update(detailRef, {
+            imageUrl: downloadURL
+          })
+        }
+
         batch.commit()
           .then(() => {
             commit('updateIsEditingProfileImage', false)
@@ -242,7 +246,7 @@ export const actions = {
   updateIsEditingUserName({commit}, isEditing) {
     commit('updateIsEditingUserName', isEditing)
   },
-  updateUserName({commit}, {uid, firstName, lastName}) {
+  updateUserName({commit, state}, {uid, firstName, lastName}) {
     const nameData = {
       firstName: firstName,
       lastName: lastName,
@@ -253,9 +257,13 @@ export const actions = {
     const profileRef = firestore.collection('users')
       .doc(uid).collection('profile').doc(uid)
     batch.update(profileRef, nameData)
-    const detailRef = firestore.collection('users')
-      .doc(uid).collection('detail').doc(uid)
-    batch.update(detailRef, nameData)
+
+    if (state.type == 'user') {
+      const detailRef = firestore.collection('users')
+        .doc(uid).collection('detail').doc(uid)
+      batch.update(detailRef, nameData)
+    }
+
     batch.commit()
       .then(() => {
         commit('setFirstName', firstName)
@@ -316,18 +324,22 @@ export const actions = {
   updateIsEditingSelfIntro({commit}, isEditing) {
     commit('updateIsEditingSelfIntro', isEditing)
   },
-  updateSelfIntro({commit}, {uid, selfIntro}) {
+  updateSelfIntro({commit, state}, {uid, selfIntro}) {
     const batch = firestore.batch()
     const profileRef = firestore.collection('users')
       .doc(uid).collection('profile').doc(uid)
     batch.update(profileRef, {
       selfIntro: selfIntro,
     })
-    const detailRef = firestore.collection('users')
-      .doc(uid).collection('detail').doc(uid)
-    batch.update(detailRef, {
-      selfIntro: selfIntro,
-    })
+
+    if (state.type == 'user') {
+      const detailRef = firestore.collection('users')
+        .doc(uid).collection('detail').doc(uid)
+      batch.update(detailRef, {
+        selfIntro: selfIntro,
+      })
+    }
+
     batch.commit()
       .then(() => {
         commit('setSelfIntro', selfIntro)
