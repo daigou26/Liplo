@@ -863,46 +863,175 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
     if (companyImageUrl != previousValue.companyImageUrl) {
       isCompanyImageUrlChanged = true
     }
+    var companyData = {
+      companyName: companyName,
+    }
+    if (companyImageUrl) {
+      companyData.companyImageUrl = companyImageUrl
+    }
 
     return admin.firestore()
       .collection('jobs')
       .where('companyId', '==', companyId)
       .get()
       .then(function(snapshot) {
-        const batch = admin.firestore().batch()
+        // job関連更新
+        const jobBatch = admin.firestore().batch()
 
         snapshot.forEach(function(doc) {
           if (isCompanyNameChanged || isCompanyImageUrlChanged) {
             const jobRef = admin.firestore().collection('jobs').doc(doc.id)
-            batch.update(jobRef, {
-              companyName: companyName,
-              companyImageUrl: companyImageUrl
-            })
+            jobBatch.update(jobRef, companyData)
           }
           const jobDetailRef = admin.firestore().collection('jobs').doc(doc.id)
             .collection('detail')
             .doc(doc.id)
 
-          batch.update(jobDetailRef, {
+          var jobDetailData = {
             companyName: companyName,
-            companyImageUrl: companyImageUrl,
-            mission: mission,
-            vision: vision,
-            value: value,
-            culture: culture,
-            system: system,
-            why: why,
-            what: what,
-            services: services,
-            welfare: welfare
-          })
+          }
+          if (companyImageUrl) {
+            jobDetailData.companyImageUrl = companyImageUrl
+          }
+          if (mission) {
+            jobDetailData.mission = mission
+          }
+          if (vision) {
+            jobDetailData.vision = vision
+          }
+          if (value) {
+            jobDetailData.value = value
+          }
+          if (culture) {
+            jobDetailData.culture = culture
+          }
+          if (system) {
+            jobDetailData.system = system
+          }
+          if (why) {
+            jobDetailData.why = why
+          }
+          if (what) {
+            jobDetailData.what = what
+          }
+          if (services) {
+            jobDetailData.services = services
+          }
+          if (welfare) {
+            jobDetailData.welfare = welfare
+          }
+          jobBatch.update(jobDetailRef, jobDetailData)
         })
-        batch.commit()
+        jobBatch.commit()
           .then(() => {
-            console.log('editCompanyProfile completed.')
+            console.log('editCompanyProfile job completed.')
           })
           .catch((error) => {
             console.error("Error adding document: ", error)
+          })
+
+        // chats
+        admin.firestore()
+          .collection('chats')
+          .where('companyId', '==', companyId)
+          .get()
+          .then(function(snapshot) {
+            const batch = admin.firestore().batch()
+
+            snapshot.forEach(function(doc) {
+              if (isCompanyNameChanged || isCompanyImageUrlChanged) {
+                const chatRef = admin.firestore().collection('chats').doc(doc.id)
+                batch.update(chatRef, companyData)
+              }
+            })
+            batch.commit()
+              .then(() => {
+                console.log('editCompanyProfile chat completed.')
+              })
+              .catch((error) => {
+                console.error("Error adding document: ", error)
+              })
+          })
+          .catch(err => {
+            console.log('Error getting document', err)
+          })
+
+        // reviews
+        admin.firestore()
+          .collection('reviews')
+          .where('companyId', '==', companyId)
+          .get()
+          .then(function(snapshot) {
+            const batch = admin.firestore().batch()
+
+            snapshot.forEach(function(doc) {
+              if (isCompanyNameChanged || isCompanyImageUrlChanged) {
+                const reviewRef = admin.firestore().collection('reviews').doc(doc.id)
+                batch.update(reviewRef, companyData)
+              }
+            })
+            batch.commit()
+              .then(() => {
+                console.log('editCompanyProfile review completed.')
+              })
+              .catch((error) => {
+                console.error("Error adding document: ", error)
+              })
+          })
+          .catch(err => {
+            console.log('Error getting document', err)
+          })
+
+        // feedbacks
+        admin.firestore()
+          .collection('feedbacks')
+          .where('companyId', '==', companyId)
+          .get()
+          .then(function(snapshot) {
+            const batch = admin.firestore().batch()
+
+            snapshot.forEach(function(doc) {
+              if (isCompanyNameChanged || isCompanyImageUrlChanged) {
+                const feedbackRef = admin.firestore().collection('feedbacks').doc(doc.id)
+                batch.update(feedbackRef, companyData)
+              }
+            })
+            batch.commit()
+              .then(() => {
+                console.log('editCompanyProfile feedback completed.')
+              })
+              .catch((error) => {
+                console.error("Error adding document: ", error)
+              })
+          })
+          .catch(err => {
+            console.log('Error getting document', err)
+          })
+
+        // passes
+        admin.firestore()
+          .collection('passes')
+          .where('companyId', '==', companyId)
+          .get()
+          .then(function(snapshot) {
+            const batch = admin.firestore().batch()
+
+            snapshot.forEach(function(doc) {
+              if (isCompanyNameChanged || isCompanyImageUrlChanged) {
+                const passRef = admin.firestore().collection('passes').doc(doc.id)
+                batch.update(passRef, companyData)
+              }
+            })
+            batch.commit()
+              .then(() => {
+                console.log('editCompanyProfile pass completed.')
+              })
+              .catch((error) => {
+                console.error("Error adding document: ", error)
+              })
+          })
+          .catch(err => {
+            console.log('Error getting document', err)
           })
       })
       .catch(err => {

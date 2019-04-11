@@ -204,7 +204,7 @@ export const actions = {
     var timestamp = Math.floor( date.getTime() / 1000 )
 
     // アップロード
-    const uploadTask = storageRef.child(`users/${uid}/profile_${timestamp}.jpg`).put(imageFile)
+    const uploadTask = storageRef.child(`users/${uid}/profile/${timestamp}.jpg`).put(imageFile)
     uploadTask.on('state_changed', function(snapshot){
       var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
       console.log('Upload is ' + progress + '% done')
