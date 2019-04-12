@@ -44,7 +44,7 @@
                           {{ job.companyName }}
                         </v-list-tile-title>
                         <v-list-tile-sub-title>
-                          <v-rating small readonly v-model="job.rating"/>
+                          <v-rating small half-increments readonly v-model="job.rating.all"/>
                         </v-list-tile-sub-title>
                       </v-list-tile-content>
                     </v-list-tile>

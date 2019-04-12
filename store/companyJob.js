@@ -236,27 +236,48 @@ export const actions = {
     }, function() {
       // dbにurl保存
       uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-        firestore.collection('jobs')
-          .add({
-            companyId: companyId,
-            imageUrl: downloadURL,
-            title: title,
-            content: content,
-            description: description,
-            wage: wage,
-            requiredSkills: requiredSkills,
-            idealSkills: idealSkills,
-            workweek: workweek,
-            period: period,
-            workday: workday,
-            idealCandidate: idealCandidate,
-            occupation: occupation,
-            features: features,
-            environment: environment,
-            createdAt: createdAt,
-            status: 'creating',
-            initialStatus: status
-          })
+        const jobData = {
+          companyId: companyId,
+          imageUrl: downloadURL,
+          title: title,
+          content: content,
+          wage: wage,
+          workweek: workweek,
+          period: period,
+          workday: workday,
+          occupation: occupation,
+          features: features,
+          createdAt: createdAt,
+          status: 'creating',
+        }
+        const jobDetailData = {
+          companyId: companyId,
+          imageUrl: downloadURL,
+          title: title,
+          content: content,
+          description: description,
+          wage: wage,
+          requiredSkills: requiredSkills,
+          idealSkills: idealSkills,
+          workweek: workweek,
+          period: period,
+          workday: workday,
+          idealCandidate: idealCandidate,
+          occupation: occupation,
+          features: features,
+          environment: environment,
+          createdAt: createdAt,
+          initialStatus: status
+        }
+        const batch = firestore.batch()
+        const jobId = firestore.collection('jobs').doc().id
+        const jobsRef = firestore.collection('jobs').doc(jobId)
+        batch.set(jobsRef, jobData)
+        const jobDetailRef = firestore.collection('jobs')
+          .doc(jobId).collection('detail').doc(jobId)
+        batch.set(jobDetailRef, jobDetailData)
+
+        batch.commit()
           .then(() => {
             router.push('/recruiter/jobs')
           })

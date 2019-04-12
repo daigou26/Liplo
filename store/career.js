@@ -34,7 +34,6 @@ export const actions = {
             companyId: doc.data()['companyId'],
             companyImageUrl: doc.data()['companyImageUrl'],
             companyName: doc.data()['companyName'],
-            duration: doc.data()['duration'],
             end: doc.data()['end'],
             isReviewWritten: doc.data()['isReviewWritten'],
           }
@@ -66,7 +65,6 @@ export const actions = {
             companyId: doc.data()['companyId'],
             companyImageUrl: doc.data()['companyImageUrl'],
             companyName: doc.data()['companyName'],
-            duration: doc.data()['duration'],
             end: doc.data()['end'],
           }
           data.push(company)
@@ -85,6 +83,7 @@ export const actions = {
       .then(function(snapshot) {
         const data = []
         snapshot.forEach(function(doc) {
+          console.log(doc.data());
           let startedAt = doc.data()['startedAt']
           if (startedAt) {
             let date = new Date( startedAt.seconds * 1000 )
@@ -93,15 +92,25 @@ export const actions = {
             let day  = date.getDate()
             startedAt = `${year}/${month}/${day}`
           }
+          let endedAt = doc.data()['endedAt']
+          if (endedAt) {
+            let date = new Date( endedAt.seconds * 1000 )
+            let year  = date.getFullYear()
+            let month = date.getMonth() + 1
+            let day  = date.getDate()
+            endedAt = `${year}/${month}/${day}`
+          }
           const job = {
             careerId: doc.id,
             occupation: doc.data()['occupation'],
             companyId: doc.data()['companyId'],
             companyImageUrl: doc.data()['companyImageUrl'],
             companyName: doc.data()['companyName'],
-            duration: doc.data()['duration'],
             end: doc.data()['end'],
-            startedAt: startedAt
+            startedAt: startedAt,
+            endedAt: endedAt,
+            isInternExtended: doc.data()['isInternExtended'],
+            extendedInternEnd: doc.data()['extendedInternEnd']
           }
           data.push(job)
         })
