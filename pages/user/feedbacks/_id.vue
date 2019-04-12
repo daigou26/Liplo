@@ -106,7 +106,6 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import { auth } from '@/plugins/firebase'
 import MyPageMenu from '~/components/MyPageMenu'
 
 export default {
@@ -114,6 +113,7 @@ export default {
     MyPageMenu
   },
   data: () => ({
+    isQueried: false,
     count: 0,
     showInfiniteLoading: false,
     mypageItems: [
@@ -149,15 +149,25 @@ export default {
   mounted() {
     this.showInfiniteLoading = true
 
-    auth.onAuthStateChanged((user) => {
-      if (user) {
+    if (this.uid != null && !this.isQueried) {
+      if (this.params.id == null) {
+        this.queryFeedbacks({uid: this.uid, feedbacks: this.feedbacks})
+      } else {
+        this.queryFeedback({nuxt: this.$nuxt, params: this.$route.params})
+      }
+    }
+  },
+  watch: {
+    uid(uid) {
+      if (uid != null) {
+        this.isQueried = true
         if (this.params.id == null) {
-          this.queryFeedbacks({uid: user.uid, feedbacks: this.feedbacks})
+          this.queryFeedbacks({uid: uid, feedbacks: this.feedbacks})
         } else {
           this.queryFeedback({nuxt: this.$nuxt, params: this.$route.params})
         }
       }
-    })
+    }
   },
   methods: {
     infiniteHandler($state) {

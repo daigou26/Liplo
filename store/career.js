@@ -83,7 +83,6 @@ export const actions = {
       .then(function(snapshot) {
         const data = []
         snapshot.forEach(function(doc) {
-          console.log(doc.data());
           let startedAt = doc.data()['startedAt']
           if (startedAt) {
             let date = new Date( startedAt.seconds * 1000 )

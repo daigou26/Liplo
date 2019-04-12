@@ -88,6 +88,7 @@ export default {
     MyPageMenu
   },
   data: () => ({
+    isQueried: false,
     mypageItems: [
       'passes',
       'career',
@@ -108,11 +109,17 @@ export default {
     }),
   },
   mounted() {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        this.queryCareer(user.uid)
+    if (this.uid != null && !this.isQueried) {
+      this.queryCareer(this.uid)
+    }
+  },
+  watch: {
+    uid(uid) {
+      if (uid != null) {
+        this.isQueried = true
+        this.queryCareer(uid)
       }
-    })
+    }
   },
   methods: {
     ...mapActions({

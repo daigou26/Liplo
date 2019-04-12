@@ -326,10 +326,10 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import { auth } from '@/plugins/firebase'
 
 export default {
   data: () => ({
+    isQueried: false,
     message: '',
     showInfiniteLoading: false,
     windowHeight: 0,
@@ -417,31 +417,30 @@ export default {
     this.messagesHeight = windowHeight - 48 - 63 - 4
 
     this.showInfiniteLoading = true
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        if (this.params.id == null) {
-          this.resetChatsState()
-          this.queryChats({uid: user.uid, companyId: null, chats: this.chats})
-        } else {
-          this.resetMessagesState()
-          this.updateIsMessagesLoading(true)
-          this.queryMessages({params: this.params, type: 'user'})
 
-          if (this.breakpoint == 'md' || this.breakpoint == 'lg' || this.breakpoint == 'xl') {
-            // すでにchatsがある場合はクエリしない
-            if (this.chats == null || this.chats.length == 0) {
-              // urlに直接アクセスした場合
-              this.queryChats({uid: user.uid, companyId: null, chats: this.chats})
-            } else {
-              // unreadCount 更新(local)
-              this.updateUnreadCount(this.params)
-            }
+    if (this.uid != null && !this.isQueried) {
+      if (this.params.id == null) {
+        this.resetChatsState()
+        this.queryChats({uid: this.uid, companyId: null, chats: this.chats})
+      } else {
+        this.resetMessagesState()
+        this.updateIsMessagesLoading(true)
+        this.queryMessages({params: this.params, type: 'user'})
+
+        if (this.breakpoint == 'md' || this.breakpoint == 'lg' || this.breakpoint == 'xl') {
+          // すでにchatsがある場合はクエリしない
+          if (this.chats == null || this.chats.length == 0) {
+            // urlに直接アクセスした場合
+            this.queryChats({uid: this.uid, companyId: null, chats: this.chats})
           } else {
-            this.queryChat({nuxt: this.$nuxt, params: this.params})
+            // unreadCount 更新(local)
+            this.updateUnreadCount(this.params)
           }
+        } else {
+          this.queryChat({nuxt: this.$nuxt, params: this.params})
         }
       }
-    })
+    }
   },
   destroyed () {
     // listenerがあればデタッチ
@@ -451,6 +450,32 @@ export default {
     }
   },
   watch: {
+    uid(uid) {
+      if (uid != null) {
+        this.isQueried = true
+        if (this.params.id == null) {
+          this.resetChatsState()
+          this.queryChats({uid: uid, companyId: null, chats: this.chats})
+        } else {
+          this.resetMessagesState()
+          this.updateIsMessagesLoading(true)
+          this.queryMessages({params: this.params, type: 'user'})
+
+          if (this.breakpoint == 'md' || this.breakpoint == 'lg' || this.breakpoint == 'xl') {
+            // すでにchatsがある場合はクエリしない
+            if (this.chats == null || this.chats.length == 0) {
+              // urlに直接アクセスした場合
+              this.queryChats({uid: uid, companyId: null, chats: this.chats})
+            } else {
+              // unreadCount 更新(local)
+              this.updateUnreadCount(this.params)
+            }
+          } else {
+            this.queryChat({nuxt: this.$nuxt, params: this.params})
+          }
+        }
+      }
+    },
     messages(messages) {
       // 最下部へスクロール
       if (messages.length <= 10 || this.isNewMessage) {
