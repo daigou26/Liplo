@@ -46,7 +46,7 @@
       </template>
     </v-data-table>
     <infinite-loading
-      v-if="showInfiniteLoading && jobs && jobs.length >= 2 && !isLoading"
+      v-if="showInfiniteLoading && jobs && jobs.length >= 10 && !isLoading"
       :distance="50"
       spinner="waveDots"
       @infinite="infiniteHandler">

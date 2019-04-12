@@ -132,7 +132,7 @@ export const actions = {
 
     if (jobs.length == 0) {
       jobsRef.orderBy('createdAt', 'desc')
-        .limit(2)
+        .limit(10)
         .get()
         .then(function(snapshot) {
           var docCount = 0
@@ -165,7 +165,7 @@ export const actions = {
 
       jobsRef.orderBy('createdAt', 'desc')
         .startAfter(lastDate)
-        .limit(2)
+        .limit(10)
         .get()
         .then(function(snapshot) {
           var docCount = 0

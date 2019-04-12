@@ -59,7 +59,7 @@
                 </template>
               </v-list>
               <infinite-loading
-                v-if="showInfiniteLoading && feedbacks && feedbacks.length >= 2 && !isFeedbacksLoading"
+                v-if="showInfiniteLoading && feedbacks && feedbacks.length >= 10 && !isFeedbacksLoading"
                 :distance="50"
                 spinner="waveDots"
                 @infinite="infiniteHandler">

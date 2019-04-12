@@ -68,7 +68,7 @@
                 </template>
               </v-list>
               <infinite-loading
-                v-if="showInfiniteLoading && passes && passes.length >= 2 && !isPassesLoading"
+                v-if="showInfiniteLoading && passes && passes.length >= 10 && !isPassesLoading"
                 :distance="50"
                 spinner="waveDots"
                 @infinite="infiniteHandler">

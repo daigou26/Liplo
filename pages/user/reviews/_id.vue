@@ -99,7 +99,7 @@
                 書いたレビューがありません。
               </div>
               <infinite-loading
-                v-if="showInfiniteLoading && userReviews && userReviews.length >= 2 && !isUserReviewsLoading"
+                v-if="showInfiniteLoading && userReviews && userReviews.length >= 10 && !isUserReviewsLoading"
                 :distance="50"
                 spinner="waveDots"
                 @infinite="infiniteHandler">
