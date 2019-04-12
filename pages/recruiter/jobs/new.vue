@@ -30,7 +30,7 @@
           v-model="title"
           :rules="titleRules"
           counter="50"
-          label="Title"
+          label="タイトル（必須）"
           placeholder="タイトルを入力してください。"
           required
         ></v-text-field>
@@ -40,7 +40,7 @@
           :rules="contentRules"
           counter="100"
           rows="3"
-          label="概要"
+          label="概要（必須）"
           placeholder="概要を100字以内で入力してください。これは検索画面で表示されます。"
           required
         ></v-textarea>
@@ -48,7 +48,7 @@
           class="pt-4"
           v-model="description"
           :rules="descriptionRules"
-          label="仕事内容"
+          label="仕事内容（必須）"
           placeholder="仕事内容について"
           required
         ></v-textarea>
@@ -56,7 +56,7 @@
           class="pt-4"
           v-model="wage"
           :rules="wageRules"
-          label="給料"
+          label="給料（必須）"
           placeholder="給料について"
           required
         ></v-textarea>
@@ -64,7 +64,7 @@
           class="pt-4"
           v-model="requiredSkills"
           :rules="requiredSkillsRules"
-          label="必要なスキル"
+          label="必要なスキル（必須）"
           placeholder="必要なスキルについて"
           required
         ></v-textarea>
@@ -88,7 +88,7 @@
           <v-text-field
             v-model="workweek.days"
             :rules="workweekDaysRules"
-            label="最低勤務日数（週）"
+            label="週の最低勤務日数（必須）"
             suffix="日"
             type="number"
             required
@@ -98,7 +98,7 @@
           <v-text-field
             v-model="workweek.hours"
             :rules="workweekHoursRules"
-            label="最低勤務時間（週合計）"
+            label="週の最低勤務時間"
             suffix="時間"
             type="number"
             required
@@ -107,12 +107,13 @@
         <v-flex sm6 pt-4>
           <v-text-field
             v-model="period"
-            label="勤務期間（月）"
+            :rules="periodRules"
+            label="勤務期間（必須）"
             suffix="ヶ月"
             type="number"
             required
           ></v-text-field>
-          <p class="textColor" style="font-size: 12px;">
+          <p class="textColor pt-1" style="font-size: 12px;">
             パスを出すまでの試用期間。期間は1ヶ月程度を推奨しています。試用期間が終わった後にインターンを延長することができます。
           </p>
         </v-flex>
@@ -120,21 +121,13 @@
           class="pt-4"
           v-model="workday"
           :items="workdayItems"
-          label="勤務可能曜日"
+          label="勤務可能曜日（必須）"
         ></v-select>
         <v-select
           class="pt-4"
           v-model="occupation"
           :items="occupationItems"
-          label="募集職種"
-        ></v-select>
-        <v-select
-          class="pt-4"
-          v-model="features"
-          :items="featureItems"
-          label="特徴"
-          chips
-          multiple
+          label="募集職種（必須）"
         ></v-select>
         <v-textarea
           v-if="occupation == 'エンジニア'"
@@ -145,6 +138,14 @@
           placeholder="開発環境について"
           required
         ></v-textarea>
+        <v-select
+          class="pt-4"
+          v-model="features"
+          :items="featureItems"
+          label="特徴"
+          chips
+          multiple
+        ></v-select>
         <div class="text-xs-right py-3">
           <v-flex xs6 sm4 offset-xs6 offset-sm8>
             <v-select
@@ -155,7 +156,7 @@
             ></v-select>
           </v-flex>
           <v-btn
-            :disabled="!valid || !imageFileSizeValid"
+            :disabled="postButtonDisabled"
             @click="postButtonClicked"
           >
             投稿する
@@ -216,12 +217,18 @@ export default {
       hours: null,
     },
     workweekDaysRules: [
-      v => (v <= 7) || '7日以内で指定してください'
+      v => !!v || '数字を入力してください',
+      v => (v <= 7) || '7日以内で指定してください',
     ],
     workweekHoursRules: [
+      v => !!v || '数字を入力してください',
       v => (v <= 100) || '100時間以内で指定してください'
     ],
     period: null,
+    periodRules: [
+      v => !!v || '数字を入力してください',
+      v => (v <= 100) || '100時間以内で指定してください'
+    ],
     workday: null,
     workdayItems: [
       '平日のみ',
@@ -229,7 +236,7 @@ export default {
       '日曜可',
       '土日可',
     ],
-    occupation: '',
+    occupation: null,
     occupationItems: [
       'エンジニア',
       'デザイナー',
@@ -256,6 +263,14 @@ export default {
     ]
   }),
   computed: {
+    postButtonDisabled() {
+      return (!this.valid ||
+        this.imageFile == null ||
+        !this.imageFileSizeValid ||
+        this.occupation == null ||
+        this.workday == null
+      )
+    },
     imageRatio() {
       switch (this.breakpoint) {
         case 'xs': return '2'

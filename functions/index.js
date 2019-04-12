@@ -761,24 +761,10 @@ exports.applyForJob = functions.region('asia-northeast1')
 // 採用担当者が募集を投稿した時の処理
 exports.postJob = functions.region('asia-northeast1')
   .firestore
-  .document('jobs/{jobId}')
+  .document('jobs/{jobId}/detail/{detailId}')
   .onCreate((snap, context) => {
     const jobId = context.params.jobId
     const companyId = snap.data().companyId
-    const title = snap.data().title
-    const imageUrl = snap.data().imageUrl
-    const description = snap.data().description
-    const wage = snap.data().wage
-    const requiredSkills = snap.data().requiredSkills
-    const idealSkills = snap.data().idealSkills
-    const environment = snap.data().environment
-    const workweek = snap.data().workweek
-    const period = snap.data().period
-    const workday = snap.data().workday
-    const idealCandidate = snap.data().idealCandidate
-    const occupation = snap.data().occupation
-    const features = snap.data().features
-    const createdAt = snap.data().createdAt
     const initialStatus = snap.data().initialStatus
 
     return admin.firestore()
@@ -819,9 +805,7 @@ exports.postJob = functions.region('asia-northeast1')
           batch.update(jobsRef, jobData)
 
           var jobDetailData = {
-            companyId: companyId,
             companyName: companyName,
-            title: title,
             mission: mission,
             vision: vision,
             value: value,
@@ -831,28 +815,13 @@ exports.postJob = functions.region('asia-northeast1')
             what: what,
             services: services,
             welfare: welfare,
-            description: description,
-            wage: wage,
-            requiredSkills: requiredSkills,
-            idealSkills: idealSkills,
-            environment: environment,
-            workweek: workweek,
-            period: period,
-            workday: workday,
-            idealCandidate: idealCandidate,
-            occupation: occupation,
-            features: features,
-            createdAt: createdAt
           }
           if (companyImageUrl) {
             jobDetailData.companyImageUrl = companyImageUrl
           }
-          if (imageUrl) {
-            jobDetailData.imageUrl = imageUrl
-          }
 
           const jobDetailRef = admin.firestore().collection('jobs').doc(jobId).collection('detail').doc(jobId)
-          batch.set(jobDetailRef, jobDetailData)
+          batch.update(jobDetailRef, jobDetailData)
           batch.commit()
             .then(() => {
               console.log('postJob completed.')
