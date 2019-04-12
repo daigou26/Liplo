@@ -54,11 +54,13 @@ exports.updateCareer = functions.region('asia-northeast1')
               occupation: occupation,
               companyId: companyId,
               companyName: companyName,
-              companyImageUrl: companyImageUrl,
               startedAt: createdAt,
               end: false,
               isReviewWritten: false,
               isInternExtended: false,
+            }
+            if (companyImageUrl) {
+              careerData.companyImageUrl = companyImageUrl
             }
 
             const batch = admin.firestore().batch()
@@ -151,11 +153,15 @@ exports.sendFeedback = functions.region('asia-northeast1')
           var feedbackData = {
             uid: user.uid,
             userName: user.name,
-            profileImageUrl: user.imageUrl,
             companyId: companyId,
             companyName: companyName,
-            companyImageUrl: companyImageUrl,
             createdAt: updatedAt,
+          }
+          if (user.imageUrl) {
+            feedbackData.profileImageUrl = user.imageUrl
+          }
+          if (companyImageUrl) {
+            feedbackData.companyImageUrl = companyImageUrl
           }
 
           if (newValue.feedback == null) {
@@ -224,15 +230,11 @@ exports.sendPass = functions.region('asia-northeast1')
           const companyImageUrl = doc.data().imageUrl
           const passId = admin.firestore().collection('passes').doc().id
 
-          const batch = admin.firestore().batch()
-          const passRef = admin.firestore().collection('passes').doc(passId)
-          batch.set(passRef, {
+          var passData = {
             uid: user.uid,
             userName: user.name,
-            profileImageUrl: user.imageUrl,
             companyId: companyId,
             companyName: companyName,
-            companyImageUrl: companyImageUrl,
             createdAt: updatedAt,
             expirationDate: pass.expirationDate,
             occupation: pass.occupation,
@@ -241,7 +243,17 @@ exports.sendPass = functions.region('asia-northeast1')
             isAccepted: false,
             isContracted: false,
             isValid: true,
-          })
+          }
+          if (user.imageUrl) {
+            passData.profileImageUrl = user.imageUrl
+          }
+          if (companyImageUrl) {
+            passData.companyImageUrl = companyImageUrl
+          }
+
+          const batch = admin.firestore().batch()
+          const passRef = admin.firestore().collection('passes').doc(passId)
+          batch.set(passRef, passData)
           const candidateRef = admin.firestore().collection('companies')
             .doc(companyId).collection('candidates').doc(candidateId)
 
@@ -526,19 +538,25 @@ exports.scoutUser = functions.region('asia-northeast1')
                 })
               } else {
                 const chatId = admin.firestore().collection('chats').doc().id
-                const batch = admin.firestore().batch()
-                const chatsRef = admin.firestore().collection('chats').doc(chatId)
-                batch.set(chatsRef, {
+                var chatData = {
                   uid: user.uid,
-                  profileImageUrl: user.imageUrl,
                   userName: user.name,
                   companyId: companyId,
-                  companyImageUrl: companyImageUrl,
                   companyName: companyName,
                   lastMessage: message,
                   messagesExist: true,
                   updatedAt: createdAt,
-                })
+                }
+                if (user.imageUrl) {
+                  chatData.profileImageUrl = user.imageUrl
+                }
+                if (companyImageUrl) {
+                  chatData.companyImageUrl = companyImageUrl
+                }
+
+                const batch = admin.firestore().batch()
+                const chatsRef = admin.firestore().collection('chats').doc(chatId)
+                batch.set(chatsRef, chatData)
                 const messagesRef = admin.firestore().collection('chats').doc(chatId)
                   .collection('messages').doc()
                 batch.set(messagesRef, {
@@ -695,18 +713,24 @@ exports.applyForJob = functions.region('asia-northeast1')
                 })
               } else {
                 const chatId = admin.firestore().collection('chats').doc().id
-                const batch = admin.firestore().batch()
-                const chatsRef = admin.firestore().collection('chats').doc(chatId)
-                batch.set(chatsRef, {
+                var chatData = {
                   uid: user.uid,
-                  profileImageUrl: user.imageUrl,
                   userName: user.name,
                   companyId: companyId,
-                  companyImageUrl: companyImageUrl,
                   companyName: companyName,
                   messagesExist: false,
                   updatedAt: createdAt,
-                })
+                }
+                if (user.imageUrl) {
+                  chatData.profileImageUrl = user.imageUrl
+                }
+                if (companyImageUrl) {
+                  chatData.companyImageUrl = companyImageUrl
+                }
+
+                const batch = admin.firestore().batch()
+                const chatsRef = admin.firestore().collection('chats').doc(chatId)
+                batch.set(chatsRef, chatData)
                 const candidateRef = admin.firestore().collection('companies').doc(companyId)
                   .collection('candidates').doc(candidateId)
                 batch.update(candidateRef, {
@@ -777,10 +801,12 @@ exports.postJob = functions.region('asia-northeast1')
           const services = doc.data().services
           const welfare = doc.data().welfare
 
-          const jobData = {
+          var jobData = {
             companyName: companyName,
-            companyImageUrl: companyImageUrl,
             status: initialStatus,
+          }
+          if (companyImageUrl) {
+            jobData.companyImageUrl = companyImageUrl
           }
           if (doc.data().reviews) {
             rating = doc.data().reviews.rating
@@ -791,13 +817,11 @@ exports.postJob = functions.region('asia-northeast1')
           const batch = admin.firestore().batch()
           const jobsRef = admin.firestore().collection('jobs').doc(jobId)
           batch.update(jobsRef, jobData)
-          const jobDetailRef = admin.firestore().collection('jobs').doc(jobId).collection('detail').doc(jobId)
-          batch.set(jobDetailRef, {
+
+          var jobDetailData = {
             companyId: companyId,
             companyName: companyName,
-            companyImageUrl: companyImageUrl,
             title: title,
-            imageUrl: imageUrl,
             mission: mission,
             vision: vision,
             value: value,
@@ -819,7 +843,16 @@ exports.postJob = functions.region('asia-northeast1')
             occupation: occupation,
             features: features,
             createdAt: createdAt
-          })
+          }
+          if (companyImageUrl) {
+            jobDetailData.companyImageUrl = companyImageUrl
+          }
+          if (imageUrl) {
+            jobDetailData.imageUrl = imageUrl
+          }
+
+          const jobDetailRef = admin.firestore().collection('jobs').doc(jobId).collection('detail').doc(jobId)
+          batch.set(jobDetailRef, jobDetailData)
           batch.commit()
             .then(() => {
               console.log('postJob completed.')
@@ -1335,16 +1368,6 @@ exports.acceptJobOffer = functions.region('asia-northeast1')
     const companyImageUrl = newValue.companyImageUrl
     const occupation = newValue.occupation
     const passId = context.params.passId
-    const acceptedOffer = {
-      acceptedOffer: {
-        companyId: companyId,
-        companyName: companyName,
-        companyImageUrl: companyImageUrl,
-        passId: passId,
-        occupation: occupation,
-        isContracted: false,
-      }
-    }
     const message = {
       message: userMessage,
       createdAt: newValue.acceptedAt,
@@ -1421,7 +1444,7 @@ exports.sendMessageFromUser = functions.region('asia-northeast1')
             }
           }
 
-          const chatData = {
+          var chatData = {
             updatedAt: snap.data().createdAt,
             lastMessage: message,
             messagesExist: true,
