@@ -53,9 +53,21 @@
                 <div class="py-3">
                   <div class="mb-1">{{ item.startedAt }}</div>
                   <div class="title font-weight-bold mb-3 return">{{ item.companyName }}</div>
-                  <div>{{ item.occupation }}</div>
-                  <div v-if="item.end">期間: {{ item.duration }}ヶ月</div>
-                  <div v-else>勤務中</div>
+                  <div class="pb-1">職種:　{{ item.occupation }}</div>
+                  <div v-if="!item.end">
+                    勤務中
+                  </div>
+                  <div v-else-if="item.isInternExtended">
+                    <div v-if="item.extendedInternEnd">
+                      終了日:　{{ item.endedAt }}
+                    </div>
+                    <div v-else>
+                      インターン延長中
+                    </div>
+                  </div>
+                  <div v-else>
+                    終了日:　{{ item.endedAt }}
+                  </div>
                 </div>
               </v-timeline-item>
             </v-timeline>
