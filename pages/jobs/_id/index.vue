@@ -452,16 +452,13 @@
                         </div>
                       </template>
                     </v-list>
-                    <div v-if="allReviews != null && reviews.rating.count > allReviews.length" class="text-xs-center">
-                      <v-btn
-                        fab
-                        small
-                        color="white"
-                        @click="queryReviews({companyId: companyId, reviews: allReviews})"
-                      >
-                        <v-icon>arrow_downward</v-icon>
-                      </v-btn>
-                    </div>
+                    <infinite-loading
+                      v-if="showInfiniteLoading && allReviews && allReviews.length >= 10 && !isReviewsLoading"
+                      :distance="50"
+                      spinner="waveDots"
+                      @infinite="infiniteHandler">
+                      <div slot="no-results"></div>
+                    </infinite-loading>
                   </div>
                 </v-layout>
               </v-container>
@@ -488,6 +485,7 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data: () => ({
     isQueried: false,
+    showInfiniteLoading: false,
     reviewsDialog: false,
     reviewChartOptions: {
       responsive: true,
@@ -558,17 +556,16 @@ export default {
       applicants: state => state.job.applicants,
       reviews: state => state.job.reviews,
       reviewChartData: state => state.job.reviewChartData,
-      allReviews: state => state.reviews.reviews,
       isLoading: state => state.job.isLoading,
       isCandidate: state => state.job.isCandidate,
+      allReviews: state => state.reviews.companyReviews,
+      isReviewsLoading: state => state.reviews.isCompanyReviewsLoading,
+      allReviewsQueried: state => state.reviews.allCompanyReviewsQueried,
     }),
   },
   mounted() {
     this.showChart = true
-
-    if (this.uid != null && !this.isQueried) {
-      this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: this.uid})
-    }
+    this.showInfiniteLoading = true
   },
   watch: {
     uid(uid) {
@@ -578,17 +575,34 @@ export default {
       }
     }
   },
-  // fetch(context) {
-  //   console.log('fetch')
-  //   const store = context.store
-  //   // query job
-  //   store.dispatch('job/queryJob', {params: context.params, uid: store.state.uid})
-  // },
+  fetch(context) {
+    const store = context.store
+    // query job
+    store.dispatch('job/queryJobDetail', {nuxt: context, params: context.params, uid: store.state.uid})
+  },
   methods: {
+    infiniteHandler($state) {
+      if (!this.allReviewsQueried) {
+        if (!this.isReviewsLoading) {
+          this.count += 1
+          this.updateIsReviewsLoading(true)
+          this.queryCompanyReviews(this.companyId)
+          if (this.count > 20) {
+            $state.complete()
+          } else {
+            $state.loaded()
+          }
+        }
+      } else {
+        $state.complete()
+      }
+    },
     reviewsButtonClicked() {
       this.reviewsDialog = true
-      if (this.allReviews == null) {
-        this.queryReviews({companyId: this.companyId, reviews: null})
+      if (this.allReviews.length == 0) {
+        this.resetReviewsState()
+        this.updateIsReviewsLoading(true)
+        this.queryCompanyReviews(this.companyId)
       }
     },
     applyButtonClicked() {
@@ -603,8 +617,10 @@ export default {
     },
     ...mapActions({
       queryJobDetail: 'job/queryJobDetail',
-      queryReviews: 'reviews/queryReviews',
       apply: 'job/apply',
+      queryCompanyReviews: 'reviews/queryCompanyReviews',
+      updateIsReviewsLoading: 'reviews/updateIsCompanyReviewsLoading',
+      resetReviewsState: 'reviews/resetState',
     }),
   }
 }
