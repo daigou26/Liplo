@@ -140,7 +140,6 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import { auth } from '@/plugins/firebase'
 import MyPageMenu from '~/components/MyPageMenu'
 
 export default {
@@ -148,6 +147,7 @@ export default {
     MyPageMenu
   },
   data: () => ({
+    isQueried: false,
     acceptOfferValid: true,
     userMessage: '',
     messageRules: [
@@ -191,15 +191,25 @@ export default {
   mounted() {
     this.showInfiniteLoading = true
 
-    auth.onAuthStateChanged((user) => {
-      if (user) {
+    if (this.uid != null && !this.isQueried) {
+      if (this.params.id == null) {
+        this.queryPasses({uid: this.uid, passes: this.passes})
+      } else {
+        this.queryPass({nuxt: this.$nuxt, params: this.$route.params})
+      }
+    }
+  },
+  watch: {
+    uid(uid) {
+      if (uid != null) {
+        this.isQueried = true
         if (this.params.id == null) {
-          this.queryPasses({uid: user.uid, passes: this.passes})
+          this.queryPasses({uid: uid, passes: this.passes})
         } else {
           this.queryPass({nuxt: this.$nuxt, params: this.$route.params})
         }
       }
-    })
+    }
   },
   methods: {
     acceptButtonClicked() {

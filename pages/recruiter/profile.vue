@@ -269,10 +269,10 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex'
-import { firestore, auth, storage, storageRef } from '@/plugins/firebase'
 
 export default {
   data: () => ({
+    isQueried: false,
     imageFileSizeWarning: '2MB以下の画像を選択してください',
     selectedImageSize: 200,
     selectedImage: null,
@@ -324,11 +324,17 @@ export default {
     }),
   },
   mounted() {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        this.queryProfile(user.uid)
+    if (this.uid != null && !this.isQueried) {
+      this.queryProfile(this.uid)
+    }
+  },
+  watch: {
+    uid(uid) {
+      if (uid != null) {
+        this.isQueried = true
+        this.queryProfile(uid)
       }
-    })
+    }
   },
   methods: {
     profileImageClicked() {

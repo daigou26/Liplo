@@ -182,7 +182,6 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import { auth } from '@/plugins/firebase'
 import MyPageMenu from '~/components/MyPageMenu'
 
 export default {
@@ -190,6 +189,7 @@ export default {
     MyPageMenu
   },
   data: () => ({
+    isQueried: false,
     atmosphere: 3,
     job: 3,
     discretion: 3,
@@ -225,15 +225,27 @@ export default {
     }),
   },
   mounted() {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
+    this.showInfiniteLoading = true
+
+    if (this.uid != null && !this.isQueried) {
+      if (this.$route.query.id != null) {
+        this.queryNotReviewedCompany({nuxt: this.$nuxt, uid: this.uid, careerId: this.$route.query.id})
+      } else {
+        this.$router.replace({ path: '/user/reviews'})
+      }
+    }
+  },
+  watch: {
+    uid(uid) {
+      if (uid != null) {
+        this.isQueried = true
         if (this.$route.query.id != null) {
-          this.queryNotReviewedCompany({nuxt: this.$nuxt, uid: user.uid, careerId: this.$route.query.id})
+          this.queryNotReviewedCompany({nuxt: this.$nuxt, uid: uid, careerId: this.$route.query.id})
         } else {
           this.$router.replace({ path: '/user/reviews'})
         }
       }
-    })
+    }
   },
   methods: {
     reviewButtonClicked() {

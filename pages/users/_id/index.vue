@@ -342,7 +342,6 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import { auth } from '@/plugins/firebase'
 
 export default {
   data: () => ({

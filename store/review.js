@@ -77,7 +77,7 @@ export const actions = {
         console.error("Error adding document: ", error)
       })
   },
-  queryReview({commit}, {nuxt, params, companyId}) {
+  queryReview({commit}, {nuxt, params, companyId, uid}) {
     const reviewId = params.id
 
     return firestore.collection('reviews')
@@ -85,6 +85,11 @@ export const actions = {
       .get()
       .then(function(doc) {
         if (doc.exists) {
+          if (companyId != doc.data()['companyId'] && uid != doc.data()['uid']) {
+            console.log('404')
+            nuxt.error({ statusCode: 404, message: 'not found' })
+          }
+
           commit('setCompanyId', doc.data()['companyId'])
           commit('setCompanyImageUrl', doc.data()['companyImageUrl'])
           commit('setCompanyName', doc.data()['companyName'])
@@ -126,11 +131,6 @@ export const actions = {
             ]
           }
           commit('setChartData', chartData)
-
-          if (companyId != doc.data()['companyId']) {
-            console.log('404')
-            nuxt.error({ statusCode: 404, message: 'not found' })
-          }
         } else {
           // 404
           console.log('404')
