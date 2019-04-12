@@ -17,8 +17,8 @@ export const mutations = {
   updatePassesLoading(state, isLoading) {
     state.isPassesLoading = isLoading
   },
-  setAllPassesQueried(state) {
-    state.allPassesQueried = true
+  setAllPassesQueried(state, allPassesQueried) {
+    state.allPassesQueried = allPassesQueried
   }
 }
 
@@ -61,7 +61,7 @@ export const actions = {
             commit('addPass', pass)
           })
           if (docCount == 0) {
-            commit('setAllPassesQueried')
+            commit('setAllPassesQueried', true)
           }
           commit('updatePassesLoading', false)
         })
@@ -108,7 +108,7 @@ export const actions = {
             commit('addPass', pass)
           })
           if (docCount == 0) {
-            commit('setAllPassesQueried')
+            commit('setAllPassesQueried', true)
           }
           commit('updatePassesLoading', false)
         })

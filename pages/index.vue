@@ -5,7 +5,7 @@
     justify-center
   >
     <v-container class="pt-0 mt-5">
-      <v-layout row justify-center>
+      <v-layout column justify-center>
         <v-flex
           xs12
           sm10
@@ -53,6 +53,13 @@
               </v-card>
             </template>
           </v-list>
+          <infinite-loading
+            v-if="showInfiniteLoading && jobs && jobs.length >= 10 && !isLoading"
+            :distance="50"
+            spinner="waveDots"
+            @infinite="infiniteHandler">
+            <div slot="no-results"></div>
+          </infinite-loading>
         </v-flex>
       </v-layout>
     </v-container>
@@ -60,54 +67,69 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   data() {
     return {
-      bottom: false
+      count: 0,
+      showInfiniteLoading: false,
     }
   },
   computed: {
     ...mapState({
+      uid: state => state.uid,
       jobs: state => state.jobs.jobs,
-      loading: state => state.jobs.loading,
+      isLoading: state => state.jobs.isLoading,
+      allJobsQueried: state => state.jobs.allJobsQueried,
     })
   },
   mounted() {
-    window.addEventListener('scroll', () => {
-      this.bottom = this.isBottomVisible()
-    })
-    if (this.jobs == null) {
-      // filter set
-      this.$store.dispatch('jobs/setFilter', this.$route.query)
-      // query jobs
-      this.$store.dispatch('jobs/queryJobs', this.$route.query)
-    }
+    this.showInfiniteLoading = true
   },
   watchQuery: ['occupation', 'features'],
   fetch(context) {
     const store = context.store
+    store.dispatch('jobs/resetState')
     // filter set
     store.dispatch('jobs/setFilter', context.query)
     // query jobs
     store.dispatch('jobs/queryJobs', context.query)
   },
   watch: {
-    bottom(bottom) {
-      if (bottom　&& this.jobs != null) {
-        this.$store.dispatch('jobs/addJobs', { queryParams: this.$route.query, jobs: this.$store.state.jobs.jobs})
+    uid(uid) {
+      if (uid != null) {
+        this.resetState()
+        // filter set
+        this.setFilter(this.$route.query)
+        // query jobs
+        this.queryJobs(this.$route.query)
       }
     }
   },
   methods: {
-    isBottomVisible() {
-      const scrollY = window.scrollY
-      const visible = document.documentElement.clientHeight
-      const pageHeight = document.documentElement.scrollHeight
-      const bottomOfPage = visible + scrollY >= pageHeight
-      return bottomOfPage || pageHeight < visible
+    infiniteHandler($state) {
+      if (!this.allJobsQueried) {
+        if (!this.isLoading) {
+          this.count += 1
+          this.updateIsLoading(true)
+          this.queryJobs(this.$route.query)
+          if (this.count > 20) {
+            $state.complete()
+          } else {
+            $state.loaded()
+          }
+        }
+      } else {
+        $state.complete()
+      }
     },
+    ...mapActions({
+      queryJobs: 'jobs/queryJobs',
+      updateIsLoading: 'jobs/updateIsLoading',
+      setFilter: 'jobs/setFilter',
+      resetState: 'jobs/resetState',
+    }),
   }
 }
 </script>

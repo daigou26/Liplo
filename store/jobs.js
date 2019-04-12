@@ -2,7 +2,9 @@ export const strict = false
 import { firestore } from '@/plugins/firebase'
 
 export const state = () => ({
-  jobs: null,
+  jobs: [],
+  isLoading: false,
+  allJobsQueried: false,
   engineer: false,
   designer: false,
   sales: false,
@@ -14,16 +16,20 @@ export const state = () => ({
   friend: false,
   overseas: false,
   toolbarExtension: false,
-  loading: false,
 })
 
 export const mutations = {
-  // jobs
-  setJobs(state, jobs) {
-    state.jobs = jobs
-  },
   addJob(state, job) {
     state.jobs.push(job)
+  },
+  resetJobs(state) {
+    state.jobs = []
+  },
+  updateIsLoading(state, isLoading) {
+    state.isLoading = isLoading
+  },
+  setAllJobsQueried(state, allJobsQueried) {
+    state.allJobsQueried = allJobsQueried
   },
   // occupation
   updateEngineer(state, isActive) {
@@ -64,14 +70,11 @@ export const mutations = {
   resetToolbarExtension(state) {
     state.toolbarExtension = false
   },
-  // loading
-  updateLoading(state, isLoading) {
-    state.loading = isLoading
-  }
 }
 
 export const actions = {
-  queryJobs({commit}, queryParams) {
+  queryJobs({commit, state}, queryParams) {
+    const jobs = state.jobs
     const occupationParams = queryParams.occupation
     const featuresParams = queryParams.features
 
@@ -126,105 +129,70 @@ export const actions = {
         jobsRef = jobsRef.where('features.overseas', '==', true)
       }
     }
-    return jobsRef.orderBy('createdAt', 'desc').limit(10).get()
-      .then(function(snapshot) {
-        const data = []
-        snapshot.forEach(function(doc) {
-          const job = {
-            jobId: doc.id,
-            title: doc.data()['title'],
-            content: doc.data()['content'],
-            imageUrl: doc.data()['imageUrl'],
-            companyId: doc.data()['companyId'],
-            companyName: doc.data()['companyName'],
-            companyImageUrl: doc.data()['companyImageUrl'],
-            rating: doc.data()['rating'],
-            createdAt: doc.data()['createdAt']
-          }
-          data.push(job)
-        })
-        commit('setJobs', data)
-      })
-      .catch(function(error) {
-        console.log("Error getting document:", error);
-      })
-  },
-  addJobs({commit}, {queryParams, jobs}) {
-    const occupationParams = queryParams.occupation
-    const featuresParams = queryParams.features
-    var jobsRef = firestore.collection('jobs')
 
-    // occupation
-    if (typeof occupationParams == 'string') {
-      jobsRef = jobsRef.where(`occupation.${occupationParams}`, '==', true)
-    }
-    if (Array.isArray(occupationParams) && occupationParams.length == 1) {
-      jobsRef = jobsRef.where(`occupation.${occupationParams[0]}`, '==', true)
-    }
-    if (Array.isArray(occupationParams) && occupationParams.length > 1) {
-      if (!occupationParams.includes('engineer')) {
-        jobsRef = jobsRef.where('occupation.engineer', '==', false)
-      }
-      if (!occupationParams.includes('designer')) {
-        jobsRef = jobsRef.where('occupation.designer', '==', false)
-      }
-      if (!occupationParams.includes('sales')) {
-        jobsRef = jobsRef.where('occupation.sales', '==', false)
-      }
-      if (!occupationParams.includes('others')) {
-        jobsRef = jobsRef.where('occupation.others', '==', false)
-      }
-    }
-
-    // features
-    if (typeof featuresParams == 'string') {
-      jobsRef = jobsRef.where(`features.${featuresParams}`, '==', true)
-    }
-    if (Array.isArray(featuresParams) && featuresParams.length == 1) {
-      jobsRef = jobsRef.where(`features.${featuresParams[0]}`, '==', true)
-    }
-    if (Array.isArray(featuresParams) && featuresParams.length > 1) {
-      if (featuresParams.includes('experience')) {
-        jobsRef = jobsRef.where('features.experience', '==', true)
-      }
-      if (featuresParams.includes('funding')) {
-        jobsRef = jobsRef.where('features.funding', '==', true)
-      }
-      if (featuresParams.includes('founder20s')) {
-        jobsRef = jobsRef.where('features.founder20s', '==', true)
-      }
-      if (featuresParams.includes('media')) {
-        jobsRef = jobsRef.where('features.media', '==', true)
-      }
-      if (featuresParams.includes('friend')) {
-        jobsRef = jobsRef.where('features.friend', '==', true)
-      }
-      if (featuresParams.includes('overseas')) {
-        jobsRef = jobsRef.where('features.overseas', '==', true)
-      }
-    }
-    const lastIndex = jobs.length - 1
-    const lastDate = jobs[lastIndex].createdAt
-    return jobsRef.orderBy('createdAt', 'desc').startAfter(lastDate).limit(10).get()
-      .then(function(snapshot) {
-        snapshot.forEach(function(doc) {
-          const job = {
-            jobId: doc.id,
-            title: doc.data()['title'],
-            content: doc.data()['content'],
-            imageUrl: doc.data()['imageUrl'],
-            companyId: doc.data()['companyId'],
-            companyName: doc.data()['companyName'],
-            companyImageUrl: doc.data()['companyImageUrl'],
-            rating: doc.data()['rating'],
-            createdAt: doc.data()['createdAt']
+    if (jobs.length == 0) {
+      jobsRef.orderBy('createdAt', 'desc')
+        .limit(10)
+        .get()
+        .then(function(snapshot) {
+          var docCount = 0
+          snapshot.forEach(function(doc) {
+            docCount += 1
+            const job = {
+              jobId: doc.id,
+              title: doc.data()['title'],
+              content: doc.data()['content'],
+              imageUrl: doc.data()['imageUrl'],
+              companyId: doc.data()['companyId'],
+              companyName: doc.data()['companyName'],
+              companyImageUrl: doc.data()['companyImageUrl'],
+              rating: doc.data()['rating'],
+              createdAt: doc.data()['createdAt']
+            }
+            commit('addJob', job)
+          })
+          if (docCount == 0) {
+            commit('setAllJobsQueried', true)
           }
-          commit('addJob', job)
+          commit('updateIsLoading', false)
         })
-      })
-      .catch(function(error) {
-        console.log("Error getting document:", error);
-      })
+        .catch(function(error) {
+          console.log("Error getting document:", error);
+        })
+    } else if (jobs.length != 0) {
+      const lastIndex = jobs.length - 1
+      const lastDate = jobs[lastIndex].createdAt
+
+      jobsRef.orderBy('createdAt', 'desc')
+        .startAfter(lastDate)
+        .limit(10)
+        .get()
+        .then(function(snapshot) {
+          var docCount = 0
+          snapshot.forEach(function(doc) {
+            docCount += 1
+            const job = {
+              jobId: doc.id,
+              title: doc.data()['title'],
+              content: doc.data()['content'],
+              imageUrl: doc.data()['imageUrl'],
+              companyId: doc.data()['companyId'],
+              companyName: doc.data()['companyName'],
+              companyImageUrl: doc.data()['companyImageUrl'],
+              rating: doc.data()['rating'],
+              createdAt: doc.data()['createdAt']
+            }
+            commit('addJob', job)
+          })
+          if (docCount == 0) {
+            commit('setAllJobsQueried', true)
+          }
+          commit('updateIsLoading', false)
+        })
+        .catch(function(error) {
+          console.log("Error getting document:", error);
+        })
+    }
   },
   setFilter({commit}, queryParams) {
     const occupationParams = queryParams.occupation
@@ -249,5 +217,13 @@ export const actions = {
   },
   resetToolbarExtension({commit}) {
     commit('resetToolbarExtension')
+  },
+  updateIsLoading({commit}, isLoading) {
+    commit('updateIsLoading', isLoading)
+  },
+  resetState({commit}) {
+    commit('resetJobs')
+    commit('updateIsLoading', false)
+    commit('setAllJobsQueried', false)
   },
 }

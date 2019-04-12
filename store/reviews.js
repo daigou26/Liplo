@@ -2,22 +2,16 @@ export const strict = false
 import { firestore } from '@/plugins/firebase'
 
 export const state = () => ({
-  reviews: null,
   companyReviews: [],
   isCompanyReviewsLoading: false,
   allCompanyReviewsQueried: false,
+  // ユーザーが記入したレビュー
   userReviews: [],
   isUserReviewsLoading: false,
   allUserReviewsQueried: false,
 })
 
 export const mutations = {
-  setReviews(state, reviews) {
-    state.reviews = reviews
-  },
-  addReview(state, review) {
-    state.reviews.push(review)
-  },
   addCompanyReview(state, review) {
     state.companyReviews.push(review)
   },
@@ -25,10 +19,10 @@ export const mutations = {
     state.companyReviews = []
   },
   updateIsCompanyReviewsLoading(state, isLoading) {
-    state.iscompanyReviewsLoading = isLoading
+    state.isCompanyReviewsLoading = isLoading
   },
-  setAllCompanyReviewsQueried(state) {
-    state.allcompanyReviewsQueried = true
+  setAllCompanyReviewsQueried(state, allCompanyReviewsQueried) {
+    state.allCompanyReviewsQueried = allCompanyReviewsQueried
   },
   addUserReview(state, review) {
     state.userReviews.push(review)
@@ -39,60 +33,12 @@ export const mutations = {
   updateUserReviewsLoading(state, isLoading) {
     state.isUserReviewsLoading = isLoading
   },
-  setAllUserReviewsQueried(state) {
-    state.allUserReviewsQueried = true
+  setAllUserReviewsQueried(state, allUserReviewsQueried) {
+    state.allUserReviewsQueried = allUserReviewsQueried
   }
 }
 
 export const actions = {
-  queryReviews({commit}, {companyId, reviews}) {
-    if (reviews == null) {
-      return firestore.collection('reviews')
-        .where('companyId', '==', companyId)
-        .orderBy('createdAt', 'desc')
-        .limit(10)
-        .get()
-        .then(function(snapshot) {
-          const data = []
-          snapshot.forEach(function(doc) {
-            const review = {
-              all: doc.data()['all'],
-              content: doc.data()['content'],
-              occupation: doc.data()['occupation'],
-              createdAt: doc.data()['createdAt']
-            }
-            data.push(review)
-          })
-          commit('setReviews', data)
-        })
-        .catch(function(error) {
-          console.log("Error getting document:", error);
-        })
-    } else if (reviews.length != 0) {
-      const lastIndex = reviews.length - 1
-      const lastDate = reviews[lastIndex].createdAt
-      return firestore.collection('reviews')
-        .where('companyId', '==', companyId)
-        .orderBy('createdAt', 'desc')
-        .startAfter(lastDate)
-        .limit(10)
-        .get()
-        .then(function(snapshot) {
-          snapshot.forEach(function(doc) {
-            const review = {
-              all: doc.data()['all'],
-              content: doc.data()['content'],
-              occupation: doc.data()['occupation'],
-              createdAt: doc.data()['createdAt']
-            }
-            commit('addReview', review)
-          })
-        })
-        .catch(function(error) {
-          console.log("Error getting document:", error);
-        })
-    }
-  },
   queryCompanyReviews({commit, state}, companyId) {
     const reviews = state.companyReviews
     if (reviews.length == 0) {
@@ -133,7 +79,7 @@ export const actions = {
             commit('addCompanyReview', review)
           })
           if (docCount == 0) {
-            commit('setAllCompanyReviewsQueried')
+            commit('setAllCompanyReviewsQueried', true)
           }
           commit('updateIsCompanyReviewsLoading', false)
         })
@@ -181,7 +127,7 @@ export const actions = {
             commit('addCompanyReview', review)
           })
           if (docCount == 0) {
-            commit('setAllCompanyReviewsQueried')
+            commit('setAllCompanyReviewsQueried', true)
           }
           commit('updateIsCompanyReviewsLoading', false)
         })
@@ -214,7 +160,7 @@ export const actions = {
             commit('addUserReview', review)
           })
           if (docCount == 0) {
-            commit('setAllUserReviewsQueried')
+            commit('setAllUserReviewsQueried',true)
           }
           commit('updateUserReviewsLoading', false)
         })
@@ -244,7 +190,7 @@ export const actions = {
             commit('addUserReview', review)
           })
           if (docCount == 0) {
-            commit('setAllUserReviewsQueried')
+            commit('setAllUserReviewsQueried', true)
           }
           commit('updateUserReviewsLoading', false)
         })
@@ -257,7 +203,6 @@ export const actions = {
     commit('updateUserReviewsLoading', isLoading)
   },
   resetState({commit}) {
-    commit('setReviews', null)
     commit('resetCompanyReviews')
     commit('updateIsCompanyReviewsLoading', false)
     commit('setAllCompanyReviewsQueried', false)
