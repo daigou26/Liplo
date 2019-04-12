@@ -27,8 +27,8 @@ export const mutations = {
   updateIsCompanyReviewsLoading(state, isLoading) {
     state.iscompanyReviewsLoading = isLoading
   },
-  setAllCompanyReviewsQueried(state) {
-    state.allcompanyReviewsQueried = true
+  setAllCompanyReviewsQueried(state, allCompanyReviewsQueried) {
+    state.allcompanyReviewsQueried = allCompanyReviewsQueried
   },
   addUserReview(state, review) {
     state.userReviews.push(review)
@@ -39,8 +39,8 @@ export const mutations = {
   updateUserReviewsLoading(state, isLoading) {
     state.isUserReviewsLoading = isLoading
   },
-  setAllUserReviewsQueried(state) {
-    state.allUserReviewsQueried = true
+  setAllUserReviewsQueried(state, allUserReviewsQueried) {
+    state.allUserReviewsQueried = allUserReviewsQueried
   }
 }
 
@@ -133,7 +133,7 @@ export const actions = {
             commit('addCompanyReview', review)
           })
           if (docCount == 0) {
-            commit('setAllCompanyReviewsQueried')
+            commit('setAllCompanyReviewsQueried', true)
           }
           commit('updateIsCompanyReviewsLoading', false)
         })
@@ -181,7 +181,7 @@ export const actions = {
             commit('addCompanyReview', review)
           })
           if (docCount == 0) {
-            commit('setAllCompanyReviewsQueried')
+            commit('setAllCompanyReviewsQueried', true)
           }
           commit('updateIsCompanyReviewsLoading', false)
         })
@@ -214,7 +214,7 @@ export const actions = {
             commit('addUserReview', review)
           })
           if (docCount == 0) {
-            commit('setAllUserReviewsQueried')
+            commit('setAllUserReviewsQueried',true)
           }
           commit('updateUserReviewsLoading', false)
         })
@@ -244,7 +244,7 @@ export const actions = {
             commit('addUserReview', review)
           })
           if (docCount == 0) {
-            commit('setAllUserReviewsQueried')
+            commit('setAllUserReviewsQueried', true)
           }
           commit('updateUserReviewsLoading', false)
         })

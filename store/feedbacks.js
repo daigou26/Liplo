@@ -20,8 +20,8 @@ export const mutations = {
   updateFeedbacksLoading(state, isLoading) {
     state.isFeedbacksLoading = isLoading
   },
-  setAllFeedbacksQueried(state) {
-    state.allFeedbacksQueried = true
+  setAllFeedbacksQueried(state, allFeedbacksQueried) {
+    state.allFeedbacksQueried = allFeedbacksQueried
   },
   addUnwittenFeedback(state, feedback) {
     state.unwrittenFeedbacks.push(feedback)
@@ -32,8 +32,8 @@ export const mutations = {
   updateIsUnwittenFeedbacksLoading(state, isLoading) {
     state.isUnwrittenFeedbacksLoading = isLoading
   },
-  setAllUnwittenFeedbacksQueried(state) {
-    state.allUnwrittenFeedbacksQueried = true
+  setAllUnwittenFeedbacksQueried(state, allUnwrittenFeedbacksQueried) {
+    state.allUnwrittenFeedbacksQueried = allUnwrittenFeedbacksQueried
   }
 }
 
@@ -61,7 +61,7 @@ export const actions = {
             commit('addFeedback', feedback)
           })
           if (docCount == 0) {
-            commit('setAllFeedbacksQueried')
+            commit('setAllFeedbacksQueried', true)
           }
           commit('updateFeedbacksLoading', false)
         })
@@ -93,7 +93,7 @@ export const actions = {
             commit('addFeedback', feedback)
           })
           if (docCount == 0) {
-            commit('setAllFeedbacksQueried')
+            commit('setAllFeedbacksQueried', true)
           }
           commit('updateFeedbacksLoading', false)
         })
@@ -138,7 +138,7 @@ export const actions = {
             commit('addUnwittenFeedback', feedback)
           })
           if (docCount == 0) {
-            commit('setAllUnwittenFeedbacksQueried')
+            commit('setAllUnwittenFeedbacksQueried', true)
           }
           commit('updateIsUnwittenFeedbacksLoading', false)
         })
@@ -159,7 +159,7 @@ export const actions = {
           var docCount = 0
           snapshot.forEach(function(doc) {
             docCount += 1
-            
+
             var timestamp = doc.data()['createdAt']
             if (timestamp) {
               let date = new Date( timestamp.seconds * 1000 )
@@ -179,7 +179,7 @@ export const actions = {
             commit('addUnwittenFeedback', feedback)
           })
           if (docCount == 0) {
-            commit('setAllUnwittenFeedbacksQueried')
+            commit('setAllUnwittenFeedbacksQueried', true)
           }
           commit('updateIsUnwittenFeedbacksLoading', false)
         })

@@ -20,8 +20,8 @@ export const mutations = {
   updateIsLoading(state, isLoading) {
     state.isLoading = isLoading
   },
-  setAllChatsQueried(state) {
-    state.allChatsQueried = true
+  setAllChatsQueried(state, allChatsQueried) {
+    state.allChatsQueried = allChatsQueried
   }
 }
 
@@ -70,7 +70,7 @@ export const actions = {
             commit('addChat', chat)
           })
           if (docCount == 0) {
-            commit('setAllChatsQueried')
+            commit('setAllChatsQueried', true)
           }
           commit('updateIsLoading', false)
         })
@@ -113,7 +113,7 @@ export const actions = {
             commit('addChat', chat)
           })
           if (docCount == 0) {
-            commit('setAllChatsQueried')
+            commit('setAllChatsQueried', true)
           }
           commit('updateIsLoading', false)
         })
