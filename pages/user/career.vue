@@ -19,7 +19,7 @@
           md4
           hidden-sm-and-down
           :class="{
-            'pa-5': $vuetify.breakpoint.lgAndUp,
+            'py-5 px-4': $vuetify.breakpoint.lgAndUp,
             'pa-3': $vuetify.breakpoint.mdOnly,
           }"
         >

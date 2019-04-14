@@ -18,29 +18,29 @@
           <v-icon>arrow_drop_down</v-icon>
         </v-btn>
         <v-card>
-          <v-list dense>
+          <v-list dense class="py-0">
             <v-list-tile
               v-for="item in mypageItems"
-              :key="item"
-              :class="{ 'teal lighten-5': path.includes('user/' + item) }"
-              :to="'/user/' + item"
+              :key="item.value"
+              :class="{ 'teal lighten-5': path.includes('user/' + item.value) }"
+              :to="'/user/' + item.value"
             >
-              <v-list-tile-title
-                v-text="item"
-              />
+              <v-list-tile-content>
+                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+              </v-list-tile-content>
             </v-list-tile>
           </v-list>
         </v-card>
       </v-menu>
       <!-- menu ( xl, lg, md) -->
-      <v-list class="border hidden-sm-and-down">
+      <v-list class="border hidden-sm-and-down py-0">
         <template v-for="(item, index) in mypageItems">
           <v-list-tile
-            :class="{ 'teal lighten-5': path.includes('user/' + item) }"
-            :to="'/user/' + item"
+            :class="{ 'teal lighten-5': path.includes('user/' + item.value) }"
+            :to="'/user/' + item.value"
           >
             <v-list-tile-content>
-              <v-list-tile-title>{{ item }}</v-list-tile-title>
+              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
           <v-divider
@@ -57,10 +57,26 @@ export default {
   data: () => ({
     dropdownText: '',
     mypageItems: [
-      'passes',
-      'career',
-      'feedbacks',
-      'reviews'
+      {
+        title: '通知',
+        value: 'notifications'
+      },
+      {
+        title: '内定パス',
+        value: 'passes'
+      },
+      {
+        title: 'キャリア',
+        value: 'career'
+      },
+      {
+        title: 'フィードバック',
+        value: 'feedbacks'
+      },
+      {
+        title: 'レビュー',
+        value: 'reviews'
+      },
     ],
   }),
   computed: {
@@ -72,7 +88,9 @@ export default {
     },
   },
   mounted() {
-    if (this.path.includes('user/career')) {
+    if (this.path.includes('user/notifications')) {
+      this.dropdownText = '通知'
+    } else if (this.path.includes('user/career')) {
       this.dropdownText = 'キャリア'
     } else if (this.path.includes('user/reviews')) {
       this.dropdownText = 'レビュー'
