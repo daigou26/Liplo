@@ -448,6 +448,21 @@
               <v-btn small flat @click="updateAllIsUnread(uid)">すべて既読にする</v-btn>
             </v-toolbar-items>
           </v-toolbar>
+          <v-card
+            v-if="hasNewMessage"
+            flat
+            to="/recruiter/messages"
+            @click=""
+          >
+            <v-alert
+              :value="true"
+              color="warning"
+              outline
+              class="mt-0"
+            >
+              新着メッセージがあります
+            </v-alert>
+          </v-card>
           <v-list v-if="!isNotificationsLoading && notifications && notifications.length != 0" two-line>
             <template v-for="(notification, index) in notifications">
               <v-card
@@ -479,7 +494,7 @@
            ></v-progress-circular>
           </div>
           <v-divider v-if="notifications && notifications.length >= 1"></v-divider>
-          <div v-if="notifications && notifications.length >= 1" class="text-xs-center py-3">
+          <div v-if="notifications && notifications.length >= 1" class="text-xs-center py-2">
             <v-btn flat small to="/recruiter/notifications" style="color: #00897B">
               すべて表示する
             </v-btn>
