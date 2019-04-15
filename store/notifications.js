@@ -8,6 +8,8 @@ export const state = () => ({
   isLoading: false,
   allNotificationsQueried: false,
   canReadAll: false,
+  hasNewNotification: false,
+  unsubscribe: null,
 })
 
 export const mutations = {
@@ -40,7 +42,13 @@ export const mutations = {
   },
   updateCanReadAll(state, canReadAll) {
     state.canReadAll = canReadAll
-  }
+  },
+  updateHasNewNotification(state, hasNewNotification) {
+    state.hasNewNotification = hasNewNotification
+  },
+  setUnsubscribe(state, unsubscribe) {
+    state.unsubscribe = unsubscribe
+  },
 }
 
 export const actions = {
@@ -262,6 +270,31 @@ export const actions = {
       .catch(function(error) {
         console.log("Error getting document:", error);
       })
+  },
+  // 未読の通知があるか
+  setNotificationsListener({commit}, uid) {
+    const listener = firestore.collection('users')
+      .doc(uid)
+      .collection('notifications')
+      .where('isUnread', '==', true)
+      .onSnapshot(function(snapshot) {
+        if (!snapshot.empty) {
+          commit('updateHasNewNotification', true)
+        } else {
+          commit('updateHasNewNotification', false)
+        }
+      })
+    commit('setUnsubscribe', listener)
+  },
+  resetHasNewNotification({commit}) {
+    commit('updateHasNewNotification', false)
+  },
+  resetNotificationsListener({commit, state}) {
+    if (state.unsubscribe) {
+      console.log('notification listener unsubscribed');
+      state.unsubscribe()
+    }
+    commit('setUnsubscribe', null)
   },
   resetLatestNotificationsState({commit}) {
     commit('resetLatestNotifications')

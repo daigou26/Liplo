@@ -39,7 +39,7 @@ export const mutations = {
   resetAllMessagesQueried(state) {
     state.allMessagesQueried = false
   },
-  updateUnsubscribe(state, unsubscribe) {
+  setUnsubscribe(state, unsubscribe) {
     state.unsubscribe = unsubscribe
   },
   updateIsNewMessage(state, isNew) {
@@ -84,7 +84,7 @@ export const actions = {
           // listenerがあればremove
           if (state.unsubscribe) {
             state.unsubscribe()
-            commit('updateUnsubscribe', null)
+            commit('setUnsubscribe', null)
           }
           // listener set
           var lastDate
@@ -119,7 +119,7 @@ export const actions = {
                   })
               }
 
-              if (snapshot.docChanges().length != 0) {
+              if (!snapshot.empty) {
                 commit('updateIsNewMessage', true)
               }
 
@@ -135,7 +135,7 @@ export const actions = {
                 }
               })
             })
-            commit('updateUnsubscribe', listener)
+            commit('setUnsubscribe', listener)
         })
         .catch(function(error) {
           commit('updateIsLoading', false)
@@ -178,13 +178,12 @@ export const actions = {
     }
   },
   resetUnsubscribe({commit}) {
-    commit('updateUnsubscribe', null)
+    commit('setUnsubscribe', null)
   },
   resetState({commit}) {
     commit('resetMessages')
     commit('updateIsInitialQuery', true)
     commit('updateIsLoading', false)
     commit('resetAllMessagesQueried')
-    commit('updateUnsubscribe', null)
   },
 }

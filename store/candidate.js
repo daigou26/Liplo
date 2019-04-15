@@ -405,7 +405,7 @@ export const actions = {
                     })
                 }
 
-                if (snapshot.docChanges().length != 0) {
+                if (!snapshot.empty) {
                   commit('updateIsNewMessage', true)
                 }
 
