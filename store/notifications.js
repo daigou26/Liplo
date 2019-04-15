@@ -14,6 +14,9 @@ export const mutations = {
   addLatestNotification(state, notification) {
     state.latestNotifications.push(notification)
   },
+  setLatestNotifications(state, notifications) {
+    state.latestNotifications = notifications
+  },
   resetLatestNotifications(state) {
     state.latestNotifications = []
   },
@@ -22,6 +25,9 @@ export const mutations = {
   },
   addNotification(state, notification) {
     state.notifications.push(notification)
+  },
+  setNotifications(state, notifications) {
+    state.notifications = notifications
   },
   resetNotifications(state) {
     state.notifications = []
@@ -57,11 +63,16 @@ export const actions = {
             timestamp = Math.floor((currentDate - createdAt) / 86400000)
             timestamp = String(timestamp) + '日前'
           } else {
-            timestamp = String(timestamp) + '時間前'
+            if (timestamp <= 1) {
+              timestamp = '1時間以内'
+            } else {
+              timestamp = String(timestamp) + '時間前'
+            }
           }
 
           if (docCount < 4) {
             const notification = {
+              notificationId: doc.id,
               type: doc.data()['type'],
               isImportant: doc.data()['isImportant'],
               content: doc.data()['content'],
@@ -107,10 +118,15 @@ export const actions = {
               timestamp = Math.floor((currentDate - createdAt) / 86400000)
               timestamp = String(timestamp) + '日前'
             } else {
-              timestamp = String(timestamp) + '時間前'
+              if (timestamp <= 1) {
+                timestamp = '1時間以内'
+              } else {
+                timestamp = String(timestamp) + '時間前'
+              }
             }
 
             const notification = {
+              notificationId: doc.id,
               type: doc.data()['type'],
               isImportant: doc.data()['isImportant'],
               content: doc.data()['content'],
@@ -156,6 +172,7 @@ export const actions = {
             }
 
             const notification = {
+              notificationId: doc.id,
               type: doc.data()['type'],
               isImportant: doc.data()['isImportant'],
               content: doc.data()['content'],
@@ -178,6 +195,73 @@ export const actions = {
   },
   updateIsLoading({commit}, isLoading) {
     commit('updateIsLoading', isLoading)
+  },
+  // 指定されたnotificationIdの通知を既読にする
+  updateIsUnread({commit, state}, {uid, notificationId}) {
+    firestore.collection('users')
+      .doc(uid)
+      .collection('notifications')
+      .doc(notificationId)
+      .update({
+        isUnread: false
+      })
+      .then(() => {
+        var latestNotifications = state.latestNotifications
+        var notifications = state.notifications
+
+        latestNotifications.forEach((notification, index) => {
+          if (notification.notificationId == notificationId) {
+            latestNotifications[index].isUnread = false
+          }
+        })
+
+        notifications.forEach((notification, index) => {
+          if (notification.notificationId == notificationId) {
+            notifications[index].isUnread = false
+          }
+        })
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error)
+      })
+  },
+  // 全ての通知を既読にする
+  updateAllIsUnread({commit, state}, uid) {
+    firestore.collection('users')
+      .doc(uid)
+      .collection('notifications')
+      .where('isUnread', '==', true)
+      .get()
+      .then(function(snapshot) {
+        const batch = firestore.batch()
+
+        snapshot.forEach(function(doc) {
+          const notificationRef = firestore.collection('users').doc(uid)
+            .collection('notifications').doc(doc.id)
+          batch.update(notificationRef, {
+            isUnread: false,
+          })
+        })
+        batch.commit()
+          .then(() => {
+            var latestNotifications = state.latestNotifications
+            var notifications = state.notifications
+
+            latestNotifications.forEach((notification, index) => {
+              latestNotifications[index].isUnread = false
+            })
+
+            notifications.forEach((notification, index) => {
+              notifications[index].isUnread = false
+            })
+          })
+          .catch((error) => {
+            console.error("Error adding document: ", error)
+          })
+      })
+      .catch(function(error) {
+        console.log("Error getting document:", error);
+      })
   },
   resetLatestNotificationsState({commit}) {
     commit('resetLatestNotifications')

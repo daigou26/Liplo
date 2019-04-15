@@ -128,23 +128,33 @@
         <v-flex class="text-xs-center">
           <div class="align-center">
             <div class="text-xs-left">
-              <v-menu offset-y offset-x min-width="350">
+              <v-menu offset-y offset-x min-width="400">
                 <v-btn flat icon slot="activator" @click="notificationsButtonClicked">
                   <span class="font-weight-bold textColor">通知</span>
                 </v-btn>
-
                 <v-card>
                   <v-toolbar flat height="48">
                     <span class="font-weight-bold subheading">通知</span>
+                    <v-spacer></v-spacer>
+                    <v-toolbar-items class="pr-0">
+                      <v-btn small flat @click="updateAllIsUnread(uid)">すべて既読にする</v-btn>
+                    </v-toolbar-items>
                   </v-toolbar>
                   <v-list v-if="!isNotificationsLoading && notifications && notifications.length != 0" two-line>
                     <template v-for="(notification, index) in notifications">
-                      <v-list-tile>
-                        <v-list-tile-content>
-                          <v-list-tile-title class="textColor return">{{ notification.content }}</v-list-tile-title>
-                          <v-list-tile-sub-title class="textColor return text-xs-right">{{ notification.timestamp }}</v-list-tile-sub-title>
-                        </v-list-tile-content>
-                      </v-list-tile>
+                      <v-card
+                        flat
+                        :to="notification.url ? notification.url : ''"
+                        @click="updateIsUnread({uid: uid, notificationId: notification.notificationId})"
+                      >
+                        <div class="textColor text-xs-right caption pr-2 pt-2">
+                          {{ notification.isUnread ? '未読' : '既読' }}
+                        </div>
+                        <div class="textColor return px-3 py-2">{{ notification.content }}</div>
+                        <div class="textColor text-xs-right caption pr-2 pb-2">
+                          {{ notification.timestamp }}
+                        </div>
+                      </v-card>
                       <v-divider
                         v-if="notifications.length != index + 1"
                       ></v-divider>
@@ -161,8 +171,10 @@
                    ></v-progress-circular>
                   </div>
                   <v-divider v-if="notifications && canReadAll"></v-divider>
-                  <div v-if="notifications && canReadAll" class="text-xs-center edit-text-color py-3">
-                    すべて表示する
+                  <div v-if="notifications && canReadAll" class="text-xs-center py-3">
+                    <v-btn flat small to="/user/notifications" style="color: #00897B">
+                      すべて表示する
+                    </v-btn>
                   </div>
                 </v-card>
               </v-menu>
@@ -170,16 +182,6 @@
           </div>
         </v-flex>
       </v-layout>
-      <!-- <v-btn flat icon class="px-3">
-        <span class="font-weight-bold textColor">通知</span>
-      </v-btn> -->
-      <!-- <v-btn flat icon color="grey" class="px-3">
-        <v-icon style="font-size: 28px">notifications</v-icon>
-      </v-btn> -->
-      <!-- <v-btn flat icon color="yellow darken-2" class="px-3">
-        <v-icon style="font-size: 28px">notifications_active</v-icon>
-      </v-btn> -->
-
       <v-layout row wrap align-center class="pl-4">
         <v-flex class="text-xs-center">
           <!-- ログイン中に表示される -->
@@ -424,6 +426,69 @@
       <v-btn flat active-class to="/users">
         <span class="font-weight-bold textColor">検索</span>
       </v-btn>
+      <!-- notifications -->
+      <v-layout v-if="uid" row wrap align-center>
+        <v-flex class="text-xs-center">
+          <div class="align-center">
+            <div class="text-xs-left">
+              <v-menu
+                offset-y
+                min-width="350"
+                :fullscreen="$vuetify.breakpoint.xsOnly"
+              >
+                <v-btn flat icon slot="activator" @click="notificationsButtonClicked">
+                  <span class="font-weight-bold textColor">通知</span>
+                </v-btn>
+                <v-card>
+                  <v-toolbar flat height="48">
+                    <span class="font-weight-bold subheading">通知</span>
+                    <v-spacer></v-spacer>
+                    <v-toolbar-items>
+                      <v-btn small flat @click="updateAllIsUnread(uid)">すべて既読にする</v-btn>
+                    </v-toolbar-items>
+                  </v-toolbar>
+                  <v-list v-if="!isNotificationsLoading && notifications && notifications.length != 0" two-line>
+                    <template v-for="(notification, index) in notifications">
+                      <v-card
+                        flat
+                        :to="notification.url ? notification.url : ''"
+                        @click="updateIsUnread({uid: uid, notificationId: notification.notificationId})"
+                      >
+                        <div class="textColor text-xs-right caption pr-2 pt-2">
+                          {{ notification.isUnread ? '未読' : '既読' }}
+                        </div>
+                        <div class="textColor return px-3 py-2">{{ notification.content }}</div>
+                        <div class="textColor text-xs-right caption pr-2 pb-2">
+                          {{ notification.timestamp }}
+                        </div>
+                      </v-card>
+                      <v-divider
+                        v-if="notifications.length != index + 1"
+                      ></v-divider>
+                    </template>
+                  </v-list>
+                  <div v-if="!isNotificationsLoading && notifications && notifications.length == 0" class="text-xs-center py-4">
+                    通知はありません
+                  </div>
+                  <div v-if="isNotificationsLoading" class="text-xs-center py-4">
+                    <v-progress-circular
+                     :size="50"
+                     color="primary"
+                     indeterminate
+                   ></v-progress-circular>
+                  </div>
+                  <v-divider v-if="notifications && notifications.length >= 1"></v-divider>
+                  <div v-if="notifications && notifications.length >= 1" class="text-xs-center py-3">
+                    <v-btn flat small to="/recruiter/notifications" style="color: #00897B">
+                      すべて表示する
+                    </v-btn>
+                  </div>
+                </v-card>
+              </v-menu>
+            </div>
+          </div>
+        </v-flex>
+      </v-layout>
       <v-layout row wrap align-center class="pl-5">
         <v-flex class="text-xs-center">
           <!-- ログイン中に表示される -->
@@ -627,6 +692,8 @@ export default {
       this.password = ''
     },
     ...mapActions({
+      updateIsUnread: 'notifications/updateIsUnread',
+      updateAllIsUnread: 'notifications/updateAllIsUnread',
       queryLatestNotifications: 'notifications/queryLatestNotifications',
       updateIsNotificationsLoading: 'notifications/updateIsLatestNotificationsLoading',
       resetNotificationsState: 'notifications/resetLatestNotificationsState',

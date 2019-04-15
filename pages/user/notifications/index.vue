@@ -16,7 +16,7 @@
       >
         <!-- menu (lg, md)-->
         <v-flex
-          md3
+          md4
           hidden-sm-and-down
           :class="{
             'py-5 px-4': $vuetify.breakpoint.lgAndUp,
@@ -25,7 +25,7 @@
         >
           <my-page-menu/>
         </v-flex>
-        <!-- passes (lg, md) -->
+        <!-- notifications (lg, md) -->
         <v-flex
           md8
           xs12
@@ -41,9 +41,16 @@
             <!-- notifications -->
             <v-list v-if="notifications" three-line class="border py-0">
               <template v-for="(notification, index) in notifications">
-                <v-card flat>
-                  <div class="textColor return px-3 pt-3 pb-2">{{ notification.content }}</div>
-                  <div class="textColor text-xs-right pr-2 pb-2">
+                <v-card
+                  flat
+                  :to="notification.url ? notification.url : ''"
+                  @click="updateIsUnread({uid: uid, notificationId: notification.notificationId})"
+                >
+                  <div class="textColor text-xs-right caption pr-2 pt-2">
+                    {{ notification.isUnread ? '未読' : '既読' }}
+                  </div>
+                  <div class="textColor return px-3 py-2">{{ notification.content }}</div>
+                  <div class="textColor caption text-xs-right pr-2 pb-2">
                     {{ notification.timestamp }}
                   </div>
                 </v-card>
@@ -133,6 +140,7 @@ export default {
       }
     },
     ...mapActions({
+      updateIsUnread: 'notifications/updateIsUnread',
       queryNotifications: 'notifications/queryNotifications',
       updateIsLoading: 'notifications/updateIsLoading',
       resetState: 'notifications/resetState',

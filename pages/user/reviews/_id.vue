@@ -16,7 +16,7 @@
       >
         <!-- menu (lg, md)-->
         <v-flex
-          md3
+          md4
           hidden-sm-and-down
           :class="{
             'py-5 px-4': $vuetify.breakpoint.lgAndUp,
