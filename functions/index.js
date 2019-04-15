@@ -1485,7 +1485,7 @@ exports.acceptJobOffer = functions.region('asia-northeast1')
       user: {
         uid: uid,
         name: userName,
-        imageUrl: imageUrl
+        imageUrl: profileImageUrl
       }
     }
 

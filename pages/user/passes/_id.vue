@@ -214,7 +214,6 @@ export default {
   methods: {
     acceptButtonClicked() {
       this.acceptOffer({params: this.params, message: this.userMessage})
-      this.setIsAccepted(true)
     },
     infiniteHandler($state) {
       if (!this.allPassesQueried) {
@@ -237,7 +236,6 @@ export default {
       updatePassesLoading: 'passes/updatePassesLoading',
       queryPass: 'pass/queryPass',
       acceptOffer: 'pass/acceptOffer',
-      setIsAccepted: 'pass/setIsAccepted',
     }),
   }
 }
