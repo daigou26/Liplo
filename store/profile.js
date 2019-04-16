@@ -184,6 +184,9 @@ export const actions = {
   setCompanyId({commit}, companyId) {
     commit('setCompanyId', companyId)
   },
+  setEmail({commit}, email) {
+    commit('setEmail', email)
+  },
   setImageUrl({commit}, imageUrl) {
     commit('setImageUrl', imageUrl)
   },

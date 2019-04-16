@@ -522,6 +522,7 @@ export default {
       }
     },
     ...mapState({
+      email: state => state.profile.email,
       type: state => state.profile.type,
       profileImageUrl: state => state.profile.imageUrl,
       firstName: state => state.profile.firstName,
@@ -612,6 +613,7 @@ export default {
         imageUrl: this.profileImageUrl,
         firstName: this.firstName,
         lastName: this.lastName,
+        email: this.email,
         companyId: this.companyId
       })
     },

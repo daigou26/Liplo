@@ -265,12 +265,13 @@ export const actions = {
         nuxt.error({ statusCode: 404, message: 'not found' })
       }
   },
-  apply({commit, state},{params, uid, imageUrl, firstName, lastName, companyId}) {
+  apply({commit, state},{params, uid, imageUrl, firstName, lastName, email, companyId}) {
     const jobId = params.id
     const user = {
       uid: uid,
       name: lastName + ' ' + firstName,
-      imageUrl: imageUrl
+      imageUrl: imageUrl,
+      email: email,
     }
     const status = {
       scouted: false,

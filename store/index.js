@@ -86,7 +86,7 @@ export const actions = {
   setLoading({commit}) {
     commit('setLoading')
   },
-  setAuthInfo({dispatch, commit}, {route, router, user, type, firstName, lastName, companyName, companyEmail, position}) {
+  setAuthInfo({dispatch, commit}, {route, router, user, type, firstName, lastName, companyName, companyEmail, companyInvoiceEmail, position}) {
     if (user) {
       commit('setUid', user.uid)
       firestore.collection('users').doc(user.uid).get()
@@ -101,10 +101,12 @@ export const actions = {
                   uid: user.uid,
                   name: lastName + ' ' + firstName,
                   position: position,
+                  email: user.email
                 }]
                 const company = {
                   name: companyName,
                   email: companyEmail,
+                  invoiceEmail: companyInvoiceEmail,
                   members: members,
                 }
                 const batch = firestore.batch()
@@ -116,6 +118,7 @@ export const actions = {
                   firstName: firstName,
                   lastName: lastName,
                   type: 'recruiter',
+                  email: user.email
                 })
                 const profileRef = firestore.collection('users')
                   .doc(user.uid).collection('profile').doc(user.uid)
@@ -147,6 +150,7 @@ export const actions = {
                   lastName: lastName,
                   type: 'user',
                   points: 0,
+                  email: user.email
                 })
                 const profileRef = firestore.collection('users')
                   .doc(user.uid).collection('profile').doc(user.uid)
@@ -182,6 +186,7 @@ export const actions = {
             dispatch('profile/setLastName', doc.data()['lastName'])
             dispatch('profile/setType', doc.data()['type'])
             dispatch('profile/setCompanyId', doc.data()['companyId'])
+            dispatch('profile/setEmail', doc.data()['email'])
 
             if (doc.data()['imageUrl'] != null) {
               dispatch('profile/setImageUrl', doc.data()['imageUrl'])
