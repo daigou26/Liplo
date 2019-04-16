@@ -55,7 +55,7 @@ export const actions = {
         acceptedAt: new Date(),
       })
       .then(() => {
-
+        commit('setIsAccepted', true)
       })
       .catch((error) => {
         console.error("Error adding document: ", error)

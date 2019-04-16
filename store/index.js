@@ -6,7 +6,7 @@ export const state = () => ({
   uid: null,
   authError: null,
   loading: false,
-
+  hasNewMessage: false,
 })
 
 export const mutations = {
@@ -24,6 +24,10 @@ export const mutations = {
   },
   resetLoading(state) {
     state.loading = false
+  },
+
+  updateHasNewMessage(state, hasNewNotification) {
+    state.hasNewNotification = hasNewNotification
   },
 }
 
@@ -55,6 +59,10 @@ export const actions = {
   },
   async signOut({dispatch, commit}) {
     auth.signOut()
+    dispatch('chats/resetMessagesListener')
+    dispatch('chats/resetHasNewMessage')
+    dispatch('notifications/resetNotificationsListener')
+    dispatch('notifications/resetHasNewNotification')
     dispatch('career/resetState')
     dispatch('chat/resetState')
     dispatch('chats/resetState')
@@ -100,7 +108,8 @@ export const actions = {
                   members: members,
                 }
                 const batch = firestore.batch()
-                const companyRef = firestore.collection('companies').doc()
+                const companyId = firestore.collection('companies').doc().id
+                const companyRef = firestore.collection('companies').doc(companyId)
                 batch.set(companyRef, company)
                 const userRef = firestore.collection('users').doc(user.uid)
                 batch.set(userRef, {
@@ -126,6 +135,9 @@ export const actions = {
                   .catch((error) => {
                     console.error("Error adding document: ", error)
                   })
+
+                // メッセージのリスナー
+                dispatch('chats/setCompanyMessagesListener', companyId)
               } else if (type == 'user') {
                 // user
                 const batch = firestore.batch()
@@ -158,6 +170,9 @@ export const actions = {
                   .catch((error) => {
                     console.error("Error adding document: ", error)
                   })
+
+                // メッセージのリスナー
+                dispatch('chats/setUserMessagesListener', user.uid)
               }
             } else {
               // 招待でログインした user
@@ -173,17 +188,25 @@ export const actions = {
             }
 
             if (doc.data()['type'] == 'recruiter') {
+              // メッセージのリスナー
+              dispatch('chats/setCompanyMessagesListener', doc.data()['companyId'])
+
               if (route.path.includes('/user') && !route.path.includes('users')) {
                 router.replace('/recruiter/dashboard')
               } else if (route.path.includes('/messages') && !route.path.includes('recruiter/messages')) {
                 router.replace('/recruiter/dashboard')
               }
             } else {
+              // メッセージのリスナー
+              dispatch('chats/setUserMessagesListener', user.uid)
+
               if (route.path.includes('/recruiter') || route.path.includes('/users')) {
                 router.replace('/')
               }
             }
           }
+          // 通知のリスナー
+          dispatch('notifications/setNotificationsListener', user.uid)
         })
 
     } else {
@@ -197,5 +220,6 @@ export const actions = {
     commit('setUid', null)
     commit('setAuthError', null)
     commit('resetLoading')
+    commit('updateHasNewMessage', false)
   },
 }

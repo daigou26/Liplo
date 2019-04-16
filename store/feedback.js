@@ -93,7 +93,7 @@ export const actions = {
         nuxt.error({ statusCode: 404, message: 'not found' })
       })
   },
-  sendFeedback({commit}, {router, params, goodPoint, advice}) {
+  sendFeedback({commit, state}, {router, params, goodPoint, advice}) {
     const feedbackId = params.id
     const feedbackData = {
       goodPoint: goodPoint,
@@ -102,9 +102,22 @@ export const actions = {
       isWritten: true
     }
 
-    firestore.collection('feedbacks')
-      .doc(feedbackId)
-      .update(feedbackData)
+    const batch = firestore.batch()
+    const feedbackRef = firestore.collection('feedbacks').doc(feedbackId)
+    batch.update(feedbackRef, feedbackData)
+    const notificationRef = firestore.collection('users')
+      .doc(state.uid).collection('notifications').doc()
+    const url = '/user/feedbacks/' + feedbackId
+    batch.set(notificationRef, {
+      type: 'normal',
+      isImportant: false,
+      content: state.companyName + 'にフィードバックをもらいました！ 確認してみましょう。',
+      createdAt: new Date(),
+      url: url,
+      isUnread: true,
+    })
+
+    batch.commit()
       .then(() => {
         router.replace({path: '/recruiter/feedbacks'})
       })

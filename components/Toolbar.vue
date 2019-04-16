@@ -108,21 +108,80 @@
     </v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items class="hidden-xs-only">
+      <!-- messages -->
       <v-btn
         v-if="uid"
         flat
         to="/messages"
         active-class
+        class="pr-4"
       >
-        <v-badge  overlap color="red">
+        <span v-if="!hasNewMessage" class="font-weight-bold textColor">メッセージ</span>
+        <v-badge v-else overlap color="red">
           <template v-slot:badge>
             <span></span>
           </template>
-          <span class="font-weight-bold">メッセージ</span>
+          <span class="font-weight-bold textColor">メッセージ</span>
         </v-badge>
       </v-btn>
-
-      <v-layout row wrap align-center class="pl-5">
+      <!-- notifications -->
+      <v-menu v-if="uid" offset-y offset-x min-width="400">
+        <v-btn flat slot="activator" @click="notificationsButtonClicked">
+          <span v-if="!hasNewNotification" class="font-weight-bold textColor">通知</span>
+          <v-badge v-else overlap color="red">
+            <template v-slot:badge>
+              <span></span>
+            </template>
+            <span class="font-weight-bold textColor">通知</span>
+          </v-badge>
+        </v-btn>
+        <v-card>
+          <v-toolbar flat height="48">
+            <span class="font-weight-bold subheading">通知</span>
+            <v-spacer></v-spacer>
+            <v-toolbar-items class="pr-0">
+              <v-btn small flat @click="updateAllIsUnread(uid)">すべて既読にする</v-btn>
+            </v-toolbar-items>
+          </v-toolbar>
+          <v-list v-if="!isNotificationsLoading && notifications && notifications.length != 0" two-line>
+            <template v-for="(notification, index) in notifications">
+              <v-card
+                flat
+                :to="notification.url ? notification.url : ''"
+                @click="updateIsUnread({uid: uid, notificationId: notification.notificationId})"
+              >
+                <div class="textColor text-xs-right caption pr-2 pt-2">
+                  {{ notification.isUnread ? '未読' : '既読' }}
+                </div>
+                <div class="textColor return px-3 py-2">{{ notification.content }}</div>
+                <div class="textColor text-xs-right caption pr-2 pb-2">
+                  {{ notification.timestamp }}
+                </div>
+              </v-card>
+              <v-divider
+                v-if="notifications.length != index + 1"
+              ></v-divider>
+            </template>
+          </v-list>
+          <div v-if="!isNotificationsLoading && notifications && notifications.length == 0" class="text-xs-center py-4">
+            通知はありません
+          </div>
+          <div v-if="isNotificationsLoading" class="text-xs-center py-4">
+            <v-progress-circular
+             :size="50"
+             color="primary"
+             indeterminate
+           ></v-progress-circular>
+          </div>
+          <v-divider v-if="notifications && canReadAll"></v-divider>
+          <div v-if="notifications && canReadAll" class="text-xs-center py-3">
+            <v-btn flat small to="/user/notifications" style="color: #00897B">
+              すべて表示する
+            </v-btn>
+          </div>
+        </v-card>
+      </v-menu>
+      <v-layout row wrap align-center class="pl-4">
         <v-flex class="text-xs-center">
           <!-- ログイン中に表示される -->
           <div v-if="uid" class="align-center">
@@ -355,51 +414,127 @@
       </v-layout>
     </v-toolbar-items>
   </v-toolbar>
-  <v-toolbar v-else flat fixed app color="white">
-      <!-- filter extension -->
-      <v-flex xs12 slot="extension" v-if="usersToolbarExtension || jobsToolbarExtension">
-        <filter-extension></filter-extension>
-      </v-flex>
-      <v-toolbar-title v-if="(!path.includes('/recruiter') && !path.includes('/users')) || breakpoint == 'xs'">Application</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-toolbar-items>
-        <v-btn flat active-class to="/users">
-          <span class="font-weight-bold textColor">検索</span>
+  <v-toolbar v-else flat fixed app color="white" id="toolbar">
+    <!-- filter extension -->
+    <v-flex xs12 slot="extension" v-if="usersToolbarExtension || jobsToolbarExtension">
+      <filter-extension></filter-extension>
+    </v-flex>
+    <v-toolbar-title v-if="(!path.includes('/recruiter') && !path.includes('/users')) || breakpoint == 'xs'">Application</v-toolbar-title>
+    <v-spacer></v-spacer>
+    <v-toolbar-items>
+      <v-btn flat active-class to="/users">
+        <span class="font-weight-bold textColor">検索</span>
+      </v-btn>
+      <!-- notifications -->
+      <v-menu
+        offset-y
+        min-width="350"
+        :fullscreen="$vuetify.breakpoint.xsOnly"
+      >
+        <v-btn flat active-class slot="activator" @click="notificationsButtonClicked">
+          <span v-if="!hasNewNotification" class="font-weight-bold textColor">通知</span>
+          <v-badge v-else overlap color="red">
+            <template v-slot:badge>
+              <span></span>
+            </template>
+            <span class="font-weight-bold textColor">通知</span>
+          </v-badge>
         </v-btn>
-        <v-layout row wrap align-center class="pl-5">
-          <v-flex class="text-xs-center">
-            <!-- ログイン中に表示される -->
-            <div class="align-center">
-              <div class="text-xs-left">
-                <v-menu offset-y offset-x min-width="250">
-                  <!-- Profile画像 -->
-                  <v-avatar
-                    slot="activator"
-                    :size="avatarSize"
-                  >
-                    <img v-if="imageUrl" :src="imageUrl" alt="avatar">
-                    <v-icon v-else>person</v-icon>
-                  </v-avatar>
-                  <v-list>
-                    <v-list-tile to="/recruiter/profile">
-                      <v-list-tile-title>プロフィール</v-list-tile-title>
-                    </v-list-tile>
-                    <v-divider></v-divider>
-                    <v-list-tile to="/recruiter/dashboard">
-                      <v-list-tile-title>ダッシュボード</v-list-tile-title>
-                    </v-list-tile>
-                    <v-divider></v-divider>
-                    <v-list-tile @click="signOut">
-                      <v-list-tile-title>ログアウト</v-list-tile-title>
-                    </v-list-tile>
-                  </v-list>
-                </v-menu>
-              </div>
+        <v-card>
+          <v-toolbar flat height="48">
+            <span class="font-weight-bold subheading">通知</span>
+            <v-spacer></v-spacer>
+            <v-toolbar-items>
+              <v-btn small flat @click="updateAllIsUnread(uid)">すべて既読にする</v-btn>
+            </v-toolbar-items>
+          </v-toolbar>
+          <v-card
+            v-if="hasNewMessage"
+            flat
+            to="/recruiter/messages"
+            @click=""
+          >
+            <v-alert
+              :value="true"
+              color="warning"
+              outline
+              class="mt-0"
+            >
+              新着メッセージがあります
+            </v-alert>
+          </v-card>
+          <v-list v-if="!isNotificationsLoading && notifications && notifications.length != 0" two-line>
+            <template v-for="(notification, index) in notifications">
+              <v-card
+                flat
+                :to="notification.url ? notification.url : ''"
+                @click="updateIsUnread({uid: uid, notificationId: notification.notificationId})"
+              >
+                <div class="textColor text-xs-right caption pr-2 pt-2">
+                  {{ notification.isUnread ? '未読' : '既読' }}
+                </div>
+                <div class="textColor return px-3 py-2">{{ notification.content }}</div>
+                <div class="textColor text-xs-right caption pr-2 pb-2">
+                  {{ notification.timestamp }}
+                </div>
+              </v-card>
+              <v-divider
+                v-if="notifications.length != index + 1"
+              ></v-divider>
+            </template>
+          </v-list>
+          <div v-if="!isNotificationsLoading && notifications && notifications.length == 0" class="text-xs-center py-4">
+            通知はありません
+          </div>
+          <div v-if="isNotificationsLoading" class="text-xs-center py-4">
+            <v-progress-circular
+             :size="50"
+             color="primary"
+             indeterminate
+           ></v-progress-circular>
+          </div>
+          <v-divider v-if="notifications && notifications.length >= 1"></v-divider>
+          <div v-if="notifications && notifications.length >= 1" class="text-xs-center py-2">
+            <v-btn flat small to="/recruiter/notifications" style="color: #00897B">
+              すべて表示する
+            </v-btn>
+          </div>
+        </v-card>
+      </v-menu>
+      <v-layout row wrap align-center class="pl-5">
+        <v-flex class="text-xs-center">
+          <!-- ログイン中に表示される -->
+          <div class="align-center">
+            <div class="text-xs-left">
+              <v-menu offset-y offset-x min-width="250">
+                <!-- Profile画像 -->
+                <v-avatar
+                  slot="activator"
+                  :size="avatarSize"
+                >
+                  <img v-if="imageUrl" :src="imageUrl" alt="avatar">
+                  <v-icon v-else>person</v-icon>
+                </v-avatar>
+                <v-list>
+                  <v-list-tile to="/recruiter/profile">
+                    <v-list-tile-title>プロフィール</v-list-tile-title>
+                  </v-list-tile>
+                  <v-divider></v-divider>
+                  <v-list-tile to="/recruiter/dashboard">
+                    <v-list-tile-title>ダッシュボード</v-list-tile-title>
+                  </v-list-tile>
+                  <v-divider></v-divider>
+                  <v-list-tile @click="signOut">
+                    <v-list-tile-title>ログアウト</v-list-tile-title>
+                  </v-list-tile>
+                </v-list>
+              </v-menu>
             </div>
-          </v-flex>
-        </v-layout>
-      </v-toolbar-items>
-    </v-toolbar>
+          </div>
+        </v-flex>
+      </v-layout>
+    </v-toolbar-items>
+  </v-toolbar>
 </template>
 
 <script>
@@ -412,6 +547,7 @@ export default {
     FilterExtension
   },
   data: () => ({
+    isInitialNotificationQueried: false,
     avatarSize: 40,
     dialog: false,
     signUpDialog: false,
@@ -456,6 +592,11 @@ export default {
       imageUrl: state => state.profile.imageUrl,
       jobsToolbarExtension: state => state.jobs.toolbarExtension,
       usersToolbarExtension: state => state.users.toolbarExtension,
+      notifications: state => state.notifications.latestNotifications,
+      isNotificationsLoading: state => state.notifications.isLoading,
+      canReadAll: state => state.notifications.canReadAll,
+      hasNewNotification: state => state.notifications.hasNewNotification,
+      hasNewMessage: state => state.chats.hasNewMessage,
     })
   },
   mounted() {
@@ -482,6 +623,8 @@ export default {
           window.localStorage.removeItem('emailForSignIn')
           console.log('login success')
 
+          this.resetNotificationsListener()
+          this.resetHasNewNotification()
           this.resetCareerState()
           this.resetChatState()
           this.resetChatsState()
@@ -514,38 +657,50 @@ export default {
       this.resetData()
     })
   },
+  destroyed () {
+    // listenerがあればデタッチ
+    this.resetNotificationsListener()
+  },
   methods: {
-    iconClicked: function() {
+    iconClicked() {
       if (this.$vuetify.breakpoint.name == 'xs') {
         this.dropdownMenu = !this.dropdownMenu
       }
     },
-    signUpButtonClicked: function() {
+    signUpButtonClicked() {
       this.dialog = true
       this.signUpDialog = true
       this.signInDialog = false
       this.$store.dispatch('resetAuthError')
     },
-    signUp: function() {
+    signUp() {
       this.$store.dispatch('setLoading')
       this.$store.dispatch('resetAuthError')
       this.$store.dispatch('signUp', {email: this.email, password: this.password})
     },
-    signInButtonClicked: function() {
+    signInButtonClicked() {
       this.dialog = true
       this.signInDialog = true
       this.signUpDialog = false
       this.$store.dispatch('resetAuthError')
     },
-    signIn: function() {
+    signIn() {
       this.$store.dispatch('setLoading')
       this.$store.dispatch('resetAuthError')
       this.$store.dispatch('signIn', {email: this.email, password: this.password})
     },
-    signOut: function() {
+    signOut() {
       this.$store.dispatch('signOut')
     },
-    resetData: function() {
+    notificationsButtonClicked() {
+      if (!this.isInitialNotificationQueried){
+        this.isInitialNotificationQueried = true
+        this.resetNotificationsState()
+        this.updateIsNotificationsLoading(true)
+        this.queryLatestNotifications(this.uid)
+      }
+    },
+    resetData() {
       this.dialog = false
       this.signUpDialog = false
       this.signUpForm = false
@@ -557,6 +712,15 @@ export default {
       this.password = ''
     },
     ...mapActions({
+      resetMessagesListener: 'chats/resetMessagesListener',
+      resetHasNewMessage: 'chats/resetHasNewMessage',
+      resetNotificationsListener: 'notifications/resetNotificationsListener',
+      resetHasNewNotification: 'notifications/resetHasNewNotification',
+      updateIsUnread: 'notifications/updateIsUnread',
+      updateAllIsUnread: 'notifications/updateAllIsUnread',
+      queryLatestNotifications: 'notifications/queryLatestNotifications',
+      updateIsNotificationsLoading: 'notifications/updateIsLatestNotificationsLoading',
+      resetNotificationsState: 'notifications/resetLatestNotificationsState',
       setAuthInfo: 'setAuthInfo',
       resetCareerState: 'career/resetState',
       resetChatState: 'chat/resetState',

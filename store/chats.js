@@ -5,6 +5,8 @@ export const state = () => ({
   chats: [],
   isLoading: false,
   allChatsQueried: false,
+  hasNewMessage: false,
+  unsubscribe: null,
 })
 
 export const mutations = {
@@ -22,7 +24,13 @@ export const mutations = {
   },
   setAllChatsQueried(state, allChatsQueried) {
     state.allChatsQueried = allChatsQueried
-  }
+  },
+  updateHasNewMessage(state, hasNewMessage) {
+    state.hasNewMessage = hasNewMessage
+  },
+  setUnsubscribe(state, unsubscribe) {
+    state.unsubscribe = unsubscribe
+  },
 }
 
 export const actions = {
@@ -122,6 +130,44 @@ export const actions = {
           console.log("Error getting document:", error)
         })
     }
+  },
+  // 未読のメッセージがあるか
+  setUserMessagesListener({commit}, uid) {
+    const listener = firestore.collection('chats')
+      .where('userUnreadCount', '>', 0)
+      .where('uid', '==', uid)
+      .onSnapshot(function(snapshot) {
+        if (!snapshot.empty) {
+          commit('updateHasNewMessage', true)
+        } else {
+          commit('updateHasNewMessage', false)
+        }
+      })
+    commit('setUnsubscribe', listener)
+  },
+  setCompanyMessagesListener({commit}, companyId) {
+    const listener = firestore.collection('chats')
+      .where('picUnreadCount', '>', 0)
+      .where('companyId', '==', companyId)
+      .onSnapshot(function(snapshot) {
+        console.log('CompanyMessagesListener', snapshot);
+        if (!snapshot.empty) {
+          commit('updateHasNewMessage', true)
+        } else {
+          commit('updateHasNewMessage', false)
+        }
+      })
+    commit('setUnsubscribe', listener)
+  },
+  resetHasNewMessage({commit}) {
+    commit('updateHasNewMessage', false)
+  },
+  resetMessagesListener({commit, state}) {
+    if (state.unsubscribe) {
+      console.log('notification listener unsubscribed');
+      state.unsubscribe()
+    }
+    commit('setUnsubscribe', null)
   },
   resetState({commit}) {
     commit('resetChats')

@@ -16,10 +16,10 @@
       >
         <!-- menu (lg, md)-->
         <v-flex
-          md3
+          md4
           hidden-sm-and-down
           :class="{
-            'pa-5': $vuetify.breakpoint.lgAndUp,
+            'py-5 px-4': $vuetify.breakpoint.lgAndUp,
             'pa-3': $vuetify.breakpoint.mdOnly,
           }"
         >
@@ -214,7 +214,6 @@ export default {
   methods: {
     acceptButtonClicked() {
       this.acceptOffer({params: this.params, message: this.userMessage})
-      this.setIsAccepted(true)
     },
     infiniteHandler($state) {
       if (!this.allPassesQueried) {
@@ -237,7 +236,6 @@ export default {
       updatePassesLoading: 'passes/updatePassesLoading',
       queryPass: 'pass/queryPass',
       acceptOffer: 'pass/acceptOffer',
-      setIsAccepted: 'pass/setIsAccepted',
     }),
   }
 }
