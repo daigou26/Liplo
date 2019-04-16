@@ -1,5 +1,63 @@
 <template>
-  <v-toolbar v-if="type != 'recruiter'" flat color="white" class="toolbar-fixed border-bottom" id="toolbar">
+  <!-- メールアドレスの確認が済んでいない場合は確認してもらう -->
+  <v-toolbar v-if="uid && !isVerified" flat fixed app color="white" id="toolbar">
+    <v-toolbar-title v-if="(!path.includes('/recruiter') && !path.includes('/users')) || breakpoint == 'xs'">Application</v-toolbar-title>
+    <v-spacer></v-spacer>
+    <v-toolbar-items>
+      <v-layout row wrap align-center class="pl-5">
+        <v-flex class="text-xs-center">
+          <div class="align-center">
+            <div class="text-xs-left">
+              <v-menu offset-y offset-x min-width="250">
+                <v-avatar
+                  slot="activator"
+                  :size="avatarSize"
+                >
+                  <v-icon>person</v-icon>
+                </v-avatar>
+                <v-list>
+                  <v-list-tile @click="signOut">
+                    <v-list-tile-title>ログアウト</v-list-tile-title>
+                  </v-list-tile>
+                </v-list>
+              </v-menu>
+            </div>
+          </div>
+        </v-flex>
+      </v-layout>
+    </v-toolbar-items>
+    <v-dialog
+      :value="true"
+      :fullscreen="$vuetify.breakpoint.xsOnly"
+      persistent
+      width="500"
+    >
+      <v-card>
+        <v-toolbar flat color="orange lighten-2">
+          <span class="textColor font-weight-bold subheading">メールアドレスの確認をお願いします</span>
+        </v-toolbar>
+        <div class="pa-4">
+          <div>
+            ログインしました！
+          </div>
+          <div>
+            {{ userEmail }}にメールアドレスの確認メールを送信しました。ご確認ください。
+          </div>
+        </div>
+        <v-divider class="mt-4"></v-divider>
+        <div class="text-xs-right">
+          <v-btn
+            flat
+            color="primary"
+            @click="signOut"
+          >
+            <span>ログアウト</span>
+          </v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
+  </v-toolbar>
+  <v-toolbar v-else-if="type != 'recruiter'" flat color="white" class="toolbar-fixed border-bottom" id="toolbar">
     <v-toolbar-side-icon　@click="iconClicked"></v-toolbar-side-icon>
     <div class="text-xs-center hidden-sm-and-up">
       <v-dialog
@@ -251,6 +309,7 @@
                                 :value="authError != null"
                                 type="error"
                                 class="mb-5"
+                                outline
                               >
                                 {{ authError }}
                               </v-alert>
@@ -307,6 +366,7 @@
                                 :value="authError != null"
                                 type="error"
                                 class="mb-5"
+                                outline
                               >
                                 {{ authError }}
                               </v-alert>
@@ -586,6 +646,8 @@ export default {
     },
     ...mapState({
       uid: state => state.uid,
+      isVerified: state => state.isVerified,
+      userEmail: state => state.profile.email,
       type: state => state.profile.type,
       authError: state => state.authError,
       loading: state => state.loading,
@@ -600,53 +662,10 @@ export default {
     })
   },
   mounted() {
-    // Confirm the link is a sign-in with email link.
-    if (auth.isSignInWithEmailLink(window.location.href)) {
-      console.log('isSignInWithEmailLink');
-      // Additional state parameters can also be passed via URL.
-      // This can be used to continue the user's intended action before triggering
-      // the sign-in operation.
-      // Get the email if available. This should be available if the user completes
-      // the flow on the same device where they started it.
-      var loginEmail = window.localStorage.getItem('emailForSignIn')
-      if (!loginEmail) {
-        // User opened the link on a different device. To prevent session fixation
-        // attacks, ask the user to provide the associated email again. For example:
-        loginEmail = window.prompt('Please provide your email for confirmation');
-      }
-      console.log('email:', loginEmail);
-
-      // The client SDK will parse the code from the link for you.
-      auth.signInWithEmailLink(loginEmail, window.location.href)
-        .then(function(result) {
-          // Clear email from storage.
-          window.localStorage.removeItem('emailForSignIn')
-          console.log('login success')
-
-          this.resetNotificationsListener()
-          this.resetHasNewNotification()
-          this.resetCareerState()
-          this.resetChatState()
-          this.resetChatsState()
-          this.resetFeedbackState()
-          this.resetFeedbacksState()
-          this.resetState()
-          this.resetMessagesState()
-          this.resetProfileState()
-          this.resetReviewState()
-          this.resetReviewsState()
-          this.resetPassState()
-          this.resetPassesState()
-          this.resetCompanyProfileState()
-        })
-        .catch(function(error) {
-          // Some error occurred, you can inspect the code: error.code
-          // Common errors could be invalid email and invalid or expired OTPs.
-        });
-    }
     // ログイン時、dbにuser(recruiter)情報保存
     auth.onAuthStateChanged((user) => {
       this.setAuthInfo({
+        url: window.location.origin,
         route: this.$route,
         router: this.$router,
         user: user,
