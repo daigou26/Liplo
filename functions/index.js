@@ -1,4 +1,14 @@
 const functions = require('firebase-functions')
+const nodemailer = require('nodemailer')
+const gmailEmail = functions.config().gmail.email
+const gmailPassword = functions.config().gmail.password
+const mailTransport = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: gmailEmail,
+        pass: gmailPassword
+    }
+})
 const admin = require('firebase-admin')
 admin.initializeApp()
 
@@ -320,6 +330,19 @@ exports.sendPass = functions.region('asia-northeast1')
           })
           batch.commit()
             .then(() => {
+              // 内定パスが渡されたユーザーにメール送信
+              const mailOptions = {
+                from: `LightHouse <noreply@firebase.com>`,
+                to: user.email,
+              }
+              mailOptions.subject = `${companyName}に内定パスをもらいました！`
+              mailOptions.text = `${companyName}に内定パスをもらいました！　ご確認ください。`
+              mailTransport.sendMail(mailOptions, (err, info) => {
+                if (err) {
+                  console.log(err)
+                }
+                console.log('New pass email sent to:', user.email)
+              })
               console.log('sendPass completed.')
             })
             .catch((error) => {
@@ -599,6 +622,19 @@ exports.scoutUser = functions.region('asia-northeast1')
                       .then(() => {
                         isSendedMessage = true
                         if (isUpdatedCandidates && isSendedMessage) {
+                          // スカウトされたユーザーにメール送信
+                          const mailOptions = {
+                            from: `LightHouse <noreply@firebase.com>`,
+                            to: user.email,
+                          }
+                          mailOptions.subject = `${companyName}にスカウトされました！`
+                          mailOptions.text = `${companyName}にスカウトされました！　ご確認ください。`
+                          mailTransport.sendMail(mailOptions, (err, info) => {
+                            if (err) {
+                              console.log(err)
+                            }
+                            console.log('New scout email sent to:', user.email)
+                          })
                           console.log('scoutUser completed.')
                         }
                       })
@@ -660,6 +696,19 @@ exports.scoutUser = functions.region('asia-northeast1')
                   .then(() => {
                     isSendedMessage = true
                     if (isUpdatedCandidates && isSendedMessage) {
+                      // スカウトされたユーザーにメール送信
+                      const mailOptions = {
+                        from: `LightHouse <noreply@firebase.com>`,
+                        to: user.email,
+                      }
+                      mailOptions.subject = `${companyName}にスカウトされました！`
+                      mailOptions.text = `${companyName}にスカウトされました！　ご確認ください。`
+                      mailTransport.sendMail(mailOptions, (err, info) => {
+                        if (err) {
+                          console.log(err)
+                        }
+                        console.log('New scout email sent to:', user.email)
+                      })
                       console.log('scoutUser completed.')
                     }
                   })
@@ -805,6 +854,21 @@ exports.applyForJob = functions.region('asia-northeast1')
                       .then(() => {
                         setChatId = true
                         if (isUpdatedCandidates && setChatId) {
+                          // 応募が来たら担当者にメール送信
+                          members.forEach((member, i) => {
+                            const mailOptions = {
+                              from: `LightHouse <noreply@firebase.com>`,
+                              to: member.email,
+                            }
+                            mailOptions.subject = `${user.name}さんから応募が来ました。`
+                            mailOptions.text = `$${user.name}さんから応募が来ました。　ご確認ください。`
+                            mailTransport.sendMail(mailOptions, (err, info) => {
+                              if (err) {
+                                console.log(err)
+                              }
+                              console.log('New apply email sent to:', member.email)
+                            })
+                          })
                           console.log('applyForJob completed.')
                         }
                       })
@@ -842,6 +906,22 @@ exports.applyForJob = functions.region('asia-northeast1')
                   .then(() => {
                     setChatId = true
                     if (isUpdatedCandidates && setChatId) {
+                      // 応募が来たら担当者にメール送信
+                      members.forEach((member, i) => {
+                        const mailOptions = {
+                          from: `LightHouse <noreply@firebase.com>`,
+                          to: member.email,
+                        }
+                        mailOptions.subject = `${user.name}さんから応募が来ました。`
+                        mailOptions.text = `$${user.name}さんから応募が来ました。　ご確認ください。`
+                        mailTransport.sendMail(mailOptions, (err, info) => {
+                          if (err) {
+                            console.log(err)
+                          }
+                          console.log('New apply email sent to:', member.email)
+                        })
+                      })
+
                       console.log('applyForJob completed.')
                     }
                   })
@@ -1535,6 +1615,21 @@ exports.acceptJobOffer = functions.region('asia-northeast1')
               })
               batch.commit()
                 .then(() => {
+                  // 内定が承諾されたら担当者にメール送信
+                  members.forEach((member, i) => {
+                    const mailOptions = {
+                      from: `LightHouse <noreply@firebase.com>`,
+                      to: member.email,
+                    }
+                    mailOptions.subject = `${userName}さんが内定を承諾しました。`
+                    mailOptions.text = `$${userName}さんが内定を承諾しました。　内定契約が済みましたら、ステータスを採用予定に変更してください。`
+                    mailTransport.sendMail(mailOptions, (err, info) => {
+                      if (err) {
+                        console.log(err)
+                      }
+                      console.log('New accept pass email sent to:', member.email)
+                    })
+                  })
                   console.log('acceptJobOffer notification completed.')
                 })
                 .catch((error) => {

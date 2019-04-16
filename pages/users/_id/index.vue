@@ -383,6 +383,7 @@ export default {
       picImageUrl: state => state.profile.imageUrl,
       picFirstName: state => state.profile.firstName,
       picLastName: state => state.profile.lastName,
+      userEmail: state => state.user.email,
       userImageUrl: state => state.user.imageUrl,
       userFirstName: state => state.user.firstName,
       userLastName: state => state.user.lastName,
@@ -425,7 +426,8 @@ export default {
       const user = {
         uid: this.$route.params.id,
         imageUrl: this.userImageUrl,
-        name: this.userLastName + ' ' + this.userFirstName
+        name: this.userLastName + ' ' + this.userFirstName,
+        email: this.userEmail,
       }
       const pic = {
         uid: this.picUid,
