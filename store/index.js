@@ -8,7 +8,8 @@ export const state = () => ({
   sentVerifyEmail: false,
   authError: null,
   loading: false,
-  hasNewMessage: false,
+  isRefreshed: false,
+  isInvitedMemberSignedIn: false,
 })
 
 export const mutations = {
@@ -33,10 +34,12 @@ export const mutations = {
   resetLoading(state) {
     state.loading = false
   },
-
-  updateHasNewMessage(state, hasNewNotification) {
-    state.hasNewNotification = hasNewNotification
+  updateIsRefreshed(state, isRefreshed) {
+    state.isRefreshed = isRefreshed
   },
+  updateIsInvitedMemberSignedIn(state, isSignedIn) {
+    state.isInvitedMemberSignedIn = isSignedIn
+  }
 }
 
 export const actions = {
@@ -59,6 +62,41 @@ export const actions = {
             break
         }
         commit('resetLoading')
+      })
+  },
+  // 招待された担当者のサインアップ
+  async invitedMemberSignUp({commit}, {companyId, email, password}) {
+    firestore.collection('companies')
+      .doc(companyId)
+      .collection('invitedMembers')
+      .where('email', '==', email)
+      .get()
+      .then(function(snapshot) {
+        // 招待済みかどうか
+        if (!snapshot.empty) {
+          auth.createUserWithEmailAndPassword(email, password)
+            .then(function() {
+              commit('resetLoading')
+            })
+            .catch(function(error) {
+              var errorCode = error.code
+              switch (errorCode) {
+                case 'auth/email-already-in-use':
+                  commit('setAuthError', 'このメールアドレスはすでに使用されています')
+                  break
+                case 'auth/invalid-email':
+                  commit('setAuthError', 'メールアドレスの形式が正しくありません')
+                  break
+                default:
+                  commit('setAuthError', 'サインアップに失敗しました')
+                  break
+              }
+              commit('resetLoading')
+            })
+        } else {
+          commit('setAuthError', 'このメールアドレスは招待されていません。')
+          commit('resetLoading')
+        }
       })
   },
   async signIn({commit}, {email, password}) {
@@ -123,8 +161,10 @@ export const actions = {
     router,
     user,
     type,
+    recruiterType,
     firstName,
     lastName,
+    companyId,
     companyName,
     companyEmail,
     companyInvoiceEmail,
@@ -138,7 +178,6 @@ export const actions = {
         if (route.path !== '/' && route.name !== 'jobs-id') {
           router.push('/')
         }
-
         commit('updateSentVerifyEmail', true)
         console.log('email', user.email);
         var actionCodeSettings = {
@@ -158,56 +197,88 @@ export const actions = {
           if (!doc.exists) {
             // サインアップ時
             if (firstName != '' && lastName != '') {
-
               if (type == 'recruiter') {
                 // recruiter
-                const members = [{
-                  uid: user.uid,
-                  name: lastName + ' ' + firstName,
-                  position: position,
-                  email: user.email
-                }]
-                const company = {
-                  name: companyName,
-                  email: companyEmail,
-                  invoiceEmail: companyInvoiceEmail,
-                  members: members,
+                if (recruiterType == 'notInvited') {
+                  // 招待されていない担当者
+                  const members = [{
+                    uid: user.uid,
+                    name: lastName + ' ' + firstName,
+                    position: position,
+                    email: user.email
+                  }]
+                  const company = {
+                    name: companyName,
+                    email: companyEmail,
+                    invoiceEmail: companyInvoiceEmail,
+                    members: members,
+                  }
+
+                  const batch = firestore.batch()
+                  const companyId = firestore.collection('companies').doc().id
+                  const companyRef = firestore.collection('companies').doc(companyId)
+                  batch.set(companyRef, company)
+                  const userRef = firestore.collection('users').doc(user.uid)
+                  batch.set(userRef, {
+                    firstName: firstName,
+                    lastName: lastName,
+                    type: 'recruiter',
+                    email: user.email,
+                    isEmailVerified: user.emailVerified,
+                  })
+                  const profileRef = firestore.collection('users')
+                    .doc(user.uid).collection('profile').doc(user.uid)
+                  batch.set(profileRef, {
+                    firstName: firstName,
+                    lastName: lastName,
+                    position: position,
+                    email: user.email
+                  })
+                  batch.commit()
+                    .then(() => {
+                      dispatch('profile/setFirstName', firstName)
+                      dispatch('profile/setLastName', lastName)
+                      dispatch('profile/setEmail', user.email)
+                      dispatch('profile/setType', 'recruiter')
+                      router.replace('/recruiter/dashboard')
+                    })
+                    .catch((error) => {
+                      console.error("Error adding document: ", error)
+                    })
+                } else if (companyId != null) {
+                  // 招待された担当者
+                  const batch = firestore.batch()
+
+                  const userRef = firestore.collection('users').doc(user.uid)
+                  batch.set(userRef, {
+                    companyId: companyId,
+                    firstName: firstName,
+                    lastName: lastName,
+                    type: 'recruiter',
+                    email: user.email,
+                    isEmailVerified: user.emailVerified,
+                  })
+                  const profileRef = firestore.collection('users')
+                    .doc(user.uid).collection('profile').doc(user.uid)
+                  batch.set(profileRef, {
+                    firstName: firstName,
+                    lastName: lastName,
+                    position: position,
+                    email: user.email
+                  })
+                  batch.commit()
+                    .then(() => {
+                      commit('updateIsInvitedMemberSignedIn', true)
+                      dispatch('profile/setFirstName', firstName)
+                      dispatch('profile/setLastName', lastName)
+                      dispatch('profile/setEmail', user.email)
+                      dispatch('profile/setType', 'recruiter')
+                      router.replace('/recruiter/dashboard')
+                    })
+                    .catch((error) => {
+                      console.error("Error adding document: ", error)
+                    })
                 }
-
-                const batch = firestore.batch()
-                const companyId = firestore.collection('companies').doc().id
-                const companyRef = firestore.collection('companies').doc(companyId)
-                batch.set(companyRef, company)
-                const userRef = firestore.collection('users').doc(user.uid)
-                batch.set(userRef, {
-                  firstName: firstName,
-                  lastName: lastName,
-                  type: 'recruiter',
-                  email: user.email,
-                  isEmailVerified: user.emailVerified,
-                })
-                const profileRef = firestore.collection('users')
-                  .doc(user.uid).collection('profile').doc(user.uid)
-                batch.set(profileRef, {
-                  firstName: firstName,
-                  lastName: lastName,
-                  position: position,
-                  email: user.email
-                })
-                batch.commit()
-                  .then(() => {
-                    dispatch('profile/setFirstName', firstName)
-                    dispatch('profile/setLastName', lastName)
-                    dispatch('profile/setEmail', user.email)
-                    dispatch('profile/setType', 'recruiter')
-                    router.replace('/recruiter/dashboard')
-                  })
-                  .catch((error) => {
-                    console.error("Error adding document: ", error)
-                  })
-
-                // メッセージのリスナー
-                dispatch('chats/setCompanyMessagesListener', companyId)
               } else if (type == 'user') {
                 // user
                 const batch = firestore.batch()
@@ -243,9 +314,6 @@ export const actions = {
                   .catch((error) => {
                     console.error("Error adding document: ", error)
                   })
-
-                // メッセージのリスナー
-                dispatch('chats/setUserMessagesListener', user.uid)
               }
             }
           } else {
@@ -294,16 +362,21 @@ export const actions = {
 
     } else {
       commit('setUid', null)
-      if (route.path !== '/' && route.name !== 'jobs-id') {
+      if (route.path !== '/' && route.path !== '/signup' && route.name !== 'jobs-id') {
         router.push('/')
       }
     }
   },
+  updateIsRefreshed({commit}, isRefreshed) {
+    commit('updateIsRefreshed', isRefreshed)
+  },
   resetState({commit}) {
     commit('setUid', null)
     commit('updateIsVerified', false)
+    commit('updateSentVerifyEmail', false)
     commit('setAuthError', null)
     commit('resetLoading')
     commit('updateHasNewMessage', false)
+    commit('updateIsRefreshed', false)
   },
 }

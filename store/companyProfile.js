@@ -310,26 +310,19 @@ export const actions = {
   updateAddMemberLoading({commit}, loading) {
      commit('updateAddMemberLoading', loading)
   },
-  addMember({commit}, {window, email}) {
-    // const actionCodeSettings = {
-    //   url: 'http://localhost:3000/recruiter/dashboard',
-    //   handleCodeInApp: true,
-    // }
-    // console.log('add member func');
-    // console.log(window);
-    // console.log(email);
-    // auth.sendSignInLinkToEmail(email, actionCodeSettings)
-    //   .then(() => {
-    //     console.log('The link was successfully sent.')
-    //     window.localStorage.setItem('emailForSignIn', email)
-    //
-    //     commit('updateAddMemberLoading', false)
-    //   })
-    //   .catch((error) => {
-    //     commit('updateAddMemberLoading', false)
-    //     commit('setAddMemberError', error)
-    //     console.error("Error adding document: ", error)
-    //   })
+  addMember({commit}, {companyId, companyName, userName, email}) {
+    firestore.collection('companies')
+      .doc(companyId)
+      .collection('invitedMembers')
+      .add({
+        companyName,
+        userName,
+        email: email,
+        createdAt: new Date()
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error)
+      })
   },
   updateIsEditingMission({commit}, isEditing) {
     commit('updateIsEditingMission', isEditing)

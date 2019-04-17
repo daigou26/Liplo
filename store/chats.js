@@ -133,31 +133,35 @@ export const actions = {
   },
   // 未読のメッセージがあるか
   setUserMessagesListener({commit}, uid) {
-    const listener = firestore.collection('chats')
-      .where('userUnreadCount', '>', 0)
-      .where('uid', '==', uid)
-      .onSnapshot(function(snapshot) {
-        if (!snapshot.empty) {
-          commit('updateHasNewMessage', true)
-        } else {
-          commit('updateHasNewMessage', false)
-        }
-      })
-    commit('setUnsubscribe', listener)
+    if (!state.unsubscribe) {
+      const listener = firestore.collection('chats')
+        .where('userUnreadCount', '>', 0)
+        .where('uid', '==', uid)
+        .onSnapshot(function(snapshot) {
+          if (!snapshot.empty) {
+            commit('updateHasNewMessage', true)
+          } else {
+            commit('updateHasNewMessage', false)
+          }
+        })
+      commit('setUnsubscribe', listener)
+    }
   },
-  setCompanyMessagesListener({commit}, companyId) {
-    const listener = firestore.collection('chats')
-      .where('picUnreadCount', '>', 0)
-      .where('companyId', '==', companyId)
-      .onSnapshot(function(snapshot) {
-        console.log('CompanyMessagesListener', snapshot);
-        if (!snapshot.empty) {
-          commit('updateHasNewMessage', true)
-        } else {
-          commit('updateHasNewMessage', false)
-        }
-      })
-    commit('setUnsubscribe', listener)
+  setCompanyMessagesListener({commit, state}, companyId) {
+    if (!state.unsubscribe) {
+      const listener = firestore.collection('chats')
+        .where('picUnreadCount', '>', 0)
+        .where('companyId', '==', companyId)
+        .onSnapshot(function(snapshot) {
+          console.log('CompanyMessagesListener', snapshot);
+          if (!snapshot.empty) {
+            commit('updateHasNewMessage', true)
+          } else {
+            commit('updateHasNewMessage', false)
+          }
+        })
+      commit('setUnsubscribe', listener)
+    }
   },
   resetHasNewMessage({commit}) {
     commit('updateHasNewMessage', false)

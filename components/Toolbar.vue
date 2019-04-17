@@ -32,7 +32,7 @@
       persistent
       width="500"
     >
-      <v-card>
+      <v-card v-if="!invitedMemberDialog">
         <v-toolbar flat color="orange lighten-2">
           <span class="textColor font-weight-bold subheading">メールアドレスの確認をお願いします</span>
         </v-toolbar>
@@ -55,11 +55,19 @@
           </v-btn>
         </div>
       </v-card>
+      <v-card v-else>
+        <v-progress-circular
+         :size="50"
+         color="primary"
+         indeterminate
+        ></v-progress-circular>
+      </v-card>
     </v-dialog>
   </v-toolbar>
+  <!-- user & 未ログイン -->
   <v-toolbar v-else-if="type != 'recruiter'" flat color="white" class="toolbar-fixed border-bottom" id="toolbar">
     <v-toolbar-side-icon　@click="iconClicked"></v-toolbar-side-icon>
-    <div class="text-xs-center hidden-sm-and-up">
+    <div v-if="uid" class="text-xs-center hidden-sm-and-up">
       <v-dialog
         v-model="dropdownMenu"
         fullscreen
@@ -379,20 +387,20 @@
                                 solo
                                 required
                               ></v-text-field>
-                              <!-- 名前 -->
-                              <v-text-field
-                                v-model="firstName"
-                                :rules="firstNameRules"
-                                label="名"
-                                append-icon="person"
-                                solo
-                                required
-                              ></v-text-field>
                               <!-- 苗字 -->
                               <v-text-field
                                 v-model="lastName"
                                 :rules="lastNameRules"
                                 label="姓"
+                                append-icon="person"
+                                solo
+                                required
+                              ></v-text-field>
+                              <!-- 名前 -->
+                              <v-text-field
+                                v-model="firstName"
+                                :rules="firstNameRules"
+                                label="名"
                                 append-icon="person"
                                 solo
                                 required
@@ -473,7 +481,103 @@
         </v-flex>
       </v-layout>
     </v-toolbar-items>
+    <v-dialog
+      v-model="invitedMemberDialog"
+      :fullscreen="$vuetify.breakpoint.xsOnly"
+      width="500"
+      persistent
+    >
+      <v-card class="pt-5 pb-3 px-3">
+        <v-toolbar flat color="white hidden-sm-and-up">
+          <v-toolbar-side-icon
+            @click="invitedMemberDialog=false"
+          ></v-toolbar-side-icon>
+        </v-toolbar>
+        <v-flex
+          xs12
+          class="text-xs-center"
+          :class="{'px-2': $vuetify.breakpoint.smAndUp, 'px-3 mt-4': $vuetify.breakpoint.xsOnly}"
+        >
+          <!-- 登録フォーム -->
+          <div>
+            <v-form v-model="invitedMemberValid">
+              <v-container>
+                <v-layout
+                  column
+                  justify-center
+                >
+                  <v-flex xs12>
+                    <!-- Error Message -->
+                    <v-alert
+                      :value="authError != null"
+                      type="error"
+                      class="mb-5"
+                      outline
+                    >
+                      {{ authError }}
+                    </v-alert>
+                    <!-- メールアドレス -->
+                    <v-text-field
+                      v-model="email"
+                      :rules="emailRules"
+                      label="メールアドレス"
+                      append-icon="mail_outline"
+                      solo
+                      required
+                    ></v-text-field>
+                    <!-- 苗字 -->
+                    <v-text-field
+                      v-model="lastName"
+                      :rules="lastNameRules"
+                      label="姓"
+                      append-icon="person"
+                      solo
+                      required
+                    ></v-text-field>
+                    <!-- 名前 -->
+                    <v-text-field
+                      v-model="firstName"
+                      :rules="firstNameRules"
+                      label="名"
+                      append-icon="person"
+                      solo
+                      required
+                    ></v-text-field>
+                    <!-- パスワード -->
+                    <v-text-field
+                      v-model="password"
+                      :append-icon="passwordShow ? 'visibility_off' : 'visibility'"
+                      :rules="passwordRules"
+                      :type="passwordShow ? 'text' : 'password'"
+                      label="パスワード"
+                      solo
+                      required
+                      @click:append="passwordShow = !passwordShow"
+                    ></v-text-field>
+                  </v-flex>
+                  <!-- 登録ボタン -->
+                  <v-btn
+                    block
+                    :disabled="!invitedMemberValid || loading"
+                    class="orange darken-1"
+                    @click="invitedMemberSignUpClicked"
+                  >
+                    <span
+                      class="font-weight-bold body-1"
+                      style="color: #ffffff;"
+                    >
+                      登録する
+                    </span>
+                  </v-btn>
+                </v-layout>
+              </v-container>
+            </v-form>
+          </div>
+        </v-flex>
+      </v-card>
+    </v-dialog>
   </v-toolbar>
+  <!-- recruiter -->
   <v-toolbar v-else flat fixed app color="white" id="toolbar">
     <!-- filter extension -->
     <v-flex xs12 slot="extension" v-if="usersToolbarExtension || jobsToolbarExtension">
@@ -615,6 +719,8 @@ export default {
     signInDialog: false,
     dropdownMenu: false,
     valid: true,
+    invitedMemberDialog: false,
+    invitedMemberValid: true,
     firstName: '',
     lastName: '',
     firstNameRules: [
@@ -636,8 +742,25 @@ export default {
       v => !!v || 'パスワードを入力してください',
       v => (v && v.length >= 8) || '最低8文字必要です'
     ],
+    position: '',
+    positionRules: [
+      v => !!v || '入力されていません',
+      v => (v && v.length <= 30) || '30文字を超えています'
+    ],
+    companyName: '',
+    companyEmail: '',
+    companyInvoiceEmail: '',
   }),
   computed: {
+    userType() {
+      return (this.invitedRecruiterSignup || this.companyName != '') ? 'recruiter' : 'user'
+    },
+    invitedRecruiterSignup() {
+      return this.query.type == 'invited' && this.query.id != null
+    },
+    query() {
+      return this.$route.query
+    },
     path() {
       return this.$route.path
     },
@@ -646,6 +769,7 @@ export default {
     },
     ...mapState({
       uid: state => state.uid,
+      isInvitedMemberSignedIn: state => state.isInvitedMemberSignedIn,
       isVerified: state => state.isVerified,
       userEmail: state => state.profile.email,
       type: state => state.profile.type,
@@ -662,6 +786,8 @@ export default {
     })
   },
   mounted() {
+    this.invitedMemberDialog = this.invitedRecruiterSignup
+    this.updateIsRefreshed(true)
     // ログイン時、dbにuser(recruiter)情報保存
     auth.onAuthStateChanged((user) => {
       this.setAuthInfo({
@@ -669,9 +795,15 @@ export default {
         route: this.$route,
         router: this.$router,
         user: user,
-        type: 'user',
+        type: this.userType,
+        recruiterType: this.invitedRecruiterSignup ? 'invited' : 'notInvited',
         firstName: this.firstName,
-        lastName: this.lastName
+        lastName: this.lastName,
+        companyId: this.query.id,
+        companyName: this.companyName,
+        companyEmail: this.companyEmail,
+        companyInvoiceEmail: this.companyInvoiceEmail,
+        position: this.position,
       })
       this.resetData()
     })
@@ -679,6 +811,13 @@ export default {
   destroyed () {
     // listenerがあればデタッチ
     this.resetNotificationsListener()
+  },
+  watch: {
+    isInvitedMemberSignedIn(isSignedIn) {
+      if (isSignedIn == true) {
+        this.invitedMemberDialog = false
+      }
+    }
   },
   methods: {
     iconClicked() {
@@ -696,6 +835,11 @@ export default {
       this.$store.dispatch('setLoading')
       this.$store.dispatch('resetAuthError')
       this.$store.dispatch('signUp', {email: this.email, password: this.password})
+    },
+    invitedMemberSignUpClicked() {
+      this.setLoading()
+      this.resetAuthError()
+      this.invitedMemberSignUp({companyId: this.query.id, email: this.email, password: this.password})
     },
     signInButtonClicked() {
       this.dialog = true
@@ -731,6 +875,9 @@ export default {
       this.password = ''
     },
     ...mapActions({
+      invitedMemberSignUp: 'invitedMemberSignUp',
+      setLoading: 'setLoading',
+      resetAuthError: 'resetAuthError',
       resetMessagesListener: 'chats/resetMessagesListener',
       resetHasNewMessage: 'chats/resetHasNewMessage',
       resetNotificationsListener: 'notifications/resetNotificationsListener',
@@ -741,6 +888,7 @@ export default {
       updateIsNotificationsLoading: 'notifications/updateIsLatestNotificationsLoading',
       resetNotificationsState: 'notifications/resetLatestNotificationsState',
       setAuthInfo: 'setAuthInfo',
+      updateIsRefreshed: 'updateIsRefreshed',
       resetCareerState: 'career/resetState',
       resetChatState: 'chat/resetState',
       resetChatsState: 'chats/resetState',
