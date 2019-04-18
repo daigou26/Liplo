@@ -1,5 +1,5 @@
 export const strict = false
-import { firestore, storageRef } from '@/plugins/firebase'
+import { firestore, functions } from '@/plugins/firebase'
 
 export const state = () => ({
   imageUrl: '',
@@ -305,5 +305,42 @@ export const actions = {
         console.log('404')
         nuxt.error({ statusCode: 404, message: 'not found' })
       }
+  },
+  addCompany({commit}, {companyName, companyEmail, userName, email, position, inquiry}) {
+    const companyId = firestore.collection('companies').doc().id
+    const member = {
+      name: userName,
+      position: position,
+      email: email,
+      isInitialMember: true,
+    }
+    const companyData = {
+      companyName: companyName,
+      email: companyEmail,
+      members: [member],
+    }
+    const batch = firestore.batch()
+    const companyRef = firestore.collection('companies').doc(companyId)
+    batch.set(companyRef, companyData)
+    const companyDetailRef = firestore.collection('companies')
+      .doc(companyId)
+      .collection('detail')
+      .doc(companyId)
+    batch.set(companyDetailRef, companyData)
+
+    batch.commit()
+      .catch((error) => {
+        console.error("Error adding document: ", error)
+      })
+
+    var sendAddCompanyMail = functions.httpsCallable("sendAddCompanyMail")
+    sendAddCompanyMail({
+      companyName: companyName,
+      userName: userName,
+      email: email,
+      inquiry: inquiry
+    }).then(function(result) {
+      console.log('sendAddCompanyMail completed.');
+    })
   },
 }

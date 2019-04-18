@@ -9,7 +9,7 @@ export const state = () => ({
   authError: null,
   loading: false,
   isRefreshed: false,
-  isInvitedMemberSignedIn: false,
+  isRecruiterSignedIn: false,
 })
 
 export const mutations = {
@@ -37,8 +37,8 @@ export const mutations = {
   updateIsRefreshed(state, isRefreshed) {
     state.isRefreshed = isRefreshed
   },
-  updateIsInvitedMemberSignedIn(state, isSignedIn) {
-    state.isInvitedMemberSignedIn = isSignedIn
+  updateIsRecruiterSignedIn(state, isSignedIn) {
+    state.isRecruiterSignedIn = isSignedIn
   }
 }
 
@@ -52,7 +52,7 @@ export const actions = {
         var errorCode = error.code
         switch (errorCode) {
           case 'auth/email-already-in-use':
-            commit('setAuthError', 'このメールアドレスはすでに使用されています')
+            commit('setAuthError', 'この メールアドレスはすでに使用されています')
             break
           case 'auth/invalid-email':
             commit('setAuthError', 'メールアドレスの形式が正しくありません')
@@ -65,39 +65,82 @@ export const actions = {
       })
   },
   // 招待された担当者のサインアップ
-  async invitedMemberSignUp({commit}, {companyId, email, password}) {
-    firestore.collection('companies')
-      .doc(companyId)
-      .collection('invitedMembers')
-      .where('email', '==', email)
-      .get()
-      .then(function(snapshot) {
-        // 招待済みかどうか
-        if (!snapshot.empty) {
-          auth.createUserWithEmailAndPassword(email, password)
-            .then(function() {
-              commit('resetLoading')
-            })
-            .catch(function(error) {
-              var errorCode = error.code
-              switch (errorCode) {
-                case 'auth/email-already-in-use':
-                  commit('setAuthError', 'このメールアドレスはすでに使用されています')
-                  break
-                case 'auth/invalid-email':
-                  commit('setAuthError', 'メールアドレスの形式が正しくありません')
-                  break
-                default:
-                  commit('setAuthError', 'サインアップに失敗しました')
-                  break
+  async recruiterSignedIn({commit}, {recruiterType, companyId, email, password}) {
+    if (recruiterType == 'invited') {
+      firestore.collection('companies')
+        .doc(companyId)
+        .collection('invitedMembers')
+        .where('email', '==', email)
+        .get()
+        .then(function(snapshot) {
+          // 招待済みかどうか
+          if (!snapshot.empty) {
+            auth.createUserWithEmailAndPassword(email, password)
+              .then(function() {
+                commit('resetLoading')
+              })
+              .catch(function(error) {
+                var errorCode = error.code
+                switch (errorCode) {
+                  case 'auth/email-already-in-use':
+                    commit('setAuthError', 'このメールアドレスはすでに使用されています')
+                    break
+                  case 'auth/invalid-email':
+                    commit('setAuthError', 'メールアドレスの形式が正しくありません')
+                    break
+                  default:
+                    commit('setAuthError', 'サインアップに失敗しました')
+                    break
+                }
+                commit('resetLoading')
+              })
+          } else {
+            commit('setAuthError', 'このメールアドレスは招待されていません。')
+            commit('resetLoading')
+          }
+        })
+    } else if (recruiterType == 'initial') {
+      firestore.collection('companies')
+        .doc(companyId)
+        .get()
+        .then(function(doc) {
+          if (doc.exists) {
+            const members = doc.data()['members']
+            if (members.length == 1) {
+              if (members[0].email == email) {
+                auth.createUserWithEmailAndPassword(email, password)
+                  .then(function() {
+                    commit('resetLoading')
+                  })
+                  .catch(function(error) {
+                    var errorCode = error.code
+                    switch (errorCode) {
+                      case 'auth/email-already-in-use':
+                        commit('setAuthError', 'このメールアドレスはすでに使用されています')
+                        break
+                      case 'auth/invalid-email':
+                        commit('setAuthError', 'メールアドレスの形式が正しくありません')
+                        break
+                      default:
+                        commit('setAuthError', 'サインアップに失敗しました')
+                        break
+                    }
+                    commit('resetLoading')
+                  })
+              } else {
+                commit('setAuthError', 'メールアドレスが間違っています')
+                commit('resetLoading')
               }
+            } else if (members.length >= 2){
+              commit('setAuthError', 'すでにこの企業のアカウントが存在しています。この企業のメンバーになるには、すでにアカウントを作成している担当者の方に招待してもらう必要があります。')
               commit('resetLoading')
-            })
-        } else {
-          commit('setAuthError', 'このメールアドレスは招待されていません。')
-          commit('resetLoading')
-        }
-      })
+            }
+          } else {
+            commit('setAuthError', '企業が存在しません。もう一度メールのリンクからアクセスしてください。')
+            commit('resetLoading')
+          }
+        })
+    }
   },
   async signIn({commit}, {email, password}) {
     auth.signInWithEmailAndPassword(email, password)
@@ -161,36 +204,13 @@ export const actions = {
     router,
     user,
     type,
-    recruiterType,
     firstName,
     lastName,
     companyId,
-    companyName,
-    companyEmail,
-    companyInvoiceEmail,
     position
   }) {
     if (user) {
       commit('setUid', user.uid)
-      commit('updateIsVerified',  user.emailVerified)
-      // メールアドレスの確認が済んでいない場合はメール送信
-      if (!user.emailVerified && !state.sentVerifyEmail) {
-        if (route.path !== '/' && route.name !== 'jobs-id') {
-          router.push('/')
-        }
-        commit('updateSentVerifyEmail', true)
-        console.log('email', user.email);
-        var actionCodeSettings = {
-          url: url,
-          handleCodeInApp: true,
-        };
-        user.sendEmailVerification(actionCodeSettings)
-          .then(function() {
-            console.log('sent verify email')
-          }).catch(function(error) {
-            console.error("Error adding document: ", error)
-          });
-      }
 
       firestore.collection('users').doc(user.uid).get()
         .then(function(doc) {
@@ -199,53 +219,7 @@ export const actions = {
             if (firstName != '' && lastName != '') {
               if (type == 'recruiter') {
                 // recruiter
-                if (recruiterType == 'notInvited') {
-                  // 招待されていない担当者
-                  const members = [{
-                    uid: user.uid,
-                    name: lastName + ' ' + firstName,
-                    position: position,
-                    email: user.email
-                  }]
-                  const company = {
-                    name: companyName,
-                    email: companyEmail,
-                    invoiceEmail: companyInvoiceEmail,
-                    members: members,
-                  }
-
-                  const batch = firestore.batch()
-                  const companyId = firestore.collection('companies').doc().id
-                  const companyRef = firestore.collection('companies').doc(companyId)
-                  batch.set(companyRef, company)
-                  const userRef = firestore.collection('users').doc(user.uid)
-                  batch.set(userRef, {
-                    firstName: firstName,
-                    lastName: lastName,
-                    type: 'recruiter',
-                    email: user.email,
-                    isEmailVerified: user.emailVerified,
-                  })
-                  const profileRef = firestore.collection('users')
-                    .doc(user.uid).collection('profile').doc(user.uid)
-                  batch.set(profileRef, {
-                    firstName: firstName,
-                    lastName: lastName,
-                    position: position,
-                    email: user.email
-                  })
-                  batch.commit()
-                    .then(() => {
-                      dispatch('profile/setFirstName', firstName)
-                      dispatch('profile/setLastName', lastName)
-                      dispatch('profile/setEmail', user.email)
-                      dispatch('profile/setType', 'recruiter')
-                      router.replace('/recruiter/dashboard')
-                    })
-                    .catch((error) => {
-                      console.error("Error adding document: ", error)
-                    })
-                } else if (companyId != null) {
+                if (companyId != null) {
                   // 招待された担当者
                   const batch = firestore.batch()
 
@@ -260,15 +234,19 @@ export const actions = {
                   })
                   const profileRef = firestore.collection('users')
                     .doc(user.uid).collection('profile').doc(user.uid)
-                  batch.set(profileRef, {
+                  var profileData = {
                     firstName: firstName,
                     lastName: lastName,
-                    position: position,
                     email: user.email
-                  })
+                  }
+                  if (position) {
+                    profileData.position = position
+                  }
+                  batch.set(profileRef, profileData)
                   batch.commit()
                     .then(() => {
-                      commit('updateIsInvitedMemberSignedIn', true)
+                      commit('updateIsRecruiterSignedIn', true)
+                      dispatch('profile/setCompanyId', companyId)
                       dispatch('profile/setFirstName', firstName)
                       dispatch('profile/setLastName', lastName)
                       dispatch('profile/setEmail', user.email)
@@ -281,6 +259,27 @@ export const actions = {
                 }
               } else if (type == 'user') {
                 // user
+                // メールアドレスの確認が済んでいない場合はメール送信
+                commit('updateIsVerified',  user.emailVerified)
+                if (!user.emailVerified && !state.sentVerifyEmail) {
+                  console.log('email not verified');
+                  if (route.path !== '/' && route.name !== 'jobs-id') {
+                    router.push('/')
+                  }
+                  commit('updateSentVerifyEmail', true)
+                  var actionCodeSettings = {
+                    url: url,
+                    handleCodeInApp: true,
+                  }
+                  user.sendEmailVerification(actionCodeSettings)
+                    .then(function() {
+                      console.log('sent verify email')
+                    })
+                    .catch(function(error) {
+                      console.error("Error adding document: ", error)
+                    })
+                }
+
                 const batch = firestore.batch()
                 const userRef = firestore.collection('users').doc(user.uid)
                 batch.set(userRef, {
@@ -348,6 +347,27 @@ export const actions = {
                 router.replace('/recruiter/dashboard')
               }
             } else {
+              // メールアドレスの確認が済んでいない場合はメール送信
+              commit('updateIsVerified',  user.emailVerified)
+              if (!user.emailVerified && !state.sentVerifyEmail) {
+                console.log('email not verified');
+                if (route.path !== '/' && route.name !== 'jobs-id') {
+                  router.push('/')
+                }
+                commit('updateSentVerifyEmail', true)
+                var actionCodeSettings = {
+                  url: url,
+                  handleCodeInApp: true,
+                }
+                user.sendEmailVerification(actionCodeSettings)
+                  .then(function() {
+                    console.log('sent verify email')
+                  })
+                  .catch(function(error) {
+                    console.error("Error adding document: ", error)
+                  })
+              }
+
               // メッセージのリスナー
               dispatch('chats/setUserMessagesListener', user.uid)
 
@@ -362,7 +382,7 @@ export const actions = {
 
     } else {
       commit('setUid', null)
-      if (route.path !== '/' && route.path !== '/signup' && route.name !== 'jobs-id') {
+      if (route.path !== '/' && route.path !== '/signup' && route.path !== '/company_registration' && route.name !== 'jobs-id') {
         router.push('/')
       }
     }
@@ -376,7 +396,6 @@ export const actions = {
     commit('updateSentVerifyEmail', false)
     commit('setAuthError', null)
     commit('resetLoading')
-    commit('updateHasNewMessage', false)
     commit('updateIsRefreshed', false)
   },
 }
