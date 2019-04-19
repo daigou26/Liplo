@@ -20,7 +20,7 @@
             <nuxt-link to="/contact" class="font-weight-bold textColor">お問い合わせ</nuxt-link>
           </div>
           <div class="pb-2">
-            <nuxt-link to="/" class="font-weight-bold textColor">運営企業</nuxt-link>
+            <nuxt-link to="/" class="font-weight-bold textColor">運営会社</nuxt-link>
           </div>
         </v-flex>
         <v-flex xs6>
@@ -36,7 +36,7 @@
             <nuxt-link to="/" class="font-weight-bold textColor">利用規約</nuxt-link>
           </div>
           <div class="pb-2">
-            <nuxt-link to="/company_registration" class="font-weight-bold textColor">プライバシーポリシー</nuxt-link>
+            <nuxt-link to="/" class="font-weight-bold textColor">プライバシー</nuxt-link>
           </div>
         </v-flex>
       </v-layout>
