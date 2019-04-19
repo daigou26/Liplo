@@ -3,26 +3,24 @@
     <drawer v-if="path.includes('/recruiter') || path.includes('/users')"></drawer>
     <toolbar></toolbar>
     <v-content class="white">
-      <v-container fluid pa-0 fill-height>
+      <v-container fluid pa-0>
         <nuxt />
       </v-container>
+      <footer-content></footer-content>
     </v-content>
-    <!-- <v-footer
-      :fixed="fixed"
-      app
-    >
-      <span>&copy; 2019</span>
-    </v-footer> -->
   </v-app>
 </template>
 
 <script>
 import Toolbar from '~/components/Toolbar'
 import Drawer from '~/components/Drawer'
+import FooterContent from '~/components/FooterContent'
+
 export default {
   components: {
     Toolbar,
-    Drawer
+    Drawer,
+    FooterContent
   },
   data() {
     return {
@@ -56,6 +54,9 @@ export default {
 </script>
 
 <style>
+#footer a{
+  text-decoration: none;
+}
 .toolbar-title {
   color: inherit;
   text-decoration: inherit;

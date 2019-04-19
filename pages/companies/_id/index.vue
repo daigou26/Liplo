@@ -6,6 +6,7 @@
   >
     <v-flex xs12>
       <v-img
+        class="grey lighten-2"
         :src="imageUrl"
         :aspect-ratio="imageRatio"
       ></v-img>

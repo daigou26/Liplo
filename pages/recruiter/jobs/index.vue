@@ -11,6 +11,7 @@
       :items="jobs"
       class="elevation-1"
       hide-actions
+      no-data-text="まだ募集を作成していません。"
     >
       <template v-slot:items="props">
         <td class="py-1">

@@ -1,5 +1,5 @@
 export const strict = false
-import { firestore, auth, GoogleProvider } from '@/plugins/firebase'
+import { firestore, functions, auth, GoogleProvider } from '@/plugins/firebase'
 
 
 export const state = () => ({
@@ -389,6 +389,17 @@ export const actions = {
   },
   updateIsRefreshed({commit}, isRefreshed) {
     commit('updateIsRefreshed', isRefreshed)
+  },
+  // お問い合わせ
+  sendContact({commit}, {name, email, content}) {
+    var sendContact = functions.httpsCallable("sendContact")
+    sendContact({
+      name: name,
+      email: email,
+      content: content
+    }).then(function(result) {
+      console.log('contact completed.');
+    })
   },
   resetState({commit}) {
     commit('setUid', null)
