@@ -13,6 +13,33 @@ const admin = require('firebase-admin')
 admin.initializeApp()
 
 
+// 企業メンバーが招待された時の処理
+exports.inviteMember = functions.region('asia-northeast1')
+  .firestore
+  .document('companies/{companyId}/invitedMembers/{memberId}')
+  .onCreate((snap, context) => {
+    const companyId = context.params.companyId
+    const email = snap.data().email
+    const companyName = snap.data().companyName
+    const userName = snap.data().userName
+    const url = `http://localhost:3000/?type=invited&id=${companyId}`
+
+    // 内定パスが渡されたユーザーにメール送信
+    const mailOptions = {
+      from: `LightHouse <noreply@firebase.com>`,
+      to: email,
+    }
+    mailOptions.subject = `${userName}さんが${companyName}にあなたを招待しました。`
+    mailOptions.text = `${userName}さんが${companyName}にあなたを招待しました。${url}にアクセスして、サインアップしてください。`
+    return mailTransport.sendMail(mailOptions)
+      .then(() => {
+        console.log('New pass email sent to:', email)
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error)
+      })
+  })
+
 // 候補者のステータスが変わった時、user の career を更新
 exports.updateCareer = functions.region('asia-northeast1')
   .firestore
@@ -861,7 +888,7 @@ exports.applyForJob = functions.region('asia-northeast1')
                               to: member.email,
                             }
                             mailOptions.subject = `${user.name}さんから応募が来ました。`
-                            mailOptions.text = `$${user.name}さんから応募が来ました。　ご確認ください。`
+                            mailOptions.text = `${user.name}さんから応募が来ました。　ご確認ください。`
                             mailTransport.sendMail(mailOptions, (err, info) => {
                               if (err) {
                                 console.log(err)
@@ -913,7 +940,7 @@ exports.applyForJob = functions.region('asia-northeast1')
                           to: member.email,
                         }
                         mailOptions.subject = `${user.name}さんから応募が来ました。`
-                        mailOptions.text = `$${user.name}さんから応募が来ました。　ご確認ください。`
+                        mailOptions.text = `${user.name}さんから応募が来ました。　ご確認ください。`
                         mailTransport.sendMail(mailOptions, (err, info) => {
                           if (err) {
                             console.log(err)
@@ -1236,6 +1263,91 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
       })
   })
 
+exports.sendAddCompanyMail = functions
+  .https
+  .onCall((data, context) => {
+    const mailOptions = {
+      from: `${data.email}`,
+      to: 'go26dev@gmail.com',
+    }
+    mailOptions.subject = `${data.companyName}の${data.userName}様からお問い合わせを頂きました`
+    mailOptions.text = `${data.companyName}の${data.userName}様からお問い合わせを頂きました。\n お問い合わせ内容：${data.inquiry}`
+    mailTransport.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.log(err)
+      }
+      console.log('sendAddCompanyMail completed.')
+    })
+  })
+
+// 担当者がサインアップした時の処理
+exports.createRecruiter = functions.region('asia-northeast1')
+  .firestore
+  .document('users/{uid}')
+  .onCreate((snap, context) => {
+    const uid = context.params.uid
+    const companyId = snap.data().companyId
+    const firstName = snap.data().firstName
+    const lastName = snap.data().lastName
+    const email = snap.data().email
+    const position = snap.data().position
+
+    // userの場合終了
+    if (companyId == null) {
+      return 0
+    }
+
+    // 企業の member 内の情報更新
+    return admin.firestore()
+      .collection('companies').doc(companyId)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          var members = doc.data().members
+          var member = {
+            uid: uid,
+            name: lastName + ' ' + firstName,
+            email: email,
+          }
+          if (position) {
+            member.position = position
+          }
+
+          if (members.length == 1) {
+            if (members[0].isInitialMember != null && members[0].isInitialMember) {
+              member.position = members[0].position
+              members = [member]
+            } else {
+              members.push(member)
+            }
+          } else if (members.length > 1) {
+            members.push(member)
+          }
+
+          // members更新
+          const batch = admin.firestore().batch()
+          const companyRef = admin.firestore().collection('companies').doc(companyId)
+          batch.update(companyRef, {
+            members: members,
+          })
+          const companyDetailRef = admin.firestore().collection('companies').doc(companyId).collection('detail').doc(companyId)
+          batch.update(companyDetailRef, {
+            members: members,
+          })
+          batch.commit()
+            .then(() => {
+              console.log('createInvitedMemberProfile completed.')
+            })
+            .catch((error) => {
+              console.error("Error adding document: ", error)
+            })
+        }
+      })
+      .catch(err => {
+        console.log('Error getting document', err)
+      })
+  })
+
 // プロフィールを編集した時の処理
 exports.editProfile = functions.region('asia-northeast1')
   .firestore
@@ -1252,6 +1364,7 @@ exports.editProfile = functions.region('asia-northeast1')
     const selfIntro = newValue.selfIntro
 
     if (companyId == null) {
+      // user
       // name, imageUrl どれも変わっていない場合はreturn
       if (
         firstName == previousValue.firstName &&
@@ -1294,6 +1407,7 @@ exports.editProfile = functions.region('asia-northeast1')
           console.error("Error adding document: ", error)
         })
     } else {
+      // recruiter
       // name, imageUrl, position, selfIntro どれも変わっていない場合はreturn
       if (
         firstName == previousValue.firstName &&
@@ -1353,44 +1467,6 @@ exports.editProfile = functions.region('asia-northeast1')
           console.log('Error getting document', err)
         })
     }
-  })
-
-// 企業が登録された時の処理
-exports.addCompany = functions.region('asia-northeast1')
-  .firestore
-  .document('companies/{companyId}')
-  .onCreate((snap, context) => {
-    const companyId = context.params.companyId
-    const members = snap.data().members
-    const uid = members[0].uid
-    const companyName = snap.data().name
-    const companyEmail = snap.data().email
-
-    const companyDetail = {
-      name: companyName,
-      email: companyEmail,
-      members: members,
-    }
-
-    // userにcompanyId を追加, companyDetail に companyName や members などを追加
-    const batch = admin.firestore().batch()
-    const companyDetailRef = admin.firestore().collection('companies').doc(companyId).collection('detail').doc(companyId)
-    batch.set(companyDetailRef, companyDetail)
-    const userRef = admin.firestore().collection('users').doc(uid)
-    batch.update(userRef, {
-      companyId: companyId
-    })
-    const userProfileRef = admin.firestore().collection('users').doc(uid).collection('profile').doc(uid)
-    batch.update(userProfileRef, {
-      companyId: companyId
-    })
-    return batch.commit()
-      .then(() => {
-        console.log('addCompany completed.')
-      })
-      .catch((error) => {
-        console.error("Error adding document: ", error)
-      })
   })
 
 // レビューした時の処理
@@ -1622,7 +1698,7 @@ exports.acceptJobOffer = functions.region('asia-northeast1')
                       to: member.email,
                     }
                     mailOptions.subject = `${userName}さんが内定を承諾しました。`
-                    mailOptions.text = `$${userName}さんが内定を承諾しました。　内定契約が済みましたら、ステータスを採用予定に変更してください。`
+                    mailOptions.text = `${userName}さんが内定を承諾しました。　内定契約が済みましたら、ステータスを採用予定に変更してください。`
                     mailTransport.sendMail(mailOptions, (err, info) => {
                       if (err) {
                         console.log(err)

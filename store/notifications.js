@@ -273,18 +273,20 @@ export const actions = {
   },
   // 未読の通知があるか
   setNotificationsListener({commit}, uid) {
-    const listener = firestore.collection('users')
-      .doc(uid)
-      .collection('notifications')
-      .where('isUnread', '==', true)
-      .onSnapshot(function(snapshot) {
-        if (!snapshot.empty) {
-          commit('updateHasNewNotification', true)
-        } else {
-          commit('updateHasNewNotification', false)
-        }
-      })
-    commit('setUnsubscribe', listener)
+    if (!state.unsubscribe) {
+      const listener = firestore.collection('users')
+        .doc(uid)
+        .collection('notifications')
+        .where('isUnread', '==', true)
+        .onSnapshot(function(snapshot) {
+          if (!snapshot.empty) {
+            commit('updateHasNewNotification', true)
+          } else {
+            commit('updateHasNewNotification', false)
+          }
+        })
+      commit('setUnsubscribe', listener)
+    }
   },
   resetHasNewNotification({commit}) {
     commit('updateHasNewNotification', false)

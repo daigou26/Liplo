@@ -78,6 +78,7 @@ export default {
   },
   computed: {
     ...mapState({
+      isRefreshed: state => state.isRefreshed,
       uid: state => state.uid,
       jobs: state => state.jobs.jobs,
       isLoading: state => state.jobs.isLoading,
@@ -97,8 +98,8 @@ export default {
     store.dispatch('jobs/queryJobs', context.query)
   },
   watch: {
-    uid(uid) {
-      if (uid != null) {
+    isRefreshed(isRefreshed) {
+      if (isRefreshed == true) {
         this.resetState()
         // filter set
         this.setFilter(this.$route.query)

@@ -1,7 +1,73 @@
 <template>
-  <v-toolbar v-if="type != 'recruiter'" flat color="white" class="toolbar-fixed border-bottom" id="toolbar">
+  <!-- メールアドレスの確認が済んでいない場合は確認してもらう -->
+  <v-toolbar v-if="uid && !isVerified && type == 'user'" flat fixed app color="white" id="toolbar">
+    <v-toolbar-title v-if="(!path.includes('/recruiter') && !path.includes('/users')) || breakpoint == 'xs'">Application</v-toolbar-title>
+    <v-spacer></v-spacer>
+    <v-toolbar-items>
+      <v-layout row wrap align-center class="pl-5">
+        <v-flex class="text-xs-center">
+          <div class="align-center">
+            <div class="text-xs-left">
+              <v-menu offset-y offset-x min-width="250">
+                <v-avatar
+                  slot="activator"
+                  :size="avatarSize"
+                >
+                  <v-icon>person</v-icon>
+                </v-avatar>
+                <v-list>
+                  <v-list-tile @click="signOut">
+                    <v-list-tile-title>ログアウト</v-list-tile-title>
+                  </v-list-tile>
+                </v-list>
+              </v-menu>
+            </div>
+          </div>
+        </v-flex>
+      </v-layout>
+    </v-toolbar-items>
+    <v-dialog
+      :value="true"
+      :fullscreen="$vuetify.breakpoint.xsOnly"
+      persistent
+      width="500"
+    >
+      <v-card v-if="!recruiterSignUpDialog">
+        <v-toolbar flat color="orange lighten-2">
+          <span class="textColor font-weight-bold subheading">メールアドレスの確認をお願いします</span>
+        </v-toolbar>
+        <div class="pa-4">
+          <div>
+            ログインしました！
+          </div>
+          <div>
+            {{ userEmail }}にメールアドレスの確認メールを送信しました。ご確認ください。
+          </div>
+        </div>
+        <v-divider class="mt-4"></v-divider>
+        <div class="text-xs-right">
+          <v-btn
+            flat
+            color="primary"
+            @click="signOut"
+          >
+            <span>ログアウト</span>
+          </v-btn>
+        </div>
+      </v-card>
+      <v-card v-else>
+        <v-progress-circular
+         :size="50"
+         color="primary"
+         indeterminate
+        ></v-progress-circular>
+      </v-card>
+    </v-dialog>
+  </v-toolbar>
+  <!-- user & 未ログイン -->
+  <v-toolbar v-else-if="type != 'recruiter'" flat color="white" class="toolbar-fixed border-bottom" id="toolbar">
     <v-toolbar-side-icon　@click="iconClicked"></v-toolbar-side-icon>
-    <div class="text-xs-center hidden-sm-and-up">
+    <div v-if="uid" class="text-xs-center hidden-sm-and-up">
       <v-dialog
         v-model="dropdownMenu"
         fullscreen
@@ -251,6 +317,7 @@
                                 :value="authError != null"
                                 type="error"
                                 class="mb-5"
+                                outline
                               >
                                 {{ authError }}
                               </v-alert>
@@ -307,6 +374,7 @@
                                 :value="authError != null"
                                 type="error"
                                 class="mb-5"
+                                outline
                               >
                                 {{ authError }}
                               </v-alert>
@@ -319,20 +387,20 @@
                                 solo
                                 required
                               ></v-text-field>
-                              <!-- 名前 -->
-                              <v-text-field
-                                v-model="firstName"
-                                :rules="firstNameRules"
-                                label="名"
-                                append-icon="person"
-                                solo
-                                required
-                              ></v-text-field>
                               <!-- 苗字 -->
                               <v-text-field
                                 v-model="lastName"
                                 :rules="lastNameRules"
                                 label="姓"
+                                append-icon="person"
+                                solo
+                                required
+                              ></v-text-field>
+                              <!-- 名前 -->
+                              <v-text-field
+                                v-model="firstName"
+                                :rules="firstNameRules"
+                                label="名"
                                 append-icon="person"
                                 solo
                                 required
@@ -413,7 +481,102 @@
         </v-flex>
       </v-layout>
     </v-toolbar-items>
+    <v-dialog
+      v-model="recruiterSignUpDialog"
+      :fullscreen="$vuetify.breakpoint.xsOnly"
+      width="500"
+      persistent
+    >
+      <v-card>
+        <v-toolbar flat color="white">
+          <span class="textColor font-weight-bold subheading">サインアップ</span>
+        </v-toolbar>
+        <v-flex
+          xs12
+          class="text-xs-center"
+          py-3
+          :class="{'px-4': $vuetify.breakpoint.smAndUp, 'px-3 mt-4': $vuetify.breakpoint.xsOnly}"
+        >
+          <!-- 登録フォーム -->
+          <div>
+            <v-form v-model="recruiterSignUpValid">
+              <v-container>
+                <v-layout
+                  column
+                  justify-center
+                >
+                  <v-flex xs12>
+                    <!-- Error Message -->
+                    <v-alert
+                      :value="authError != null"
+                      type="error"
+                      class="mb-5"
+                      outline
+                    >
+                      {{ authError }}
+                    </v-alert>
+                    <!-- メールアドレス -->
+                    <v-text-field
+                      v-model="email"
+                      :rules="emailRules"
+                      label="メールアドレス"
+                      append-icon="mail_outline"
+                      solo
+                      required
+                    ></v-text-field>
+                    <!-- 苗字 -->
+                    <v-text-field
+                      v-model="lastName"
+                      :rules="lastNameRules"
+                      label="姓"
+                      append-icon="person"
+                      solo
+                      required
+                    ></v-text-field>
+                    <!-- 名前 -->
+                    <v-text-field
+                      v-model="firstName"
+                      :rules="firstNameRules"
+                      label="名"
+                      append-icon="person"
+                      solo
+                      required
+                    ></v-text-field>
+                    <!-- パスワード -->
+                    <v-text-field
+                      v-model="password"
+                      :append-icon="passwordShow ? 'visibility_off' : 'visibility'"
+                      :rules="passwordRules"
+                      :type="passwordShow ? 'text' : 'password'"
+                      label="パスワード"
+                      solo
+                      required
+                      @click:append="passwordShow = !passwordShow"
+                    ></v-text-field>
+                  </v-flex>
+                  <!-- 登録ボタン -->
+                  <v-btn
+                    block
+                    :disabled="!recruiterSignUpValid || loading"
+                    class="orange darken-1"
+                    @click="recruiterSignUpSignUpClicked"
+                  >
+                    <span
+                      class="font-weight-bold body-1"
+                      style="color: #ffffff;"
+                    >
+                      登録する
+                    </span>
+                  </v-btn>
+                </v-layout>
+              </v-container>
+            </v-form>
+          </div>
+        </v-flex>
+      </v-card>
+    </v-dialog>
   </v-toolbar>
+  <!-- recruiter -->
   <v-toolbar v-else flat fixed app color="white" id="toolbar">
     <!-- filter extension -->
     <v-flex xs12 slot="extension" v-if="usersToolbarExtension || jobsToolbarExtension">
@@ -555,6 +718,8 @@ export default {
     signInDialog: false,
     dropdownMenu: false,
     valid: true,
+    recruiterSignUpDialog: false,
+    recruiterSignUpValid: true,
     firstName: '',
     lastName: '',
     firstNameRules: [
@@ -576,8 +741,25 @@ export default {
       v => !!v || 'パスワードを入力してください',
       v => (v && v.length >= 8) || '最低8文字必要です'
     ],
+    position: '',
+    positionRules: [
+      v => !!v || '入力されていません',
+      v => (v && v.length <= 30) || '30文字を超えています'
+    ],
+    companyName: '',
+    companyEmail: '',
+    companyInvoiceEmail: '',
   }),
   computed: {
+    userType() {
+      return this.query.id != null ? 'recruiter' : 'user'
+    },
+    recruiterSignUp() {
+      return this.query.id != null
+    },
+    query() {
+      return this.$route.query
+    },
     path() {
       return this.$route.path
     },
@@ -586,6 +768,9 @@ export default {
     },
     ...mapState({
       uid: state => state.uid,
+      isRecruiterSignedIn: state => state.isRecruiterSignedIn,
+      isVerified: state => state.isVerified,
+      userEmail: state => state.profile.email,
       type: state => state.profile.type,
       authError: state => state.authError,
       loading: state => state.loading,
@@ -600,66 +785,38 @@ export default {
     })
   },
   mounted() {
-    // Confirm the link is a sign-in with email link.
-    if (auth.isSignInWithEmailLink(window.location.href)) {
-      console.log('isSignInWithEmailLink');
-      // Additional state parameters can also be passed via URL.
-      // This can be used to continue the user's intended action before triggering
-      // the sign-in operation.
-      // Get the email if available. This should be available if the user completes
-      // the flow on the same device where they started it.
-      var loginEmail = window.localStorage.getItem('emailForSignIn')
-      if (!loginEmail) {
-        // User opened the link on a different device. To prevent session fixation
-        // attacks, ask the user to provide the associated email again. For example:
-        loginEmail = window.prompt('Please provide your email for confirmation');
-      }
-      console.log('email:', loginEmail);
-
-      // The client SDK will parse the code from the link for you.
-      auth.signInWithEmailLink(loginEmail, window.location.href)
-        .then(function(result) {
-          // Clear email from storage.
-          window.localStorage.removeItem('emailForSignIn')
-          console.log('login success')
-
-          this.resetNotificationsListener()
-          this.resetHasNewNotification()
-          this.resetCareerState()
-          this.resetChatState()
-          this.resetChatsState()
-          this.resetFeedbackState()
-          this.resetFeedbacksState()
-          this.resetState()
-          this.resetMessagesState()
-          this.resetProfileState()
-          this.resetReviewState()
-          this.resetReviewsState()
-          this.resetPassState()
-          this.resetPassesState()
-          this.resetCompanyProfileState()
-        })
-        .catch(function(error) {
-          // Some error occurred, you can inspect the code: error.code
-          // Common errors could be invalid email and invalid or expired OTPs.
-        });
-    }
+    this.recruiterSignUpDialog = this.recruiterSignUp
+    this.updateIsRefreshed(true)
     // ログイン時、dbにuser(recruiter)情報保存
     auth.onAuthStateChanged((user) => {
       this.setAuthInfo({
+        url: window.location.origin,
         route: this.$route,
         router: this.$router,
         user: user,
-        type: 'user',
+        type: this.userType,
         firstName: this.firstName,
-        lastName: this.lastName
+        lastName: this.lastName,
+        companyId: this.query.id,
+        position: this.position,
       })
-      this.resetData()
     })
   },
   destroyed () {
     // listenerがあればデタッチ
     this.resetNotificationsListener()
+  },
+  watch: {
+    isRecruiterSignedIn(isSignedIn) {
+      if (isSignedIn == true) {
+        this.recruiterSignUpDialog = false
+      }
+    },
+    uid(uid) {
+      if (uid == null) {
+        this.resetData()
+      }
+    },
   },
   methods: {
     iconClicked() {
@@ -677,6 +834,16 @@ export default {
       this.$store.dispatch('setLoading')
       this.$store.dispatch('resetAuthError')
       this.$store.dispatch('signUp', {email: this.email, password: this.password})
+    },
+    recruiterSignUpSignUpClicked() {
+      this.setLoading()
+      this.resetAuthError()
+      this.recruiterSignedIn({
+        recruiterType: this.query.type,
+        companyId: this.query.id,
+        email: this.email,
+        password: this.password
+      })
     },
     signInButtonClicked() {
       this.dialog = true
@@ -712,6 +879,9 @@ export default {
       this.password = ''
     },
     ...mapActions({
+      recruiterSignedIn: 'recruiterSignedIn',
+      setLoading: 'setLoading',
+      resetAuthError: 'resetAuthError',
       resetMessagesListener: 'chats/resetMessagesListener',
       resetHasNewMessage: 'chats/resetHasNewMessage',
       resetNotificationsListener: 'notifications/resetNotificationsListener',
@@ -722,6 +892,7 @@ export default {
       updateIsNotificationsLoading: 'notifications/updateIsLatestNotificationsLoading',
       resetNotificationsState: 'notifications/resetLatestNotificationsState',
       setAuthInfo: 'setAuthInfo',
+      updateIsRefreshed: 'updateIsRefreshed',
       resetCareerState: 'career/resetState',
       resetChatState: 'chat/resetState',
       resetChatsState: 'chats/resetState',

@@ -4,6 +4,22 @@
     white
     wrap
   >
+    <v-snackbar
+     v-model="snackbar"
+     color="orange lighten-2"
+     :multi-line="true"
+     :timeout="6000"
+     :top="true"
+   >
+     {{ snackbarText }}
+     <v-btn
+       color="white"
+       flat
+       @click="snackbar = false"
+     >
+       Close
+     </v-btn>
+   </v-snackbar>
     <!-- Top Image -->
     <v-flex xs12>
       <v-img
@@ -262,17 +278,9 @@
                     justify-center
                   >
                     <v-flex xs12>
-                      <!-- Error Message -->
-                      <!-- <v-alert
-                        :value="authError != null"
-                        type="error"
-                        class="mb-5"
-                      >
-                        {{ authError }}
-                      </v-alert> -->
                       <!-- メールアドレス -->
                       <v-text-field
-                        v-model="email"
+                        v-model="memberEmail"
                         :rules="emailRules"
                         label="メールアドレス"
                         append-icon="mail_outline"
@@ -1049,6 +1057,8 @@ export default {
   data: () => ({
     // datePickerFormat: 'yyyy/MM/dd',
     // ja: ja,
+    snackbar: false,
+    snackbarText: '',
     isQueried: false,
     imageFileSizeWarning: '2MB以下の画像を選択してください',
     selectedTopImageSize: 200,
@@ -1065,6 +1075,7 @@ export default {
     editCompanyNameValid: true,
     addMemberDialog: false,
     addMemberValid: true,
+    memberEmail: '',
     tempEmail: '',
     emailRules: [
       v => /.+@.+/.test(v) || '無効なメールアドレスです'
@@ -1169,6 +1180,8 @@ export default {
       }
     },
     ...mapState({
+      firstName: state => state.profile.firstName,
+      lastName: state => state.profile.lastName,
       companyId: state => state.profile.companyId,
       imageFileSizeValid: state => state.companyProfile.imageFileSizeValid,
       topImageUrl: state => state.companyProfile.topImageUrl,
@@ -1275,12 +1288,17 @@ export default {
     },
     addMemberButtonClicked() {
       this.addMemberDialog = true
-      this.email = ''
+      this.memberEmail = ''
     },
     inviteMember() {
-      // this.resetAddMemberError()
-      // this.updateAddMemberLoading(true)
-      // this.addMember({window: window, email: this.email})
+      this.addMember({
+        companyId: this.companyId,
+        companyName: this.companyName,
+        userName: this.lastName + ' ' + this.firstName,
+        email: this.memberEmail
+      })
+      this.snackbar = true
+      this.snackbarText = `${this.memberEmail}に招待メールを送信しました！`
       this.addMemberDialog = false
     },
     editMissionButtonClicked() {
