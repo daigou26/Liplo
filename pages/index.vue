@@ -2,14 +2,28 @@
   <v-layout
     white
     column
-    justify-center
   >
-    <v-container class="pt-0 mt-5">
-      <v-layout column justify-center>
+    <!-- footer 表示ボタン -->
+    <v-card-text
+      class="pa-0 hidden-xs-only"
+      id="footer-button"
+      :style="{ top: footerButtonTop + 'px' }"
+    >
+      <v-btn
+        absolute
+        right
+        color="white"
+
+        @click="footer = true"
+      >
+        <span class="font-weight-bold textColor">企業情報、プライバシーなど</span>
+      </v-btn>
+    </v-card-text>
+    <v-container class="pt-0 mt-3">
+      <v-layout row wrap justify-center>
         <v-flex
           xs12
-          sm10
-          lg8
+          sm8
           text-xs-center
         >
           <!-- job lists -->
@@ -63,8 +77,65 @@
         </v-flex>
       </v-layout>
     </v-container>
+    <!-- footer -->
+    <v-footer
+      v-if="footer"
+      class="shadow-top"
+      id="footer"
+      fixed
+      app
+      color="white"
+      height="300"
+    >
+      <v-layout row wrap>
+        <v-flex xs8 offset-xs2 pb-3 pt-5>
+          <v-layout row wrap>
+            <v-flex xs6>
+              <div class="pb-2">
+                <nuxt-link to="/company_registration" class="font-weight-bold textColor">採用担当者様はこちら</nuxt-link>
+              </div>
+              <div class="pb-2">
+                <nuxt-link to="/" class="font-weight-bold textColor">お問い合わせ</nuxt-link>
+              </div>
+              <div class="pb-2">
+                <nuxt-link to="/" class="font-weight-bold textColor">企業情報</nuxt-link>
+              </div>
+            </v-flex>
+            <v-flex xs6>
+              <div class="pb-3 textColor">
+                <v-btn flat small icon color="grey" class="ma-0 mr-3">
+                  <v-icon>fab fa-facebook</v-icon>
+                </v-btn>
+                <v-btn flat small icon color="grey" class="ma-0">
+                  <v-icon>fab fa-twitter</v-icon>
+                </v-btn>
+              </div>
+              <div class="pb-2">
+                <nuxt-link to="/" class="font-weight-bold textColor">利用規約</nuxt-link>
+              </div>
+              <div class="pb-2">
+                <nuxt-link to="/company_registration" class="font-weight-bold textColor">プライバシーポリシー</nuxt-link>
+              </div>
+            </v-flex>
+          </v-layout>
+        </v-flex>
+        <v-flex xs8 offset-xs2 py-2>
+          <v-divider></v-divider>
+        </v-flex>
+        <v-flex xs8 offset-xs2>
+          <span>&copy; 2019 All rights reserved.</span>
+        </v-flex>
+        <v-flex xs10 offset-xs1 text-xs-right>
+          <v-btn color="white" small @click="footer = false">
+            <v-icon>close</v-icon>
+            閉じる
+          </v-btn>
+        </v-flex>
+      </v-layout>
+    </v-footer>
   </v-layout>
 </template>
+
 
 <script>
 import { mapActions, mapState } from 'vuex'
@@ -72,8 +143,10 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
+      footer: false,
       count: 0,
       showInfiniteLoading: false,
+      footerButtonTop: 0,
     }
   },
   computed: {
@@ -87,6 +160,15 @@ export default {
   },
   mounted() {
     this.showInfiniteLoading = true
+
+    let toolbarHeight
+    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+      toolbarHeight = 48
+    } else {
+      toolbarHeight = 64
+    }
+    const windowHeight = window.innerHeight - toolbarHeight
+    this.footerButtonTop = windowHeight - 20
   },
   watchQuery: ['occupation', 'features'],
   fetch(context) {
@@ -134,3 +216,13 @@ export default {
   }
 }
 </script>
+<style>
+#footer-button {
+  position: -webkit-sticky;
+  position: sticky;
+  z-index: 1
+}
+#footer a{
+  text-decoration: none;
+}
+</style>

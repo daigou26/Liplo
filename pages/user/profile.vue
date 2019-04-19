@@ -5,7 +5,7 @@
       justify-center
     >
       <v-flex xs12>
-        <v-card>
+        <v-card flat class="border-side">
           <!-- Profile画像 & UserName -->
           <div class="d-flex py-4 align-center">
             <!-- Profile画像 -->
@@ -611,7 +611,7 @@
               </v-flex>
             </div>
             <!-- 基本情報 -->
-            <div>
+            <div class="pb-5">
               <v-layout
                 align-center
                 justify-space-between
