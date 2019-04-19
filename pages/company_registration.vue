@@ -55,7 +55,6 @@
                       class="py-2"
                       :rules="companyNameRules"
                       label="企業名（必須）"
-                      append-icon="business"
                       required
                     ></v-text-field>
                     <!-- 企業メールアドレス -->
@@ -64,7 +63,6 @@
                       class="py-2"
                       :rules="emailRules"
                       label="企業メールアドレス（必須）"
-                      append-icon="mail_outline"
                       required
                     ></v-text-field>
                     <!-- 苗字 -->
@@ -73,7 +71,6 @@
                       class="py-2"
                       :rules="lastNameRules"
                       label="姓（必須）"
-                      append-icon="person"
                       required
                     ></v-text-field>
                     <!-- 名前 -->
@@ -82,7 +79,6 @@
                       class="py-2"
                       :rules="firstNameRules"
                       label="名（必須）"
-                      append-icon="person"
                       required
                     ></v-text-field>
                     <!-- メールアドレス -->
@@ -91,7 +87,6 @@
                       class="py-2"
                       :rules="emailRules"
                       label="メールアドレス（必須）"
-                      append-icon="mail_outline"
                       required
                     ></v-text-field>
                     <!-- 役職 -->
@@ -100,7 +95,6 @@
                       class="py-2"
                       :rules="positionRules"
                       label="役職（必須）"
-                      append-icon="person"
                       required
                     ></v-text-field>
                     <!-- 要望 -->
@@ -200,17 +194,6 @@ export default {
       this.valid = false
       this.snackbar = true
       this.snackbarText = `送信が完了しました。こちらからメールをお送りしますので、少々お待ちください。`
-    },
-    resetData() {
-      this.dialog = false
-      this.signUpDialog = false
-      this.signUpForm = false
-      this.signInDialog = false
-      this.dropdownMenu = false
-      this.firstName = ''
-      this.lastName = ''
-      this.email = ''
-      this.password = ''
     },
     ...mapActions({
       addCompany: 'company/addCompany',

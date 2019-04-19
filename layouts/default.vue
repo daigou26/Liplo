@@ -54,6 +54,9 @@ export default {
 </script>
 
 <style>
+#footer a{
+  text-decoration: none;
+}
 .toolbar-title {
   color: inherit;
   text-decoration: inherit;
