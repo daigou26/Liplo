@@ -8,6 +8,7 @@
       :items="reviews"
       class="elevation-1"
       hide-actions
+      no-data-text="レビューがありません。"
     >
       <template v-slot:items="props">
         <n-link class="clickable" tag="tr" :to="'/recruiter/reviews/' + props.item.reviewId">

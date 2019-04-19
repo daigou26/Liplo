@@ -8,6 +8,7 @@
       :items="candidates"
       class="elevation-1"
       hide-actions
+      no-data-text="候補者がいません。"
     >
       <template v-slot:items="props">
         <n-link class="clickable" tag="tr" :to="'/recruiter/candidates/' + props.item.candidateId">
