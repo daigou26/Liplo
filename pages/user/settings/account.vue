@@ -55,7 +55,7 @@
           <v-flex md10 sm6 xs8 offset-md1 offset-sm3 offset-xs2>
             <!-- menu (sm, xs) -->
             <settings-menu class="hidden-md-and-up"></settings-menu>
-            <!-- settings -->
+            <!-- スカウト設定 -->
             <div class="title textColor pt-4">
               スカウトについて
             </div>
@@ -71,18 +71,103 @@
                 更新
               </v-btn>
             </div>
+            <!-- メアド変更 -->
+            <div class="title textColor pt-5">
+              メールアドレスを変更する
+            </div>
+            <div class="pt-3">
+              現在のメールアドレス： {{ this.currentEmail }}
+            </div>
+            <div class="text-xs-right pt-4">
+              <v-btn @click="changeUserEmailDialog = true">
+                メールアドレスを変更する
+              </v-btn>
+            </div>
+            <!-- アカウント削除 -->
             <div class="title textColor pt-5">
               アカウントの削除
             </div>
             <div class="text-xs-left pt-4">
-              <v-btn @click="dialog = true">
+              <v-btn @click="deleteAccountDialog = true">
                 アカウントを削除する
               </v-btn>
             </div>
           </v-flex>
         </v-flex>
+        <!-- changeUserEmailDialog -->
         <v-dialog
-          v-model="dialog"
+          v-model="changeUserEmailDialog"
+          :fullscreen="$vuetify.breakpoint.xsOnly"
+          width="500"
+        >
+          <v-card>
+            <v-toolbar flat color="orange lighten-2">
+              <span class="textColor font-weight-bold subheading">メールアドレス変更</span>
+            </v-toolbar>
+            <div class="pa-4">
+              <div class="pb-4">
+                新しいメールアドレスとパスワードを入力してください。
+              </div>
+              <v-form v-model="changeUserEmailValid">
+                <v-container>
+                  <v-layout
+                    column
+                    justify-center
+                  >
+                    <v-flex xs12>
+                      <!-- Error Message -->
+                      <v-alert
+                        :value="authError != null"
+                        type="error"
+                        class="mb-5"
+                        outline
+                      >
+                        {{ authError }}
+                      </v-alert>
+                      <!-- メールアドレス -->
+                      <v-text-field
+                        v-model="newEmail"
+                        :rules="emailRules"
+                        label="新しいメールアドレス"
+                        append-icon="mail_outline"
+                        solo
+                        required
+                      ></v-text-field>
+                      <!-- パスワード -->
+                      <v-text-field
+                        v-model="password"
+                        :append-icon="passwordShow ? 'visibility_off' : 'visibility'"
+                        :rules="passwordRules"
+                        :type="passwordShow ? 'text' : 'password'"
+                        label="パスワード"
+                        solo
+                        required
+                        @click:append="passwordShow = !passwordShow"
+                      ></v-text-field>
+                    </v-flex>
+                    <!-- 変更ボタン -->
+                    <v-btn
+                      block
+                      :disabled="!changeUserEmailValid || loading"
+                      class="orange darken-1"
+                      @click="changeUserEmailButtonClicked"
+                    >
+                      <span
+                        class="font-weight-bold body-1"
+                        style="color: #ffffff;"
+                      >
+                        メールアドレス変更
+                      </span>
+                    </v-btn>
+                  </v-layout>
+                </v-container>
+              </v-form>
+            </div>
+          </v-card>
+        </v-dialog>
+        <!-- deleteAccountDialog -->
+        <v-dialog
+          v-model="deleteAccountDialog"
           :fullscreen="$vuetify.breakpoint.xsOnly"
           width="500"
         >
@@ -94,7 +179,7 @@
               <div class="pb-4">
                 一度アカウントを削除すると復元することができなくなります。 削除する場合は、メールアドレスとパスワードを入力してください。
               </div>
-              <v-form v-model="valid">
+              <v-form v-model="deleteAccountValid">
                 <v-container>
                   <v-layout
                     column
@@ -125,7 +210,7 @@
                     <!-- 削除ボタン -->
                     <v-btn
                       block
-                      :disabled="!valid || loading"
+                      :disabled="!deleteAccountValid || loading"
                       class="orange darken-1"
                       @click="deleteAccountButtonClicked"
                     >
@@ -160,8 +245,15 @@ export default {
     tempAcceptScout: true,
     snackbar: false,
     snackbarText: '',
-    dialog: false,
-    valid: true,
+    changeUserEmailDialog: false,
+    changeUserEmailValid: true,
+    deleteAccountDialog: false,
+    deleteAccountValid: true,
+    newEmail: '',
+    emailRules: [
+      v => !!v || 'メールアドレスを入力してください',
+      v => /.+@.+/.test(v) || '無効なメールアドレスです'
+    ],
     passwordShow: false,
     password: '',
     passwordRules: [
@@ -181,6 +273,7 @@ export default {
     },
     ...mapState({
       uid: state => state.uid,
+      currentEmail: state => state.profile.email,
       acceptScout: state => state.settings.acceptScout,
       isLoading: state => state.settings.isLoading,
       authError: state => state.authError,
@@ -207,6 +300,11 @@ export default {
       if (acceptScout != null) {
         this.tempAcceptScout = acceptScout
       }
+    },
+    loading(loading) {
+      if (loading == false) {
+        this.changeUserEmailDialog = false
+      }
     }
   },
   methods: {
@@ -218,16 +316,23 @@ export default {
       this.snackbar = true
       this.snackbarText = 'アカウント設定を更新しました！'
     },
+    changeUserEmailButtonClicked() {
+      this.setLoading()
+      this.resetAuthError()
+      this.changeUserEmail({newEmail: this.newEmail, password: this.password})
+    },
     deleteAccountButtonClicked() {
       this.setLoading()
       this.resetAuthError()
       this.deleteAccount(this.password)
+      this.deleteAccountDialog = false
     },
     ...mapActions({
       querySettings: 'settings/querySettings',
       updateAcceptScout: 'settings/updateAcceptScout',
       updateIsLoading: 'settings/updateIsLoading',
       resetState: 'settings/resetState',
+      changeUserEmail: 'changeUserEmail',
       deleteAccount: 'deleteAccount',
       setLoading: 'setLoading',
       resetAuthError: 'resetAuthError',

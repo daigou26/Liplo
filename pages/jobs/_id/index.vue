@@ -522,7 +522,6 @@ export default {
       }
     },
     ...mapState({
-      email: state => state.profile.email,
       type: state => state.profile.type,
       profileImageUrl: state => state.profile.imageUrl,
       firstName: state => state.profile.firstName,
@@ -611,7 +610,6 @@ export default {
         uid: this.uid,
         name: this.lastName + ' ' + this.firstName,
         imageUrl: this.profileImageUrl,
-        email: this.email,
       }
 
       this.apply({

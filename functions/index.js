@@ -366,7 +366,7 @@ exports.sendPass = functions.region('asia-northeast1')
                       // 内定パスが渡されたユーザーにメール送信
                       const mailOptions = {
                         from: `LightHouse <noreply@firebase.com>`,
-                        to: user.email,
+                        to: userDoc.data().email,
                       }
                       mailOptions.subject = `${companyName}に内定パスをもらいました！`
                       mailOptions.text = `${companyName}に内定パスをもらいました！　ご確認ください。`
@@ -382,7 +382,7 @@ exports.sendPass = functions.region('asia-northeast1')
                 .catch((error) => {
                   console.error("Error adding document: ", error)
                 })
-              
+
               console.log('sendPass completed.')
             })
             .catch((error) => {
@@ -671,7 +671,7 @@ exports.scoutUser = functions.region('asia-northeast1')
                                   // スカウトされたユーザーにメール送信
                                   const mailOptions = {
                                     from: `LightHouse <noreply@firebase.com>`,
-                                    to: user.email,
+                                    to: userDoc.data().email,
                                   }
                                   mailOptions.subject = `${companyName}にスカウトされました！`
                                   mailOptions.text = `${companyName}にスカウトされました！　ご確認ください。`
@@ -758,7 +758,7 @@ exports.scoutUser = functions.region('asia-northeast1')
                               // スカウトされたユーザーにメール送信
                               const mailOptions = {
                                 from: `LightHouse <noreply@firebase.com>`,
-                                to: user.email,
+                                to: userDoc.data().email,
                               }
                               mailOptions.subject = `${companyName}にスカウトされました！`
                               mailOptions.text = `${companyName}にスカウトされました！　ご確認ください。`
