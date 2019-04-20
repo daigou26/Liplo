@@ -1009,14 +1009,14 @@ export default {
           this.isMessagesQueried = true
           this.updateIsMessagesLoading(true)
           this.isShowMessage = true
-          this.queryMessages({type: 'recruiter'})
+          this.queryMessages()
         }
       } else {
         if (index == 2 && !this.isMessagesQueried) {
           this.isMessagesQueried = true
           this.updateIsMessagesLoading(true)
           this.isShowMessage = true
-          this.queryMessages({type: 'recruiter'})
+          this.queryMessages()
         }
       }
     },
@@ -1025,7 +1025,7 @@ export default {
         if (!this.isMessagesLoading && this.companyId != null) {
           this.count += 1
           this.updateIsMessagesLoading(true)
-          this.queryMessages({infiniteState: $state})
+          this.queryMessages($state)
 
           if (this.count > 20) {
             $state.complete()

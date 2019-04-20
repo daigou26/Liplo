@@ -343,7 +343,7 @@ export const actions = {
   updateIsNewMessage({commit}, isNew) {
     commit('updateIsNewMessage', isNew)
   },
-  queryMessages({commit, state}, {infiniteState, type}) {
+  queryMessages({commit, state}, infiniteState) {
     const messages = state.messages
     const chatId = state.chatId
     if (chatId) {
@@ -390,20 +390,14 @@ export const actions = {
               .startAfter(lastDate)
               .onSnapshot(function(snapshot) {
                 // unreadCount更新
-                if (type) {
-                  var data
-                  if (type == 'recruiter') {
-                    data = {
-                      picUnreadCount: 0
-                    }
-                  }
-                  firestore.collection('chats')
-                    .doc(chatId)
-                    .update(data)
-                    .catch(err => {
-                      console.log('Error getting document', err)
-                    })
-                }
+                firestore.collection('chats')
+                  .doc(chatId)
+                  .update({
+                    picUnreadCount: 0
+                  })
+                  .catch(err => {
+                    console.log('Error getting document', err)
+                  })
 
                 if (!snapshot.empty) {
                   commit('updateIsNewMessage', true)

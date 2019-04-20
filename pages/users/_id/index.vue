@@ -429,6 +429,7 @@ export default {
         name: this.userLastName + ' ' + this.userFirstName,
         email: this.userEmail,
       }
+
       const pic = {
         uid: this.picUid,
         imageUrl: this.picImageUrl,

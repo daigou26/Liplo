@@ -131,6 +131,7 @@ export default {
       users: state => state.users.users,
       isLoading: state => state.users.isLoading,
       allUsersQueried: state => state.users.allUsersQueried,
+      acceptScout: state => state.settings.acceptScout,
     }),
   },
   mounted() {
@@ -142,7 +143,7 @@ export default {
     store.dispatch('users/setFilter', context.query)
     store.dispatch('users/resetState')
     store.dispatch('users/updateIsLoading', true)
-    store.dispatch('users/queryUsers', context.query)
+    store.dispatch('users/queryUsers', {queryParams: context.query, acceptScout: store.state.settings.acceptScout})
   },
   watch: {
     companyId(companyId) {
@@ -150,7 +151,7 @@ export default {
         this.resetState()
         this.isQueried = true
         this.updateIsLoading(true)
-        this.queryUsers(this.$route.query)
+        this.queryUsers({queryParams: this.$route.query, acceptScout: this.acceptScout})
       }
     }
   },
@@ -160,7 +161,7 @@ export default {
         if (!this.isLoading && this.companyId != null) {
           this.count += 1
           this.updateIsLoading(true)
-          this.queryUsers({queryParams: this.$route.query})
+          this.queryUsers({queryParams: this.$route.query, acceptScout: this.acceptScout})
 
           if (this.count > 20) {
             $state.complete()

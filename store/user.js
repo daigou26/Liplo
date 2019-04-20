@@ -126,6 +126,7 @@ export const actions = {
       })
   },
   scout({commit, state},{user, pic, companyId, message}) {
+    console.log("scout", user);
     var scouts = state.scouts
     const status = {
       scouted: true,

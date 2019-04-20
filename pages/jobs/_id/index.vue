@@ -607,13 +607,16 @@ export default {
       }
     },
     applyButtonClicked() {
+      const user = {
+        uid: this.uid,
+        name: this.lastName + ' ' + this.firstName,
+        imageUrl: this.profileImageUrl,
+        email: this.email,
+      }
+
       this.apply({
         params: this.$route.params,
-        uid: this.uid,
-        imageUrl: this.profileImageUrl,
-        firstName: this.firstName,
-        lastName: this.lastName,
-        email: this.email,
+        user: user,
         companyId: this.companyId
       })
     },

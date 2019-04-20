@@ -67,6 +67,7 @@
   <!-- user & 未ログイン -->
   <v-toolbar v-else-if="type != 'recruiter'" flat color="white" class="toolbar-fixed border-bottom" id="toolbar">
     <v-toolbar-side-icon　@click="iconClicked"></v-toolbar-side-icon>
+    <!-- menu (xsのみ) -->
     <div v-if="uid" class="text-xs-center hidden-sm-and-up">
       <v-dialog
         v-model="dropdownMenu"
@@ -82,7 +83,6 @@
                   class="ml-2"
                 ></v-toolbar-side-icon>
               </v-toolbar>
-
               <v-list>
                 <!-- ホーム -->
                 <v-list-tile
@@ -94,7 +94,6 @@
                     <v-list-tile-title class="textColor">ホーム</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
-
                 <!-- プロフィール -->
                 <v-list-tile
                   class="px-3"
@@ -105,7 +104,6 @@
                     <v-list-tile-title class="textColor">プロフィール</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
-
                 <!-- マイページ -->
                 <v-list-tile
                   class="px-3"
@@ -116,7 +114,6 @@
                     <v-list-tile-title class="textColor">マイページ</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
-
                 <!-- メッセージ -->
                 <v-list-tile
                   class="px-3"
@@ -127,7 +124,16 @@
                     <v-list-tile-title class="textColor">メッセージ</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
-
+                <!-- 設定 -->
+                <v-list-tile
+                  class="px-3"
+                  to="/user/settings/notifications"
+                  @click="dropdownMenu=false"
+                >
+                  <v-list-tile-content>
+                    <v-list-tile-title class="textColor">設定</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
                 <v-divider class="mx-4"></v-divider>
                 <!-- 登録 -->
                 <v-list-tile
@@ -266,8 +272,12 @@
                     <v-list-tile-title>プロフィール</v-list-tile-title>
                   </v-list-tile>
                   <v-divider></v-divider>
-                  <v-list-tile to="/user/passes">
+                  <v-list-tile to="/user/notifications">
                     <v-list-tile-title>マイページ</v-list-tile-title>
+                  </v-list-tile>
+                  <v-divider></v-divider>
+                  <v-list-tile to="/user/settings/notifications">
+                    <v-list-tile-title>設定</v-list-tile-title>
                   </v-list-tile>
                   <v-divider></v-divider>
                   <v-list-tile @click="signOut">
@@ -559,7 +569,7 @@
                     block
                     :disabled="!recruiterSignUpValid || loading"
                     class="orange darken-1"
-                    @click="recruiterSignUpSignUpClicked"
+                    @click="recruiterSignUpClicked"
                   >
                     <span
                       class="font-weight-bold body-1"
@@ -754,9 +764,6 @@ export default {
     userType() {
       return this.query.id != null ? 'recruiter' : 'user'
     },
-    recruiterSignUp() {
-      return this.query.id != null
-    },
     query() {
       return this.$route.query
     },
@@ -785,7 +792,7 @@ export default {
     })
   },
   mounted() {
-    this.recruiterSignUpDialog = this.recruiterSignUp
+    this.recruiterSignUpDialog = this.query.id != null ? true : false
     this.updateIsRefreshed(true)
     // ログイン時、dbにuser(recruiter)情報保存
     auth.onAuthStateChanged((user) => {
@@ -835,10 +842,10 @@ export default {
       this.$store.dispatch('resetAuthError')
       this.$store.dispatch('signUp', {email: this.email, password: this.password})
     },
-    recruiterSignUpSignUpClicked() {
+    recruiterSignUpClicked() {
       this.setLoading()
       this.resetAuthError()
-      this.recruiterSignedIn({
+      this.recruiterSignUp({
         recruiterType: this.query.type,
         companyId: this.query.id,
         email: this.email,
@@ -879,7 +886,7 @@ export default {
       this.password = ''
     },
     ...mapActions({
-      recruiterSignedIn: 'recruiterSignedIn',
+      recruiterSignUp: 'recruiterSignUp',
       setLoading: 'setLoading',
       resetAuthError: 'resetAuthError',
       resetMessagesListener: 'chats/resetMessagesListener',

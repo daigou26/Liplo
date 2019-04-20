@@ -75,7 +75,7 @@ export const mutations = {
 }
 
 export const actions = {
-  queryUsers({commit, state}, queryParams) {
+  queryUsers({commit, state}, {queryParams, acceptScout}) {
     const users = state.users
     const occupationParams = queryParams.occupation
 
@@ -105,7 +105,9 @@ export const actions = {
 
     if (users.length == 0) {
       return usersRef
+        .where('acceptScout', '==', true)
         .where('type', '==', 'user')
+        .where('isDeleted', '==', false)
         .orderBy('points', 'desc')
         .limit(10)
         .get()
@@ -138,7 +140,9 @@ export const actions = {
       const lastIndex = users.length - 1
       const points = users[lastIndex].points
       return usersRef
+        .where('acceptScout', '==', true)
         .where('type', '==', 'user')
+        .where('isDeleted', '==', false)
         .orderBy('points', 'desc')
         .startAfter(points)
         .limit(10)

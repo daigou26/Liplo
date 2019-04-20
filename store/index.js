@@ -1,4 +1,5 @@
 export const strict = false
+import firebase from 'firebase'
 import { firestore, functions, auth, GoogleProvider } from '@/plugins/firebase'
 
 
@@ -49,6 +50,7 @@ export const actions = {
         commit('resetLoading')
       })
       .catch(function(error) {
+        console.error("Error adding document: ", error)
         var errorCode = error.code
         switch (errorCode) {
           case 'auth/email-already-in-use':
@@ -65,7 +67,7 @@ export const actions = {
       })
   },
   // 招待された担当者のサインアップ
-  async recruiterSignedIn({commit}, {recruiterType, companyId, email, password}) {
+  async recruiterSignUp({commit}, {recruiterType, companyId, email, password}) {
     if (recruiterType == 'invited') {
       firestore.collection('companies')
         .doc(companyId)
@@ -80,6 +82,7 @@ export const actions = {
                 commit('resetLoading')
               })
               .catch(function(error) {
+                console.error("Error adding document: ", error)
                 var errorCode = error.code
                 switch (errorCode) {
                   case 'auth/email-already-in-use':
@@ -113,6 +116,7 @@ export const actions = {
                     commit('resetLoading')
                   })
                   .catch(function(error) {
+                    console.error("Error adding document: ", error)
                     var errorCode = error.code
                     switch (errorCode) {
                       case 'auth/email-already-in-use':
@@ -148,7 +152,8 @@ export const actions = {
         commit('resetLoading')
       })
       .catch(function(error) {
-        var errorCode = error.code;
+        console.error("Error adding document: ", error)
+        var errorCode = error.code
         switch (errorCode) {
           case 'auth/user-disabled':
             commit('setAuthError', 'このアカウントは無効になっています')
@@ -163,7 +168,7 @@ export const actions = {
             commit('setAuthError', 'メールアドレスの形式が正しくありません')
             break
           default:
-            commit('setAuthError', 'サインアップに失敗しました')
+            commit('setAuthError', 'ログインに失敗しました')
             break
         }
         commit('resetLoading')
@@ -188,6 +193,71 @@ export const actions = {
     dispatch('pass/resetState')
     dispatch('passes/resetState')
     dispatch('companyJobs/resetState')
+    dispatch('settings/resetState')
+  },
+  async deleteAccount({dispatch, commit}, password) {
+    var user = auth.currentUser
+    var credential = firebase.auth.EmailAuthProvider.credential(user.email, password)
+
+    // 再認証
+    user.reauthenticateAndRetrieveDataWithCredential(credential).then(function() {
+      firestore.collection('users')
+        .doc(user.uid)
+        .update({
+          isDeleted: true
+        })
+        .then(() => {
+          // delete
+          user.delete().then(function() {
+            dispatch('chats/resetMessagesListener')
+            dispatch('chats/resetHasNewMessage')
+            dispatch('notifications/resetNotificationsListener')
+            dispatch('notifications/resetHasNewNotification')
+            dispatch('career/resetState')
+            dispatch('chat/resetState')
+            dispatch('chats/resetState')
+            dispatch('feedback/resetState')
+            dispatch('feedbacks/resetState')
+            dispatch('resetState')
+            dispatch('messages/resetState')
+            dispatch('profile/resetState')
+            dispatch('review/resetState')
+            dispatch('reviews/resetState')
+            dispatch('pass/resetState')
+            dispatch('passes/resetState')
+            dispatch('companyJobs/resetState')
+            dispatch('settings/resetState')
+          }).catch(function(error) {
+            console.error("Error adding document: ", error)
+            commit('setAuthError', 'アカウントが削除できませんでした')
+            commit('resetLoading')
+          })
+        })
+    }).catch(function(error) {
+      console.error("Error adding document: ", error)
+      var errorCode = error.code
+      switch (errorCode) {
+        case 'auth/user-mismatch':
+          commit('setAuthError', '別のアカウントのメールアドレスとパスワードを入力しています')
+          break
+        case 'auth/user-disabled':
+          commit('setAuthError', 'このアカウントは無効になっています')
+          break
+        case 'auth/user-not-found':
+          commit('setAuthError', 'ユーザーが見つかりません')
+          break
+        case 'auth/wrong-password':
+          commit('setAuthError', 'パスワードが間違っています')
+          break
+        case 'auth/invalid-email':
+          commit('setAuthError', 'メールアドレスの形式が正しくありません')
+          break
+        default:
+          commit('setAuthError', 'ログインに失敗しました')
+          break
+      }
+      commit('resetLoading')
+    })
   },
   setUid({commit}, uid) {
     commit('setUid', uid)
@@ -231,6 +301,7 @@ export const actions = {
                     type: 'recruiter',
                     email: user.email,
                     isEmailVerified: user.emailVerified,
+                    isDeleted: false,
                   })
                   const profileRef = firestore.collection('users')
                     .doc(user.uid).collection('profile').doc(user.uid)
@@ -289,6 +360,9 @@ export const actions = {
                   points: 0,
                   email: user.email,
                   isEmailVerified: user.emailVerified,
+                  notificationsSetting: {scout: true, pass: true},
+                  acceptScout: true,
+                  isDeleted: false,
                 })
                 const profileRef = firestore.collection('users')
                   .doc(user.uid).collection('profile').doc(user.uid)
@@ -302,13 +376,16 @@ export const actions = {
                 batch.set(detailRef, {
                   firstName: firstName,
                   lastName: lastName,
-                  email: user.email
+                  email: user.email,
                 })
                 batch.commit()
                   .then(() => {
                     dispatch('profile/setFirstName', firstName)
                     dispatch('profile/setLastName', lastName)
+                    dispatch('profile/setType', 'user')
                     dispatch('profile/setEmail', user.email)
+                    dispatch('settings/setNotificationsSetting', {scout: true, pass: true})
+                    dispatch('settings/setAcceptScout', true)
                   })
                   .catch((error) => {
                     console.error("Error adding document: ", error)
@@ -321,6 +398,8 @@ export const actions = {
             dispatch('profile/setType', doc.data()['type'])
             dispatch('profile/setCompanyId', doc.data()['companyId'])
             dispatch('profile/setEmail', doc.data()['email'])
+            dispatch('settings/setNotificationsSetting', doc.data()['notificationsSetting'])
+            dispatch('settings/setAcceptScout', doc.data()['acceptScout'])
 
             if (doc.data()['imageUrl'] != null) {
               dispatch('profile/setImageUrl', doc.data()['imageUrl'])

@@ -82,7 +82,7 @@ exports.updateCareer = functions.region('asia-northeast1')
       .get()
       .then(doc => {
         if (doc.exists) {
-          const companyName = doc.data().name
+          const companyName = doc.data().companyName
           const companyImageUrl = doc.data().imageUrl
 
           if (newStatus.intern) {
@@ -207,7 +207,7 @@ exports.sendFeedback = functions.region('asia-northeast1')
       .get()
       .then(doc => {
         if (doc.exists) {
-          const companyName = doc.data().name
+          const companyName = doc.data().companyName
           const companyImageUrl = doc.data().imageUrl
 
           var feedbackData = {
@@ -306,7 +306,7 @@ exports.sendPass = functions.region('asia-northeast1')
       .get()
       .then(doc => {
         if (doc.exists) {
-          const companyName = doc.data().name
+          const companyName = doc.data().companyName
           const companyImageUrl = doc.data().imageUrl
           const passId = admin.firestore().collection('passes').doc().id
 
@@ -357,19 +357,32 @@ exports.sendPass = functions.region('asia-northeast1')
           })
           batch.commit()
             .then(() => {
-              // 内定パスが渡されたユーザーにメール送信
-              const mailOptions = {
-                from: `LightHouse <noreply@firebase.com>`,
-                to: user.email,
-              }
-              mailOptions.subject = `${companyName}に内定パスをもらいました！`
-              mailOptions.text = `${companyName}に内定パスをもらいました！　ご確認ください。`
-              mailTransport.sendMail(mailOptions, (err, info) => {
-                if (err) {
-                  console.log(err)
-                }
-                console.log('New pass email sent to:', user.email)
-              })
+              admin.firestore().collection('users')
+                .doc(user.uid)
+                .get()
+                .then(userDoc => {
+                  if (userDoc.exists) {
+                    if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.pass) {
+                      // 内定パスが渡されたユーザーにメール送信
+                      const mailOptions = {
+                        from: `LightHouse <noreply@firebase.com>`,
+                        to: user.email,
+                      }
+                      mailOptions.subject = `${companyName}に内定パスをもらいました！`
+                      mailOptions.text = `${companyName}に内定パスをもらいました！　ご確認ください。`
+                      mailTransport.sendMail(mailOptions, (err, info) => {
+                        if (err) {
+                          console.log(err)
+                        }
+                        console.log('New pass email sent to:', user.email)
+                      })
+                    }
+                  }
+                })
+                .catch((error) => {
+                  console.error("Error adding document: ", error)
+                })
+              
               console.log('sendPass completed.')
             })
             .catch((error) => {
@@ -538,7 +551,7 @@ exports.scoutUser = functions.region('asia-northeast1')
       .get()
       .then(doc => {
         if (doc.exists) {
-          const companyName = doc.data().name
+          const companyName = doc.data().companyName
           const companyImageUrl = doc.data().imageUrl
           var currentCandidates = doc.data().currentCandidates
           var allCandidates = doc.data().allCandidates
@@ -649,19 +662,32 @@ exports.scoutUser = functions.region('asia-northeast1')
                       .then(() => {
                         isSendedMessage = true
                         if (isUpdatedCandidates && isSendedMessage) {
-                          // スカウトされたユーザーにメール送信
-                          const mailOptions = {
-                            from: `LightHouse <noreply@firebase.com>`,
-                            to: user.email,
-                          }
-                          mailOptions.subject = `${companyName}にスカウトされました！`
-                          mailOptions.text = `${companyName}にスカウトされました！　ご確認ください。`
-                          mailTransport.sendMail(mailOptions, (err, info) => {
-                            if (err) {
-                              console.log(err)
-                            }
-                            console.log('New scout email sent to:', user.email)
-                          })
+                          admin.firestore().collection('users')
+                            .doc(user.uid)
+                            .get()
+                            .then(userDoc => {
+                              if (userDoc.exists) {
+                                if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.scout) {
+                                  // スカウトされたユーザーにメール送信
+                                  const mailOptions = {
+                                    from: `LightHouse <noreply@firebase.com>`,
+                                    to: user.email,
+                                  }
+                                  mailOptions.subject = `${companyName}にスカウトされました！`
+                                  mailOptions.text = `${companyName}にスカウトされました！　ご確認ください。`
+                                  mailTransport.sendMail(mailOptions, (err, info) => {
+                                    if (err) {
+                                      console.log(err)
+                                    }
+                                    console.log('New scout email sent to:', user.email)
+                                  })
+                                }
+                              }
+                            })
+                            .catch((error) => {
+                              console.error("Error adding document: ", error)
+                            })
+
                           console.log('scoutUser completed.')
                         }
                       })
@@ -723,19 +749,32 @@ exports.scoutUser = functions.region('asia-northeast1')
                   .then(() => {
                     isSendedMessage = true
                     if (isUpdatedCandidates && isSendedMessage) {
-                      // スカウトされたユーザーにメール送信
-                      const mailOptions = {
-                        from: `LightHouse <noreply@firebase.com>`,
-                        to: user.email,
-                      }
-                      mailOptions.subject = `${companyName}にスカウトされました！`
-                      mailOptions.text = `${companyName}にスカウトされました！　ご確認ください。`
-                      mailTransport.sendMail(mailOptions, (err, info) => {
-                        if (err) {
-                          console.log(err)
-                        }
-                        console.log('New scout email sent to:', user.email)
-                      })
+                      admin.firestore().collection('users')
+                        .doc(user.uid)
+                        .get()
+                        .then(userDoc => {
+                          if (userDoc.exists) {
+                            if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.scout) {
+                              // スカウトされたユーザーにメール送信
+                              const mailOptions = {
+                                from: `LightHouse <noreply@firebase.com>`,
+                                to: user.email,
+                              }
+                              mailOptions.subject = `${companyName}にスカウトされました！`
+                              mailOptions.text = `${companyName}にスカウトされました！　ご確認ください。`
+                              mailTransport.sendMail(mailOptions, (err, info) => {
+                                if (err) {
+                                  console.log(err)
+                                }
+                                console.log('New scout email sent to:', user.email)
+                              })
+                            }
+                          }
+                        })
+                        .catch((error) => {
+                          console.error("Error adding document: ", error)
+                        })
+
                       console.log('scoutUser completed.')
                     }
                   })
@@ -775,7 +814,7 @@ exports.applyForJob = functions.region('asia-northeast1')
       .get()
       .then(doc => {
         if (doc.exists) {
-          const companyName = doc.data().name
+          const companyName = doc.data().companyName
           const companyImageUrl = doc.data().imageUrl
           const members = doc.data().members
           var currentCandidates = doc.data().currentCandidates
