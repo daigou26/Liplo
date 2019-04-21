@@ -260,17 +260,25 @@ export const actions = {
       commit('resetLoading')
     })
   },
-  async deleteAccount({dispatch, commit}, password) {
+  async deleteAccount({dispatch, commit}, {type, password}) {
     var user = auth.currentUser
     var credential = firebase.auth.EmailAuthProvider.credential(user.email, password)
 
     // 再認証
     user.reauthenticateAndRetrieveDataWithCredential(credential).then(function() {
-      firestore.collection('users')
-        .doc(user.uid)
-        .update({
+      const batch = firestore.batch()
+      const userRef = firestore.collection('users').doc(user.uid)
+      batch.update(userRef, {
+        isDeleted: true
+      })
+      if (type == 'user') {
+        const userDetailRef = firestore.collection('users').doc(user.uid)
+          .collection('detail').doc(user.uid)
+        batch.update(userDetailRef, {
           isDeleted: true
         })
+      }
+      batch.commit()
         .then(() => {
           // delete
           user.delete().then(function() {
@@ -298,6 +306,11 @@ export const actions = {
             commit('setAuthError', 'アカウントが削除できませんでした')
             commit('resetLoading')
           })
+        })
+        .catch((error) => {
+          console.error("Error adding document: ", error)
+          commit('setAuthError', 'アカウントが削除できませんでした')
+          commit('resetLoading')
         })
     }).catch(function(error) {
       console.error("Error adding document: ", error)

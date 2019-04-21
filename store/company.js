@@ -32,6 +32,8 @@ export const state = () => ({
   reviewChartData: null,
   feedbackChartData: null,
   feedbackChartOptions: null,
+  invoiceEmail: null,
+  isLoading: false,
 })
 
 export const mutations = {
@@ -122,13 +124,19 @@ export const mutations = {
   setFeedbackChartOptions(state, options) {
     state.feedbackChartOptions = options
   },
+  setInvoiceEmail(state, email) {
+    state.invoiceEmail = email
+  },
+  updateIsLoading(state, isLoading) {
+    state.isLoading = isLoading
+  }
 }
 
 export const actions = {
   // recruiter dashboard でのクエリ
   queryCompany({commit}, {nuxt, companyId}) {
     if (companyId != null && companyId != '') {
-      return firestore.collection('companies').doc(companyId)
+      firestore.collection('companies').doc(companyId)
         .get()
         .then(function(doc) {
           if (doc.exists) {
@@ -221,7 +229,7 @@ export const actions = {
     const companyId = params.id
 
     if (companyId != null && companyId != '') {
-      return firestore.collection('companies').doc(companyId)
+      firestore.collection('companies').doc(companyId)
         .collection('detail')
         .doc(companyId)
         .get()
@@ -324,6 +332,7 @@ export const actions = {
     const companyData = {
       companyName: companyName,
       email: companyEmail,
+      invoiceEmail: companyEmail,
       members: [member],
       isDeleted: false,
     }
@@ -344,6 +353,7 @@ export const actions = {
 
     var sendAddCompanyMail = functions.httpsCallable("sendAddCompanyMail")
     sendAddCompanyMail({
+      companyId: companyId,
       companyName: companyName,
       userName: userName,
       email: email,
@@ -352,4 +362,35 @@ export const actions = {
       console.log('sendAddCompanyMail completed.');
     })
   },
+  queryCompanyInvoiceEmail({commit}, companyId) {
+    firestore.collection('companies')
+      .doc(companyId)
+      .get()
+      .then(function(doc) {
+        if (doc.exists) {
+          commit('setInvoiceEmail', doc.data()['invoiceEmail'])
+        }
+        commit('updateIsLoading', false)
+      })
+      .catch(function(error) {
+        console.log("Error getting document:", error)
+        commit('updateIsLoading', false)
+      })
+  },
+  updateCompanyInvoiceEmail({commit}, {companyId, email}) {
+    firestore.collection('companies')
+      .doc(companyId)
+      .update({
+        invoiceEmail: email
+      })
+      .then(() => {
+        commit('setInvoiceEmail', email)
+      })
+      .catch((error) => {
+        console.log("Error getting document:", error)
+      })
+  },
+  updateIsLoading({commit}, isLoading) {
+    commit('updateIsLoading', isLoading)
+  }
 }

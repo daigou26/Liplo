@@ -1385,7 +1385,11 @@ exports.sendAddCompanyMail = functions
       to: 'go26dev@gmail.com',
     }
     mailOptions.subject = `${data.companyName}の${data.userName}様からのお問い合わせ`
-    mailOptions.text = `${data.companyName}の${data.userName}様からお問い合わせを頂きました。\n\n メールアドレス： ${data.email} \n\n お問い合わせ内容：${data.inquiry}`
+    mailOptions.text =
+      `${data.companyName}の${data.userName}様からお問い合わせを頂きました。\n\n
+      id: ${data.companyId} \n\n 
+      メールアドレス： ${data.email} \n\n
+      お問い合わせ内容：${data.inquiry}`
     mailTransport.sendMail(mailOptions, (err, info) => {
       if (err) {
         console.log(err)

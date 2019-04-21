@@ -77,7 +77,7 @@
               メールアドレスを変更する
             </div>
             <div class="pt-3">
-              現在のメールアドレス： {{ this.currentEmail }}
+              現在のメールアドレス： {{ currentEmail }}
             </div>
             <div class="text-xs-right pt-4">
               <v-btn @click="changeEmailDialog = true">
@@ -336,7 +336,7 @@ export default {
     deleteAccountButtonClicked() {
       this.setLoading()
       this.resetAuthError()
-      this.deleteAccount(this.password)
+      this.deleteAccount({type: this.type, password: this.password})
       this.deleteAccountDialog = false
     },
     ...mapActions({

@@ -404,7 +404,7 @@ export default {
   mounted() {
     if (this.companyId != null && !this.isQueried) {
       this.resetState()
-      this.queryUser({uid: this.params.id, companyId: this.companyId})
+      this.queryUser({nuxt: this.$nuxt, uid: this.params.id, companyId: this.companyId})
     }
   },
   watch: {
@@ -412,7 +412,7 @@ export default {
       if (companyId != null) {
         this.isQueried = true
         this.resetState()
-        this.queryUser({uid: this.params.id, companyId: companyId})
+        this.queryUser({nuxt: this.$nuxt, uid: this.params.id, companyId: companyId})
       }
     }
   },
