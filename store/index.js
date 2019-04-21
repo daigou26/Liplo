@@ -4,7 +4,7 @@ import { firestore, functions, auth, GoogleProvider } from '@/plugins/firebase'
 
 
 export const state = () => ({
-  uid: null,
+  uid: '',
   isVerified: true,
   sentVerifyEmail: false,
   authError: null,
@@ -195,7 +195,7 @@ export const actions = {
     dispatch('companyJobs/resetState')
     dispatch('settings/resetState')
   },
-  async changeUserEmail({dispatch, commit}, {newEmail, password}) {
+  async changeEmail({dispatch, commit}, {type, newEmail, password}) {
     var user = auth.currentUser
     var credential = firebase.auth.EmailAuthProvider.credential(user.email, password)
 
@@ -211,11 +211,14 @@ export const actions = {
       batch.update(profileRef, {
         email: newEmail,
       })
-      const userDetailRef = firestore.collection('users').doc(user.uid)
-        .collection('detail').doc(user.uid)
-      batch.update(userDetailRef, {
-        email: newEmail,
-      })
+      if (type == 'user') {
+        const userDetailRef = firestore.collection('users').doc(user.uid)
+          .collection('detail').doc(user.uid)
+        batch.update(userDetailRef, {
+          email: newEmail,
+        })
+      }
+
       batch.commit()
         .then(() => {
           // メアド変更
@@ -353,7 +356,6 @@ export const actions = {
               if (type == 'recruiter') {
                 // recruiter
                 if (companyId != null) {
-                  // 招待された担当者
                   const batch = firestore.batch()
 
                   const userRef = firestore.collection('users').doc(user.uid)
@@ -475,11 +477,13 @@ export const actions = {
               batch.update(profileRef, {
                 email: user.email,
               })
-              const userDetailRef = firestore.collection('users').doc(user.uid)
-                .collection('detail').doc(user.uid)
-              batch.update(userDetailRef, {
-                email: user.email,
-              })
+              if (doc.data()['type'] == 'user') {
+                const userDetailRef = firestore.collection('users').doc(user.uid)
+                  .collection('detail').doc(user.uid)
+                batch.update(userDetailRef, {
+                  email: user.email,
+                })
+              }
               batch.commit()
                 .then(() => {
                   dispatch('profile/setEmail', user.email)
@@ -499,7 +503,7 @@ export const actions = {
               // メッセージのリスナー
               dispatch('chats/setCompanyMessagesListener', doc.data()['companyId'])
 
-              if (route.path.includes('/user') && !route.path.includes('users')) {
+              if (route.path.includes('/user') && !route.path.includes('users') && !route.path.includes('settings')) {
                 router.replace('/recruiter/dashboard')
               } else if (route.path.includes('/messages') && !route.path.includes('recruiter/messages')) {
                 router.replace('/recruiter/dashboard')
@@ -573,7 +577,7 @@ export const actions = {
     })
   },
   resetState({commit}) {
-    commit('setUid', null)
+    commit('setUid', '')
     commit('updateIsVerified', true)
     commit('updateSentVerifyEmail', false)
     commit('setAuthError', null)

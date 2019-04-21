@@ -697,6 +697,10 @@
                     <v-list-tile-title>ダッシュボード</v-list-tile-title>
                   </v-list-tile>
                   <v-divider></v-divider>
+                  <v-list-tile to="/user/settings/notifications">
+                    <v-list-tile-title>設定</v-list-tile-title>
+                  </v-list-tile>
+                  <v-divider></v-divider>
                   <v-list-tile @click="signOut">
                     <v-list-tile-title>ログアウト</v-list-tile-title>
                   </v-list-tile>

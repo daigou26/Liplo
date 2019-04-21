@@ -267,7 +267,8 @@ export const actions = {
           features: features,
           environment: environment,
           createdAt: createdAt,
-          initialStatus: status
+          initialStatus: status,
+          status: 'creating'
         }
         const batch = firestore.batch()
         const jobId = firestore.collection('jobs').doc().id

@@ -168,100 +168,116 @@ export const actions = {
             commit('setOccupation', doc.data()['occupation'])
             // commit('setFeatures', doc.data()['features'])
             commit('setCreatedAt', doc.data()['createdAt'])
-
-            // レビュー情報取得
-            firestore.collection('companies')
-              .doc(companyId)
-              .collection('detail')
-              .doc(companyId)
-              .get()
-              .then(function(companyDoc) {
-                if (companyDoc.exists) {
-                  commit('setReviews', companyDoc.data()['reviews'])
-                  // chart Data
-                  const reviews = companyDoc.data()['reviews']
-                  if (reviews) {
-                    const reviewChartData = {
-                      labels: [
-                        '成長できるか',
-                        '仕事内容',
-                        '裁量度',
-                        '勤務中の自由度',
-                        '出勤時間の柔軟性',
-                        'メンター',
-                        '雰囲気',
-                      ],
-                      datasets: [
-                        {
-                          borderColor: '#f87979',
-                          backgroundColor: 'rgba(248, 121, 121, 0.1)',
-                          data: [
-                            reviews.rating.growth,
-                            reviews.rating.job,
-                            reviews.rating.discretion,
-                            reviews.rating.flexibility,
-                            reviews.rating.flexibleSchedule,
-                            reviews.rating.mentor,
-                            reviews.rating.atmosphere
-                          ]
-                        }
-                      ]
+            if (doc.data()['status'] == 'published') {
+              // レビュー情報取得
+              firestore.collection('companies')
+                .doc(companyId)
+                .collection('detail')
+                .doc(companyId)
+                .get()
+                .then(function(companyDoc) {
+                  if (companyDoc.exists) {
+                    commit('setReviews', companyDoc.data()['reviews'])
+                    // chart Data
+                    const reviews = companyDoc.data()['reviews']
+                    if (reviews) {
+                      const reviewChartData = {
+                        labels: [
+                          '成長できるか',
+                          '仕事内容',
+                          '裁量度',
+                          '勤務中の自由度',
+                          '出勤時間の柔軟性',
+                          'メンター',
+                          '雰囲気',
+                        ],
+                        datasets: [
+                          {
+                            borderColor: '#f87979',
+                            backgroundColor: 'rgba(248, 121, 121, 0.1)',
+                            data: [
+                              reviews.rating.growth,
+                              reviews.rating.job,
+                              reviews.rating.discretion,
+                              reviews.rating.flexibility,
+                              reviews.rating.flexibleSchedule,
+                              reviews.rating.mentor,
+                              reviews.rating.atmosphere
+                            ]
+                          }
+                        ]
+                      }
+                      commit('setReviewChartData', reviewChartData)
                     }
-                    commit('setReviewChartData', reviewChartData)
-                  }
 
+                    isQueriedCompanyDetail = true
+                    if (uid) {
+                      if (isQueriedCandidates && isQueriedCompanyDetail) {
+                        commit('updateIsLoading', false)
+                      }
+                    } else {
+                      commit('updateIsLoading', false)
+                    }
+                  }
+                })
+                .catch(function(error) {
+                  console.log("Error getting document:", error)
                   isQueriedCompanyDetail = true
                   if (isQueriedCandidates && isQueriedCompanyDetail) {
                     commit('updateIsLoading', false)
                   }
-                }
-              })
-              .catch(function(error) {
-                console.log("Error getting document:", error)
-                isQueriedCompanyDetail = true
-                if (isQueriedCandidates && isQueriedCompanyDetail) {
-                  commit('updateIsLoading', false)
-                }
-              })
-            // すでに候補者になっているか
-            firestore.collection('companies')
-              .doc(companyId)
-              .collection('candidates')
-              .where('user.uid', '==', uid)
-              .where('status.rejected', '==', false)
-              .get()
-              .then(function(snapshot) {
-                if (snapshot.empty) {
-                  commit('updateIsCandidate', false)
-                } else {
-                  commit('updateIsCandidate', true)
-                }
+                })
+              // すでに候補者になっているか
+              if (uid) {
+                firestore.collection('companies')
+                  .doc(companyId)
+                  .collection('candidates')
+                  .where('user.uid', '==', uid)
+                  .where('status.rejected', '==', false)
+                  .get()
+                  .then(function(snapshot) {
+                    if (snapshot.empty) {
+                      commit('updateIsCandidate', false)
+                    } else {
+                      commit('updateIsCandidate', true)
+                    }
 
-                isQueriedCandidates = true
-                if (isQueriedCandidates && isQueriedCompanyDetail) {
-                  commit('updateIsLoading', false)
-                }
-              })
-              .catch(function(error) {
-                console.log("Error getting document:", error)
-                isQueriedCandidates = true
-                if (isQueriedCandidates && isQueriedCompanyDetail) {
-                  commit('updateIsLoading', false)
-                }
-              })
+                    isQueriedCandidates = true
+                    if (isQueriedCandidates && isQueriedCompanyDetail) {
+                      commit('updateIsLoading', false)
+                    }
+                  })
+                  .catch(function(error) {
+                    console.log("Error getting document:", error)
+                    isQueriedCandidates = true
+                    if (isQueriedCandidates && isQueriedCompanyDetail) {
+                      commit('updateIsLoading', false)
+                    }
+                  })
+              }
+            } else {
+              // 非公開の場合
+              // 404
+              console.log('404')
+              commit('updateIsLoading', false)
+              nuxt.error({ statusCode: 404, message: 'not found' })
+            }
           } else {
             // 404
             console.log('404')
+            commit('updateIsLoading', false)
             nuxt.error({ statusCode: 404, message: 'not found' })
           }
         })
         .catch(function(error) {
           console.log("Error getting document:", error)
+          commit('updateIsLoading', false)
           nuxt.error({ statusCode: 404, message: 'not found' })
 
         })
       } else {
         console.log('404')
+        commit('updateIsLoading', false)
         nuxt.error({ statusCode: 404, message: 'not found' })
       }
   },

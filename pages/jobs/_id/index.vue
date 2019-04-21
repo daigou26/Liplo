@@ -357,6 +357,7 @@
               <v-list-tile>
                 <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
                   <v-img
+                    v-if="companyImageUrl"
                     :src="companyImageUrl"
                   ></v-img>
                 </v-list-tile-avatar>
@@ -522,6 +523,7 @@ export default {
       }
     },
     ...mapState({
+      isRefreshed: state => state.isRefreshed,
       type: state => state.profile.type,
       profileImageUrl: state => state.profile.imageUrl,
       firstName: state => state.profile.firstName,
@@ -567,18 +569,15 @@ export default {
     this.showChart = true
     this.showInfiniteLoading = true
   },
-  watch: {
-    uid(uid) {
-      if (uid != null) {
-        this.isQueried = true
-        this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: uid})
-      }
-    }
-  },
   fetch(context) {
     const store = context.store
     // query job
     store.dispatch('job/queryJobDetail', {nuxt: context, params: context.params, uid: store.state.uid})
+  },
+  watch: {
+    uid(uid) {
+      this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: this.uid})
+    }
   },
   methods: {
     infiniteHandler($state) {

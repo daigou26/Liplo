@@ -56,21 +56,22 @@
             <!-- menu (sm, xs) -->
             <settings-menu class="hidden-md-and-up"></settings-menu>
             <!-- スカウト設定 -->
-            <div class="title textColor pt-4">
-              スカウトについて
-            </div>
-            <div class="pt-5">
+            <div v-if="type == 'user'" class="pt-5">
+              <div class="title textColor pb-4">
+                スカウトについて
+              </div>
               <v-checkbox
                 v-model="tempAcceptScout"
                 label="企業からのスカウトを受け取る"
                 color="info"
               ></v-checkbox>
+              <div class="text-xs-right pb-5">
+                <v-btn @click="updateButtonClicked">
+                  更新
+                </v-btn>
+              </div>
             </div>
-            <div class="text-xs-right pb-5">
-              <v-btn @click="updateButtonClicked">
-                更新
-              </v-btn>
-            </div>
+
             <!-- メアド変更 -->
             <div class="title textColor pt-5">
               メールアドレスを変更する
@@ -79,7 +80,7 @@
               現在のメールアドレス： {{ this.currentEmail }}
             </div>
             <div class="text-xs-right pt-4">
-              <v-btn @click="changeUserEmailDialog = true">
+              <v-btn @click="changeEmailDialog = true">
                 メールアドレスを変更する
               </v-btn>
             </div>
@@ -94,9 +95,9 @@
             </div>
           </v-flex>
         </v-flex>
-        <!-- changeUserEmailDialog -->
+        <!-- changeEmailDialog -->
         <v-dialog
-          v-model="changeUserEmailDialog"
+          v-model="changeEmailDialog"
           :fullscreen="$vuetify.breakpoint.xsOnly"
           width="500"
         >
@@ -108,7 +109,7 @@
               <div class="pb-4">
                 新しいメールアドレスとパスワードを入力してください。
               </div>
-              <v-form v-model="changeUserEmailValid">
+              <v-form v-model="changeEmailValid">
                 <v-container>
                   <v-layout
                     column
@@ -148,9 +149,9 @@
                     <!-- 変更ボタン -->
                     <v-btn
                       block
-                      :disabled="!changeUserEmailValid || loading"
+                      :disabled="!changeEmailValid || loading"
                       class="orange darken-1"
-                      @click="changeUserEmailButtonClicked"
+                      @click="changeEmailButtonClicked"
                     >
                       <span
                         class="font-weight-bold body-1"
@@ -176,8 +177,18 @@
               <span class="textColor font-weight-bold subheading">本当に削除しますか？</span>
             </v-toolbar>
             <div class="pa-4">
-              <div class="pb-4">
+              <div v-if="type == 'user'" class="pb-4">
                 一度アカウントを削除すると復元することができなくなります。 削除する場合は、メールアドレスとパスワードを入力してください。
+              </div>
+              <div v-else class="pb-4">
+                一度アカウントを削除すると復元することができなくなります。 削除する場合は、メールアドレスとパスワードを入力してください。
+                <div class="pt-3">
+                  <div>注意：</div>
+                  <div class="red--text">
+                    企業メンバーが1人の状態で、アカウントが削除されると、企業アカウントも削除されます。
+                    企業アカウントを残す場合は、メンバーを2人以上にしてから削除してください。
+                  </div>
+                </div>
               </div>
               <v-form v-model="deleteAccountValid">
                 <v-container>
@@ -245,8 +256,8 @@ export default {
     tempAcceptScout: true,
     snackbar: false,
     snackbarText: '',
-    changeUserEmailDialog: false,
-    changeUserEmailValid: true,
+    changeEmailDialog: false,
+    changeEmailValid: true,
     deleteAccountDialog: false,
     deleteAccountValid: true,
     newEmail: '',
@@ -273,6 +284,7 @@ export default {
     },
     ...mapState({
       uid: state => state.uid,
+      type: state => state.profile.type,
       currentEmail: state => state.profile.email,
       acceptScout: state => state.settings.acceptScout,
       isLoading: state => state.settings.isLoading,
@@ -303,7 +315,7 @@ export default {
     },
     loading(loading) {
       if (loading == false) {
-        this.changeUserEmailDialog = false
+        this.changeEmailDialog = false
       }
     }
   },
@@ -316,10 +328,10 @@ export default {
       this.snackbar = true
       this.snackbarText = 'アカウント設定を更新しました！'
     },
-    changeUserEmailButtonClicked() {
+    changeEmailButtonClicked() {
       this.setLoading()
       this.resetAuthError()
-      this.changeUserEmail({newEmail: this.newEmail, password: this.password})
+      this.changeEmail({type: this.type, newEmail: this.newEmail, password: this.password})
     },
     deleteAccountButtonClicked() {
       this.setLoading()
@@ -332,7 +344,7 @@ export default {
       updateAcceptScout: 'settings/updateAcceptScout',
       updateIsLoading: 'settings/updateIsLoading',
       resetState: 'settings/resetState',
-      changeUserEmail: 'changeUserEmail',
+      changeEmail: 'changeEmail',
       deleteAccount: 'deleteAccount',
       setLoading: 'setLoading',
       resetAuthError: 'resetAuthError',

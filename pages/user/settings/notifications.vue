@@ -59,7 +59,7 @@
             <div class="title textColor pt-4">
               メール受信設定
             </div>
-            <div class="pt-5">
+            <div v-if="type == 'user'" class="pt-5">
               <v-checkbox
                 v-model="tempScout"
                 label="企業からのスカウト"
@@ -68,6 +68,18 @@
               <v-checkbox
                 v-model="tempPass"
                 label="企業からの内定パス"
+                color="info"
+              ></v-checkbox>
+            </div>
+            <div v-else class="pt-5">
+              <v-checkbox
+                v-model="tempApplication"
+                label="学生からの応募"
+                color="info"
+              ></v-checkbox>
+              <v-checkbox
+                v-model="tempAcceptPass"
+                label="学生が内定を承諾した時"
                 color="info"
               ></v-checkbox>
             </div>
@@ -95,6 +107,8 @@ export default {
     isQueried: false,
     tempScout: true,
     tempPass: true,
+    tempApplication: true,
+    tempAcceptPass: true,
     snackbar: false,
     snackbarText: '',
   }),
@@ -110,6 +124,7 @@ export default {
     },
     ...mapState({
       uid: state => state.uid,
+      type: state => state.profile.type,
       notificationsSetting: state => state.settings.notificationsSetting,
       isLoading: state => state.settings.isLoading,
     }),
@@ -134,14 +149,28 @@ export default {
       if (setting != null) {
         this.tempScout = setting.scout
         this.tempPass = setting.pass
+        this.tempApplication = setting.application
+        this.tempAcceptPass = setting.acceptPass
       }
     }
   },
   methods: {
     updateButtonClicked() {
+      var settingData
+      if (this.type == 'user') {
+        settingData = {
+          scout: this.tempScout,
+          pass: this.tempPass
+        }
+      } else if (this.type == 'recruiter') {
+        settingData = {
+          application: this.tempApplication,
+          acceptPass: this.tempAcceptPass
+        }
+      }
       this.updateNotificationsSetting({
         uid: this.uid,
-        setting: {scout: this.tempScout, pass: this.tempPass}
+        setting: settingData
       })
       this.snackbar = true
       this.snackbarText = 'メール受信設定を更新しました！'

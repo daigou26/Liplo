@@ -98,7 +98,7 @@
           <v-text-field
             v-model="workweek.hours"
             :rules="workweekHoursRules"
-            label="週の最低勤務時間"
+            label="週の最低勤務時間（必須）"
             suffix="時間"
             type="number"
             required
@@ -337,24 +337,26 @@ export default {
         overseas: false,
         friend: false,
       }
-      if (this.features.includes('未経験OK')) {
-        features.experience = true
-      }
-      if (this.features.includes('メディア掲載実績あり')) {
-        features.media = true
-      }
-      if (this.features.includes('創業者が20代')) {
-        features.founder20s = true
-      }
-      if (this.features.includes('資金調達済み')) {
-        features.funding = true
-      }
-      if (this.features.includes('海外進出中')) {
-        features.overseas = true
-      }
-      if (this.features.includes('友人と応募OK')) {
-        features.friend = true
-      }
+      if (this.features) {
+        if (this.features.includes('未経験OK')) {
+          features.experience = true
+        }
+        if (this.features.includes('メディア掲載実績あり')) {
+          features.media = true
+        }
+        if (this.features.includes('創業者が20代')) {
+          features.founder20s = true
+        }
+        if (this.features.includes('資金調達済み')) {
+          features.funding = true
+        }
+        if (this.features.includes('海外進出中')) {
+          features.overseas = true
+        }
+        if (this.features.includes('友人と応募OK')) {
+          features.friend = true
+        }
+      }    
 
       const workweek = {
         days: Number(this.workweek.days),

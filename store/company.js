@@ -259,36 +259,43 @@ export const actions = {
             // commit('setOccupation', doc.data()['occupation'])
             // commit('setFeatures', doc.data()['features'])
 
-            // chart Data
-            if (doc.data()['reviews']) {
-              const reviews = doc.data()['reviews']
-              const reviewChartData = {
-                labels: [
-                  '成長できるか',
-                  '仕事内容',
-                  '裁量度',
-                  '勤務中の自由度',
-                  '出勤時間の柔軟性',
-                  'メンター',
-                  '雰囲気',
-                ],
-                datasets: [
-                  {
-                    borderColor: '#f87979',
-                    backgroundColor: 'rgba(248, 121, 121, 0.1)',
-                    data: [
-                      reviews.rating.growth,
-                      reviews.rating.job,
-                      reviews.rating.discretion,
-                      reviews.rating.flexibility,
-                      reviews.rating.flexibleSchedule,
-                      reviews.rating.mentor,
-                      reviews.rating.atmosphere
-                    ]
-                  }
-                ]
+            if (!doc.data()['isDeleted']) {
+              // chart Data
+              if (doc.data()['reviews']) {
+                const reviews = doc.data()['reviews']
+                const reviewChartData = {
+                  labels: [
+                    '成長できるか',
+                    '仕事内容',
+                    '裁量度',
+                    '勤務中の自由度',
+                    '出勤時間の柔軟性',
+                    'メンター',
+                    '雰囲気',
+                  ],
+                  datasets: [
+                    {
+                      borderColor: '#f87979',
+                      backgroundColor: 'rgba(248, 121, 121, 0.1)',
+                      data: [
+                        reviews.rating.growth,
+                        reviews.rating.job,
+                        reviews.rating.discretion,
+                        reviews.rating.flexibility,
+                        reviews.rating.flexibleSchedule,
+                        reviews.rating.mentor,
+                        reviews.rating.atmosphere
+                      ]
+                    }
+                  ]
+                }
+                commit('setReviewChartData', reviewChartData)
               }
-              commit('setReviewChartData', reviewChartData)
+            } else {
+              // 削除済みの場合
+              // 404
+              console.log('404')
+              nuxt.error({ statusCode: 404, message: 'not found' })
             }
           } else {
             // 404
@@ -318,10 +325,12 @@ export const actions = {
       companyName: companyName,
       email: companyEmail,
       members: [member],
+      isDeleted: false,
     }
     const batch = firestore.batch()
     const companyRef = firestore.collection('companies').doc(companyId)
     batch.set(companyRef, companyData)
+
     const companyDetailRef = firestore.collection('companies')
       .doc(companyId)
       .collection('detail')
