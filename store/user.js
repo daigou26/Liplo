@@ -76,7 +76,7 @@ export const mutations = {
 }
 
 export const actions = {
-  queryUser({commit, state}, {uid, companyId}) {
+  queryUser({commit, state}, {nuxt, uid, companyId}) {
     firestore.collection('users')
       .doc(uid)
       .collection('detail')
@@ -100,25 +100,39 @@ export const actions = {
           commit('setDesiredOccupatins', doc.data()['desiredOccupations'])
           commit('setInterstingFields', doc.data()['interestingFields'])
 
-          // すでに候補者になっているか
-          firestore.collection('companies')
-            .doc(companyId)
-            .collection('candidates')
-            .where('user.uid', '==', uid)
-            .where('status.rejected', '==', false)
-            .get()
-            .then(function(snapshot) {
-              if (snapshot.empty) {
-                commit('updateIsCandidate', false)
-              } else {
-                commit('updateIsCandidate', true)
-              }
-              commit('updateIsLoading', false)
-            })
-            .catch(function(error) {
-              console.log("Error getting document:", error)
-              commit('updateIsLoading', false)
-            })
+          // 削除されているか
+          if (doc.data()['isDeleted']) {
+            console.log('404');
+            // 404
+            commit('updateIsLoading', false)
+            nuxt.error({ statusCode: 404, message: 'not found' })
+          } else {
+            console.log(' not 404');
+            // すでに候補者になっているか
+            firestore.collection('companies')
+              .doc(companyId)
+              .collection('candidates')
+              .where('user.uid', '==', uid)
+              .where('status.rejected', '==', false)
+              .get()
+              .then(function(snapshot) {
+                if (snapshot.empty) {
+                  commit('updateIsCandidate', false)
+                } else {
+                  commit('updateIsCandidate', true)
+                }
+                commit('updateIsLoading', false)
+              })
+              .catch(function(error) {
+                console.log("Error getting document:", error)
+                commit('updateIsLoading', false)
+              })
+          }
+        } else {
+          console.log('404');
+          // 404
+          commit('updateIsLoading', false)
+          nuxt.error({ statusCode: 404, message: 'not found' })
         }
       })
       .catch(function(error) {
@@ -126,6 +140,7 @@ export const actions = {
       })
   },
   scout({commit, state},{user, pic, companyId, message}) {
+    console.log("scout", user);
     var scouts = state.scouts
     const status = {
       scouted: true,

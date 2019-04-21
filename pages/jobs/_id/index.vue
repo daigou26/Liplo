@@ -357,6 +357,7 @@
               <v-list-tile>
                 <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
                   <v-img
+                    v-if="companyImageUrl"
                     :src="companyImageUrl"
                   ></v-img>
                 </v-list-tile-avatar>
@@ -522,7 +523,7 @@ export default {
       }
     },
     ...mapState({
-      email: state => state.profile.email,
+      isRefreshed: state => state.isRefreshed,
       type: state => state.profile.type,
       profileImageUrl: state => state.profile.imageUrl,
       firstName: state => state.profile.firstName,
@@ -568,18 +569,15 @@ export default {
     this.showChart = true
     this.showInfiniteLoading = true
   },
-  watch: {
-    uid(uid) {
-      if (uid != null) {
-        this.isQueried = true
-        this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: uid})
-      }
-    }
-  },
   fetch(context) {
     const store = context.store
     // query job
     store.dispatch('job/queryJobDetail', {nuxt: context, params: context.params, uid: store.state.uid})
+  },
+  watch: {
+    uid(uid) {
+      this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: this.uid})
+    }
   },
   methods: {
     infiniteHandler($state) {
@@ -607,13 +605,15 @@ export default {
       }
     },
     applyButtonClicked() {
+      const user = {
+        uid: this.uid,
+        name: this.lastName + ' ' + this.firstName,
+        imageUrl: this.profileImageUrl,
+      }
+
       this.apply({
         params: this.$route.params,
-        uid: this.uid,
-        imageUrl: this.profileImageUrl,
-        firstName: this.firstName,
-        lastName: this.lastName,
-        email: this.email,
+        user: user,
         companyId: this.companyId
       })
     },

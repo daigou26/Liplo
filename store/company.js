@@ -32,6 +32,8 @@ export const state = () => ({
   reviewChartData: null,
   feedbackChartData: null,
   feedbackChartOptions: null,
+  invoiceEmail: null,
+  isLoading: false,
 })
 
 export const mutations = {
@@ -122,13 +124,19 @@ export const mutations = {
   setFeedbackChartOptions(state, options) {
     state.feedbackChartOptions = options
   },
+  setInvoiceEmail(state, email) {
+    state.invoiceEmail = email
+  },
+  updateIsLoading(state, isLoading) {
+    state.isLoading = isLoading
+  }
 }
 
 export const actions = {
   // recruiter dashboard でのクエリ
   queryCompany({commit}, {nuxt, companyId}) {
     if (companyId != null && companyId != '') {
-      return firestore.collection('companies').doc(companyId)
+      firestore.collection('companies').doc(companyId)
         .get()
         .then(function(doc) {
           if (doc.exists) {
@@ -221,7 +229,7 @@ export const actions = {
     const companyId = params.id
 
     if (companyId != null && companyId != '') {
-      return firestore.collection('companies').doc(companyId)
+      firestore.collection('companies').doc(companyId)
         .collection('detail')
         .doc(companyId)
         .get()
@@ -259,36 +267,43 @@ export const actions = {
             // commit('setOccupation', doc.data()['occupation'])
             // commit('setFeatures', doc.data()['features'])
 
-            // chart Data
-            if (doc.data()['reviews']) {
-              const reviews = doc.data()['reviews']
-              const reviewChartData = {
-                labels: [
-                  '成長できるか',
-                  '仕事内容',
-                  '裁量度',
-                  '勤務中の自由度',
-                  '出勤時間の柔軟性',
-                  'メンター',
-                  '雰囲気',
-                ],
-                datasets: [
-                  {
-                    borderColor: '#f87979',
-                    backgroundColor: 'rgba(248, 121, 121, 0.1)',
-                    data: [
-                      reviews.rating.growth,
-                      reviews.rating.job,
-                      reviews.rating.discretion,
-                      reviews.rating.flexibility,
-                      reviews.rating.flexibleSchedule,
-                      reviews.rating.mentor,
-                      reviews.rating.atmosphere
-                    ]
-                  }
-                ]
+            if (!doc.data()['isDeleted']) {
+              // chart Data
+              if (doc.data()['reviews']) {
+                const reviews = doc.data()['reviews']
+                const reviewChartData = {
+                  labels: [
+                    '成長できるか',
+                    '仕事内容',
+                    '裁量度',
+                    '勤務中の自由度',
+                    '出勤時間の柔軟性',
+                    'メンター',
+                    '雰囲気',
+                  ],
+                  datasets: [
+                    {
+                      borderColor: '#f87979',
+                      backgroundColor: 'rgba(248, 121, 121, 0.1)',
+                      data: [
+                        reviews.rating.growth,
+                        reviews.rating.job,
+                        reviews.rating.discretion,
+                        reviews.rating.flexibility,
+                        reviews.rating.flexibleSchedule,
+                        reviews.rating.mentor,
+                        reviews.rating.atmosphere
+                      ]
+                    }
+                  ]
+                }
+                commit('setReviewChartData', reviewChartData)
               }
-              commit('setReviewChartData', reviewChartData)
+            } else {
+              // 削除済みの場合
+              // 404
+              console.log('404')
+              nuxt.error({ statusCode: 404, message: 'not found' })
             }
           } else {
             // 404
@@ -317,11 +332,14 @@ export const actions = {
     const companyData = {
       companyName: companyName,
       email: companyEmail,
+      invoiceEmail: companyEmail,
       members: [member],
+      isDeleted: false,
     }
     const batch = firestore.batch()
     const companyRef = firestore.collection('companies').doc(companyId)
     batch.set(companyRef, companyData)
+
     const companyDetailRef = firestore.collection('companies')
       .doc(companyId)
       .collection('detail')
@@ -335,6 +353,7 @@ export const actions = {
 
     var sendAddCompanyMail = functions.httpsCallable("sendAddCompanyMail")
     sendAddCompanyMail({
+      companyId: companyId,
       companyName: companyName,
       userName: userName,
       email: email,
@@ -343,4 +362,35 @@ export const actions = {
       console.log('sendAddCompanyMail completed.');
     })
   },
+  queryCompanyInvoiceEmail({commit}, companyId) {
+    firestore.collection('companies')
+      .doc(companyId)
+      .get()
+      .then(function(doc) {
+        if (doc.exists) {
+          commit('setInvoiceEmail', doc.data()['invoiceEmail'])
+        }
+        commit('updateIsLoading', false)
+      })
+      .catch(function(error) {
+        console.log("Error getting document:", error)
+        commit('updateIsLoading', false)
+      })
+  },
+  updateCompanyInvoiceEmail({commit}, {companyId, email}) {
+    firestore.collection('companies')
+      .doc(companyId)
+      .update({
+        invoiceEmail: email
+      })
+      .then(() => {
+        commit('setInvoiceEmail', email)
+      })
+      .catch((error) => {
+        console.log("Error getting document:", error)
+      })
+  },
+  updateIsLoading({commit}, isLoading) {
+    commit('updateIsLoading', isLoading)
+  }
 }

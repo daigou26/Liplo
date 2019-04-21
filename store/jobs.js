@@ -131,7 +131,8 @@ export const actions = {
     }
 
     if (jobs.length == 0) {
-      jobsRef.orderBy('createdAt', 'desc')
+      jobsRef.where('status', '==', 'published')
+        .orderBy('createdAt', 'desc')
         .limit(10)
         .get()
         .then(function(snapshot) {
@@ -163,7 +164,8 @@ export const actions = {
       const lastIndex = jobs.length - 1
       const lastDate = jobs[lastIndex].createdAt
 
-      jobsRef.orderBy('createdAt', 'desc')
+      jobsRef.where('status', '==', 'published')
+        .orderBy('createdAt', 'desc')
         .startAfter(lastDate)
         .limit(10)
         .get()

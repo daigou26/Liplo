@@ -57,7 +57,7 @@
                         <v-list-tile-title class="textColor font-weight-bold">
                           {{ job.companyName }}
                         </v-list-tile-title>
-                        <v-list-tile-sub-title>
+                        <v-list-tile-sub-title v-if="job.rating">
                           <v-rating small half-increments readonly v-model="job.rating.all"/>
                         </v-list-tile-sub-title>
                       </v-list-tile-content>

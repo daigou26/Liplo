@@ -383,7 +383,6 @@ export default {
       picImageUrl: state => state.profile.imageUrl,
       picFirstName: state => state.profile.firstName,
       picLastName: state => state.profile.lastName,
-      userEmail: state => state.user.email,
       userImageUrl: state => state.user.imageUrl,
       userFirstName: state => state.user.firstName,
       userLastName: state => state.user.lastName,
@@ -405,7 +404,7 @@ export default {
   mounted() {
     if (this.companyId != null && !this.isQueried) {
       this.resetState()
-      this.queryUser({uid: this.params.id, companyId: this.companyId})
+      this.queryUser({nuxt: this.$nuxt, uid: this.params.id, companyId: this.companyId})
     }
   },
   watch: {
@@ -413,7 +412,7 @@ export default {
       if (companyId != null) {
         this.isQueried = true
         this.resetState()
-        this.queryUser({uid: this.params.id, companyId: companyId})
+        this.queryUser({nuxt: this.$nuxt, uid: this.params.id, companyId: companyId})
       }
     }
   },
@@ -427,8 +426,8 @@ export default {
         uid: this.$route.params.id,
         imageUrl: this.userImageUrl,
         name: this.userLastName + ' ' + this.userFirstName,
-        email: this.userEmail,
       }
+
       const pic = {
         uid: this.picUid,
         imageUrl: this.picImageUrl,

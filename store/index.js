@@ -1,10 +1,11 @@
 export const strict = false
+import firebase from 'firebase'
 import { firestore, functions, auth, GoogleProvider } from '@/plugins/firebase'
 
 
 export const state = () => ({
-  uid: null,
-  isVerified: false,
+  uid: '',
+  isVerified: true,
   sentVerifyEmail: false,
   authError: null,
   loading: false,
@@ -49,6 +50,7 @@ export const actions = {
         commit('resetLoading')
       })
       .catch(function(error) {
+        console.error("Error adding document: ", error)
         var errorCode = error.code
         switch (errorCode) {
           case 'auth/email-already-in-use':
@@ -65,7 +67,7 @@ export const actions = {
       })
   },
   // 招待された担当者のサインアップ
-  async recruiterSignedIn({commit}, {recruiterType, companyId, email, password}) {
+  async recruiterSignUp({commit}, {recruiterType, companyId, email, password}) {
     if (recruiterType == 'invited') {
       firestore.collection('companies')
         .doc(companyId)
@@ -80,6 +82,7 @@ export const actions = {
                 commit('resetLoading')
               })
               .catch(function(error) {
+                console.error("Error adding document: ", error)
                 var errorCode = error.code
                 switch (errorCode) {
                   case 'auth/email-already-in-use':
@@ -113,6 +116,7 @@ export const actions = {
                     commit('resetLoading')
                   })
                   .catch(function(error) {
+                    console.error("Error adding document: ", error)
                     var errorCode = error.code
                     switch (errorCode) {
                       case 'auth/email-already-in-use':
@@ -148,7 +152,8 @@ export const actions = {
         commit('resetLoading')
       })
       .catch(function(error) {
-        var errorCode = error.code;
+        console.error("Error adding document: ", error)
+        var errorCode = error.code
         switch (errorCode) {
           case 'auth/user-disabled':
             commit('setAuthError', 'このアカウントは無効になっています')
@@ -163,7 +168,7 @@ export const actions = {
             commit('setAuthError', 'メールアドレスの形式が正しくありません')
             break
           default:
-            commit('setAuthError', 'サインアップに失敗しました')
+            commit('setAuthError', 'ログインに失敗しました')
             break
         }
         commit('resetLoading')
@@ -188,6 +193,150 @@ export const actions = {
     dispatch('pass/resetState')
     dispatch('passes/resetState')
     dispatch('companyJobs/resetState')
+    dispatch('settings/resetState')
+  },
+  async changeEmail({dispatch, commit}, {type, newEmail, password}) {
+    var user = auth.currentUser
+    var credential = firebase.auth.EmailAuthProvider.credential(user.email, password)
+
+    // 再認証
+    user.reauthenticateAndRetrieveDataWithCredential(credential).then(function() {
+      const batch = firestore.batch()
+      const userRef = firestore.collection('users').doc(user.uid)
+      batch.update(userRef, {
+        email: newEmail,
+      })
+      const profileRef = firestore.collection('users').doc(user.uid)
+        .collection('profile').doc(user.uid)
+      batch.update(profileRef, {
+        email: newEmail,
+      })
+      if (type == 'user') {
+        const userDetailRef = firestore.collection('users').doc(user.uid)
+          .collection('detail').doc(user.uid)
+        batch.update(userDetailRef, {
+          email: newEmail,
+        })
+      }
+
+      batch.commit()
+        .then(() => {
+          // メアド変更
+          user.updateEmail(newEmail).then(function() {
+            dispatch('profile/setEmail', newEmail)
+            commit('resetLoading')
+          }).catch(function(error) {
+            console.error("Error adding document: ", error)
+            commit('setAuthError', 'メールアドレスを変更できませんでした')
+            commit('resetLoading')
+          })
+        })
+        .catch((error) => {
+          console.error("Error adding document: ", error)
+        })
+    }).catch(function(error) {
+      console.error("Error adding document: ", error)
+      var errorCode = error.code
+      switch (errorCode) {
+        case 'auth/user-mismatch':
+          commit('setAuthError', '別のアカウントのメールアドレスとパスワードを入力しています')
+          break
+        case 'auth/user-disabled':
+          commit('setAuthError', 'このアカウントは無効になっています')
+          break
+        case 'auth/user-not-found':
+          commit('setAuthError', 'ユーザーが見つかりません')
+          break
+        case 'auth/wrong-password':
+          commit('setAuthError', 'パスワードが間違っています')
+          break
+        case 'auth/invalid-email':
+          commit('setAuthError', 'メールアドレスの形式が正しくありません')
+          break
+        default:
+          commit('setAuthError', 'ログインに失敗しました')
+          break
+      }
+      commit('resetLoading')
+    })
+  },
+  async deleteAccount({dispatch, commit}, {type, password}) {
+    var user = auth.currentUser
+    var credential = firebase.auth.EmailAuthProvider.credential(user.email, password)
+
+    // 再認証
+    user.reauthenticateAndRetrieveDataWithCredential(credential).then(function() {
+      const batch = firestore.batch()
+      const userRef = firestore.collection('users').doc(user.uid)
+      batch.update(userRef, {
+        isDeleted: true
+      })
+      if (type == 'user') {
+        const userDetailRef = firestore.collection('users').doc(user.uid)
+          .collection('detail').doc(user.uid)
+        batch.update(userDetailRef, {
+          isDeleted: true
+        })
+      }
+      batch.commit()
+        .then(() => {
+          // delete
+          user.delete().then(function() {
+            commit('resetLoading')
+            dispatch('chats/resetMessagesListener')
+            dispatch('chats/resetHasNewMessage')
+            dispatch('notifications/resetNotificationsListener')
+            dispatch('notifications/resetHasNewNotification')
+            dispatch('career/resetState')
+            dispatch('chat/resetState')
+            dispatch('chats/resetState')
+            dispatch('feedback/resetState')
+            dispatch('feedbacks/resetState')
+            dispatch('resetState')
+            dispatch('messages/resetState')
+            dispatch('profile/resetState')
+            dispatch('review/resetState')
+            dispatch('reviews/resetState')
+            dispatch('pass/resetState')
+            dispatch('passes/resetState')
+            dispatch('companyJobs/resetState')
+            dispatch('settings/resetState')
+          }).catch(function(error) {
+            console.error("Error adding document: ", error)
+            commit('setAuthError', 'アカウントが削除できませんでした')
+            commit('resetLoading')
+          })
+        })
+        .catch((error) => {
+          console.error("Error adding document: ", error)
+          commit('setAuthError', 'アカウントが削除できませんでした')
+          commit('resetLoading')
+        })
+    }).catch(function(error) {
+      console.error("Error adding document: ", error)
+      var errorCode = error.code
+      switch (errorCode) {
+        case 'auth/user-mismatch':
+          commit('setAuthError', '別のアカウントのメールアドレスとパスワードを入力しています')
+          break
+        case 'auth/user-disabled':
+          commit('setAuthError', 'このアカウントは無効になっています')
+          break
+        case 'auth/user-not-found':
+          commit('setAuthError', 'ユーザーが見つかりません')
+          break
+        case 'auth/wrong-password':
+          commit('setAuthError', 'パスワードが間違っています')
+          break
+        case 'auth/invalid-email':
+          commit('setAuthError', 'メールアドレスの形式が正しくありません')
+          break
+        default:
+          commit('setAuthError', 'ログインに失敗しました')
+          break
+      }
+      commit('resetLoading')
+    })
   },
   setUid({commit}, uid) {
     commit('setUid', uid)
@@ -220,7 +369,6 @@ export const actions = {
               if (type == 'recruiter') {
                 // recruiter
                 if (companyId != null) {
-                  // 招待された担当者
                   const batch = firestore.batch()
 
                   const userRef = firestore.collection('users').doc(user.uid)
@@ -231,6 +379,7 @@ export const actions = {
                     type: 'recruiter',
                     email: user.email,
                     isEmailVerified: user.emailVerified,
+                    isDeleted: false,
                   })
                   const profileRef = firestore.collection('users')
                     .doc(user.uid).collection('profile').doc(user.uid)
@@ -289,6 +438,9 @@ export const actions = {
                   points: 0,
                   email: user.email,
                   isEmailVerified: user.emailVerified,
+                  notificationsSetting: {scout: true, pass: true},
+                  acceptScout: true,
+                  isDeleted: false,
                 })
                 const profileRef = firestore.collection('users')
                   .doc(user.uid).collection('profile').doc(user.uid)
@@ -302,13 +454,16 @@ export const actions = {
                 batch.set(detailRef, {
                   firstName: firstName,
                   lastName: lastName,
-                  email: user.email
+                  email: user.email,
                 })
                 batch.commit()
                   .then(() => {
                     dispatch('profile/setFirstName', firstName)
                     dispatch('profile/setLastName', lastName)
+                    dispatch('profile/setType', 'user')
                     dispatch('profile/setEmail', user.email)
+                    dispatch('settings/setNotificationsSetting', {scout: true, pass: true})
+                    dispatch('settings/setAcceptScout', true)
                   })
                   .catch((error) => {
                     console.error("Error adding document: ", error)
@@ -320,38 +475,71 @@ export const actions = {
             dispatch('profile/setLastName', doc.data()['lastName'])
             dispatch('profile/setType', doc.data()['type'])
             dispatch('profile/setCompanyId', doc.data()['companyId'])
-            dispatch('profile/setEmail', doc.data()['email'])
+            dispatch('settings/setNotificationsSetting', doc.data()['notificationsSetting'])
+            dispatch('settings/setAcceptScout', doc.data()['acceptScout'])
 
-            if (doc.data()['imageUrl'] != null) {
-              dispatch('profile/setImageUrl', doc.data()['imageUrl'])
-            }
-
-            if (user.emailVerified && !doc.data()['isEmailVerified']) {
-              firestore.collection('users')
-                .doc(user.uid)
-                .update({
-                  isEmailVerified: true,
+            // email を変更した後、リセットした場合、user.email と db がずれるため、更新
+            if (user.email != doc.data()['email']) {
+              const batch = firestore.batch()
+              const userRef = firestore.collection('users').doc(user.uid)
+              batch.update(userRef, {
+                email: user.email,
+              })
+              const profileRef = firestore.collection('users').doc(user.uid)
+                .collection('profile').doc(user.uid)
+              batch.update(profileRef, {
+                email: user.email,
+              })
+              if (doc.data()['type'] == 'user') {
+                const userDetailRef = firestore.collection('users').doc(user.uid)
+                  .collection('detail').doc(user.uid)
+                batch.update(userDetailRef, {
+                  email: user.email,
+                })
+              }
+              batch.commit()
+                .then(() => {
+                  dispatch('profile/setEmail', user.email)
                 })
                 .catch((error) => {
                   console.error("Error adding document: ", error)
                 })
+            } else {
+              dispatch('profile/setEmail', doc.data()['email'])
+            }
+
+            if (doc.data()['imageUrl'] != null) {
+              dispatch('profile/setImageUrl', doc.data()['imageUrl'])
             }
 
             if (doc.data()['type'] == 'recruiter') {
               // メッセージのリスナー
               dispatch('chats/setCompanyMessagesListener', doc.data()['companyId'])
 
-              if (route.path.includes('/user') && !route.path.includes('users')) {
+              if (route.path.includes('/user') && !route.path.includes('users') && !route.path.includes('settings')) {
                 router.replace('/recruiter/dashboard')
               } else if (route.path.includes('/messages') && !route.path.includes('recruiter/messages')) {
                 router.replace('/recruiter/dashboard')
               }
             } else {
+              commit('updateIsVerified',  doc.data()['isEmailVerified'])
+              // emailVerifiedを true に
+              if (user.emailVerified && !doc.data()['isEmailVerified']) {
+                firestore.collection('users')
+                  .doc(user.uid)
+                  .update({
+                    isEmailVerified: true,
+                  })
+                  .then(() => {
+                    commit('updateIsVerified',  true)
+                  })
+                  .catch((error) => {
+                    console.error("Error adding document: ", error)
+                  })
+              }
               // メールアドレスの確認が済んでいない場合はメール送信
-              commit('updateIsVerified',  user.emailVerified)
-              if (!user.emailVerified && !state.sentVerifyEmail) {
-                console.log('email not verified');
-                if (route.path !== '/' && route.name !== 'jobs-id') {
+              if (!doc.data()['isEmailVerified'] && !user.emailVerified && !state.sentVerifyEmail) {
+                if (route.path !== '/' && route.name !== 'jobs-id' && route.path !== '/user/settings/account') {
                   router.push('/')
                 }
                 commit('updateSentVerifyEmail', true)
@@ -402,8 +590,8 @@ export const actions = {
     })
   },
   resetState({commit}) {
-    commit('setUid', null)
-    commit('updateIsVerified', false)
+    commit('setUid', '')
+    commit('updateIsVerified', true)
     commit('updateSentVerifyEmail', false)
     commit('setAuthError', null)
     commit('resetLoading')
