@@ -324,13 +324,13 @@ export default {
     }),
   },
   mounted() {
-    if (this.uid != null && !this.isQueried) {
+    if (this.uid != null && this.uid != '' && !this.isQueried) {
       this.queryProfile(this.uid)
     }
   },
   watch: {
     uid(uid) {
-      if (uid != null) {
+      if (uid != null && uid != '') {
         this.isQueried = true
         this.queryProfile(uid)
       }

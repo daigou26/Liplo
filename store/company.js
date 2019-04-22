@@ -177,7 +177,7 @@ export const actions = {
               commit('setReviewChartData', reviewChartData)
             }
 
-            if (doc.data()['feedback']) {
+            if (doc.data()['feedback'] && doc.data()['feedback'].all != 0) {
               const feedback = doc.data()['feedback']
               const feedbackRate = Math.round(feedback.writtenCount / feedback.all * 100)
               const feedbackChartData = {
@@ -335,6 +335,11 @@ export const actions = {
       invoiceEmail: companyEmail,
       members: [member],
       isDeleted: false,
+      points: 100,
+      feedback: {
+        all: 0,
+        writtenCount: 0
+      }
     }
     const batch = firestore.batch()
     const companyRef = firestore.collection('companies').doc(companyId)

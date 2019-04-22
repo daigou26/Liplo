@@ -191,7 +191,7 @@ export default {
   mounted() {
     this.showInfiniteLoading = true
 
-    if (this.uid != null && !this.isQueried) {
+    if (this.uid != null && this.uid != '' && !this.isQueried) {
       if (this.params.id == null) {
         this.queryPasses({uid: this.uid, passes: this.passes})
       } else {
@@ -201,7 +201,7 @@ export default {
   },
   watch: {
     uid(uid) {
-      if (uid != null) {
+      if (uid != null && uid != '') {
         this.isQueried = true
         if (this.params.id == null) {
           this.queryPasses({uid: uid, passes: this.passes})

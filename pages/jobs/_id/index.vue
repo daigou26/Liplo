@@ -576,7 +576,9 @@ export default {
   },
   watch: {
     uid(uid) {
-      this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: this.uid})
+      if (uid != '') {
+        this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: uid})
+      }
     }
   },
   methods: {

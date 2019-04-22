@@ -766,7 +766,7 @@ export default {
   }),
   computed: {
     userType() {
-      return this.query.id != null ? 'recruiter' : 'user'
+      return this.query.type != null ? 'recruiter' : 'user'
     },
     query() {
       return this.$route.query
@@ -796,7 +796,7 @@ export default {
     })
   },
   mounted() {
-    this.recruiterSignUpDialog = this.query.id != null ? true : false
+    this.recruiterSignUpDialog = this.query.type != null ? true : false
     this.updateIsRefreshed(true)
     // ログイン時、dbにuser(recruiter)情報保存
     auth.onAuthStateChanged((user) => {

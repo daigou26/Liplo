@@ -14,6 +14,23 @@
         row
         wrap
       >
+        <v-snackbar
+          v-model="snackbar"
+          class="px-5"
+          color="orange lighten-1"
+          :multi-line="true"
+          :timeout="6000"
+          :top="true"
+        >
+          {{ snackbarText }}
+          <v-btn
+            color="white"
+            flat
+            @click="snackbar = false"
+          >
+            Close
+          </v-btn>
+        </v-snackbar>
         <!-- menu (lg, md)-->
         <v-flex
           md4
@@ -190,6 +207,8 @@ export default {
   },
   data: () => ({
     isQueried: false,
+    snackbar: false,
+    snackbarText: '',
     atmosphere: 3,
     job: 3,
     discretion: 3,
@@ -227,7 +246,7 @@ export default {
   mounted() {
     this.showInfiniteLoading = true
 
-    if (this.uid != null && !this.isQueried) {
+    if (this.uid != null && this.uid != '' && !this.isQueried) {
       if (this.$route.query.id != null) {
         this.queryNotReviewedCompany({nuxt: this.$nuxt, uid: this.uid, careerId: this.$route.query.id})
       } else {
@@ -237,7 +256,7 @@ export default {
   },
   watch: {
     uid(uid) {
-      if (uid != null) {
+      if (uid != null && uid != '') {
         this.isQueried = true
         if (this.$route.query.id != null) {
           this.queryNotReviewedCompany({nuxt: this.$nuxt, uid: uid, careerId: this.$route.query.id})
@@ -251,12 +270,11 @@ export default {
     reviewButtonClicked() {
       this.reviewValid = false
       const all = Math.round((this.atmosphere + this.job + this.discretion + this.flexibleSchedule + this.flexibility + this.mentor + this.mentor) / 7 * 10) / 10
-      const review = {
+      var review = {
         uid: this.uid,
         careerId: this.notReviewedCompany.careerId,
         companyId: this.notReviewedCompany.companyId,
         companyName: this.notReviewedCompany.companyName,
-        companyImageUrl: this.notReviewedCompany.companyImageUrl,
         occupation: this.notReviewedCompany.occupation,
         content: this.content,
         all: all,
@@ -269,7 +287,12 @@ export default {
         growth: this.growth,
         createdAt: new Date(),
       }
+      if (this.notReviewedCompany.companyImageUrl) {
+        review.companyImageUrl = this.notReviewedCompany.companyImageUrl
+      }
       this.postReview({router: this.$router, careerId: this.$route.query.id, review: review})
+      this.snackbar = true
+      this.snackbarText = 'レビューを送信しました！'
     },
     ...mapActions({
       postReview: 'review/postReview',

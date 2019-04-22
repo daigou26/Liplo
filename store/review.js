@@ -70,9 +70,6 @@ export const actions = {
     const reviewRef = firestore.collection('reviews').doc()
     batch.set(reviewRef, review)
     batch.commit()
-      .then(() => {
-        router.replace({path: '/user/reviews'})
-      })
       .catch((error) => {
         console.error("Error adding document: ", error)
       })

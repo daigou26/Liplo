@@ -14,7 +14,7 @@ admin.initializeApp()
 
 
 // 企業メンバーが招待された時の処理
-exports.inviteMember = functions.region('asia-northeast1')
+exports.sendMailToInvitedMember = functions.region('asia-northeast1')
   .firestore
   .document('companies/{companyId}/invitedMembers/{memberId}')
   .onCreate((snap, context) => {
@@ -33,7 +33,7 @@ exports.inviteMember = functions.region('asia-northeast1')
     mailOptions.text = `${userName}さんが${companyName}にあなたを招待しました。${url}にアクセスして、サインアップしてください。`
     return mailTransport.sendMail(mailOptions)
       .then(() => {
-        console.log('New pass email sent to:', email)
+        console.log('sendMailToInvitedMember completed. sent to:', email)
       })
       .catch((error) => {
         console.error("Error adding document: ", error)
@@ -75,7 +75,6 @@ exports.updateCareer = functions.region('asia-northeast1')
     const career = newValue.career
     const occupation = career.internOccupation
 
-    // ステータスがインターンになった時
     return admin.firestore()
       .collection('companies')
       .doc(companyId)
@@ -86,8 +85,13 @@ exports.updateCareer = functions.region('asia-northeast1')
           const companyImageUrl = doc.data().imageUrl
 
           if (newStatus.intern) {
+            // ステータスがインターンになった時
+            const batch = admin.firestore().batch()
+            // キャリア更新
             const careerId = admin.firestore().collection('users').doc(user.uid)
               .collection('career').doc().id
+            const careerRef = admin.firestore().collection('users').doc(user.uid)
+              .collection('career').doc(careerId)
             var careerData = {
               occupation: occupation,
               companyId: companyId,
@@ -101,11 +105,6 @@ exports.updateCareer = functions.region('asia-northeast1')
             if (companyImageUrl) {
               careerData.companyImageUrl = companyImageUrl
             }
-
-            const batch = admin.firestore().batch()
-            // キャリア
-            const careerRef = admin.firestore().collection('users').doc(user.uid)
-              .collection('career').doc(careerId)
             batch.set(careerRef, careerData)
             // キャリア情報をcandidateに格納
             const candidateRef = admin.firestore().collection('companies')
@@ -117,6 +116,33 @@ exports.updateCareer = functions.region('asia-northeast1')
             batch.commit()
               .then(() => {
                 console.log('updateCareer completed.')
+              })
+              .catch((error) => {
+                console.error("Error adding document: ", error)
+              })
+
+            // userスコア更新
+            admin.firestore()
+              .collection('users')
+              .doc(user.uid)
+              .get()
+              .then(userDoc => {
+                var points = userDoc.data().points
+                if (points == null) {
+                  points = 0
+                }
+                admin.firestore()
+                  .collection('users')
+                  .doc(user.uid)
+                  .update({
+                    points: points + 1,
+                  })
+                  .then(() => {
+                    console.log('updateCareer: update user score completed.')
+                  })
+                  .catch((error) => {
+                    console.error("Error adding document: ", error)
+                  })
               })
               .catch((error) => {
                 console.error("Error adding document: ", error)
@@ -234,6 +260,19 @@ exports.sendFeedback = functions.region('asia-northeast1')
 
           const feedbackId = admin.firestore().collection('feedbacks').doc().id
           const batch = admin.firestore().batch()
+
+          // company feedback all 更新
+          var companyFeedbackData = doc.data().feedback
+          companyFeedbackData.all += 1
+          const companyRef = admin.firestore().collection('companies').doc(companyId)
+          batch.update(companyRef, {
+            feedback: companyFeedbackData,
+          })
+          const companyDetailRef = admin.firestore().collection('companies')
+            .doc(companyId).collection('detail').doc(companyId)
+          batch.update(companyDetailRef, {
+            feedback: companyFeedbackData,
+          })
           // フィードバック
           const feedbackRef = admin.firestore().collection('feedbacks').doc(feedbackId)
           batch.set(feedbackRef, feedbackData)
@@ -256,6 +295,100 @@ exports.sendFeedback = functions.region('asia-northeast1')
           batch.commit()
             .then(() => {
               console.log('sendFeedback completed.')
+            })
+            .catch((error) => {
+              console.error("Error adding document: ", error)
+            })
+        }
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error)
+      })
+  })
+
+// 企業のfeedback countが変更された時、job の db も更新
+exports.updateJobFeedbackCount = functions.region('asia-northeast1')
+  .firestore
+  .document('companies/{companyId}')
+  .onUpdate((change, context) => {
+    const previousValue = change.before.data()
+    const newValue = change.after.data()
+    const companyId = context.params.companyId
+    const feedback = newValue.feedback
+
+    // 変化がない場合は終了
+    if (
+      feedback.all == previousValue.feedback.all &&
+      feedback.writtenCount == previousValue.feedback.writtenCount
+    ) {
+      return 0
+    }
+
+    return admin.firestore()
+      .collection('jobs')
+      .where('companyId', '==', companyId)
+      .get()
+      .then(function(snapshot) {
+        // job関連更新
+        const batch = admin.firestore().batch()
+
+        snapshot.forEach(function(doc) {
+          const jobRef = admin.firestore().collection('jobs').doc(doc.id)
+          batch.update(jobRef, {
+            feedback: feedback
+          })
+
+          const jobDetailRef = admin.firestore().collection('jobs').doc(doc.id)
+            .collection('detail')
+            .doc(doc.id)
+          batch.update(jobDetailRef, {
+            feedback: feedback
+          })
+        })
+        batch.commit()
+          .then(() => {
+            console.log('updateJobFeedbackCount completed.')
+          })
+          .catch((error) => {
+            console.error("Error adding document: ", error)
+          })
+      })
+      .catch(err => {
+        console.log('Error getting document', err)
+      })
+  })
+
+// フィードバックが送られた時、企業のfeedback countを更新
+exports.updateCompanyFeedbackCount = functions.region('asia-northeast1')
+  .firestore
+  .document('feedbacks/{feedbackId}')
+  .onCreate((snap, context) => {
+    const companyId = snap.data().companyId
+
+    return admin.firestore()
+      .collection('companies')
+      .doc(companyId)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          // company feedback writtenCount 更新
+          var feedback = doc.data().feedback
+          feedback.writtenCount += 1
+
+          const batch = admin.firestore().batch()
+          const companyRef = admin.firestore().collection('companies').doc(companyId)
+          batch.update(companyRef, {
+            feedback: feedback
+          })
+          const companyDetailRef = admin.firestore().collection('companies')
+            .doc(companyId).collection('detail').doc(companyId)
+          batch.update(companyDetailRef, {
+            feedback: feedback
+          })
+
+          batch.commit()
+            .then(() => {
+              console.log('updateCompanyFeedbackCount completed.')
             })
             .catch((error) => {
               console.error("Error adding document: ", error)
@@ -679,7 +812,7 @@ exports.scoutUser = functions.region('asia-northeast1')
                                     if (err) {
                                       console.log(err)
                                     }
-                                    console.log('New scout email sent to:', user.email)
+                                    console.log('New scout email sent to:', userDoc.data().email)
                                   })
                                 }
                               }
@@ -766,7 +899,7 @@ exports.scoutUser = functions.region('asia-northeast1')
                                 if (err) {
                                   console.log(err)
                                 }
-                                console.log('New scout email sent to:', user.email)
+                                console.log('New scout email sent to:', userDoc.data().email)
                               })
                             }
                           }
@@ -1040,10 +1173,12 @@ exports.postJob = functions.region('asia-northeast1')
           const what = doc.data().what
           const services = doc.data().services
           const welfare = doc.data().welfare
+          const feedback = doc.data().feedback
 
           var jobData = {
             companyName: companyName,
             status: initialStatus,
+            feedback: feedback
           }
           if (companyImageUrl) {
             jobData.companyImageUrl = companyImageUrl
@@ -1061,6 +1196,7 @@ exports.postJob = functions.region('asia-northeast1')
           var jobDetailData = {
             companyName: companyName,
             status: initialStatus,
+            feedback: feedback
           }
           if (companyImageUrl) {
             jobDetailData.companyImageUrl = companyImageUrl
@@ -1387,7 +1523,7 @@ exports.sendAddCompanyMail = functions
     mailOptions.subject = `${data.companyName}の${data.userName}様からのお問い合わせ`
     mailOptions.text =
       `${data.companyName}の${data.userName}様からお問い合わせを頂きました。\n\n
-      id: ${data.companyId} \n\n 
+      id: ${data.companyId} \n\n
       メールアドレス： ${data.email} \n\n
       お問い合わせ内容：${data.inquiry}`
     mailTransport.sendMail(mailOptions, (err, info) => {
@@ -1734,6 +1870,31 @@ exports.sendReview = functions.region('asia-northeast1')
       .get()
       .then(doc => {
         if (doc.exists) {
+          // スコア更新
+          var points = doc.data().points
+          if (points == null) {
+            points = 100
+          }
+          if (snap.data().all < 1.5) {
+            if (points < 2) {
+              points = 0
+            } else {
+              points -= 2
+            }
+          } else if (snap.data().all >= 1.5 && snap.data().all < 2.5) {
+            if (points < 1) {
+              points = 0
+            } else {
+              points -= 1
+            }
+          } else if (snap.data().all >= 2.5 && snap.data().all < 3.5) {
+            // points維持
+          } else if (snap.data().all >= 3.5 && snap.data().all < 4.5) {
+            points += 1
+          } else if (snap.data().all >= 4.5) {
+            points += 2
+          }
+
           var reviewCount
           var atmosphere
           var job
@@ -1803,11 +1964,12 @@ exports.sendReview = functions.region('asia-northeast1')
               comments: comments,
             }
           }
-
+          // company rating 更新
           const batch = admin.firestore().batch()
           const companyRef = admin.firestore().collection('companies').doc(companyId)
           batch.update(companyRef, {
-            rating: rating
+            rating: rating,
+            points: points
           })
           const companyDetailRef = admin.firestore().collection('companies').doc(companyId).collection('detail').doc(companyId)
           batch.update(companyDetailRef, reviews)
@@ -1819,6 +1981,7 @@ exports.sendReview = functions.region('asia-northeast1')
               console.error("Error adding document: ", error)
             })
 
+          // job rating更新
           admin.firestore()
             .collection('jobs')
             .where('companyId', '==', companyId)
@@ -1830,6 +1993,7 @@ exports.sendReview = functions.region('asia-northeast1')
                 const jobRef = admin.firestore().collection('jobs').doc(doc.id)
                 jobsBatch.update(jobRef, {
                   rating: rating,
+                  points: points
                 })
               })
               jobsBatch.commit()
@@ -1842,6 +2006,33 @@ exports.sendReview = functions.region('asia-northeast1')
             })
             .catch(err => {
               console.log('Error getting document', err)
+            })
+
+          // userスコア更新
+          admin.firestore()
+            .collection('users')
+            .doc(uid)
+            .get()
+            .then(userDoc => {
+              var points = userDoc.data().points
+              if (points == null) {
+                points = 0
+              }
+              admin.firestore()
+                .collection('users')
+                .doc(uid)
+                .update({
+                  points: points + 1,
+                })
+                .then(() => {
+                  console.log('sendReview: update user score completed.')
+                })
+                .catch((error) => {
+                  console.error("Error adding document: ", error)
+                })
+            })
+            .catch((error) => {
+              console.error("Error adding document: ", error)
             })
         }
       })
