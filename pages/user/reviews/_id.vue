@@ -248,7 +248,7 @@ export default {
   mounted() {
     this.showInfiniteLoading = true
 
-    if (this.uid != null && !this.isQueried) {
+    if (this.uid != null && this.uid != '' && !this.isQueried) {
       if (this.params.id == null) {
         this.queryUserReviews({uid: this.uid, reviews: this.userReviews})
         this.queryNotReviewedLists(this.uid)
@@ -259,7 +259,7 @@ export default {
   },
   watch: {
     uid(uid) {
-      if (uid != null) {
+      if (uid != null && uid != '') {
         this.isQueried = true
         if (this.params.id == null) {
           this.queryUserReviews({uid: uid, reviews: this.userReviews})

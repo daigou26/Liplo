@@ -389,7 +389,7 @@
                     ></v-textarea>
                   </v-form>
                   <div class="textColor">
-                    フィードバックを記入すると、企業ポイントが上がり、求人検索の際に上位に表示されやすくなります。
+                    フィードバック記入率は、募集一覧に表示されます。
                     フィードバックは後からでも入力することが出来ます。
                   </div>
                 </div>
@@ -866,7 +866,7 @@ export default {
       }
     },
     uid(uid) {
-      if (uid && this.reviews) {
+      if (uid != null && uid != '' && this.reviews) {
         for (const comment of reviews.comments) {
           if (comment.pic.uid == this.uid) {
             this.rating = comment.rating
@@ -877,7 +877,7 @@ export default {
       }
     },
     reviews(reviews) {
-      if (reviews && this.uid) {
+      if (reviews && this.uid != null && this.uid != '') {
         for (const comment of reviews.comments) {
           if (comment.pic.uid == this.uid) {
             this.rating = comment.rating

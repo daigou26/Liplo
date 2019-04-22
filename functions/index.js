@@ -75,7 +75,6 @@ exports.updateCareer = functions.region('asia-northeast1')
     const career = newValue.career
     const occupation = career.internOccupation
 
-    // ステータスがインターンになった時
     return admin.firestore()
       .collection('companies')
       .doc(companyId)
@@ -86,8 +85,13 @@ exports.updateCareer = functions.region('asia-northeast1')
           const companyImageUrl = doc.data().imageUrl
 
           if (newStatus.intern) {
+            // ステータスがインターンになった時
+            const batch = admin.firestore().batch()
+            // キャリア更新
             const careerId = admin.firestore().collection('users').doc(user.uid)
-              .collection('career').doc().id
+              .collection('career').doc().id      
+            const careerRef = admin.firestore().collection('users').doc(user.uid)
+              .collection('career').doc(careerId)
             var careerData = {
               occupation: occupation,
               companyId: companyId,
@@ -101,11 +105,6 @@ exports.updateCareer = functions.region('asia-northeast1')
             if (companyImageUrl) {
               careerData.companyImageUrl = companyImageUrl
             }
-
-            const batch = admin.firestore().batch()
-            // キャリア
-            const careerRef = admin.firestore().collection('users').doc(user.uid)
-              .collection('career').doc(careerId)
             batch.set(careerRef, careerData)
             // キャリア情報をcandidateに格納
             const candidateRef = admin.firestore().collection('companies')
@@ -117,6 +116,33 @@ exports.updateCareer = functions.region('asia-northeast1')
             batch.commit()
               .then(() => {
                 console.log('updateCareer completed.')
+              })
+              .catch((error) => {
+                console.error("Error adding document: ", error)
+              })
+
+            // userスコア更新
+            admin.firestore()
+              .collection('users')
+              .doc(user.uid)
+              .get()
+              .then(userDoc => {
+                var points = userDoc.data().points
+                if (points == null) {
+                  points = 0
+                }
+                admin.firestore()
+                  .collection('users')
+                  .doc(user.uid)
+                  .update({
+                    points: points + 1,
+                  })
+                  .then(() => {
+                    console.log('updateCareer: update user score completed.')
+                  })
+                  .catch((error) => {
+                    console.error("Error adding document: ", error)
+                  })
               })
               .catch((error) => {
                 console.error("Error adding document: ", error)
@@ -1387,7 +1413,7 @@ exports.sendAddCompanyMail = functions
     mailOptions.subject = `${data.companyName}の${data.userName}様からのお問い合わせ`
     mailOptions.text =
       `${data.companyName}の${data.userName}様からお問い合わせを頂きました。\n\n
-      id: ${data.companyId} \n\n 
+      id: ${data.companyId} \n\n
       メールアドレス： ${data.email} \n\n
       お問い合わせ内容：${data.inquiry}`
     mailTransport.sendMail(mailOptions, (err, info) => {
@@ -1803,7 +1829,7 @@ exports.sendReview = functions.region('asia-northeast1')
               comments: comments,
             }
           }
-
+          // company rating 更新
           const batch = admin.firestore().batch()
           const companyRef = admin.firestore().collection('companies').doc(companyId)
           batch.update(companyRef, {
@@ -1819,6 +1845,7 @@ exports.sendReview = functions.region('asia-northeast1')
               console.error("Error adding document: ", error)
             })
 
+          // job rating更新
           admin.firestore()
             .collection('jobs')
             .where('companyId', '==', companyId)
@@ -1842,6 +1869,33 @@ exports.sendReview = functions.region('asia-northeast1')
             })
             .catch(err => {
               console.log('Error getting document', err)
+            })
+
+          // userスコア更新
+          admin.firestore()
+            .collection('users')
+            .doc(uid)
+            .get()
+            .then(userDoc => {
+              var points = userDoc.data().points
+              if (points == null) {
+                points = 0
+              }
+              admin.firestore()
+                .collection('users')
+                .doc(uid)
+                .update({
+                  points: points + 1,
+                })
+                .then(() => {
+                  console.log('sendReview: update user score completed.')
+                })
+                .catch((error) => {
+                  console.error("Error adding document: ", error)
+                })
+            })
+            .catch((error) => {
+              console.error("Error adding document: ", error)
             })
         }
       })

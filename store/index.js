@@ -511,7 +511,6 @@ export const actions = {
             if (doc.data()['imageUrl'] != null) {
               dispatch('profile/setImageUrl', doc.data()['imageUrl'])
             }
-
             if (doc.data()['type'] == 'recruiter') {
               // メッセージのリスナー
               dispatch('chats/setCompanyMessagesListener', doc.data()['companyId'])

@@ -418,7 +418,7 @@ export default {
 
     this.showInfiniteLoading = true
 
-    if (this.uid != null && !this.isQueried) {
+    if (this.uid != null && this.uid != '' && !this.isQueried) {
       if (this.params.id == null) {
         this.resetChatsState()
         this.queryChats({uid: this.uid, companyId: null, chats: this.chats})
@@ -451,7 +451,7 @@ export default {
   },
   watch: {
     uid(uid) {
-      if (uid != null) {
+      if (uid != null && uid != '') {
         this.isQueried = true
         if (this.params.id == null) {
           this.resetChatsState()

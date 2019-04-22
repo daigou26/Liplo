@@ -106,7 +106,7 @@ export default {
   mounted() {
     this.showInfiniteLoading = true
 
-    if (this.uid != null && !this.isQueried) {
+    if (this.uid != null && this.uid != '' && !this.isQueried) {
       this.resetState()
       this.updateIsLoading(true)
       this.queryNotifications(this.uid)
@@ -114,7 +114,7 @@ export default {
   },
   watch: {
     uid(uid) {
-      if (uid != null) {
+      if (uid != null && uid != '') {
         this.isQueried = true
         this.resetState()
         this.updateIsLoading(true)
