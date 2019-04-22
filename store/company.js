@@ -335,6 +335,7 @@ export const actions = {
       invoiceEmail: companyEmail,
       members: [member],
       isDeleted: false,
+      points: 100,
     }
     const batch = firestore.batch()
     const companyRef = firestore.collection('companies').doc(companyId)

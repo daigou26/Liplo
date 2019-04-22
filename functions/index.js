@@ -89,7 +89,7 @@ exports.updateCareer = functions.region('asia-northeast1')
             const batch = admin.firestore().batch()
             // キャリア更新
             const careerId = admin.firestore().collection('users').doc(user.uid)
-              .collection('career').doc().id      
+              .collection('career').doc().id
             const careerRef = admin.firestore().collection('users').doc(user.uid)
               .collection('career').doc(careerId)
             var careerData = {
@@ -1760,6 +1760,31 @@ exports.sendReview = functions.region('asia-northeast1')
       .get()
       .then(doc => {
         if (doc.exists) {
+          // スコア更新
+          var points = doc.data().points
+          if (points == null) {
+            points = 100
+          }
+          if (snap.data().all < 1.5) {
+            if (points < 2) {
+              points = 0
+            } else {
+              points -= 2
+            }
+          } else if (snap.data().all >= 1.5 && snap.data().all < 2.5) {
+            if (points < 1) {
+              points = 0
+            } else {
+              points -= 1
+            }
+          } else if (snap.data().all >= 2.5 && snap.data().all < 3.5) {
+            // points維持
+          } else if (snap.data().all >= 3.5 && snap.data().all < 4.5) {
+            points += 1
+          } else if (snap.data().all >= 4.5) {
+            points += 2
+          }
+
           var reviewCount
           var atmosphere
           var job
@@ -1833,7 +1858,8 @@ exports.sendReview = functions.region('asia-northeast1')
           const batch = admin.firestore().batch()
           const companyRef = admin.firestore().collection('companies').doc(companyId)
           batch.update(companyRef, {
-            rating: rating
+            rating: rating,
+            points: points
           })
           const companyDetailRef = admin.firestore().collection('companies').doc(companyId).collection('detail').doc(companyId)
           batch.update(companyDetailRef, reviews)
@@ -1857,6 +1883,7 @@ exports.sendReview = functions.region('asia-northeast1')
                 const jobRef = admin.firestore().collection('jobs').doc(doc.id)
                 jobsBatch.update(jobRef, {
                   rating: rating,
+                  points: points
                 })
               })
               jobsBatch.commit()
