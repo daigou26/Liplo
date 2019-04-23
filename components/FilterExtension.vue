@@ -88,15 +88,20 @@
               <v-checkbox v-model="tempMedia" readonly></v-checkbox>
               <v-list-tile-title class="pl-3">メディアに掲載されたことがある</v-list-tile-title>
             </v-list-tile>
+            <!-- 海外進出 -->
+            <v-list-tile @click="tempOverseas=!tempOverseas">
+              <v-checkbox v-model="tempOverseas" readonly></v-checkbox>
+              <v-list-tile-title class="pl-3">海外進出している</v-list-tile-title>
+            </v-list-tile>
             <!-- 友人と応募ok -->
             <v-list-tile @click="tempFriend=!tempFriend">
               <v-checkbox v-model="tempFriend" readonly></v-checkbox>
               <v-list-tile-title class="pl-3">友人と応募OK</v-list-tile-title>
             </v-list-tile>
-            <!-- 海外進出 -->
-            <v-list-tile @click="tempOverseas=!tempOverseas">
-              <v-checkbox v-model="tempOverseas" readonly></v-checkbox>
-              <v-list-tile-title class="pl-3">海外進出している</v-list-tile-title>
+            <!-- 土日ok -->
+            <v-list-tile @click="tempWeekend=!tempWeekend">
+              <v-checkbox v-model="tempWeekend" readonly></v-checkbox>
+              <v-list-tile-title class="pl-3">土日OK</v-list-tile-title>
             </v-list-tile>
           </v-list>
 
@@ -182,8 +187,9 @@ export default {
     tempFunding: false,
     tempFounder20s: false,
     tempMedia: false,
+    tempOverseas: false,
     tempFriend: false,
-    tempOverseas: false
+    tempWeekend: false,
   }),
   computed: {
     path() {
@@ -272,6 +278,9 @@ export default {
           case 'overseas':
             text = '海外進出'
             break
+          case 'weekend':
+            text = '土日OK'
+            break
         }
         return text
       }
@@ -301,6 +310,7 @@ export default {
       media: state => state.jobs.media,
       friend: state => state.jobs.friend,
       overseas: state => state.jobs.overseas,
+      weekend: state => state.jobs.weekend,
     })
   },
   methods: {
@@ -348,6 +358,7 @@ export default {
       this.tempMedia = this.media
       this.tempFriend = this.friend
       this.tempOverseas = this.overseas
+      this.tempWeekend = this.weekend
     },
     updateOccupationFilter: function() {
       this.occupationMenu = false
@@ -412,6 +423,9 @@ export default {
       }
       if (this.tempOverseas) {
         queryParams.push('overseas')
+      }
+      if (this.tempWeekend) {
+        queryParams.push('weekend')
       }
       this.$router.replace({
         path: '/',

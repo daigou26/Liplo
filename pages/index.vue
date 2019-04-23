@@ -178,7 +178,6 @@ export default {
       toolbarHeight = 64
     }
     const windowHeight = window.innerHeight - toolbarHeight
-    console.log('windowHeight', windowHeight - 20);
     this.footerButtonTop = windowHeight - 20
   },
   watchQuery: ['occupation', 'features', 'order'],

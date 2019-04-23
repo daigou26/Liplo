@@ -15,8 +15,7 @@ export const state = () => ({
   media: false,
   friend: false,
   overseas: false,
-  recent: false,
-  rating: false,
+  weekend: false,
   order: null,
   toolbarExtension: false,
 })
@@ -66,11 +65,8 @@ export const mutations = {
   updateOverseas(state, isActive) {
     state.overseas = isActive
   },
-  updateRecent(state, isActive) {
-    state.recent = isActive
-  },
-  updateRating(state, isActive) {
-    state.rating = isActive
+  updateWeekend(state, isActive) {
+    state.weekend = isActive
   },
   setOrder(state, order) {
     state.order = order
@@ -86,7 +82,6 @@ export const mutations = {
 
 export const actions = {
   queryJobs({commit, state}, queryParams) {
-    console.log('query jobs');
     const jobs = state.jobs
     const occupationParams = queryParams.occupation
     const featuresParams = queryParams.features
@@ -141,6 +136,9 @@ export const actions = {
       }
       if (featuresParams.includes('overseas')) {
         jobsRef = jobsRef.where('features.overseas', '==', true)
+      }
+      if (featuresParams.includes('weekend')) {
+        jobsRef = jobsRef.where('features.weekend', '==', true)
       }
     }
 
@@ -229,6 +227,7 @@ export const actions = {
       commit('updateMedia', featuresParams.includes('media'))
       commit('updateFriend', featuresParams.includes('friend'))
       commit('updateOverseas', featuresParams.includes('overseas'))
+      commit('updateWeekend', featuresParams.includes('weekend'))
     }
   },
   setOrder({commit}, queryParams) {
