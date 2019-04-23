@@ -381,7 +381,14 @@ export default {
         if (this.tempJobsOthersFilter) {
           queryParams.push('others')
         }
-        this.$router.replace({ path: '/', query: { occupation: queryParams, features: this.$route.query.features }})
+        this.$router.replace({
+          path: '/',
+          query: {
+            occupation: queryParams,
+            features: this.$route.query.features,
+            order: this.$route.query.order
+          }
+        })
       }
     },
     updateFeaturesFilter: function() {
@@ -406,7 +413,14 @@ export default {
       if (this.tempOverseas) {
         queryParams.push('overseas')
       }
-      this.$router.replace({ path: '/', query: { occupation: this.$route.query.occupation, features: queryParams }})
+      this.$router.replace({
+        path: '/',
+        query: {
+          occupation: this.$route.query.occupation,
+          features: queryParams,
+          order: this.$route.query.order
+        }
+      })
     }
   }
 }

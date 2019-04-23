@@ -15,6 +15,9 @@ export const state = () => ({
   media: false,
   friend: false,
   overseas: false,
+  recent: false,
+  rating: false,
+  order: null,
   toolbarExtension: false,
 })
 
@@ -63,6 +66,15 @@ export const mutations = {
   updateOverseas(state, isActive) {
     state.overseas = isActive
   },
+  updateRecent(state, isActive) {
+    state.recent = isActive
+  },
+  updateRating(state, isActive) {
+    state.rating = isActive
+  },
+  setOrder(state, order) {
+    state.order = order
+  },
   // toolbar extension
   setToolbarExtension(state) {
     state.toolbarExtension = true
@@ -74,11 +86,13 @@ export const mutations = {
 
 export const actions = {
   queryJobs({commit, state}, queryParams) {
+    console.log('query jobs');
     const jobs = state.jobs
     const occupationParams = queryParams.occupation
     const featuresParams = queryParams.features
+    const orderParams = queryParams.order
 
-    var jobsRef = firestore.collection('jobs')
+    var jobsRef = firestore.collection('jobs').where('status', '==', 'published')
 
     // occupation
     if (typeof occupationParams == 'string') {
@@ -130,10 +144,15 @@ export const actions = {
       }
     }
 
+    // 並び替え
+    if (orderParams == null) {
+      jobsRef = jobsRef.orderBy('createdAt', 'desc')
+    } else if (orderParams == 'rating') {
+      jobsRef = jobsRef.orderBy('points', 'desc')
+    }
+
     if (jobs.length == 0) {
-      jobsRef.where('status', '==', 'published')
-        .orderBy('createdAt', 'desc')
-        .limit(10)
+      jobsRef.limit(10)
         .get()
         .then(function(snapshot) {
           var docCount = 0
@@ -164,9 +183,7 @@ export const actions = {
       const lastIndex = jobs.length - 1
       const lastDate = jobs[lastIndex].createdAt
 
-      jobsRef.where('status', '==', 'published')
-        .orderBy('createdAt', 'desc')
-        .startAfter(lastDate)
+      jobsRef.startAfter(lastDate)
         .limit(10)
         .get()
         .then(function(snapshot) {
@@ -212,6 +229,14 @@ export const actions = {
       commit('updateMedia', featuresParams.includes('media'))
       commit('updateFriend', featuresParams.includes('friend'))
       commit('updateOverseas', featuresParams.includes('overseas'))
+    }
+  },
+  setOrder({commit}, queryParams) {
+    const orderParams = queryParams.order
+    if (orderParams == null) {
+      commit('setOrder', 'recent')
+    } else if (orderParams == 'rating') {
+      commit('setOrder', 'rating')
     }
   },
   setToolbarExtension({commit}) {

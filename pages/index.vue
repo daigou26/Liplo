@@ -4,21 +4,29 @@
     column
   >
     <!-- footer 表示ボタン -->
-    <v-card-text
-      class="pa-0 hidden-xs-only"
-      id="footer-button"
-      :style="{ top: footerButtonTop + 'px' }"
-    >
+    <div class="hidden-xs-only" id="footer-button">
       <v-btn
-        absolute
-        right
         color="white"
-
         @click="footer = true"
       >
         <span class="font-weight-bold textColor">企業情報、プライバシーなど</span>
       </v-btn>
-    </v-card-text>
+    </div>
+    <!-- 並び替え -->
+    <v-flex
+      xs12
+      text-xs-right
+      class="pr-4"
+    >
+      <v-btn-toggle :value="order">
+        <v-btn flat color="teal darken-1" value="recent" @click="sortButtonClicked('recent')">
+          新着順
+        </v-btn>
+        <v-btn flat color="teal darken-1" value="rating" @click="sortButtonClicked('rating')">
+          評価順
+        </v-btn>
+      </v-btn-toggle>
+    </v-flex>
     <v-container class="pt-0 mt-3">
       <v-layout row wrap justify-center>
         <v-flex
@@ -147,6 +155,7 @@ export default {
       count: 0,
       showInfiniteLoading: false,
       footerButtonTop: 0,
+      tempOrder: 'recent'
     }
   },
   computed: {
@@ -154,6 +163,7 @@ export default {
       isRefreshed: state => state.isRefreshed,
       uid: state => state.uid,
       jobs: state => state.jobs.jobs,
+      order: state => state.jobs.order,
       isLoading: state => state.jobs.isLoading,
       allJobsQueried: state => state.jobs.allJobsQueried,
     })
@@ -168,14 +178,17 @@ export default {
       toolbarHeight = 64
     }
     const windowHeight = window.innerHeight - toolbarHeight
+    console.log('windowHeight', windowHeight - 20);
     this.footerButtonTop = windowHeight - 20
   },
-  watchQuery: ['occupation', 'features'],
+  watchQuery: ['occupation', 'features', 'order'],
   fetch(context) {
     const store = context.store
     store.dispatch('jobs/resetState')
     // filter set
     store.dispatch('jobs/setFilter', context.query)
+    // order set
+    store.dispatch('jobs/setOrder', context.query)
     // query jobs
     store.dispatch('jobs/queryJobs', context.query)
   },
@@ -185,12 +198,35 @@ export default {
         this.resetState()
         // filter set
         this.setFilter(this.$route.query)
+        // order set
+        this.setOrder(this.$route.query)
         // query jobs
         this.queryJobs(this.$route.query)
       }
-    }
+    },
   },
   methods: {
+    sortButtonClicked(order) {
+      if (order) {
+        var queryParams
+        if (order == 'recent') {
+          queryParams = {
+            occupation: this.$route.query.occupation,
+            features: this.$route.query.features,
+          }
+        } else if (order == 'rating') {
+          queryParams = {
+            occupation: this.$route.query.occupation,
+            features: this.$route.query.features,
+            order: 'rating'
+          }
+        }
+        this.$router.replace({
+          path: '/',
+          query: queryParams
+        })
+      }
+    },
     infiniteHandler($state) {
       if (!this.allJobsQueried) {
         if (!this.isLoading) {
@@ -211,6 +247,7 @@ export default {
       queryJobs: 'jobs/queryJobs',
       updateIsLoading: 'jobs/updateIsLoading',
       setFilter: 'jobs/setFilter',
+      setOrder: 'jobs/setOrder',
       resetState: 'jobs/resetState',
     }),
   }
@@ -219,7 +256,9 @@ export default {
 <style>
 #footer-button {
   position: -webkit-sticky;
-  position: sticky;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
   z-index: 1
 }
 </style>
