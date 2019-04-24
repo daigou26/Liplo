@@ -16,6 +16,7 @@ export const state = () => ({
   friend: false,
   overseas: false,
   weekend: false,
+  workweek: null,
   order: null,
   toolbarExtension: false,
 })
@@ -68,6 +69,9 @@ export const mutations = {
   updateWeekend(state, isActive) {
     state.weekend = isActive
   },
+  setWorkweek(state, workweek) {
+    state.workweek = workweek
+  },
   setOrder(state, order) {
     state.order = order
   },
@@ -85,6 +89,7 @@ export const actions = {
     const jobs = state.jobs
     const occupationParams = queryParams.occupation
     const featuresParams = queryParams.features
+    const workweekParams = queryParams.workweek
     const orderParams = queryParams.order
 
     var jobsRef = firestore.collection('jobs').where('status', '==', 'published')
@@ -139,6 +144,22 @@ export const actions = {
       }
       if (featuresParams.includes('weekend')) {
         jobsRef = jobsRef.where('features.weekend', '==', true)
+      }
+    }
+
+    // 勤務日数
+    if (workweekParams != null) {
+      if (workweekParams == '1') {
+        jobsRef = jobsRef.where('workweek.days.one', '==', true)
+      } else if (workweekParams == '2') {
+        jobsRef = jobsRef.where('workweek.days.three', '==', false)
+        jobsRef = jobsRef.where('workweek.days.four', '==', false)
+        jobsRef = jobsRef.where('workweek.days.five', '==', false)
+      } else if (workweekParams == '3') {
+        jobsRef = jobsRef.where('workweek.days.four', '==', false)
+        jobsRef = jobsRef.where('workweek.days.five', '==', false)
+      } else if (workweekParams == '4') {
+        jobsRef = jobsRef.where('workweek.days.five', '==', false)
       }
     }
 
@@ -214,6 +235,8 @@ export const actions = {
   setFilter({commit}, queryParams) {
     const occupationParams = queryParams.occupation
     const featuresParams = queryParams.features
+    const workweekParams = queryParams.workweek
+
     if (occupationParams != null) {
       commit('updateEngineer', occupationParams.includes('engineer'))
       commit('updateDesigner', occupationParams.includes('designer'))
@@ -228,6 +251,11 @@ export const actions = {
       commit('updateFriend', featuresParams.includes('friend'))
       commit('updateOverseas', featuresParams.includes('overseas'))
       commit('updateWeekend', featuresParams.includes('weekend'))
+    }
+    if (workweekParams != null) {
+      commit('setWorkweek', workweekParams)
+    } else {
+      commit('setWorkweek', null)
     }
   },
   setOrder({commit}, queryParams) {

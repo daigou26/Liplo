@@ -1174,11 +1174,13 @@ exports.postJob = functions.region('asia-northeast1')
           const services = doc.data().services
           const welfare = doc.data().welfare
           const feedback = doc.data().feedback
+          const points = doc.data().points
 
           var jobData = {
             companyName: companyName,
             status: initialStatus,
-            feedback: feedback
+            feedback: feedback,
+            points: points
           }
           if (companyImageUrl) {
             jobData.companyImageUrl = companyImageUrl
@@ -1196,7 +1198,8 @@ exports.postJob = functions.region('asia-northeast1')
           var jobDetailData = {
             companyName: companyName,
             status: initialStatus,
-            feedback: feedback
+            feedback: feedback,
+            points: points
           }
           if (companyImageUrl) {
             jobDetailData.companyImageUrl = companyImageUrl
@@ -1861,7 +1864,7 @@ exports.sendReview = functions.region('asia-northeast1')
       createdAt: createdAt,
     }
 
-    // job の rating, companies detail の reviews を更新
+    // job の rating, companies detail の reviews, points を更新
     return admin.firestore()
       .collection('companies')
       .doc(companyId)
@@ -1959,12 +1962,10 @@ exports.sendReview = functions.region('asia-northeast1')
             growth: growth
           }
           const reviews = {
-            reviews: {
-              rating: rating,
-              comments: comments,
-            }
+            rating: rating,
+            comments: comments,
           }
-          // company rating 更新
+          // company rating, points 更新
           const batch = admin.firestore().batch()
           const companyRef = admin.firestore().collection('companies').doc(companyId)
           batch.update(companyRef, {
@@ -1972,7 +1973,10 @@ exports.sendReview = functions.region('asia-northeast1')
             points: points
           })
           const companyDetailRef = admin.firestore().collection('companies').doc(companyId).collection('detail').doc(companyId)
-          batch.update(companyDetailRef, reviews)
+          batch.update(companyDetailRef, {
+            reviews: reviews,
+            points: points,
+          })
           batch.commit()
             .then(() => {
               console.log('sendReview company completed.')
@@ -1981,7 +1985,7 @@ exports.sendReview = functions.region('asia-northeast1')
               console.error("Error adding document: ", error)
             })
 
-          // job rating更新
+          // job rating, points更新
           admin.firestore()
             .collection('jobs')
             .where('companyId', '==', companyId)

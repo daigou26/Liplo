@@ -180,7 +180,7 @@ export default {
     const windowHeight = window.innerHeight - toolbarHeight
     this.footerButtonTop = windowHeight - 20
   },
-  watchQuery: ['occupation', 'features', 'order'],
+  watchQuery: ['occupation', 'features', 'workweek', 'order'],
   fetch(context) {
     const store = context.store
     store.dispatch('jobs/resetState')
@@ -212,11 +212,13 @@ export default {
           queryParams = {
             occupation: this.$route.query.occupation,
             features: this.$route.query.features,
+            workweek: this.$route.query.workweek,
           }
         } else if (order == 'rating') {
           queryParams = {
             occupation: this.$route.query.occupation,
             features: this.$route.query.features,
+            workweek: this.$route.query.workweek,
             order: 'rating'
           }
         }

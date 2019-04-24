@@ -189,7 +189,6 @@ export const actions = {
           batch.update(jobDetailRef, jobData)
           batch.commit()
             .then(() => {
-              dispatch('resetState')
               router.push('/recruiter/jobs')
             })
             .catch((error) => {
@@ -206,7 +205,6 @@ export const actions = {
       batch.update(jobDetailRef, jobData)
       batch.commit()
         .then(() => {
-          dispatch('resetState')
           router.push('/recruiter/jobs')
         })
         .catch((error) => {

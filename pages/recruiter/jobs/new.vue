@@ -224,7 +224,7 @@ export default {
     },
     workweekDaysRules: [
       v => !!v || '数字を入力してください',
-      v => (v <= 7) || '7日以内で指定してください',
+      v => (v <= 5 && v >= 1) || '1 ~ 5日で指定してください',
     ],
     workweekHoursRules: [
       v => !!v || '数字を入力してください',
@@ -416,8 +416,22 @@ export default {
         case 'その他': industry.others = true; break
       }
 
+      let workweekDays = {
+        one: false,
+        two: false,
+        three: false,
+        four: false,
+        five: false,
+      }
+      switch (this.workweek.days) {
+        case 1: workweekDays.one = true; break
+        case 2: workweekDays.two = true; break
+        case 3: workweekDays.three = true; break
+        case 4: workweekDays.four = true; break
+        case 5: workweekDays.five = true; break
+      }
       const workweek = {
-        days: Number(this.workweek.days),
+        days: workweekDays,
         hours: Number(this.workweek.hours)
       }
 

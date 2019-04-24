@@ -230,7 +230,7 @@ export default {
       hours: null,
     },
     workweekDaysRules: [
-      v => (v <= 7) || '7日以内で指定してください'
+      v => (v <= 5 && v >= 1) || '1 ~ 5日で指定してください',
     ],
     workweekHoursRules: [
       v => (v <= 100) || '100時間以内で指定してください'
@@ -358,7 +358,21 @@ export default {
       }
     },
     workweek(workweek) {
-      this.tempWorkweek = workweek
+      if (workweek) {
+        if (workweek.days.one) {
+          this.tempWorkweek.days = 1
+        } else if (workweek.days.two) {
+          this.tempWorkweek.days = 2
+        } else if (workweek.days.three) {
+          this.tempWorkweek.days = 3
+        } else if (workweek.days.four) {
+          this.tempWorkweek.days = 4
+        } else if (workweek.days.five) {
+          this.tempWorkweek.days = 5
+        }
+
+        this.tempWorkweek.hours = workweek.hours
+      }
     },
     period(period) {
       this.tempPeriod = period
@@ -556,8 +570,25 @@ export default {
         case 'その他': industry.others = true; break
       }
 
+      let workweekDays = {
+        one: false,
+        two: false,
+        three: false,
+        four: false,
+        five: false,
+      }
+      switch (this.tempWorkweek.days) {
+        case 1: workweekDays.one = true; break
+        case 2: workweekDays.two = true; break
+        case 3: workweekDays.three = true; break
+        case 4: workweekDays.four = true; break
+        case 5: workweekDays.five = true; break
+      }
+      console.log('edit temp work week', this.tempWorkweek.days);
+      console.log('edit temp work week', workweekDays);
+
       const workweek = {
-        days: Number(this.tempWorkweek.days),
+        days: workweekDays,
         hours: Number(this.tempWorkweek.hours)
       }
 
