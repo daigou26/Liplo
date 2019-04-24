@@ -455,6 +455,8 @@ export const actions = {
                   firstName: firstName,
                   lastName: lastName,
                   email: user.email,
+                  isDeleted: false,
+                  acceptScout: true,
                 })
                 batch.commit()
                   .then(() => {

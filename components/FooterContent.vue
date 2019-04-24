@@ -2,7 +2,7 @@
   <v-flex
     v-if="
       path != '/' &&
-      path != '/messages' &&
+      !path.includes('/messages') &&
       ( path == '/user/profile' || !path.includes('/user')) &&
       !path.includes('/recruiter/')
     "

@@ -134,14 +134,6 @@
           :items="occupationItems"
           label="募集職種"
         ></v-select>
-        <v-select
-          class="pt-4"
-          v-model="tempFeatures"
-          :items="featureItems"
-          label="特徴"
-          chips
-          multiple
-        ></v-select>
         <v-textarea
           v-if="tempOccupation == 'エンジニア'"
           class="pt-4"
@@ -151,6 +143,20 @@
           placeholder="開発環境について"
           required
         ></v-textarea>
+        <v-select
+          class="pt-4"
+          v-model="tempFeatures"
+          :items="featureItems"
+          label="特徴"
+          chips
+          multiple
+        ></v-select>
+        <v-select
+          class="pt-4"
+          v-model="tempIndustry"
+          :items="industryItems"
+          label="業界（必須）"
+        ></v-select>
         <div class="text-xs-right py-3">
           <v-flex xs6 sm4 offset-xs6 offset-sm8>
             <v-select
@@ -224,7 +230,7 @@ export default {
       hours: null,
     },
     workweekDaysRules: [
-      v => (v <= 7) || '7日以内で指定してください'
+      v => (v <= 5 && v >= 1) || '1 ~ 5日で指定してください',
     ],
     workweekHoursRules: [
       v => (v <= 100) || '100時間以内で指定してください'
@@ -251,7 +257,24 @@ export default {
       '創業者が20代',
       '資金調達済み',
       '海外進出中',
-      '友人と応募OK'
+      '友人と応募OK',
+      '土日OK'
+    ],
+    tempIndustry: '',
+    industryItems: [
+      '教育',
+      '人材',
+      '金融',
+      '医療・福祉',
+      'エンタメ',
+      '旅行',
+      'ゲーム',
+      '広告',
+      'メディア',
+      'メーカー',
+      '飲食',
+      'ファッション',
+      'その他'
     ],
     tempEnvironment: '',
     environmentRules: [
@@ -300,6 +323,7 @@ export default {
       idealCandidate: state => state.companyJob.idealCandidate,
       occupation: state => state.companyJob.occupation,
       features: state => state.companyJob.features,
+      industry: state => state.companyJob.industry,
       status: state => state.companyJob.status
     }),
   },
@@ -327,10 +351,28 @@ export default {
       this.tempIdealSkills = idealSkills
     },
     environment(environment) {
-      this.tempEnvironment = environment
+      if (environment == null) {
+        this.tempEnvironment = ''
+      } else {
+        this.tempEnvironment = environment
+      }
     },
     workweek(workweek) {
-      this.tempWorkweek = workweek
+      if (workweek) {
+        if (workweek.days.one) {
+          this.tempWorkweek.days = 1
+        } else if (workweek.days.two) {
+          this.tempWorkweek.days = 2
+        } else if (workweek.days.three) {
+          this.tempWorkweek.days = 3
+        } else if (workweek.days.four) {
+          this.tempWorkweek.days = 4
+        } else if (workweek.days.five) {
+          this.tempWorkweek.days = 5
+        }
+
+        this.tempWorkweek.hours = workweek.hours
+      }
     },
     period(period) {
       this.tempPeriod = period
@@ -378,6 +420,38 @@ export default {
       }
       if (features.friend == true) {
         this.tempFeatures.push('友人と応募OK')
+      }
+      if (features.weekend == true) {
+        this.tempFeatures.push('土日OK')
+      }
+    },
+    industry(industry) {
+      if (industry.education == true) {
+        this.tempIndustry = '教育'
+      } else if (industry.hr == true) {
+        this.tempIndustry = '人材'
+      } else if (industry.finance == true) {
+        this.tempIndustry = '金融'
+      } else if (industry.healthcare == true) {
+        this.tempIndustry = '医療・福祉'
+      } else if (industry.entertainment == true) {
+        this.tempIndustry = 'エンタメ'
+      } else if (industry.travel == true) {
+        this.tempIndustry = '旅行'
+      } else if (industry.game == true) {
+        this.tempIndustry = 'ゲーム'
+      } else if (industry.ad == true) {
+        this.tempIndustry = '広告'
+      } else if (industry.media == true) {
+        this.tempIndustry = 'メディア'
+      } else if (industry.maker == true) {
+        this.tempIndustry = 'メーカー'
+      } else if (industry.food == true) {
+        this.tempIndustry = '飲食'
+      } else if (industry.fashion == true) {
+        this.tempIndustry = 'ファッション'
+      } else if (industry.others == true) {
+        this.tempIndustry = 'その他'
       }
     },
     status(status) {
@@ -441,6 +515,7 @@ export default {
         funding: false,
         overseas: false,
         friend: false,
+        weekend: false,
       }
       if (this.tempFeatures.includes('未経験OK')) {
         features.experience = true
@@ -460,9 +535,60 @@ export default {
       if (this.tempFeatures.includes('友人と応募OK')) {
         features.friend = true
       }
+      if (this.tempFeatures.includes('土日OK')) {
+        features.weekend = true
+      }
+
+      let industry = {
+        education: false,
+        hr: false,
+        finance: false,
+        healthcare: false,
+        entertainment: false,
+        travel: false,
+        game: false,
+        ad: false,
+        media: false,
+        maker: false,
+        food: false,
+        fashion: false,
+        others: false,
+      }
+      switch (this.tempIndustry) {
+        case '教育': industry.education = true; break
+        case '人材': industry.hr = true; break
+        case '金融': industry.finance = true; break
+        case '医療・福祉': industry.healthcare = true; break
+        case 'エンタメ': industry.entertainment = true; break
+        case '旅行': industry.travel = true; break
+        case 'ゲーム': industry.game = true; break
+        case '広告': industry.ad = true; break
+        case 'メディア': industry.media = true; break
+        case 'メーカー': industry.maker = true; break
+        case '飲食': industry.food = true; break
+        case 'ファッション': industry.fashion = true; break
+        case 'その他': industry.others = true; break
+      }
+
+      let workweekDays = {
+        one: false,
+        two: false,
+        three: false,
+        four: false,
+        five: false,
+      }
+      switch (this.tempWorkweek.days) {
+        case 1: workweekDays.one = true; break
+        case 2: workweekDays.two = true; break
+        case 3: workweekDays.three = true; break
+        case 4: workweekDays.four = true; break
+        case 5: workweekDays.five = true; break
+      }
+      console.log('edit temp work week', this.tempWorkweek.days);
+      console.log('edit temp work week', workweekDays);
 
       const workweek = {
-        days: Number(this.tempWorkweek.days),
+        days: workweekDays,
         hours: Number(this.tempWorkweek.hours)
       }
 
@@ -485,6 +611,7 @@ export default {
         idealCandidate: this.tempIdealCandidate,
         occupation: occupation,
         features: features,
+        industry: industry,
         environment: this.tempEnvironment,
         status: status,
       })

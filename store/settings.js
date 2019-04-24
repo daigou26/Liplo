@@ -56,16 +56,21 @@ export const actions = {
       })
   },
   updateAcceptScout({commit}, {uid, acceptScout}) {
-    firestore.collection('users')
-      .doc(uid)
-      .update({
-        acceptScout: acceptScout
-      })
+    const userRef = firestore.collection('users').doc(uid)
+    batch.update(userRef, {
+      acceptScout: acceptScout
+    })
+    const userDetailRef = firestore.collection('users').doc(uid)
+      .collection('detail').doc(user.uid)
+    batch.update(userDetailRef, {
+      acceptScout: acceptScout
+    })
+    batch.commit()
       .then(() => {
         commit('setAcceptScout', acceptScout)
       })
-      .catch(function(error) {
-        console.log("Error getting document:", error)
+      .catch((error) => {
+        console.error("Error adding document: ", error)
       })
   },
   updateIsLoading({commit}, isLoading) {

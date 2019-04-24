@@ -100,14 +100,13 @@ export const actions = {
           commit('setDesiredOccupatins', doc.data()['desiredOccupations'])
           commit('setInterstingFields', doc.data()['interestingFields'])
 
-          // 削除されているか
-          if (doc.data()['isDeleted']) {
+          // スカウトを許可しているか、アカウントが削除されているか
+          if (!doc.data()['acceptScout'] || doc.data()['isDeleted']) {
             console.log('404');
             // 404
             commit('updateIsLoading', false)
             nuxt.error({ statusCode: 404, message: 'not found' })
           } else {
-            console.log(' not 404');
             // すでに候補者になっているか
             firestore.collection('companies')
               .doc(companyId)

@@ -88,15 +88,20 @@
               <v-checkbox v-model="tempMedia" readonly></v-checkbox>
               <v-list-tile-title class="pl-3">メディアに掲載されたことがある</v-list-tile-title>
             </v-list-tile>
+            <!-- 海外進出 -->
+            <v-list-tile @click="tempOverseas=!tempOverseas">
+              <v-checkbox v-model="tempOverseas" readonly></v-checkbox>
+              <v-list-tile-title class="pl-3">海外進出している</v-list-tile-title>
+            </v-list-tile>
             <!-- 友人と応募ok -->
             <v-list-tile @click="tempFriend=!tempFriend">
               <v-checkbox v-model="tempFriend" readonly></v-checkbox>
               <v-list-tile-title class="pl-3">友人と応募OK</v-list-tile-title>
             </v-list-tile>
-            <!-- 海外進出 -->
-            <v-list-tile @click="tempOverseas=!tempOverseas">
-              <v-checkbox v-model="tempOverseas" readonly></v-checkbox>
-              <v-list-tile-title class="pl-3">海外進出している</v-list-tile-title>
+            <!-- 土日ok -->
+            <v-list-tile @click="tempWeekend=!tempWeekend">
+              <v-checkbox v-model="tempWeekend" readonly></v-checkbox>
+              <v-list-tile-title class="pl-3">土日OK</v-list-tile-title>
             </v-list-tile>
           </v-list>
 
@@ -104,6 +109,40 @@
             <v-spacer></v-spacer>
             <v-btn flat @click="featuresMenu = false">キャンセル</v-btn>
             <v-btn color="primary" flat @click="updateFeaturesFilter">適用</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-menu>
+      <!-- 勤務日数 -->
+      <v-menu
+        v-model="workweekMenu"
+        fixed
+        offset-y
+        :close-on-content-click="false"
+      >
+        <v-btn
+          slot="activator"
+          v-bind:outline="!isWorkweekFilterActive"
+          v-bind:depressed="isWorkweekFilterActive"
+          :color="jobsFilterButtonColor('workweek')"
+          @click="workweekFilterButtonClicked"
+        >
+          <span :class="jobsFilterTextColor('workweek')">{{ workweekFilterText }}</span>
+        </v-btn>
+        <v-card>
+          <v-radio-group class="pl-3 pt-3 mt-0" v-model="tempWorkweek">
+            <v-radio label="指定なし" value="指定なし"></v-radio>
+            <v-radio
+              v-for="n in 5"
+              :key="n"
+              :label="`週${n}日`"
+              :value="n"
+            ></v-radio>
+          </v-radio-group>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn flat @click="workweekMenu = false">キャンセル</v-btn>
+            <v-btn color="primary" flat @click="updateWorkweekFilter">適用</v-btn>
           </v-card-actions>
         </v-card>
       </v-menu>
@@ -182,8 +221,12 @@ export default {
     tempFunding: false,
     tempFounder20s: false,
     tempMedia: false,
+    tempOverseas: false,
     tempFriend: false,
-    tempOverseas: false
+    tempWeekend: false,
+    // 勤務日数
+    workweekMenu: false,
+    tempWorkweek: '指定なし',
   }),
   computed: {
     path() {
@@ -195,6 +238,8 @@ export default {
           return this.isJobsOccupationFilterActive ? '#00897B' : '#E0E0E0'
         } else if (filterType == 'features') {
           return this.isFeaturesFilterActive ? '#00897B' : '#E0E0E0'
+        } else if (filterType == 'workweek') {
+          return this.isWorkweekFilterActive ? '#00897B' : '#E0E0E0'
         }
       }
     },
@@ -211,6 +256,8 @@ export default {
           return this.isJobsOccupationFilterActive ? 'whiteTextColor' : 'textColor'
         } else if (filterType == 'features') {
           return this.isFeaturesFilterActive ? 'whiteTextColor' : 'textColor'
+        } else if (filterType == 'workweek') {
+          return this.isWorkweekFilterActive ? 'whiteTextColor' : 'textColor'
         }
       }
     },
@@ -272,10 +319,21 @@ export default {
           case 'overseas':
             text = '海外進出'
             break
+          case 'weekend':
+            text = '土日OK'
+            break
         }
         return text
       }
       return '特徴'
+    },
+    workweekFilterText: function() {
+      const workweek = this.$route.query.workweek
+      if (workweek == null) {
+        return '勤務日数'
+      } else {
+        return '週' + workweek + '日'
+      }
     },
     isJobsOccupationFilterActive: function() {
       return (this.jobsEngineerFilter || this.jobsDesignerFilter || this.jobsSalesFilter || this.jobsOthersFilter)
@@ -285,6 +343,9 @@ export default {
     },
     isFeaturesFilterActive: function() {
       return (this.experience || this.funding || this.founder20s || this.media || this.friend || this.overseas)
+    },
+    isWorkweekFilterActive: function() {
+      return this.workweek != null
     },
     ...mapState({
       jobsEngineerFilter: state => state.jobs.engineer,
@@ -301,6 +362,8 @@ export default {
       media: state => state.jobs.media,
       friend: state => state.jobs.friend,
       overseas: state => state.jobs.overseas,
+      weekend: state => state.jobs.weekend,
+      workweek: state => state.jobs.workweek,
     })
   },
   methods: {
@@ -348,6 +411,14 @@ export default {
       this.tempMedia = this.media
       this.tempFriend = this.friend
       this.tempOverseas = this.overseas
+      this.tempWeekend = this.weekend
+    },
+    workweekFilterButtonClicked: function() {
+      if (this.workweek == null) {
+        this.tempWorkweek = '指定なし'
+      } else {
+        this.tempWorkweek = Number(this.workweek)
+      }
     },
     updateOccupationFilter: function() {
       this.occupationMenu = false
@@ -381,7 +452,15 @@ export default {
         if (this.tempJobsOthersFilter) {
           queryParams.push('others')
         }
-        this.$router.replace({ path: '/', query: { occupation: queryParams, features: this.$route.query.features }})
+        this.$router.replace({
+          path: '/',
+          query: {
+            occupation: queryParams,
+            features: this.$route.query.features,
+            workweek: this.$route.query.workweek,
+            order: this.$route.query.order
+          }
+        })
       }
     },
     updateFeaturesFilter: function() {
@@ -406,7 +485,35 @@ export default {
       if (this.tempOverseas) {
         queryParams.push('overseas')
       }
-      this.$router.replace({ path: '/', query: { occupation: this.$route.query.occupation, features: queryParams }})
+      if (this.tempWeekend) {
+        queryParams.push('weekend')
+      }
+      this.$router.replace({
+        path: '/',
+        query: {
+          occupation: this.$route.query.occupation,
+          features: queryParams,
+          workweek: this.$route.query.workweek,
+          order: this.$route.query.order
+        }
+      })
+    },
+    updateWorkweekFilter: function() {
+      this.workweekMenu = false
+      var query = {
+        occupation: this.$route.query.occupation,
+        features: this.$route.query.features,
+        order: this.$route.query.order
+      }
+
+      if (this.tempWorkweek != '指定なし') {
+        query.workweek = this.tempWorkweek
+      }
+
+      this.$router.replace({
+        path: '/',
+        query: query
+      })
     }
   }
 }

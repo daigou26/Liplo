@@ -9,13 +9,14 @@ export const state = () => ({
   wage: '',
   requiredSkills: '',
   idealSkills: '',
-  environment: null,
+  environment: '',
   workweek: null,
   period: null,
   workday: null,
   idealCandidate: '',
   occupation: '',
   features: '',
+  industry: '',
   field: '',
   createdAt: '',
   updatedAt: '',
@@ -65,6 +66,9 @@ export const mutations = {
   setFeatures(state, features) {
     state.features = features
   },
+  setIndustry(state, industry) {
+    state.industry = industry
+  },
   setCreatedAt(state, createdAt) {
     state.createdAt = createdAt
   },
@@ -81,6 +85,8 @@ export const actions = {
     const jobId = params.id
 
     firestore.collection('jobs')
+      .doc(jobId)
+      .collection('detail')
       .doc(jobId)
       .get()
       .then((doc) => {
@@ -99,6 +105,7 @@ export const actions = {
           commit('setIdealCandidate', doc.data()['idealCandidate'])
           commit('setOccupation', doc.data()['occupation'])
           commit('setFeatures', doc.data()['features'])
+          commit('setIndustry', doc.data()['industry'])
           commit('setStatus', doc.data()['status'])
           commit('setCreatedAt', doc.data()['createdAt'])
           commit('setUpdatedAt', doc.data()['updatedAt'])
@@ -125,6 +132,7 @@ export const actions = {
     idealCandidate,
     occupation,
     features,
+    industry,
     environment,
     status
   }) {
@@ -143,6 +151,7 @@ export const actions = {
       idealCandidate: idealCandidate,
       occupation: occupation,
       features: features,
+      industry: industry,
       environment: environment,
       status: status,
       updatedAt: updatedAt
@@ -180,7 +189,6 @@ export const actions = {
           batch.update(jobDetailRef, jobData)
           batch.commit()
             .then(() => {
-              dispatch('resetState')
               router.push('/recruiter/jobs')
             })
             .catch((error) => {
@@ -197,7 +205,6 @@ export const actions = {
       batch.update(jobDetailRef, jobData)
       batch.commit()
         .then(() => {
-          dispatch('resetState')
           router.push('/recruiter/jobs')
         })
         .catch((error) => {
@@ -221,6 +228,7 @@ export const actions = {
     idealCandidate,
     occupation,
     features,
+    industry,
     environment,
     status
   }) {
@@ -247,6 +255,7 @@ export const actions = {
           workday: workday,
           occupation: occupation,
           features: features,
+          industry: industry,
           createdAt: createdAt,
           status: 'creating',
         }
@@ -265,6 +274,7 @@ export const actions = {
           idealCandidate: idealCandidate,
           occupation: occupation,
           features: features,
+          industry: industry,
           environment: environment,
           createdAt: createdAt,
           initialStatus: status,
@@ -303,6 +313,7 @@ export const actions = {
     commit('setIdealCandidate', '')
     commit('setOccupation', '')
     commit('setFeatures', '')
+    commit('setIndustry', '')
     commit('setStatus', '')
   },
 }

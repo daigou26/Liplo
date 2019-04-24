@@ -15,6 +15,9 @@ export const state = () => ({
   media: false,
   friend: false,
   overseas: false,
+  weekend: false,
+  workweek: null,
+  order: null,
   toolbarExtension: false,
 })
 
@@ -63,6 +66,15 @@ export const mutations = {
   updateOverseas(state, isActive) {
     state.overseas = isActive
   },
+  updateWeekend(state, isActive) {
+    state.weekend = isActive
+  },
+  setWorkweek(state, workweek) {
+    state.workweek = workweek
+  },
+  setOrder(state, order) {
+    state.order = order
+  },
   // toolbar extension
   setToolbarExtension(state) {
     state.toolbarExtension = true
@@ -77,8 +89,10 @@ export const actions = {
     const jobs = state.jobs
     const occupationParams = queryParams.occupation
     const featuresParams = queryParams.features
+    const workweekParams = queryParams.workweek
+    const orderParams = queryParams.order
 
-    var jobsRef = firestore.collection('jobs')
+    var jobsRef = firestore.collection('jobs').where('status', '==', 'published')
 
     // occupation
     if (typeof occupationParams == 'string') {
@@ -128,12 +142,36 @@ export const actions = {
       if (featuresParams.includes('overseas')) {
         jobsRef = jobsRef.where('features.overseas', '==', true)
       }
+      if (featuresParams.includes('weekend')) {
+        jobsRef = jobsRef.where('features.weekend', '==', true)
+      }
+    }
+
+    // 勤務日数
+    if (workweekParams != null) {
+      if (workweekParams == '1') {
+        jobsRef = jobsRef.where('workweek.days.one', '==', true)
+      } else if (workweekParams == '2') {
+        jobsRef = jobsRef.where('workweek.days.three', '==', false)
+        jobsRef = jobsRef.where('workweek.days.four', '==', false)
+        jobsRef = jobsRef.where('workweek.days.five', '==', false)
+      } else if (workweekParams == '3') {
+        jobsRef = jobsRef.where('workweek.days.four', '==', false)
+        jobsRef = jobsRef.where('workweek.days.five', '==', false)
+      } else if (workweekParams == '4') {
+        jobsRef = jobsRef.where('workweek.days.five', '==', false)
+      }
+    }
+
+    // 並び替え
+    if (orderParams == null) {
+      jobsRef = jobsRef.orderBy('createdAt', 'desc')
+    } else if (orderParams == 'rating') {
+      jobsRef = jobsRef.orderBy('points', 'desc')
     }
 
     if (jobs.length == 0) {
-      jobsRef.where('status', '==', 'published')
-        .orderBy('createdAt', 'desc')
-        .limit(10)
+      jobsRef.limit(10)
         .get()
         .then(function(snapshot) {
           var docCount = 0
@@ -164,9 +202,7 @@ export const actions = {
       const lastIndex = jobs.length - 1
       const lastDate = jobs[lastIndex].createdAt
 
-      jobsRef.where('status', '==', 'published')
-        .orderBy('createdAt', 'desc')
-        .startAfter(lastDate)
+      jobsRef.startAfter(lastDate)
         .limit(10)
         .get()
         .then(function(snapshot) {
@@ -199,6 +235,8 @@ export const actions = {
   setFilter({commit}, queryParams) {
     const occupationParams = queryParams.occupation
     const featuresParams = queryParams.features
+    const workweekParams = queryParams.workweek
+
     if (occupationParams != null) {
       commit('updateEngineer', occupationParams.includes('engineer'))
       commit('updateDesigner', occupationParams.includes('designer'))
@@ -212,6 +250,20 @@ export const actions = {
       commit('updateMedia', featuresParams.includes('media'))
       commit('updateFriend', featuresParams.includes('friend'))
       commit('updateOverseas', featuresParams.includes('overseas'))
+      commit('updateWeekend', featuresParams.includes('weekend'))
+    }
+    if (workweekParams != null) {
+      commit('setWorkweek', workweekParams)
+    } else {
+      commit('setWorkweek', null)
+    }
+  },
+  setOrder({commit}, queryParams) {
+    const orderParams = queryParams.order
+    if (orderParams == null) {
+      commit('setOrder', 'recent')
+    } else if (orderParams == 'rating') {
+      commit('setOrder', 'rating')
     }
   },
   setToolbarExtension({commit}) {

@@ -146,6 +146,12 @@
           chips
           multiple
         ></v-select>
+        <v-select
+          class="pt-4"
+          v-model="industry"
+          :items="industryItems"
+          label="業界（必須）"
+        ></v-select>
         <div class="text-xs-right py-3">
           <v-flex xs6 sm4 offset-xs6 offset-sm8>
             <v-select
@@ -218,7 +224,7 @@ export default {
     },
     workweekDaysRules: [
       v => !!v || '数字を入力してください',
-      v => (v <= 7) || '7日以内で指定してください',
+      v => (v <= 5 && v >= 1) || '1 ~ 5日で指定してください',
     ],
     workweekHoursRules: [
       v => !!v || '数字を入力してください',
@@ -243,6 +249,10 @@ export default {
       '営業',
       'その他',
     ],
+    environment: '',
+    environmentRules: [
+      v => (v.length <= 2000) || '2000字以内で入力してください'
+    ],
     features: null,
     featureItems: [
       '未経験OK',
@@ -250,11 +260,24 @@ export default {
       '創業者が20代',
       '資金調達済み',
       '海外進出中',
-      '友人と応募OK'
+      '友人と応募OK',
+      '土日OK'
     ],
-    environment: '',
-    environmentRules: [
-      v => (v.length <= 2000) || '2000字以内で入力してください'
+    industry: null,
+    industryItems: [
+      '教育',
+      '人材',
+      '金融',
+      '医療・福祉',
+      'エンタメ',
+      '旅行',
+      'ゲーム',
+      '広告',
+      'メディア',
+      'メーカー',
+      '飲食',
+      'ファッション',
+      'その他'
     ],
     status: '公開',
     statusItems: [
@@ -268,7 +291,8 @@ export default {
         this.imageFile == null ||
         !this.imageFileSizeValid ||
         this.occupation == null ||
-        this.workday == null
+        this.workday == null ||
+        this.industry == null
       )
     },
     imageRatio() {
@@ -328,7 +352,6 @@ export default {
         case 'その他': occupation.others = true; break
       }
 
-
       let features = {
         experience: false,
         media: false,
@@ -336,6 +359,7 @@ export default {
         funding: false,
         overseas: false,
         friend: false,
+        weekend: false,
       }
       if (this.features) {
         if (this.features.includes('未経験OK')) {
@@ -356,10 +380,58 @@ export default {
         if (this.features.includes('友人と応募OK')) {
           features.friend = true
         }
-      }    
+        if (this.features.includes('土日OK')) {
+          features.weekend = true
+        }
+      }
 
+      let industry = {
+        education: false,
+        hr: false,
+        finance: false,
+        healthcare: false,
+        entertainment: false,
+        travel: false,
+        game: false,
+        ad: false,
+        media: false,
+        maker: false,
+        food: false,
+        fashion: false,
+        others: false,
+      }
+      switch (this.industry) {
+        case '教育': industry.education = true; break
+        case '人材': industry.hr = true; break
+        case '金融': industry.finance = true; break
+        case '医療・福祉': industry.healthcare = true; break
+        case 'エンタメ': industry.entertainment = true; break
+        case '旅行': industry.travel = true; break
+        case 'ゲーム': industry.game = true; break
+        case '広告': industry.ad = true; break
+        case 'メディア': industry.media = true; break
+        case 'メーカー': industry.maker = true; break
+        case '飲食': industry.food = true; break
+        case 'ファッション': industry.fashion = true; break
+        case 'その他': industry.others = true; break
+      }
+
+      let workweekDays = {
+        one: false,
+        two: false,
+        three: false,
+        four: false,
+        five: false,
+      }
+      switch (this.workweek.days) {
+        case 1: workweekDays.one = true; break
+        case 2: workweekDays.two = true; break
+        case 3: workweekDays.three = true; break
+        case 4: workweekDays.four = true; break
+        case 5: workweekDays.five = true; break
+      }
       const workweek = {
-        days: Number(this.workweek.days),
+        days: workweekDays,
         hours: Number(this.workweek.hours)
       }
 
@@ -381,6 +453,7 @@ export default {
         idealCandidate: this.idealCandidate,
         occupation: occupation,
         features: features,
+        industry: industry,
         environment: this.environment,
         status: status,
       })
