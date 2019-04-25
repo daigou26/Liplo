@@ -74,6 +74,9 @@ export default {
 .textColor {
   color: #555555;
 }
+.light-text-color {
+  color: #777777;
+}
 .whiteTextColor {
   color: #ffffff;
 }
