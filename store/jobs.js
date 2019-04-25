@@ -225,6 +225,7 @@ export const actions = {
           commit('updateIsLoading', false)
         })
         .catch(function(error) {
+          commit('updateIsLoading', false)
           console.log("Error getting document:", error);
         })
     } else if (jobs.length != 0) {
@@ -262,7 +263,7 @@ export const actions = {
                 }
               }
             }
-            
+
             const job = {
               jobId: doc.id,
               title: doc.data()['title'],
@@ -286,6 +287,7 @@ export const actions = {
           commit('updateIsLoading', false)
         })
         .catch(function(error) {
+          commit('updateIsLoading', false)
           console.log("Error getting document:", error);
         })
     }
