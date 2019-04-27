@@ -704,22 +704,22 @@
         </v-dialog>
       </div>
     </v-flex>
-    <v-flex v-else>
-      <div class="text-xs-center">
-        <v-progress-circular
-         :size="50"
-         color="primary"
-         indeterminate
-       ></v-progress-circular>
-      </div>
+    <v-flex v-else xs12 :style="{ height: windowHeight + 'px' }">
+      <v-layout align-center justify-center column fill-height>
+        <diamond></diamond>
+      </v-layout>
     </v-flex>
   </v-layout>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import { Diamond } from 'vue-loading-spinner'
 
 export default {
+  components: {
+    Diamond
+  },
   data: () => ({
     isQueried: false,
     showInfiniteLoading: false,
@@ -738,6 +738,7 @@ export default {
       }
     },
     showChart: false,
+    windowHeight: 0,
     windowWidth: 0,
     xsWidth: false,
   }),
@@ -857,6 +858,13 @@ export default {
     this.showChart = true
     this.showInfiniteLoading = true
 
+    let toolbarHeight
+    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+      toolbarHeight = 48
+    } else {
+      toolbarHeight = 64
+    }
+    this.windowHeight = window.innerHeight - toolbarHeight - 30
     this.windowWidth = window.innerWidth
   },
   fetch(context) {
