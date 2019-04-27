@@ -282,7 +282,7 @@
               </div>
             </div>
             <!-- review -->
-            <div v-if="uid" class="py-4 hidden-lg-and-up">
+            <div class="py-4 hidden-lg-and-up">
               <p
                 class="font-weight-bold textColor"
                 :class="{
@@ -292,7 +292,10 @@
               >
                 レビュー
               </p>
-              <div v-if="reviews" class="pt-3">
+              <div v-if="!uid" class="pt-3">
+                レビューを見るには、ログインする必要があります。
+              </div>
+              <div v-else-if="reviews" class="pt-3">
                 <!-- sm以下の場合は、チャートを使わない -->
                 <div class="hidden-md-and-up pb-5">
                   <div class="d-flex">
@@ -442,21 +445,6 @@
                 まだレビューがありません
               </div>
             </div>
-            <!-- ログインしていない場合 -->
-            <div v-else class="py-4 hidden-lg-and-up">
-              <p
-                class="font-weight-bold textColor"
-                :class="{
-                  'headline': $vuetify.breakpoint.smAndUp,
-                  'title': $vuetify.breakpoint.xsOnly
-                }"
-              >
-                レビュー
-              </p>
-              <div class="pt-2">
-                レビューを見るには、ログインする必要があります。
-              </div>
-            </div>
             <!-- 企業情報 -->
             <div class="py-4 hidden-lg-and-up">
               <p
@@ -527,11 +515,14 @@
               </div>
             </div>
             <!-- review -->
-            <div v-if="uid" class="py-4">
+            <div class="py-4">
               <p class="title font-weight-bold textColor">
                 レビュー
               </p>
-              <div v-if="reviews">
+              <div v-if="!uid">
+                レビューを見るには、ログインが必要です。
+              </div>
+              <div v-else-if="reviews">
                 <radar-chart v-if="showChart && reviewChartData" :data="reviewChartData" :options="reviewChartOptions" />
                 <v-list class="pl-3">
                   <template v-for="(item, index) in reviews.comments">
@@ -559,14 +550,6 @@
               </div>
               <div v-else class="pt-2">
                 まだレビューがありません
-              </div>
-            </div>
-            <div v-else class="py-4">
-              <p class="title font-weight-bold textColor">
-                レビュー
-              </p>
-              <div class="pt-2">
-                レビューを見るには、ログインが必要です。
               </div>
             </div>
           </v-flex>

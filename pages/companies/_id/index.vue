@@ -136,67 +136,125 @@
             </div>
           </div>
           <!-- review -->
-          <div v-if="reviews" class="py-4">
-            <p class="headline font-weight-bold textColor">
-              レビュー({{ reviews.rating.count }})
+          <div class="py-4">
+            <p
+              class="font-weight-bold textColor"
+              :class="{
+                'headline': $vuetify.breakpoint.smAndUp,
+                'title': $vuetify.breakpoint.xsOnly
+              }"
+            >
+              レビュー
             </p>
-            <div class="py-3">
+            <div v-if="!uid" class="pt-3">
+              レビューを見るには、ログインする必要があります。
+            </div>
+            <div v-else-if="reviews" class="pt-3">
               <!-- sm以下の場合は、チャートを使わない -->
               <div class="hidden-md-and-up pb-5">
                 <div class="d-flex">
                   <v-flex xs7 sm6>
-                    <span class="subheading font-weight-bold textColor pr-2">成長できるか</span>
+                    <span class="font-weight-bold textColor pr-2">成長できるか</span>
                   </v-flex>
                   <v-flex xs5 sm6 text-sm-left text-xs-right>
-                    <v-rating small readonly v-model="reviews.rating.growth"/>
+                    <v-rating
+                      v-model="reviews.rating.growth"
+                      background-color="teal"
+                      color="teal darken-1"
+                      small
+                      half-increments
+                      readonly
+                    />
                   </v-flex>
                 </div>
                 <div class="d-flex">
                   <v-flex xs7 sm6>
-                    <span class="subheading font-weight-bold textColor pr-2">仕事内容</span>
+                    <span class="font-weight-bold textColor pr-2">仕事内容</span>
                   </v-flex>
                   <v-flex xs5 sm6 text-sm-left text-xs-right>
-                    <v-rating small readonly v-model="reviews.rating.job"/>
+                    <v-rating
+                      v-model="reviews.rating.job"
+                      background-color="teal"
+                      color="teal darken-1"
+                      small
+                      half-increments
+                      readonly
+                    />
                   </v-flex>
                 </div>
                 <div class="d-flex">
                   <v-flex xs7 sm6>
-                    <span class="subheading font-weight-bold textColor pr-2">裁量度</span>
+                    <span class="font-weight-bold textColor pr-2">裁量度</span>
                   </v-flex>
                   <v-flex xs5 sm6 text-sm-left text-xs-right>
-                    <v-rating small readonly v-model="reviews.rating.discretion"/>
+                    <v-rating
+                      v-model="reviews.rating.discretion"
+                      background-color="teal"
+                      color="teal darken-1"
+                      small
+                      half-increments
+                      readonly
+                    />
                   </v-flex>
                 </div>
                 <div class="d-flex">
                   <v-flex xs7 sm6>
-                    <span class="subheading font-weight-bold textColor pr-2">出勤時間の柔軟性</span>
+                    <span class="font-weight-bold textColor pr-2">出勤時間の柔軟性</span>
                   </v-flex>
                   <v-flex xs5 sm6 text-sm-left text-xs-right>
-                    <v-rating small readonly v-model="reviews.rating.flexibleSchedule"/>
+                    <v-rating
+                      v-model="reviews.rating.flexibleSchedule"
+                      background-color="teal"
+                      color="teal darken-1"
+                      small
+                      half-increments
+                      readonly
+                    />
                   </v-flex>
                 </div>
                 <div class="d-flex">
                   <v-flex xs7 sm6>
-                    <span class="subheading font-weight-bold textColor pr-2">勤務中の自由度</span>
+                    <span class="font-weight-bold textColor pr-2">勤務中の自由度</span>
                   </v-flex>
                   <v-flex xs5 sm6 text-sm-left text-xs-right>
-                    <v-rating small readonly v-model="reviews.rating.flexibility"/>
+                    <v-rating
+                      v-model="reviews.rating.flexibility"
+                      background-color="teal"
+                      color="teal darken-1"
+                      small
+                      half-increments
+                      readonly
+                    />
                   </v-flex>
                 </div>
                 <div class="d-flex">
                   <v-flex xs7 sm6>
-                    <span class="subheading font-weight-bold textColor pr-2">メンター</span>
+                    <span class="font-weight-bold textColor pr-2">メンター</span>
                   </v-flex>
                   <v-flex xs5 sm6 text-sm-left text-xs-right>
-                    <v-rating small readonly v-model="reviews.rating.mentor"/>
+                    <v-rating
+                      v-model="reviews.rating.mentor"
+                      background-color="teal"
+                      color="teal darken-1"
+                      small
+                      half-increments
+                      readonly
+                    />
                   </v-flex>
                 </div>
                 <div class="d-flex">
                   <v-flex xs7 sm6>
-                    <span class="subheading font-weight-bold textColor pr-2">雰囲気</span>
+                    <span class="font-weight-bold textColor pr-2">雰囲気</span>
                   </v-flex>
                   <v-flex xs5 sm6 text-sm-left text-xs-right>
-                    <v-rating small readonly v-model="reviews.rating.atmosphere"/>
+                    <v-rating
+                      v-model="reviews.rating.atmosphere"
+                      background-color="teal"
+                      color="teal darken-1"
+                      small
+                      half-increments
+                      readonly
+                    />
                   </v-flex>
                 </div>
               </div>
@@ -215,8 +273,7 @@
                             class="grey lighten-3"
                             :size="25"
                           >
-                            <!-- <v-img :src="companyImageUrl" :size="15"></v-img> -->
-                            <v-icon style="font-size: 15px">person</v-icon>
+                            <v-icon style="font-size: 18px">person</v-icon>
                           </v-avatar>
                           {{ item.occupation }}
                         </div>
@@ -237,6 +294,9 @@
                   <radar-chart v-if="showChart && reviewChartData" :data="reviewChartData" :options="reviewChartOptions" />
                 </v-flex>
               </div>
+            </div>
+            <div v-else class="pt-2">
+              まだレビューがありません
             </div>
           </div>
           <!-- 募集 -->
@@ -416,6 +476,7 @@ export default {
       }
     },
     ...mapState({
+      uid: state => state.uid,
       imageUrl: state => state.company.imageUrl,
       companyId: state => state.company.companyId,
       companyName: state => state.company.companyName,

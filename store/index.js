@@ -571,7 +571,7 @@ export const actions = {
 
     } else {
       commit('setUid', null)
-      if (route.path !== '/' && route.path !== '/signup' && route.path !== '/company_registration' && route.name !== 'jobs-id') {
+      if (route.path !== '/' && route.path !== '/signup' && route.path !== '/company_registration' && route.name !== 'jobs-id' && route.name !== 'companies-id') {
         router.push('/')
       }
     }
