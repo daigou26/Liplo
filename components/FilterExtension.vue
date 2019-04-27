@@ -1,5 +1,10 @@
 <template>
-  <div class="px-5">
+  <div
+    class="filter"
+    :class="{
+      'px-5': $vuetify.breakpoint.smAndUp,
+    }"
+  >
     <!-- 求人フィルター -->
     <div v-if="!path.includes('/users')">
       <!-- 職種 -->
@@ -8,6 +13,9 @@
         fixed
         offset-y
         :close-on-content-click="false"
+        :class="{
+          'xs-filter': $vuetify.breakpoint.xsOnly,
+        }"
       >
         <v-btn
           slot="activator"
@@ -56,6 +64,9 @@
         fixed
         offset-y
         :close-on-content-click="false"
+        :class="{
+          'xs-filter': $vuetify.breakpoint.xsOnly,
+        }"
       >
         <v-btn
           slot="activator"
@@ -118,6 +129,9 @@
         fixed
         offset-y
         :close-on-content-click="false"
+        :class="{
+          'xs-filter': $vuetify.breakpoint.xsOnly,
+        }"
       >
         <v-btn
           slot="activator"
@@ -518,3 +532,16 @@ export default {
   }
 }
 </script>
+<style>
+.filter .v-btn {
+  border-radius: 10px;
+}
+.xs-filter .v-btn {
+  min-width: 0;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin-left: 4px;
+  margin-right: 4px;
+  font-size: 12px;
+}
+</style>
