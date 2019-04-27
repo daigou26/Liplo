@@ -306,58 +306,6 @@ exports.sendFeedback = functions.region('asia-northeast1')
       })
   })
 
-// 企業のfeedback countが変更された時、job の db も更新
-exports.updateJobFeedbackCount = functions.region('asia-northeast1')
-  .firestore
-  .document('companies/{companyId}')
-  .onUpdate((change, context) => {
-    const previousValue = change.before.data()
-    const newValue = change.after.data()
-    const companyId = context.params.companyId
-    const feedback = newValue.feedback
-
-    // 変化がない場合は終了
-    if (
-      feedback.all == previousValue.feedback.all &&
-      feedback.writtenCount == previousValue.feedback.writtenCount
-    ) {
-      return 0
-    }
-
-    return admin.firestore()
-      .collection('jobs')
-      .where('companyId', '==', companyId)
-      .get()
-      .then(function(snapshot) {
-        // job関連更新
-        const batch = admin.firestore().batch()
-
-        snapshot.forEach(function(doc) {
-          const jobRef = admin.firestore().collection('jobs').doc(doc.id)
-          batch.update(jobRef, {
-            feedback: feedback
-          })
-
-          const jobDetailRef = admin.firestore().collection('jobs').doc(doc.id)
-            .collection('detail')
-            .doc(doc.id)
-          batch.update(jobDetailRef, {
-            feedback: feedback
-          })
-        })
-        batch.commit()
-          .then(() => {
-            console.log('updateJobFeedbackCount completed.')
-          })
-          .catch((error) => {
-            console.error("Error adding document: ", error)
-          })
-      })
-      .catch(err => {
-        console.log('Error getting document', err)
-      })
-  })
-
 // フィードバックが送られた時、企業のfeedback countを更新
 exports.updateCompanyFeedbackCount = functions.region('asia-northeast1')
   .firestore
@@ -1316,6 +1264,11 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
     const what = newValue.what
     const services = newValue.services
     const welfare = newValue.welfare
+    const url = newValue.url
+    const location = newValue.location
+    const foundedDate = newValue.foundedDate
+    const employeesCount = newValue.employeesCount
+    const feedback = newValue.feedback
     const members = newValue.members
     var isCompanyNameChanged = false
     var isCompanyImageUrlChanged = false
@@ -1333,6 +1286,12 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
       what == previousValue.what &&
       services == previousValue.services &&
       welfare == previousValue.welfare &&
+      url == previousValue.url &&
+      location == previousValue.location &&
+      foundedDate == previousValue.foundedDate &&
+      employeesCount == previousValue.employeesCount &&
+      feedback.all == previousValue.feedback.all &&
+      feedback.writtenCount == previousValue.feedback.writtenCount &&
       members == previousValue.members
     ) {
       return 0
@@ -1400,6 +1359,21 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
           }
           if (welfare) {
             jobDetailData.welfare = welfare
+          }
+          if (url) {
+            jobDetailData.url = url
+          }
+          if (location) {
+            jobDetailData.location = location
+          }
+          if (foundedDate) {
+            jobDetailData.foundedDate = foundedDate
+          }
+          if (employeesCount) {
+            jobDetailData.employeesCount = employeesCount
+          }
+          if (feedback) {
+            jobDetailData.feedback = feedback
           }
           jobBatch.update(jobDetailRef, jobDetailData)
         })

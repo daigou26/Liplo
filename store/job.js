@@ -29,6 +29,11 @@ export const state = () => ({
   features: '',
   field: '',
   createdAt: '',
+  url :'',
+  location: '',
+  foundedDate: '',
+  employeesCount: null,
+  feedback: null,
   reviews: null,
   reviewChartData: null,
   isCandidate: false,
@@ -117,6 +122,21 @@ export const mutations = {
   setCreatedAt(state, createdAt) {
     state.createdAt = createdAt
   },
+  setUrl(state, url) {
+    state.url = url
+  },
+  setLocation(state, location) {
+    state.location = location
+  },
+  setFoundedDate(state, foundedDate) {
+    state.foundedDate = foundedDate
+  },
+  setEmployeesCount(state, employeesCount) {
+    state.employeesCount = employeesCount
+  },
+  setFeedback(state, feedback) {
+    state.feedback = feedback
+  },
   setReviews(state, reviews) {
     state.reviews = reviews
   },
@@ -142,6 +162,32 @@ export const actions = {
             var isQueriedCandidates = false
             const companyId = doc.data()['companyId']
 
+            // 投稿日
+            var createdAt = doc.data()['createdAt']
+            if (createdAt) {
+              let date = new Date( createdAt.seconds * 1000 )
+              let year  = date.getFullYear()
+              let month = date.getMonth() + 1
+              let day  = date.getDate()
+              createdAt = `${year}/${month}/${day}`
+            }
+            commit('setCreatedAt', createdAt)
+
+            // 設立日
+            var foundedDate = doc.data()['foundedDate']
+            if (foundedDate) {
+              let date = new Date( foundedDate.seconds * 1000 )
+              let year  = date.getFullYear()
+              let month = date.getMonth() + 1
+              let day  = date.getDate()
+              foundedDate = `${year}/${month}/${day}`
+            }
+            commit('setFoundedDate', foundedDate)
+
+            // feedback記入率
+            var feedback = doc.data()['feedback']
+            commit('setFeedback', Math.round(feedback.writtenCount / feedback.all * 100))
+
             commit('setImageUrl', doc.data()['imageUrl'])
             commit('setTitle', doc.data()['title'])
             commit('setCompanyId', companyId)
@@ -166,8 +212,11 @@ export const actions = {
             commit('setWorkday', doc.data()['workday'])
             commit('setIdealCandidate', doc.data()['idealCandidate'])
             commit('setOccupation', doc.data()['occupation'])
-            // commit('setFeatures', doc.data()['features'])
-            commit('setCreatedAt', doc.data()['createdAt'])
+            commit('setFeatures', doc.data()['features'])
+            commit('setUrl', doc.data()['url'])
+            commit('setLocation', doc.data()['location'])
+            commit('setEmployeesCount', doc.data()['employeesCount'])
+
             if (doc.data()['status'] == 'published') {
               // レビュー情報取得
               firestore.collection('companies')

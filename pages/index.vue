@@ -56,7 +56,7 @@
                       ></v-img>
                       <div
                         class="pt-3 px-4 text-xs-left caption textColor font-weight-bold"
-                        id="occupation"
+                        id="job-tags"
                       >
                         <span class="px-2 py-1">{{ occupation(job.occupation) }}</span>
                         <span class="ml-2 px-2 py-1">{{ job.period }}ヶ月</span>
@@ -328,12 +328,5 @@ export default {
   bottom: 20px;
   right: 20px;
   z-index: 1
-}
-#occupation span {
-  border: 1px solid;
-  border-color: #777777;
-  border-radius: 15px;
-  -webkit-border-radius: 15px;
-  -moz-border-radius: 15px;
 }
 </style>
