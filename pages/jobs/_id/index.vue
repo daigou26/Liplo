@@ -11,6 +11,41 @@
           :aspect-ratio="imageRatio"
         ></v-img>
       </v-flex>
+      <v-flex
+        xs10
+        offset-xs1
+        class="break py-3"
+        :class="{
+          'px-5': $vuetify.breakpoint.mdAndUp,
+          'px-3': $vuetify.breakpoint.smOnly,
+        }"
+      >
+        <!-- createdAt -->
+        <div class="light-text-color font-weight-bold">
+          {{ createdAt }}
+        </div>
+        <!-- title -->
+        <div
+          class="pt-1 font-weight-bold"
+          :class="{
+            'job-title': $vuetify.breakpoint.mdAndUp,
+            'headline': $vuetify.breakpoint.smOnly,
+            'title': $vuetify.breakpoint.xsOnly
+          }"
+        >
+          {{ title }}
+        </div>
+        <!-- タグ -->
+        <div
+          class="pt-3 text-xs-left caption textColor font-weight-bold"
+          id="job-tags"
+        >
+          <span class="px-2 py-1">{{ occupationText(occupation) }}</span>
+          <template v-if="value" v-for="(value, feature, index) in features">
+            <span class="ml-2 px-2 py-1">{{ featuresText(feature) }}</span>
+          </template>
+        </div>
+      </v-flex>
       <v-flex xs10 offset-xs1 class="break">
         <v-layout
           white
@@ -26,73 +61,98 @@
               'py-3': $vuetify.breakpoint.xsOnly,
             }"
           >
-            <!-- title -->
-            <div
-              class="font-weight-bold pb-5"
-              :class="{
-                'job-title': $vuetify.breakpoint.smAndUp,
-                'headline': $vuetify.breakpoint.xsOnly
-              }"
-            >
-              {{ title }}
-            </div>
+
             <!-- mission -->
             <div v-if="mission" class="py-4">
-              <p class="headline font-weight-bold textColor">
+              <p
+                class="font-weight-bold textColor"
+                :class="{
+                  'headline': $vuetify.breakpoint.smAndUp,
+                  'title': $vuetify.breakpoint.xsOnly
+                }"
+              >
                 Mission
               </p>
-              <div>
+              <div class="pt-3">
                 <p class="body-text return">{{ mission }}</p>
               </div>
             </div>
             <!-- vision -->
             <div v-if="vision" class="py-4">
-              <p class="headline font-weight-bold textColor">
+              <p
+                class="font-weight-bold textColor"
+                :class="{
+                  'headline': $vuetify.breakpoint.smAndUp,
+                  'title': $vuetify.breakpoint.xsOnly
+                }"
+              >
                 Vision
               </p>
-              <div>
+              <div class="pt-3">
                 <p class="body-text return">{{ vision }}</p>
               </div>
             </div>
             <!-- value -->
             <div v-if="value" class="py-4">
-              <p class="headline font-weight-bold textColor">
+              <p
+                class="font-weight-bold textColor"
+                :class="{
+                  'headline': $vuetify.breakpoint.smAndUp,
+                  'title': $vuetify.breakpoint.xsOnly
+                }"
+              >
                 Value
               </p>
-              <div>
+              <div class="pt-3">
                 <p class="body-text return">{{ value }}</p>
               </div>
             </div>
             <!-- culture -->
             <div v-if="culture" class="py-4">
-              <p class="headline font-weight-bold textColor">
+              <p
+                class="font-weight-bold textColor"
+                :class="{
+                  'headline': $vuetify.breakpoint.smAndUp,
+                  'title': $vuetify.breakpoint.xsOnly
+                }"
+              >
                 Culture
               </p>
-              <div>
+              <div class="pt-3">
                 <p class="body-text return">{{ culture }}</p>
               </div>
             </div>
             <!-- what -->
             <div v-if="what" class="py-4">
-              <p class="headline font-weight-bold textColor">
+              <p
+                class="font-weight-bold textColor"
+                :class="{
+                  'headline': $vuetify.breakpoint.smAndUp,
+                  'title': $vuetify.breakpoint.xsOnly
+                }"
+              >
                 何をやっているか
               </p>
-              <div>
-                <p class="body-text return">{{ what }}</p>
+              <div class="pt-3">
+                <div class="body-text return">{{ what }}</div>
                 <!-- サービス一覧 -->
-                <v-list v-if="services" class="pt-3">
+                <v-list v-if="services">
                   <template v-for="(service, index) in services">
-                      <div class="d-flex pb-3">
+                      <div v-if="!xsWidth" class="d-flex pt-4">
                         <v-flex xs4 sm3 lg2>
-                          <v-img :src="service.imageUrl" height="100"></v-img>
+                          <v-img :src="service.imageUrl" aspect-ratio="1.5" max-height="100" max-width="160"></v-img>
                         </v-flex>
-                        <v-flex xs8 sm9 lg10 class="px-4 break">
-                          <div>
-                            <span class="font-weight-bold body-text">{{ service.title }}</span>
-                          </div>
+                        <v-flex xs8 sm9 lg10 class="pl-4 break">
+                          <div class="font-weight-bold body-text">{{ service.title }}</div>
                           <p　class="textColor return">{{ service.content }}</p>
-                          <p class="textColor">{{ service.url }}</p>
+                          <a :href="service.url">{{ service.url }}</a>
                         </v-flex>
+                      </div>
+                      <div v-else class="pt-4">
+                        <v-img :src="service.imageUrl" aspect-ratio="1.5" max-height="100" max-width="160"></v-img>
+                        <div class="font-weight-bold body-text">{{ service.title }}</div>
+                        <div　class="textColor return pb-2">{{ service.content }}</div>
+                        <a :href="service.url">{{ service.url }}</a>
                       </div>
                   </template>
                 </v-list>
@@ -100,20 +160,74 @@
             </div>
             <!-- why -->
             <div v-if="why" class="py-4">
-              <p class="headline font-weight-bold textColor">
+              <p
+                class="font-weight-bold textColor"
+                :class="{
+                  'headline': $vuetify.breakpoint.smAndUp,
+                  'title': $vuetify.breakpoint.xsOnly
+                }"
+              >
                 なぜやっているか
               </p>
-              <div>
+              <div class="pt-3">
                 <p class="body-text return">{{ why }}</p>
+              </div>
+            </div>
+            <!-- 福利厚生 -->
+            <div v-if="welfare" class="py-4">
+              <p
+                class="font-weight-bold textColor"
+                :class="{
+                  'headline': $vuetify.breakpoint.smAndUp,
+                  'title': $vuetify.breakpoint.xsOnly
+                }"
+              >
+                福利厚生
+              </p>
+              <div class="pt-3">
+                <p class="body-text return">{{ welfare }}</p>
               </div>
             </div>
             <!-- 仕事について -->
             <div class="py-4">
-              <p class="headline font-weight-bold textColor">
+              <p
+                class="font-weight-bold textColor"
+                :class="{
+                  'headline': $vuetify.breakpoint.smAndUp,
+                  'title': $vuetify.breakpoint.xsOnly
+                }"
+              >
                 仕事について
               </p>
-              <div v-if="description">
+              <div v-if="description" class="py-3">
                 <p class="body-text return">{{ description }}</p>
+              </div>
+              <!-- 期間 -->
+              <div v-if="period" class="py-3">
+                <p class="job-sub-title font-weight-bold textColor">
+                  内定を出すまでのインターン期間
+                </p>
+                <div>
+                  <p class="body-text return">{{ period }}ヶ月</p>
+                </div>
+              </div>
+              <!-- 勤務日 -->
+              <div v-if="workday != null" class="py-3">
+                <p class="job-sub-title font-weight-bold textColor">
+                  勤務日
+                </p>
+                <div>
+                  <p class="body-text return">{{ workdayText(workday) }}</p>
+                </div>
+              </div>
+              <!-- 勤務時間 -->
+              <div v-if="workweek" class="py-3">
+                <p class="job-sub-title font-weight-bold textColor">
+                  勤務時間
+                </p>
+                <div>
+                  <p class="body-text return">週{{ workweekDays(workweek.days) }}日以上、週合計{{ workweek.hours }}時間以上</p>
+                </div>
               </div>
               <!-- 給与 -->
               <div v-if="wage" class="py-3">
@@ -154,75 +268,139 @@
             </div>
             <!-- 求める人物像 -->
             <div v-if="idealCandidate" class="py-4">
-              <p class="headline font-weight-bold textColor">
+              <p
+                class="font-weight-bold textColor"
+                :class="{
+                  'headline': $vuetify.breakpoint.smAndUp,
+                  'title': $vuetify.breakpoint.xsOnly
+                }"
+              >
                 求める人物像
               </p>
-              <div>
+              <div class="pt-3">
                 <p class="body-text return">{{ idealCandidate }}</p>
               </div>
             </div>
             <!-- review -->
-            <div v-if="reviews" class="py-4 hidden-lg-and-up">
-              <p class="headline font-weight-bold textColor">
-                レビュー({{ reviews.rating.count }})
+            <div class="py-4 hidden-lg-and-up">
+              <p
+                class="font-weight-bold textColor"
+                :class="{
+                  'headline': $vuetify.breakpoint.smAndUp,
+                  'title': $vuetify.breakpoint.xsOnly
+                }"
+              >
+                レビュー
               </p>
-              <div class="py-3">
+              <div v-if="!uid" class="pt-3">
+                レビューを見るには、ログインする必要があります。
+              </div>
+              <div v-else-if="reviews" class="pt-3">
                 <!-- sm以下の場合は、チャートを使わない -->
                 <div class="hidden-md-and-up pb-5">
                   <div class="d-flex">
                     <v-flex xs7 sm6>
-                      <span class="subheading font-weight-bold textColor pr-2">成長できるか</span>
+                      <span class="font-weight-bold textColor pr-2">成長できるか</span>
                     </v-flex>
                     <v-flex xs5 sm6 text-sm-left text-xs-right>
-                      <v-rating small readonly v-model="reviews.rating.growth"/>
+                      <v-rating
+                        v-model="reviews.rating.growth"
+                        background-color="teal"
+                        color="teal darken-1"
+                        small
+                        half-increments
+                        readonly
+                      />
                     </v-flex>
                   </div>
                   <div class="d-flex">
                     <v-flex xs7 sm6>
-                      <span class="subheading font-weight-bold textColor pr-2">仕事内容</span>
+                      <span class="font-weight-bold textColor pr-2">仕事内容</span>
                     </v-flex>
                     <v-flex xs5 sm6 text-sm-left text-xs-right>
-                      <v-rating small readonly v-model="reviews.rating.job"/>
+                      <v-rating
+                        v-model="reviews.rating.job"
+                        background-color="teal"
+                        color="teal darken-1"
+                        small
+                        half-increments
+                        readonly
+                      />
                     </v-flex>
                   </div>
                   <div class="d-flex">
                     <v-flex xs7 sm6>
-                      <span class="subheading font-weight-bold textColor pr-2">裁量度</span>
+                      <span class="font-weight-bold textColor pr-2">裁量度</span>
                     </v-flex>
                     <v-flex xs5 sm6 text-sm-left text-xs-right>
-                      <v-rating small readonly v-model="reviews.rating.discretion"/>
+                      <v-rating
+                        v-model="reviews.rating.discretion"
+                        background-color="teal"
+                        color="teal darken-1"
+                        small
+                        half-increments
+                        readonly
+                      />
                     </v-flex>
                   </div>
                   <div class="d-flex">
                     <v-flex xs7 sm6>
-                      <span class="subheading font-weight-bold textColor pr-2">出勤時間の柔軟性</span>
+                      <span class="font-weight-bold textColor pr-2">出勤時間の柔軟性</span>
                     </v-flex>
                     <v-flex xs5 sm6 text-sm-left text-xs-right>
-                      <v-rating small readonly v-model="reviews.rating.flexibleSchedule"/>
+                      <v-rating
+                        v-model="reviews.rating.flexibleSchedule"
+                        background-color="teal"
+                        color="teal darken-1"
+                        small
+                        half-increments
+                        readonly
+                      />
                     </v-flex>
                   </div>
                   <div class="d-flex">
                     <v-flex xs7 sm6>
-                      <span class="subheading font-weight-bold textColor pr-2">勤務中の自由度</span>
+                      <span class="font-weight-bold textColor pr-2">勤務中の自由度</span>
                     </v-flex>
                     <v-flex xs5 sm6 text-sm-left text-xs-right>
-                      <v-rating small readonly v-model="reviews.rating.flexibility"/>
+                      <v-rating
+                        v-model="reviews.rating.flexibility"
+                        background-color="teal"
+                        color="teal darken-1"
+                        small
+                        half-increments
+                        readonly
+                      />
                     </v-flex>
                   </div>
                   <div class="d-flex">
                     <v-flex xs7 sm6>
-                      <span class="subheading font-weight-bold textColor pr-2">メンター</span>
+                      <span class="font-weight-bold textColor pr-2">メンター</span>
                     </v-flex>
                     <v-flex xs5 sm6 text-sm-left text-xs-right>
-                      <v-rating small readonly v-model="reviews.rating.mentor"/>
+                      <v-rating
+                        v-model="reviews.rating.mentor"
+                        background-color="teal"
+                        color="teal darken-1"
+                        small
+                        half-increments
+                        readonly
+                      />
                     </v-flex>
                   </div>
                   <div class="d-flex">
                     <v-flex xs7 sm6>
-                      <span class="subheading font-weight-bold textColor pr-2">雰囲気</span>
+                      <span class="font-weight-bold textColor pr-2">雰囲気</span>
                     </v-flex>
                     <v-flex xs5 sm6 text-sm-left text-xs-right>
-                      <v-rating small readonly v-model="reviews.rating.atmosphere"/>
+                      <v-rating
+                        v-model="reviews.rating.atmosphere"
+                        background-color="teal"
+                        color="teal darken-1"
+                        small
+                        half-increments
+                        readonly
+                      />
                     </v-flex>
                   </div>
                 </div>
@@ -241,8 +419,7 @@
                               class="grey lighten-3"
                               :size="25"
                             >
-                              <!-- <v-img :src="companyImageUrl" :size="15"></v-img> -->
-                              <v-icon style="font-size: 15px">person</v-icon>
+                              <v-icon style="font-size: 18px">person</v-icon>
                             </v-avatar>
                             {{ item.occupation }}
                           </div>
@@ -264,43 +441,90 @@
                   </v-flex>
                 </div>
               </div>
+              <div v-else class="pt-2">
+                まだレビューがありません
+              </div>
             </div>
-            <!-- 他の募集 -->
-            <div class="py-4 mb-5">
-              <p class="headline font-weight-bold textColor">
-                他の募集
+            <!-- 企業情報 -->
+            <div class="py-4 hidden-lg-and-up">
+              <p
+                class="font-weight-bold textColor"
+                :class="{
+                  'headline': $vuetify.breakpoint.smAndUp,
+                  'title': $vuetify.breakpoint.xsOnly
+                }"
+              >
+                企業情報
               </p>
-              <div>
-                <v-card flat>
-                  <v-card-text class="overflow-hidden py-0">
-                    <v-layout class="horiz-scroll">
-                      <div
-                        v-for="media in mediaList"
-                        class="pr-3 pb-2"
-                      >
-                        <div>
-                          <img :src="media.src" height="133" width="200"/>
-                          <div class="sub-title1 font-weight-bold textColor">
-                            エンジニア、デザイナー募集
-                          </div>
-                        </div>
-                      </div>
-                    </v-layout>
-                  </v-card-text>
-                </v-card>
+              <div v-if="url" class="pb-2">
+                <v-card-actions class="pa-0">
+                  <v-icon style="font-size: 18px">link</v-icon>
+                  <a :href="url" class="pl-2">{{ url }}</a>
+                </v-card-actions>
+              </div>
+              <div v-if="foundedDate" class="pb-2">
+                <v-card-actions class="pa-0">
+                  <v-icon style="font-size: 18px">flag</v-icon>
+                  <span class="pl-2">{{ foundedDate }}に設立</span>
+                </v-card-actions>
+              </div>
+              <div v-if="location" class="pb-2">
+                <v-card-actions class="pa-0">
+                  <v-icon style="font-size: 18px">place</v-icon>
+                  <span class="pl-2">{{ location }}</span>
+                </v-card-actions>
+              </div>
+              <div v-if="employeesCount" class="pb-2">
+                <v-card-actions class="pa-0">
+                  <v-icon style="font-size: 18px">group</v-icon>
+                  <span class="pl-2">{{ employeesCount }}人のメンバー</span>
+                </v-card-actions>
               </div>
             </div>
           </v-flex>
           <!-- right section -->
           <v-flex xs4 pa-5 hidden-md-and-down>
+            <!-- 企業情報 -->
+            <div class="py-4">
+              <p class="title font-weight-bold textColor">
+                企業情報
+              </p>
+              <div v-if="url" class="pb-2">
+                <v-card-actions class="pa-0">
+                  <v-icon style="font-size: 18px">link</v-icon>
+                  <a :href="url" class="pl-2">{{ url }}</a>
+                </v-card-actions>
+              </div>
+              <div v-if="foundedDate" class="pb-2">
+                <v-card-actions class="pa-0">
+                  <v-icon style="font-size: 18px">flag</v-icon>
+                  <span class="pl-2">{{ foundedDate }}に設立</span>
+                </v-card-actions>
+              </div>
+              <div v-if="location" class="pb-2">
+                <v-card-actions class="pa-0">
+                  <v-icon style="font-size: 18px">place</v-icon>
+                  <span class="pl-2">{{ location }}</span>
+                </v-card-actions>
+              </div>
+              <div v-if="employeesCount" class="pb-2">
+                <v-card-actions class="pa-0">
+                  <v-icon style="font-size: 18px">group</v-icon>
+                  <span class="pl-2">{{ employeesCount }}人のメンバー</span>
+                </v-card-actions>
+              </div>
+            </div>
             <!-- review -->
             <div class="py-4">
               <p class="title font-weight-bold textColor">
-                レビュー({{ reviews ? reviews.rating.count : 0 }})
+                レビュー
               </p>
-              <div v-if="reviews">
+              <div v-if="!uid">
+                レビューを見るには、ログインが必要です。
+              </div>
+              <div v-else-if="reviews">
                 <radar-chart v-if="showChart && reviewChartData" :data="reviewChartData" :options="reviewChartOptions" />
-                <v-list>
+                <v-list class="pl-3">
                   <template v-for="(item, index) in reviews.comments">
                     <div class="py-2">
                       <div class="font-weight-bold body-text">
@@ -308,8 +532,7 @@
                           class="grey lighten-3"
                           :size="25"
                         >
-                          <!-- <v-img :src="companyImageUrl" :size="15"></v-img> -->
-                          <v-icon style="font-size: 15px">person</v-icon>
+                          <v-icon style="font-size: 18px">person</v-icon>
                         </v-avatar>
                         {{ item.occupation }}
                       </div>
@@ -319,11 +542,14 @@
                 </v-list>
                 <div
                   v-if="reviews.rating.count > 3"
-                  class="teal--text font-weight-bold clickable text-xs-center"
+                  class="pl-3 teal--text font-weight-bold clickable text-xs-center"
                   @click="reviewsButtonClicked"
                 >
                   すべて見る
                 </div>
+              </div>
+              <div v-else class="pt-2">
+                まだレビューがありません
               </div>
             </div>
           </v-flex>
@@ -340,7 +566,6 @@
         <v-layout
           align-center
         >
-
           <!-- Company Name && Rating -->
           <v-flex
             xs6
@@ -352,33 +577,44 @@
               'pl-4': $vuetify.breakpoint.mdAndUp,
             }"
           >
-          <v-card v-if="companyId" flat :to="'../companies/' + companyId">
-            <v-card-actions>
-              <v-list-tile>
-                <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
-                  <v-img
-                    v-if="companyImageUrl"
-                    :src="companyImageUrl"
-                  ></v-img>
-                </v-list-tile-avatar>
-                <v-list-tile-content>
-                  <v-list-tile-title class="textColor font-weight-bold">
-                    {{ companyName }}
-                  </v-list-tile-title>
-                  <v-list-tile-sub-title v-if="reviews">
-                    <v-rating small readonly v-model="reviews.rating.all"/>
-                  </v-list-tile-sub-title>
-                </v-list-tile-content>
-              </v-list-tile>
-            </v-card-actions>
-          </v-card>
-
+            <v-card v-if="companyId" flat :to="'../companies/' + companyId" id="company-info-footer">
+              <v-card-actions style="display: block;">
+                <v-list-tile class="px-0">
+                  <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
+                    <v-img
+                      v-if="companyImageUrl"
+                      :src="companyImageUrl"
+                    ></v-img>
+                  </v-list-tile-avatar>
+                  <v-list-tile-content>
+                    <v-list-tile-title class="textColor font-weight-bold">
+                      <span v-if="xsWidth" style="font-size:12px">{{ companyName }}</span>
+                      <span v-else>{{ companyName }}</span>
+                    </v-list-tile-title>
+                    <v-list-tile-sub-title v-if="reviews">
+                      <v-card-actions class="pa-0">
+                        <v-rating
+                          v-model="reviews.rating.all"
+                          background-color="teal"
+                          color="teal darken-1"
+                          small
+                          half-increments
+                          readonly
+                        />
+                        <span class="pl-1 textColor">{{ reviews.rating.count }}</span>
+                      </v-card-actions>
+                    </v-list-tile-sub-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </v-card-actions>
+            </v-card>
           </v-flex>
+          <v-spacer></v-spacer>
           <v-flex
             v-if="type != 'recruiter'"
-            xs6
-            sm5
+            xs5
             md4
+            offset
             text-xs-right
             :class="{
               'pr-5': $vuetify.breakpoint.mdAndUp,
@@ -402,7 +638,15 @@
               </span>
             </v-btn>
             <span v-else>
-              応募するにはログインが必要です
+              <span v-if="xsWidth" class="caption">
+                <div>
+                  応募するには
+                </div>
+                <div>
+                  ログインが必要です
+                </div>
+              </span>
+              <span v-else>応募するにはログインが必要です</span>
             </span>
           </v-flex>
         </v-layout>
@@ -443,12 +687,19 @@
                               class="grey lighten-3"
                               :size="25"
                             >
-                              <!-- <v-img :src="companyImageUrl" :size="15"></v-img> -->
-                              <v-icon style="font-size: 15px">person</v-icon>
+                              <v-icon style="font-size: 18px">person</v-icon>
                             </v-avatar>
                             {{ item.occupation }}
                           </div>
-                          <v-rating small readonly v-model="item.all" class="pt-2"/>
+                          <v-rating
+                            v-model="item.all"
+                            background-color="teal"
+                            color="teal darken-1"
+                            small
+                            half-increments
+                            readonly
+                            class="pt-2"
+                          />
                           <p class="py-3 body-text return">{{ item.content }}</p>
                         </div>
                       </template>
@@ -468,14 +719,10 @@
         </v-dialog>
       </div>
     </v-flex>
-    <v-flex v-else>
-      <div class="text-xs-center">
-        <v-progress-circular
-         :size="50"
-         color="primary"
-         indeterminate
-       ></v-progress-circular>
-      </div>
+    <v-flex v-else xs12 :style="{ height: windowHeight + 'px' }">
+      <v-layout align-center justify-center column fill-height>
+        Now Loading...
+      </v-layout>
     </v-flex>
   </v-layout>
 </template>
@@ -502,17 +749,84 @@ export default {
       }
     },
     showChart: false,
-    mediaList: [
-      {id: 1, name: "1.png", src: "https://placeimg.com/200/200/animals"},
-      {id: 2, name: "1.png", src: "https://placeimg.com/200/200/arch"},
-      {id: 3, name: "1.png", src: "https://placeimg.com/200/200/nature"},
-      {id: 4, name: "1.png", src: "https://placeimg.com/200/200/people"},
-      {id: 5, name: "1.png", src: "https://placeimg.com/200/200/tech"},
-      {id: 6, name: "1.png", src: "https://placeimg.com/200/200/animals"},
-      {id: 7, name: "1.png", src: "https://placeimg.com/200/200/animals"},
-    ],
+    windowHeight: 0,
+    windowWidth: 0,
+    xsWidth: false,
   }),
   computed: {
+    workdayText: function() {
+      return function(workday) {
+        if (workday == 0) {
+          return '平日のみ'
+        } else if (workday == 1) {
+          return '土曜可'
+        } else if (workday == 2) {
+          return '日曜可'
+        } else if (workday == 3) {
+          return '土日可'
+        }
+      }
+    },
+    workweekDays: function() {
+      return function(days) {
+        if (days.one) {
+          return 1
+        } else if (days.two) {
+          return 2
+        } else if (days.three) {
+          return 3
+        } else if (days.four) {
+          return 4
+        } else if (days.five) {
+          return 5
+        }
+      }
+    },
+    occupationIcon: function() {
+      return function(occupation) {
+        if (occupation.engineer == true) {
+          return 'fas fa-code'
+        } else if (occupation.designer == true) {
+          return 'fas fa-palette'
+        } else if (occupation.sales == true) {
+          return 'fas fa-user-tie'
+        } else if (occupation.others == true) {
+          return 'その他'
+        }
+      }
+    },
+    featuresText: function() {
+      return function(feature) {
+        if (feature == 'experience') {
+          return '未経験OK'
+        } else if (feature == 'media') {
+          return 'メディア掲載実績あり'
+        } else if (feature == 'founder20s') {
+          return '創業者が20代'
+        } else if (feature == 'funding') {
+          return '資金調達済み'
+        } else if (feature == 'overseas') {
+          return '海外進出中'
+        } else if (feature == 'friend') {
+          return '友人と応募OK'
+        } else if (feature == 'weekend') {
+          return '土日OK'
+        }
+      }
+    },
+    occupationText: function() {
+      return function(occupation) {
+        if (occupation.engineer == true) {
+          return 'エンジニア'
+        } else if (occupation.designer == true) {
+          return 'デザイナー'
+        } else if (occupation.sales == true) {
+          return '営業'
+        } else if (occupation.others == true) {
+          return 'その他'
+        }
+      }
+    },
     imageRatio() {
       switch (this.$vuetify.breakpoint.name) {
         case 'xs': return '2'
@@ -521,6 +835,9 @@ export default {
         case 'lg': return '3'
         case 'xl': return '3'
       }
+    },
+    breakpoint() {
+      return this.$vuetify.breakpoint.name
     },
     ...mapState({
       isRefreshed: state => state.isRefreshed,
@@ -555,6 +872,11 @@ export default {
       occupation: state => state.job.occupation,
       features: state => state.job.features,
       createdAt: state => state.job.createdAt,
+      url: state => state.job.url,
+      location: state => state.job.location,
+      foundedDate: state => state.job.foundedDate,
+      employeesCount: state => state.job.employeesCount,
+      feedback: state => state.job.feedback,
       applicants: state => state.job.applicants,
       reviews: state => state.job.reviews,
       reviewChartData: state => state.job.reviewChartData,
@@ -568,6 +890,15 @@ export default {
   mounted() {
     this.showChart = true
     this.showInfiniteLoading = true
+
+    let toolbarHeight
+    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+      toolbarHeight = 48
+    } else {
+      toolbarHeight = 64
+    }
+    this.windowHeight = window.innerHeight - toolbarHeight - 30
+    this.windowWidth = window.innerWidth
   },
   fetch(context) {
     const store = context.store
@@ -578,6 +909,11 @@ export default {
     uid(uid) {
       if (uid != '') {
         this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: uid})
+      }
+    },
+    windowWidth(width) {
+      if (width < 450) {
+        this.xsWidth = true
       }
     }
   },
@@ -629,3 +965,13 @@ export default {
   }
 }
 </script>
+<style>
+#company-info-footer div.v-list__tile {
+  padding: 0px
+}
+#company-info-footer div.v-card__actions {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>

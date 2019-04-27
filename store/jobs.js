@@ -177,6 +177,31 @@ export const actions = {
           var docCount = 0
           snapshot.forEach(function(doc) {
             docCount += 1
+
+            let createdAt = new Date( doc.data()['createdAt'].seconds * 1000 )
+            let currentDate = new Date()
+
+            var timestamp = Math.floor((currentDate - createdAt) / 3600000)
+            if (timestamp < 24) {
+              if (timestamp <= 1) {
+                timestamp = '1時間以内'
+              } else {
+                timestamp = String(timestamp) + '時間前'
+              }
+            } else {
+              timestamp = Math.floor((currentDate - createdAt) / 86400000)
+              if (timestamp < 31) {
+                timestamp = String(timestamp) + '日前'
+              } else {
+                timestamp = Math.floor((currentDate - createdAt) / (86400000 * 31))
+                if (timestamp <= 11) {
+                  timestamp = String(timestamp) + 'ヶ月前'
+                } else {
+                  timestamp = '1年以上前'
+                }
+              }
+            }
+
             const job = {
               jobId: doc.id,
               title: doc.data()['title'],
@@ -185,8 +210,12 @@ export const actions = {
               companyId: doc.data()['companyId'],
               companyName: doc.data()['companyName'],
               companyImageUrl: doc.data()['companyImageUrl'],
+              occupation: doc.data()['occupation'],
+              period: doc.data()['period'],
+              workday: doc.data()['workday'],
               rating: doc.data()['rating'],
-              createdAt: doc.data()['createdAt']
+              createdAt: doc.data()['createdAt'],
+              timestamp: timestamp
             }
             commit('addJob', job)
           })
@@ -196,6 +225,7 @@ export const actions = {
           commit('updateIsLoading', false)
         })
         .catch(function(error) {
+          commit('updateIsLoading', false)
           console.log("Error getting document:", error);
         })
     } else if (jobs.length != 0) {
@@ -209,6 +239,31 @@ export const actions = {
           var docCount = 0
           snapshot.forEach(function(doc) {
             docCount += 1
+
+            let createdAt = new Date( doc.data()['createdAt'].seconds * 1000 )
+            let currentDate = new Date()
+
+            var timestamp = Math.floor((currentDate - createdAt) / 3600000)
+            if (timestamp < 24) {
+              if (timestamp <= 1) {
+                timestamp = '1時間以内'
+              } else {
+                timestamp = String(timestamp) + '時間前'
+              }
+            } else {
+              timestamp = Math.floor((currentDate - createdAt) / 86400000)
+              if (timestamp < 31) {
+                timestamp = String(timestamp) + '日前'
+              } else {
+                timestamp = Math.floor((currentDate - createdAt) / (86400000 * 31))
+                if (timestamp <= 11) {
+                  timestamp = String(timestamp) + 'ヶ月前'
+                } else {
+                  timestamp = '1年以上前'
+                }
+              }
+            }
+
             const job = {
               jobId: doc.id,
               title: doc.data()['title'],
@@ -217,8 +272,12 @@ export const actions = {
               companyId: doc.data()['companyId'],
               companyName: doc.data()['companyName'],
               companyImageUrl: doc.data()['companyImageUrl'],
+              occupation: doc.data()['occupation'],
+              period: doc.data()['period'],
+              workday: doc.data()['workday'],
               rating: doc.data()['rating'],
-              createdAt: doc.data()['createdAt']
+              createdAt: doc.data()['createdAt'],
+              timestamp: timestamp,
             }
             commit('addJob', job)
           })
@@ -228,6 +287,7 @@ export const actions = {
           commit('updateIsLoading', false)
         })
         .catch(function(error) {
+          commit('updateIsLoading', false)
           console.log("Error getting document:", error);
         })
     }

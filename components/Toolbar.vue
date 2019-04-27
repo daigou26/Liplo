@@ -172,7 +172,7 @@
       </v-dialog>
     </div>
     <!-- filter extension -->
-    <v-flex xs12 slot="extension" v-if="jobsToolbarExtension">
+    <v-flex xs12 slot="extension" v-if="jobsToolbarExtension && !isJobsLoading">
       <filter-extension></filter-extension>
     </v-flex>
     <v-toolbar-title>
@@ -589,7 +589,7 @@
   <!-- recruiter -->
   <v-toolbar v-else flat fixed app color="white" id="toolbar">
     <!-- filter extension -->
-    <v-flex xs12 slot="extension" v-if="usersToolbarExtension || jobsToolbarExtension">
+    <v-flex xs12 slot="extension" v-if="(usersToolbarExtension || jobsToolbarExtension) && !isJobsLoading">
       <filter-extension></filter-extension>
     </v-flex>
     <v-toolbar-title v-if="(!path.includes('/recruiter') && !path.includes('/users')) || breakpoint == 'xs'">Application</v-toolbar-title>
@@ -793,6 +793,7 @@ export default {
       canReadAll: state => state.notifications.canReadAll,
       hasNewNotification: state => state.notifications.hasNewNotification,
       hasNewMessage: state => state.chats.hasNewMessage,
+      isJobsLoading: state => state.jobs.isLoading,
     })
   },
   mounted() {

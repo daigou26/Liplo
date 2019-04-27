@@ -50,18 +50,6 @@
                   <span v-if="user.desiredOccupations.sales">　営業</span>
                   <span v-if="user.desiredOccupations.others">　その他</span>
                 </v-flex>
-                <!-- <v-flex sm10 offset-sm1 hidden-xs-only py-3>
-                  <v-divider></v-divider>
-                </v-flex> -->
-                <!-- 興味のある分野 -->
-                <!-- <v-flex sm2 xs3 offset-sm1>
-                  <div >興味のある分野</div>
-                </v-flex>
-                <v-flex xs8 offset-xs1 px-2>
-                  <v-chip >機械学習</v-chip>
-                  <v-chip>FinTech</v-chip>
-                  <v-chip>HR Tech</v-chip>
-                </v-flex> -->
                 <v-flex v-if="user.skills" sm10 offset-sm1 hidden-xs-only py-3>
                   <v-divider></v-divider>
                 </v-flex>
@@ -73,7 +61,6 @@
                   <template v-for="(skill, index) in user.skills">
                     <v-chip >{{ skill }}</v-chip>
                   </template>
-
                 </v-flex>
                 <v-flex sm10 offset-sm1 hidden-xs-only py-3>
                   <v-divider></v-divider>

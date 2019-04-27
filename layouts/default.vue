@@ -54,6 +54,13 @@ export default {
 </script>
 
 <style>
+#job-tags span {
+  border: 1px solid;
+  border-color: #777777;
+  border-radius: 15px;
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+}
 #footer a{
   text-decoration: none;
 }
@@ -68,11 +75,15 @@ export default {
   font-size: 18px;
 }
 .body-text {
-  color: #555555;
-  font-size: 16px;
+  color: #484848;
+  font-size: 15px;
+  font-weight: 400;
 }
 .textColor {
   color: #555555;
+}
+.light-text-color {
+  color: #777777;
 }
 .whiteTextColor {
   color: #ffffff;

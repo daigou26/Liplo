@@ -19,7 +19,6 @@ export const state = () => ({
   industry: '',
   field: '',
   createdAt: '',
-  updatedAt: '',
   status: '',
 })
 
@@ -72,9 +71,6 @@ export const mutations = {
   setCreatedAt(state, createdAt) {
     state.createdAt = createdAt
   },
-  setUpdatedAt(state, updatedAt) {
-    state.updatedAt = updatedAt
-  },
   setStatus(state, status) {
     state.status = status
   },
@@ -108,7 +104,6 @@ export const actions = {
           commit('setIndustry', doc.data()['industry'])
           commit('setStatus', doc.data()['status'])
           commit('setCreatedAt', doc.data()['createdAt'])
-          commit('setUpdatedAt', doc.data()['updatedAt'])
         }
       })
       .catch((error) => {
@@ -141,6 +136,20 @@ export const actions = {
     const jobData = {
       title: title,
       content: content,
+      wage: wage,
+      workweek: workweek,
+      period: period,
+      workday: workday,
+      occupation: occupation,
+      features: features,
+      industry: industry,
+      environment: environment,
+      status: status,
+      createdAt: updatedAt
+    }
+    const jobDetailData = {
+      title: title,
+      content: content,
       description: description,
       wage: wage,
       requiredSkills: requiredSkills,
@@ -154,7 +163,7 @@ export const actions = {
       industry: industry,
       environment: environment,
       status: status,
-      updatedAt: updatedAt
+      createdAt: updatedAt
     }
 
     if (imageFile != null) {
@@ -162,11 +171,7 @@ export const actions = {
       commit('setImageUrl', '')
 
       var timestamp
-      if (state.updatedAt != null) {
-        timestamp = state.updatedAt.seconds
-      } else {
-        timestamp = state.createdAt.seconds
-      }
+      timestamp = state.createdAt.seconds
       storageRef.child(`companies/${companyId}/jobs/${timestamp}.jpg`).delete()
       timestamp = Math.floor( updatedAt.getTime() / 1000 )
 
@@ -181,12 +186,13 @@ export const actions = {
         // dbにurl保存
         uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
           jobData.imageUrl = downloadURL
+          jobDetailData.imageUrl = downloadURL
           const batch = firestore.batch()
           const jobRef = firestore.collection('jobs').doc(jobId)
           batch.update(jobRef, jobData)
           const jobDetailRef = firestore.collection('jobs').doc(jobId)
             .collection('detail').doc(jobId)
-          batch.update(jobDetailRef, jobData)
+          batch.update(jobDetailRef, jobDetailData)
           batch.commit()
             .then(() => {
               router.push('/recruiter/jobs')
@@ -202,7 +208,7 @@ export const actions = {
       batch.update(jobRef, jobData)
       const jobDetailRef = firestore.collection('jobs').doc(jobId)
         .collection('detail').doc(jobId)
-      batch.update(jobDetailRef, jobData)
+      batch.update(jobDetailRef, jobDetailData)
       batch.commit()
         .then(() => {
           router.push('/recruiter/jobs')
