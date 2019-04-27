@@ -26,7 +26,7 @@
         </div>
         <!-- title -->
         <div
-          class="font-weight-bold"
+          class="pt-1 font-weight-bold"
           :class="{
             'job-title': $vuetify.breakpoint.mdAndUp,
             'headline': $vuetify.breakpoint.smOnly,
@@ -41,6 +41,9 @@
           id="job-tags"
         >
           <span class="px-2 py-1">{{ occupationText(occupation) }}</span>
+          <template v-if="value" v-for="(value, feature, index) in features">
+            <span class="ml-2 px-2 py-1">{{ featuresText(feature) }}</span>
+          </template>
         </div>
       </v-flex>
       <v-flex xs10 offset-xs1 class="break">
@@ -279,7 +282,7 @@
               </div>
             </div>
             <!-- review -->
-            <div v-if="reviews" class="py-4 hidden-lg-and-up">
+            <div v-if="uid" class="py-4 hidden-lg-and-up">
               <p
                 class="font-weight-bold textColor"
                 :class="{
@@ -289,7 +292,7 @@
               >
                 レビュー
               </p>
-              <div class="pt-3">
+              <div v-if="reviews" class="pt-3">
                 <!-- sm以下の場合は、チャートを使わない -->
                 <div class="hidden-md-and-up pb-5">
                   <div class="d-flex">
@@ -435,6 +438,24 @@
                   </v-flex>
                 </div>
               </div>
+              <div v-else class="pt-2">
+                まだレビューがありません
+              </div>
+            </div>
+            <!-- ログインしていない場合 -->
+            <div v-else class="py-4 hidden-lg-and-up">
+              <p
+                class="font-weight-bold textColor"
+                :class="{
+                  'headline': $vuetify.breakpoint.smAndUp,
+                  'title': $vuetify.breakpoint.xsOnly
+                }"
+              >
+                レビュー
+              </p>
+              <div class="pt-2">
+                レビューを見るには、ログインする必要があります。
+              </div>
             </div>
             <!-- 企業情報 -->
             <div class="py-4 hidden-lg-and-up">
@@ -506,7 +527,7 @@
               </div>
             </div>
             <!-- review -->
-            <div v-if="reviews" class="py-4">
+            <div v-if="uid" class="py-4">
               <p class="title font-weight-bold textColor">
                 レビュー
               </p>
@@ -535,6 +556,17 @@
                 >
                   すべて見る
                 </div>
+              </div>
+              <div v-else class="pt-2">
+                まだレビューがありません
+              </div>
+            </div>
+            <div v-else class="py-4">
+              <p class="title font-weight-bold textColor">
+                レビュー
+              </p>
+              <div class="pt-2">
+                レビューを見るには、ログインが必要です。
               </div>
             </div>
           </v-flex>
@@ -777,6 +809,25 @@ export default {
           return 'fas fa-user-tie'
         } else if (occupation.others == true) {
           return 'その他'
+        }
+      }
+    },
+    featuresText: function() {
+      return function(feature) {
+        if (feature == 'experience') {
+          return '未経験OK'
+        } else if (feature == 'media') {
+          return 'メディア掲載実績あり'
+        } else if (feature == 'founder20s') {
+          return '創業者が20代'
+        } else if (feature == 'funding') {
+          return '資金調達済み'
+        } else if (feature == 'overseas') {
+          return '海外進出中'
+        } else if (feature == 'friend') {
+          return '友人と応募OK'
+        } else if (feature == 'weekend') {
+          return '土日OK'
         }
       }
     },

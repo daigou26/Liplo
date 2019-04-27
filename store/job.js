@@ -218,66 +218,66 @@ export const actions = {
             commit('setEmployeesCount', doc.data()['employeesCount'])
 
             if (doc.data()['status'] == 'published') {
-              // レビュー情報取得
-              firestore.collection('companies')
-                .doc(companyId)
-                .collection('detail')
-                .doc(companyId)
-                .get()
-                .then(function(companyDoc) {
-                  if (companyDoc.exists) {
-                    commit('setReviews', companyDoc.data()['reviews'])
-                    // chart Data
-                    const reviews = companyDoc.data()['reviews']
-                    if (reviews) {
-                      const reviewChartData = {
-                        labels: [
-                          '成長できるか',
-                          '仕事内容',
-                          '裁量度',
-                          '勤務中の自由度',
-                          '出勤時間の柔軟性',
-                          'メンター',
-                          '雰囲気',
-                        ],
-                        datasets: [
-                          {
-                            borderColor: '#f87979',
-                            backgroundColor: 'rgba(248, 121, 121, 0.1)',
-                            data: [
-                              reviews.rating.growth,
-                              reviews.rating.job,
-                              reviews.rating.discretion,
-                              reviews.rating.flexibility,
-                              reviews.rating.flexibleSchedule,
-                              reviews.rating.mentor,
-                              reviews.rating.atmosphere
-                            ]
-                          }
-                        ]
+              if (uid != '' && uid != null) {
+                // レビュー情報取得
+                firestore.collection('companies')
+                  .doc(companyId)
+                  .collection('detail')
+                  .doc(companyId)
+                  .get()
+                  .then(function(companyDoc) {
+                    if (companyDoc.exists) {
+                      commit('setReviews', companyDoc.data()['reviews'])
+                      // chart Data
+                      const reviews = companyDoc.data()['reviews']
+                      if (reviews) {
+                        const reviewChartData = {
+                          labels: [
+                            '成長できるか',
+                            '仕事内容',
+                            '裁量度',
+                            '勤務中の自由度',
+                            '出勤時間の柔軟性',
+                            'メンター',
+                            '雰囲気',
+                          ],
+                          datasets: [
+                            {
+                              borderColor: '#f87979',
+                              backgroundColor: 'rgba(248, 121, 121, 0.1)',
+                              data: [
+                                reviews.rating.growth,
+                                reviews.rating.job,
+                                reviews.rating.discretion,
+                                reviews.rating.flexibility,
+                                reviews.rating.flexibleSchedule,
+                                reviews.rating.mentor,
+                                reviews.rating.atmosphere
+                              ]
+                            }
+                          ]
+                        }
+                        commit('setReviewChartData', reviewChartData)
                       }
-                      commit('setReviewChartData', reviewChartData)
-                    }
 
-                    isQueriedCompanyDetail = true
-                    if (uid) {
-                      if (isQueriedCandidates && isQueriedCompanyDetail) {
+                      isQueriedCompanyDetail = true
+                      if (uid) {
+                        if (isQueriedCandidates && isQueriedCompanyDetail) {
+                          commit('updateIsLoading', false)
+                        }
+                      } else {
                         commit('updateIsLoading', false)
                       }
-                    } else {
+                    }
+                  })
+                  .catch(function(error) {
+                    console.log("Error getting document:", error)
+                    isQueriedCompanyDetail = true
+                    if (isQueriedCandidates && isQueriedCompanyDetail) {
                       commit('updateIsLoading', false)
                     }
-                  }
-                })
-                .catch(function(error) {
-                  console.log("Error getting document:", error)
-                  isQueriedCompanyDetail = true
-                  if (isQueriedCandidates && isQueriedCompanyDetail) {
-                    commit('updateIsLoading', false)
-                  }
-                })
-              // すでに候補者になっているか
-              if (uid) {
+                  })
+                // すでに候補者になっているか
                 firestore.collection('companies')
                   .doc(companyId)
                   .collection('candidates')
@@ -303,6 +303,8 @@ export const actions = {
                       commit('updateIsLoading', false)
                     }
                   })
+              } else {
+                commit('updateIsLoading', false)
               }
             } else {
               // 非公開の場合
