@@ -706,7 +706,7 @@
     </v-flex>
     <v-flex v-else xs12 :style="{ height: windowHeight + 'px' }">
       <v-layout align-center justify-center column fill-height>
-        <diamond></diamond>
+        Now Loading...
       </v-layout>
     </v-flex>
   </v-layout>
@@ -714,12 +714,8 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import { Diamond } from 'vue-loading-spinner'
 
 export default {
-  components: {
-    Diamond
-  },
   data: () => ({
     isQueried: false,
     showInfiniteLoading: false,
@@ -805,6 +801,9 @@ export default {
         case 'lg': return '3'
         case 'xl': return '3'
       }
+    },
+    breakpoint() {
+      return this.$vuetify.breakpoint.name
     },
     ...mapState({
       isRefreshed: state => state.isRefreshed,

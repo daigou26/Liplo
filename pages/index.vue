@@ -16,7 +16,9 @@
       <!-- 並び替え -->
       <v-flex
         xs12
-        class="pr-5"
+        :class="{
+          'pr-5': $vuetify.breakpoint.smAndUp,
+        }"
         id="sort"
       >
         <v-card-actions>
@@ -63,7 +65,15 @@
                       </div>
                       <v-card-title primary-title class="px-4 pt-3">
                         <div class="text-xs-left">
-                          <h3 class="headline textColor font-weight-bold mb-0">{{ job.title }}</h3>
+                          <h3
+                            :class="{
+                              'headline': $vuetify.breakpoint.smAndUp,
+                              'title': $vuetify.breakpoint.xsOnly,
+                            }"
+                            class="textColor font-weight-bold mb-0"
+                          >
+                            {{ job.title }}
+                          </h3>
                           <div class="textColor pt-3">{{ job.content }}</div>
                         </div>
                       </v-card-title>
@@ -78,7 +88,12 @@
                             ></v-img>
                           </v-list-tile-avatar>
                           <v-list-tile-content>
-                            <v-list-tile-title class="textColor font-weight-bold">
+                            <v-list-tile-title
+                              :class="{
+                                'caption': $vuetify.breakpoint.xsOnly,
+                              }"
+                              class="textColor font-weight-bold"
+                            >
                               {{ job.companyName }}
                               <span v-if="hover" class="pl-2 caption green--text">企業情報を見る</span>
                             </v-list-tile-title>
@@ -99,7 +114,7 @@
                           <!-- 投稿日 -->
                           <v-list-tile-action class="caption font-weight-bold light-text-color">
                             <v-card-actions class="pa-0">
-                              <v-icon class="mr-2">access_alarm</v-icon>
+                              <v-icon class="mr-2 hidden-xs-only">access_alarm</v-icon>
                               {{ job.timestamp }}
                             </v-card-actions>
                           </v-list-tile-action>
@@ -179,7 +194,7 @@
     </v-flex>
     <v-flex v-else xs12 :style="{ height: windowHeight + 'px' }">
       <v-layout align-center justify-center column fill-height>
-        <diamond></diamond>
+        Now Loading...
       </v-layout>
     </v-flex>
   </v-layout>
@@ -188,12 +203,8 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import { Diamond } from 'vue-loading-spinner'
 
 export default {
-  components: {
-    Diamond
-  },
   data() {
     return {
       footer: false,
@@ -205,6 +216,9 @@ export default {
     }
   },
   computed: {
+    breakpoint() {
+      return this.$vuetify.breakpoint.name
+    },
     occupation: function() {
       return function(occupation) {
         if (occupation.engineer == true) {
