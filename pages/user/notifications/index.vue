@@ -25,48 +25,54 @@
         >
           <my-page-menu/>
         </v-flex>
-        <!-- notifications (lg, md) -->
+        <!-- notifications -->
         <v-flex
-          md8
+          sm8
           xs12
-          class="py-3"
+          offset-sm2
+          offset-md0
           :class="{
             'px-5': $vuetify.breakpoint.lgAndUp,
             'px-3': $vuetify.breakpoint.mdOnly,
+            'py-4': $vuetify.breakpoint.smAndUp,
+            'py-0': $vuetify.breakpoint.xsOnly,
           }"
         >
-          <v-flex md10 sm6 xs8 offset-md1 offset-sm3 offset-xs2>
-            <!-- menu (sm, xs) -->
-            <my-page-menu class="hidden-md-and-up"></my-page-menu>
-            <!-- notifications -->
-            <v-list v-if="notifications" three-line class="border py-0">
-              <template v-for="(notification, index) in notifications">
-                <v-card
-                  flat
-                  :to="notification.url ? notification.url : ''"
-                  @click="updateIsUnread({uid: uid, notificationId: notification.notificationId})"
-                >
-                  <div class="textColor text-xs-right caption pr-2 pt-2">
-                    {{ notification.isUnread ? '未読' : '既読' }}
-                  </div>
-                  <div class="textColor return px-3 py-2">{{ notification.content }}</div>
-                  <div class="textColor caption text-xs-right pr-2 pb-2">
-                    {{ notification.timestamp }}
-                  </div>
-                </v-card>
-                <v-divider
-                  v-if="notifications.length != index + 1"
-                ></v-divider>
-              </template>
-            </v-list>
-            <infinite-loading
-              v-if="showInfiniteLoading && notifications && notifications.length >= 10 && !isLoading"
-              :distance="50"
-              spinner="waveDots"
-              @infinite="infiniteHandler">
-              <div slot="no-results"></div>
-            </infinite-loading>
-          </v-flex>
+          <!-- notifications -->
+          <v-list
+            v-if="notifications"
+            three-line
+            class="py-0"
+            :class="{
+              'border': $vuetify.breakpoint.smAndUp,
+            }"
+          >
+            <template v-for="(notification, index) in notifications">
+              <v-card
+                flat
+                :to="notification.url ? notification.url : ''"
+                @click="updateIsUnread({uid: uid, notificationId: notification.notificationId})"
+              >
+                <div class="textColor text-xs-right caption pr-2 pt-2">
+                  {{ notification.isUnread ? '未読' : '既読' }}
+                </div>
+                <div class="textColor return px-3 py-2">{{ notification.content }}</div>
+                <div class="textColor caption text-xs-right pr-2 pb-2">
+                  {{ notification.timestamp }}
+                </div>
+              </v-card>
+              <v-divider
+                v-if="notifications.length != index + 1"
+              ></v-divider>
+            </template>
+          </v-list>
+          <infinite-loading
+            v-if="showInfiniteLoading && notifications && notifications.length >= 10 && !isLoading"
+            :distance="50"
+            spinner="waveDots"
+            @infinite="infiniteHandler">
+            <div slot="no-results"></div>
+          </infinite-loading>
         </v-flex>
       </v-layout>
     </v-flex>

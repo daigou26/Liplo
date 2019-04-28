@@ -18,8 +18,8 @@
             path == '/user/notifications/' ||
             path == '/messages' ||
             path == '/messages/' ||
-            path == '/user' ||
-            path == '/user/'
+            path == '/user/menu' ||
+            path == '/user/menu/'
           )
         "
         class="shadow-top"
@@ -64,7 +64,7 @@
           <v-btn
             color="teal"
             flat
-            to="/user"
+            to="/user/menu"
           >
             <span style="font-size: 10px;">プロフィール</span>
             <v-icon>person_outline</v-icon>
@@ -142,6 +142,7 @@ export default {
 .toolbar-title {
   color: inherit;
   text-decoration: inherit;
+  font-size: 16px;
 }
 .job-title {
   font-size: 30px;

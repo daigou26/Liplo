@@ -118,7 +118,6 @@ export default {
       firstName: state => state.profile.firstName,
       lastName: state => state.profile.lastName,
       profileImageUrl: state => state.profile.imageUrl,
-      // isLoading: state => state.profile.isLoading,
     })
   },
   mounted() {

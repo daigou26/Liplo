@@ -33,7 +33,7 @@
         </v-card>
       </v-menu>
       <!-- menu ( xl, lg, md) -->
-      <v-list class="border hidden-sm-and-down py-0">
+      <v-list class="hidden-sm-and-down pt-5" style="max-width: 250px;">
         <template v-for="(item, index) in mypageItems">
           <v-list-tile
             :class="{ 'teal lighten-5': path.includes('user/' + item.value) }"
