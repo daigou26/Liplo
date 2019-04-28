@@ -18,8 +18,8 @@
             path == '/user/notifications/' ||
             path == '/messages' ||
             path == '/messages/' ||
-            path == '/user/profile' ||
-            path == '/user/profile/'
+            path == '/user' ||
+            path == '/user/'
           )
         "
         class="shadow-top"
@@ -39,7 +39,7 @@
             flat
             to="/"
           >
-            <span>探す</span>
+            <span style="font-size: 10px;">探す</span>
             <v-icon>search</v-icon>
           </v-btn>
           <!-- 通知 -->
@@ -48,7 +48,7 @@
             flat
             to="/user/notifications"
           >
-            <span>通知</span>
+            <span style="font-size: 10px;">通知</span>
             <v-icon>notifications_none</v-icon>
           </v-btn>
           <!-- メッセージ -->
@@ -57,16 +57,16 @@
             flat
             to="/messages"
           >
-            <span>メッセージ</span>
+            <span style="font-size: 10px;">メッセージ</span>
             <v-icon>chat_bubble_outline</v-icon>
           </v-btn>
           <!-- プロフィール -->
           <v-btn
             color="teal"
             flat
-            to="/user/profile"
+            to="/user"
           >
-            <span>プロフィール</span>
+            <span style="font-size: 10px;">プロフィール</span>
             <v-icon>person_outline</v-icon>
           </v-btn>
         </v-bottom-nav>

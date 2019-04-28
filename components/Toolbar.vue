@@ -67,14 +67,14 @@
   <!-- user & 未ログイン -->
   <v-toolbar v-else-if="type != 'recruiter'" flat color="white" class="toolbar-fixed border-bottom" id="toolbar">
     <v-toolbar-side-icon　@click="iconClicked"></v-toolbar-side-icon>
-    <!-- menu (xsのみ) -->
-    <div v-if="uid" class="text-xs-center hidden-sm-and-up">
+    <!-- menu (xs & 未ログイン時のみ) -->
+    <div v-if="!uid" class="text-xs-center hidden-sm-and-up">
       <v-dialog
         v-model="dropdownMenu"
         fullscreen
         transition="dialog-bottom-transition"
       >
-        <v-layout row class="hidden-sm-and-up" fill-height>
+        <v-layout row fill-height>
           <v-flex xs12>
             <v-card style="height: 100%;">
               <v-toolbar flat color="white">
@@ -84,60 +84,8 @@
                 ></v-toolbar-side-icon>
               </v-toolbar>
               <v-list>
-                <!-- ホーム -->
-                <v-list-tile
-                  class="px-3"
-                  to="/"
-                  @click="dropdownMenu=false"
-                >
-                  <v-list-tile-content>
-                    <v-list-tile-title class="textColor">ホーム</v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-                <!-- プロフィール -->
-                <v-list-tile
-                  class="px-3"
-                  to="/user/profile"
-                  @click="dropdownMenu=false"
-                >
-                  <v-list-tile-content>
-                    <v-list-tile-title class="textColor">プロフィール</v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-                <!-- マイページ -->
-                <v-list-tile
-                  class="px-3"
-                  to="/user/passes"
-                  @click="dropdownMenu=false"
-                >
-                  <v-list-tile-content>
-                    <v-list-tile-title class="textColor">マイページ</v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-                <!-- メッセージ -->
-                <v-list-tile
-                  class="px-3"
-                  to="/messages"
-                  @click="dropdownMenu=false"
-                >
-                  <v-list-tile-content>
-                    <v-list-tile-title class="textColor">メッセージ</v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-                <!-- 設定 -->
-                <v-list-tile
-                  class="px-3"
-                  to="/user/settings/notifications"
-                  @click="dropdownMenu=false"
-                >
-                  <v-list-tile-content>
-                    <v-list-tile-title class="textColor">設定</v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-                <v-divider class="mx-4"></v-divider>
                 <!-- 登録 -->
                 <v-list-tile
-                  v-if="!uid"
                   class="px-3"
                   @click="signUpButtonClicked"
                 >
@@ -147,7 +95,6 @@
                 </v-list-tile>
                 <!-- ログイン -->
                 <v-list-tile
-                  v-if="!uid"
                   class="px-3"
                   @click="signInButtonClicked"
                 >
@@ -155,14 +102,36 @@
                     <v-list-tile-title class="textColor">ログイン</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
-                <!-- ログアウト -->
+                <!-- 利用規約 -->
                 <v-list-tile
-                  v-if="uid"
                   class="px-3"
-                  @click="signOut"
                 >
                   <v-list-tile-content>
-                    <v-list-tile-title class="textColor">ログアウト</v-list-tile-title>
+                    <v-list-tile-title class="textColor">利用規約</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+                <!-- プライバシー -->
+                <v-list-tile
+                  class="px-3"
+                >
+                  <v-list-tile-content>
+                    <v-list-tile-title class="textColor">プライバシー</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+                <!-- 運営会社 -->
+                <v-list-tile
+                  class="px-3"
+                >
+                  <v-list-tile-content>
+                    <v-list-tile-title class="textColor">運営会社</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+                <!-- フィードバック -->
+                <v-list-tile
+                  class="px-3"
+                >
+                  <v-list-tile-content>
+                    <v-list-tile-title class="textColor">フィードバックを送る</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
               </v-list>
@@ -304,9 +273,9 @@
               >
                 <v-card class="pt-5 pb-3 px-3">
                   <v-toolbar flat color="white hidden-sm-and-up">
-                    <v-toolbar-side-icon
-                      @click="dialog=false"
-                    ></v-toolbar-side-icon>
+                    <v-btn icon @click="dialog=false">
+                      <v-icon>close</v-icon>
+                    </v-btn>
                   </v-toolbar>
                   <v-flex
                     xs12
