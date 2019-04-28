@@ -66,7 +66,7 @@
   </v-toolbar>
   <!-- user & 未ログイン -->
   <v-toolbar v-else-if="type != 'recruiter'" flat color="white" class="toolbar-fixed border-bottom" id="toolbar">
-    <v-toolbar-side-icon　@click="iconClicked"></v-toolbar-side-icon>
+    <v-toolbar-side-icon v-if="!uid" @click="iconClicked" class="hidden-sm-and-up"></v-toolbar-side-icon>
     <!-- menu (xs & 未ログイン時のみ) -->
     <div v-if="!uid" class="text-xs-center hidden-sm-and-up">
       <v-dialog
