@@ -1,17 +1,22 @@
 <template>
-  <v-navigation-drawer v-if="showDrawer" permanent app width="280" :mini-variant="mini">
+  <v-navigation-drawer
+    v-if="showDrawer"
+    permanent
+    app
+    width="280"
+    :mini-variant="mini"
+    mini-variant-width="48"
+    id="drawer"
+  >
     <v-toolbar flat>
-      <v-list
-        :class="{
-          'py-0': $vuetify.breakpoint.smAndDown,
-        }"
-      >
-        <v-list-tile>
-          <v-list-tile-title class="title">
-            <nuxt-link v-if="breakpoint != 'sm'" to="/" class="toolbar-title">Home</nuxt-link>
-          </v-list-tile-title>
-        </v-list-tile>
-      </v-list>
+      <v-list-tile to="/">
+        <v-list-tile-action>
+          <v-icon>home</v-icon>
+        </v-list-tile-action>
+        <v-list-tile-content>
+          <v-list-tile-title class="font-weight-medium hidden-sm-and-down" style="font-size: 18px">Home</v-list-tile-title>
+        </v-list-tile-content>
+      </v-list-tile>
     </v-toolbar>
     <v-divider></v-divider>
     <v-list dense class="pt-0" id="dashboard-menu">
@@ -65,5 +70,13 @@ export default {
 <style>
 #dashboard-menu a.v-list__tile {
   height: 56px;
+}
+#drawer div.v-toolbar__content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+#drawer .v-list__tile {
+  padding-left: 0px;
+  padding-right: 0px;
 }
 </style>

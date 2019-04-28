@@ -7,11 +7,76 @@
         <nuxt />
       </v-container>
       <footer-content></footer-content>
+      <v-footer
+        v-if="
+          uid &&
+          type == 'user' &&
+          breakpoint == 'xs' &&
+          (
+            path == '/' ||
+            path == '/user/notifications' ||
+            path == '/user/notifications/' ||
+            path == '/messages' ||
+            path == '/messages/' ||
+            path == '/user' ||
+            path == '/user/'
+          )
+        "
+        class="shadow-top"
+        fixed
+        app
+        color="white"
+        height="56"
+      >
+        <v-bottom-nav
+          :value="true"
+          absolute
+          color="transparent"
+        >
+          <!-- 募集一覧 -->
+          <v-btn
+            color="teal"
+            flat
+            to="/"
+          >
+            <span style="font-size: 10px;">探す</span>
+            <v-icon>search</v-icon>
+          </v-btn>
+          <!-- 通知 -->
+          <v-btn
+            color="teal"
+            flat
+            to="/user/notifications"
+          >
+            <span style="font-size: 10px;">通知</span>
+            <v-icon>notifications_none</v-icon>
+          </v-btn>
+          <!-- メッセージ -->
+          <v-btn
+            color="teal"
+            flat
+            to="/messages"
+          >
+            <span style="font-size: 10px;">メッセージ</span>
+            <v-icon>chat_bubble_outline</v-icon>
+          </v-btn>
+          <!-- プロフィール -->
+          <v-btn
+            color="teal"
+            flat
+            to="/user"
+          >
+            <span style="font-size: 10px;">プロフィール</span>
+            <v-icon>person_outline</v-icon>
+          </v-btn>
+        </v-bottom-nav>
+      </v-footer>
     </v-content>
   </v-app>
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex'
 import Toolbar from '~/components/Toolbar'
 import Drawer from '~/components/Drawer'
 import FooterContent from '~/components/FooterContent'
@@ -46,9 +111,19 @@ export default {
     }
   },
   computed: {
+    breakpoint() {
+      return this.$vuetify.breakpoint.name
+    },
     path() {
       return this.$route.path
     },
+    routeName() {
+      return this.$route.name
+    },
+    ...mapState({
+      uid: state => state.uid,
+      type: state => state.profile.type,
+    })
   },
 }
 </script>
