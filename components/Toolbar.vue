@@ -561,10 +561,9 @@
     <v-flex xs12 slot="extension" v-if="(usersToolbarExtension || jobsToolbarExtension) && !isJobsLoading">
       <filter-extension></filter-extension>
     </v-flex>
-    <v-toolbar-title v-if="(!path.includes('/recruiter') && !path.includes('/users')) || breakpoint == 'xs'">Application</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items>
-      <v-btn flat active-class to="/users">
+      <v-btn flat active-class to="/users" class="hidden-xs-only">
         <span class="font-weight-bold textColor">検索</span>
       </v-btn>
       <!-- notifications -->
@@ -573,7 +572,13 @@
         min-width="350"
         :fullscreen="$vuetify.breakpoint.xsOnly"
       >
-        <v-btn flat active-class slot="activator" @click="notificationsButtonClicked">
+        <v-btn
+          flat
+          active-class
+          slot="activator"
+          @click="notificationsButtonClicked"
+          class="hidden-xs-only"
+        >
           <span v-if="!hasNewNotification" class="font-weight-bold textColor">通知</span>
           <v-badge v-else overlap color="red">
             <template v-slot:badge>
@@ -643,39 +648,44 @@
           </div>
         </v-card>
       </v-menu>
-      <v-layout row wrap align-center class="pl-5">
+      <v-layout row wrap align-center class="pl-3">
         <v-flex class="text-xs-center">
-          <!-- ログイン中に表示される -->
-          <div class="align-center">
-            <div class="text-xs-left">
-              <v-menu offset-y offset-x min-width="250">
-                <!-- Profile画像 -->
-                <v-avatar
-                  slot="activator"
-                  :size="avatarSize"
-                >
-                  <img v-if="imageUrl" :src="imageUrl" alt="avatar">
-                  <v-icon v-else>person</v-icon>
-                </v-avatar>
-                <v-list>
-                  <v-list-tile to="/recruiter/profile">
-                    <v-list-tile-title>プロフィール</v-list-tile-title>
-                  </v-list-tile>
-                  <v-divider></v-divider>
-                  <v-list-tile to="/recruiter/dashboard">
-                    <v-list-tile-title>ダッシュボード</v-list-tile-title>
-                  </v-list-tile>
-                  <v-divider></v-divider>
-                  <v-list-tile to="/user/settings/notifications">
-                    <v-list-tile-title>設定</v-list-tile-title>
-                  </v-list-tile>
-                  <v-divider></v-divider>
-                  <v-list-tile @click="signOut">
-                    <v-list-tile-title>ログアウト</v-list-tile-title>
-                  </v-list-tile>
-                </v-list>
-              </v-menu>
-            </div>
+          <div class="text-xs-left">
+            <v-menu offset-y offset-x min-width="250">
+              <!-- Profile画像 -->
+              <v-avatar
+                slot="activator"
+                :size="avatarSize"
+              >
+                <img v-if="imageUrl" :src="imageUrl" alt="avatar">
+                <v-icon v-else>person</v-icon>
+              </v-avatar>
+              <v-list>
+                <v-list-tile to="/users">
+                  <v-list-tile-title>スカウト</v-list-tile-title>
+                </v-list-tile>
+                <v-divider></v-divider>
+                <v-list-tile to="/recruiter/profile">
+                  <v-list-tile-title>プロフィール</v-list-tile-title>
+                </v-list-tile>
+                <v-divider></v-divider>
+                <v-list-tile to="/recruiter/dashboard">
+                  <v-list-tile-title>ダッシュボード</v-list-tile-title>
+                </v-list-tile>
+                <v-divider></v-divider>
+                <v-list-tile to="/recruiter/notifications" class="hidden-sm-and-up">
+                  <v-list-tile-title>通知</v-list-tile-title>
+                </v-list-tile>
+                <v-divider></v-divider>
+                <v-list-tile to="/user/settings/notifications">
+                  <v-list-tile-title>設定</v-list-tile-title>
+                </v-list-tile>
+                <v-divider></v-divider>
+                <v-list-tile @click="signOut">
+                  <v-list-tile-title>ログアウト</v-list-tile-title>
+                </v-list-tile>
+              </v-list>
+            </v-menu>
           </div>
         </v-flex>
       </v-layout>
