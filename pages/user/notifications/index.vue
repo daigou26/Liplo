@@ -5,6 +5,7 @@
     wrap
   >
     <v-flex
+      v-if="!isInitialLoading"
       xs12
       md10
       offset-md1
@@ -66,6 +67,21 @@
               ></v-divider>
             </template>
           </v-list>
+          <v-card
+            v-else
+            class="pa-3"
+            :class="{
+              'mx-3 my-5': $vuetify.breakpoint.xsOnly,
+            }"
+          >
+            <div class="text-xs-center">
+              <div class="headline textColor">通知がありません</div>
+              <div class="pt-3 light-text-color">
+                通知がある場合はこちらに表示されます
+              </div>
+              <v-btn class="mt-3 font-weight-bold" color="warning" to="/">募集を探す</v-btn>
+            </div>
+          </v-card>
           <infinite-loading
             v-if="showInfiniteLoading && notifications && notifications.length >= 10 && !isLoading"
             :distance="50"
@@ -74,6 +90,11 @@
             <div slot="no-results"></div>
           </infinite-loading>
         </v-flex>
+      </v-layout>
+    </v-flex>
+    <v-flex v-else xs12 :style="{ height: windowHeight + 'px' }">
+      <v-layout align-center justify-center column fill-height>
+        Now Loading...
       </v-layout>
     </v-flex>
   </v-layout>
@@ -91,6 +112,7 @@ export default {
     isQueried: false,
     count: 0,
     showInfiniteLoading: false,
+    windowHeight: 0,
   }),
   computed: {
     params() {
@@ -105,6 +127,7 @@ export default {
     ...mapState({
       uid: state => state.uid,
       notifications: state => state.notifications.notifications,
+      isInitialLoading: state => state.notifications.isInitialLoading,
       isLoading: state => state.notifications.isLoading,
       allNotificationsQueried: state => state.notifications.allNotificationsQueried,
     }),
@@ -112,8 +135,17 @@ export default {
   mounted() {
     this.showInfiniteLoading = true
 
+    let toolbarHeight
+    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+      toolbarHeight = 48
+    } else {
+      toolbarHeight = 64
+    }
+    this.windowHeight = window.innerHeight - toolbarHeight
+
     if (this.uid != null && this.uid != '' && !this.isQueried) {
       this.resetState()
+      this.updateIsInitialLoading(true)
       this.updateIsLoading(true)
       this.queryNotifications(this.uid)
     }
@@ -123,6 +155,7 @@ export default {
       if (uid != null && uid != '') {
         this.isQueried = true
         this.resetState()
+        this.updateIsInitialLoading(true)
         this.updateIsLoading(true)
         this.queryNotifications(uid)
       }
@@ -148,6 +181,7 @@ export default {
     ...mapActions({
       updateIsUnread: 'notifications/updateIsUnread',
       queryNotifications: 'notifications/queryNotifications',
+      updateIsInitialLoading: 'notifications/updateIsInitialLoading',
       updateIsLoading: 'notifications/updateIsLoading',
       resetState: 'notifications/resetState',
     }),

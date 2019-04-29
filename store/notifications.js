@@ -5,6 +5,7 @@ export const state = () => ({
   latestNotifications: [],
   isLatestNotificationsLoading: false,
   notifications: [],
+  isInitialLoading: false,
   isLoading: false,
   allNotificationsQueried: false,
   canReadAll: false,
@@ -33,6 +34,9 @@ export const mutations = {
   },
   resetNotifications(state) {
     state.notifications = []
+  },
+  updateIsInitialLoading(state, isLoading) {
+    state.isInitialLoading = isLoading
   },
   updateIsLoading(state, isLoading) {
     state.isLoading = isLoading
@@ -148,9 +152,12 @@ export const actions = {
           if (docCount == 0) {
             commit('setAllNotificationsQueried', true)
           }
+          commit('updateIsInitialLoading', false)
           commit('updateIsLoading', false)
         })
         .catch(function(error) {
+          commit('updateIsInitialLoading', false)
+          commit('updateIsLoading', false)
           console.log("Error getting document:", error);
         })
     } else if (notifications.length != 0) {
@@ -197,9 +204,13 @@ export const actions = {
           commit('updateIsLoading', false)
         })
         .catch(function(error) {
+          commit('updateIsLoading', false)
           console.log("Error getting document:", error);
         })
     }
+  },
+  updateIsInitialLoading({commit}, isLoading) {
+    commit('updateIsInitialLoading', isLoading)
   },
   updateIsLoading({commit}, isLoading) {
     commit('updateIsLoading', isLoading)
@@ -305,6 +316,7 @@ export const actions = {
   },
   resetState({commit}) {
     commit('resetNotifications')
+    commit('updateIsInitialLoading', false)
     commit('updateIsLoading', false)
     commit('setAllNotificationsQueried', false)
   },
