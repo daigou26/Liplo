@@ -281,10 +281,14 @@
       <filter-extension></filter-extension>
     </v-flex>
     <v-toolbar-title>
-      <span v-if="path == '/'"　class="toolbar-title">募集</span>
-      <span v-else-if="path.includes('/user/notifications')"　class="toolbar-title">通知</span>
-      <span v-else-if="path.includes('/messages')"　class="toolbar-title">メッセージ</span>
-      <span v-else class="toolbar-title">Home</span>
+      <no-ssr>
+        <nuxt-link v-if="breakpoint != 'xs'" to="/" class="toolbar-title">Home</nuxt-link>
+        <span v-else-if="path == '/'"　class="toolbar-title">募集</span>
+        <span v-else-if="path.includes('/user/notifications')"　class="toolbar-title">通知</span>
+        <span v-else-if="path.includes('/messages')"　class="toolbar-title">メッセージ</span>
+        <span v-else class="toolbar-title">Home</span>
+      </no-ssr>
+
     </v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items class="hidden-xs-only">

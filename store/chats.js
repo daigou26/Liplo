@@ -3,6 +3,7 @@ import { firestore } from '@/plugins/firebase'
 
 export const state = () => ({
   chats: [],
+  isInitialLoading: false,
   isLoading: false,
   allChatsQueried: false,
   hasNewMessage: false,
@@ -18,6 +19,9 @@ export const mutations = {
   },
   resetChats(state) {
     state.chats = []
+  },
+  updateIsInitialLoading(state, isLoading) {
+    state.isInitialLoading = isLoading
   },
   updateIsLoading(state, isLoading) {
     state.isLoading = isLoading
@@ -44,6 +48,9 @@ export const actions = {
     })
     commit('setChats', chats)
   },
+  updateIsInitialLoading({commit}, isLoading) {
+    commit('updateIsInitialLoading', isLoading)
+  },
   updateIsLoading({commit}, isLoading) {
     commit('updateIsLoading', isLoading)
   },
@@ -62,6 +69,16 @@ export const actions = {
           var docCount = 0
           snapshot.forEach(function(doc) {
             docCount += 1
+
+            var updatedAt = doc.data()['updatedAt']
+            if (updatedAt) {
+              let date = new Date( updatedAt.seconds * 1000 )
+              let year  = date.getFullYear()
+              let month = date.getMonth() + 1
+              let day  = date.getDate()
+              updatedAt = `${year}/${month}/${day}`
+            }
+
             const chat = {
               chatId: doc.id,
               uid: doc.data()['uid'],
@@ -73,16 +90,18 @@ export const actions = {
               lastMessage: doc.data()['lastMessage'],
               picUnreadCount: doc.data()['picUnreadCount'],
               userUnreadCount: doc.data()['userUnreadCount'],
-              updatedAt: doc.data()['updatedAt']
+              updatedAt: updatedAt
             }
             commit('addChat', chat)
           })
           if (docCount == 0) {
             commit('setAllChatsQueried', true)
           }
+          commit('updateIsInitialLoading', false)
           commit('updateIsLoading', false)
         })
         .catch(function(error) {
+          commit('updateIsInitialLoading', false)
           commit('updateIsLoading', false)
           console.log("Error getting document:", error)
         })
@@ -105,6 +124,15 @@ export const actions = {
           var docCount = 0
           snapshot.forEach(function(doc) {
             docCount += 1
+
+            var updatedAt = doc.data()['updatedAt']
+            if (updatedAt) {
+              let date = new Date( updatedAt.seconds * 1000 )
+              let year  = date.getFullYear()
+              let month = date.getMonth() + 1
+              let day  = date.getDate()
+              updatedAt = `${year}/${month}/${day}`
+            }
             const chat = {
               chatId: doc.id,
               uid: doc.data()['uid'],
@@ -116,7 +144,7 @@ export const actions = {
               lastMessage: doc.data()['lastMessage'],
               picUnreadCount: doc.data()['picUnreadCount'],
               userUnreadCount: doc.data()['userUnreadCount'],
-              updatedAt: doc.data()['updatedAt']
+              updatedAt: updatedAt
             }
             commit('addChat', chat)
           })

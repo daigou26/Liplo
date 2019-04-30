@@ -324,7 +324,7 @@ export default {
     },
     ...mapActions({
       queryJobs: 'jobs/queryJobs',
-      updateIsInitialLoading: 'jobs/isInitialLoading',
+      updateIsInitialLoading: 'jobs/updateIsInitialLoading',
       updateIsLoading: 'jobs/updateIsLoading',
       setFilter: 'jobs/setFilter',
       setOrder: 'jobs/setOrder',
