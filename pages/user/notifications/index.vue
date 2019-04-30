@@ -4,8 +4,13 @@
     row
     wrap
   >
+    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
+      <v-layout justify-center>
+        Now Loading...
+      </v-layout>
+    </v-flex>
     <v-flex
-      v-if="!isInitialLoading"
+      v-else-if="!isInitialLoading"
       xs12
       md10
       offset-md1
@@ -126,6 +131,7 @@ export default {
     },
     ...mapState({
       uid: state => state.uid,
+      isRefreshing: state => state.isRefreshing,
       notifications: state => state.notifications.notifications,
       isInitialLoading: state => state.notifications.isInitialLoading,
       isLoading: state => state.notifications.isLoading,

@@ -5,8 +5,13 @@
     wrap
   >
     <!-- loading -->
+    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
+      <v-layout justify-center>
+        Now Loading...
+      </v-layout>
+    </v-flex>
     <v-flex
-      v-if="(breakpoint == 'xs' || breakpoint == 'sm') && (isInitialChatsLoading || isInitialMessagesLoading)"
+      v-else-if="(breakpoint == 'xs' || breakpoint == 'sm') && (isInitialChatsLoading || isInitialMessagesLoading)"
       xs12
       :style="{ height: windowHeight + 'px' }"
     >
@@ -434,6 +439,7 @@ export default {
     },
     ...mapState({
       uid: state => state.uid,
+      isRefreshing: state => state.isRefreshing,
       type: state => state.profile.type,
       profileImageUrl: state => state.profile.imageUrl,
       firstName: state => state.profile.firstName,

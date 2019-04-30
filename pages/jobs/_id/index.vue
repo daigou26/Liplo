@@ -4,7 +4,12 @@
     row
     wrap
   >
-    <v-flex xs12 v-if="!isLoading">
+    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
+      <v-layout justify-center>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex xs12 v-else-if="!isLoading">
       <v-flex>
         <v-img
           :src="imageUrl"
@@ -841,6 +846,7 @@ export default {
     },
     ...mapState({
       isRefreshed: state => state.isRefreshed,
+      isRefreshing: state => state.isRefreshing,
       type: state => state.profile.type,
       profileImageUrl: state => state.profile.imageUrl,
       firstName: state => state.profile.firstName,

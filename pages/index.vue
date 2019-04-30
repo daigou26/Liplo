@@ -3,7 +3,12 @@
     white
     column
   >
-    <v-flex v-if="!isInitialLoading">
+    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 pt-5>
+      <v-layout justify-center>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex v-else-if="!isInitialLoading">
       <!-- footer 表示ボタン -->
       <div class="hidden-xs-only" id="footer-button">
         <v-btn
@@ -234,6 +239,7 @@ export default {
     },
     ...mapState({
       isRefreshed: state => state.isRefreshed,
+      isRefreshing: state => state.isRefreshing,
       uid: state => state.uid,
       jobs: state => state.jobs.jobs,
       order: state => state.jobs.order,
@@ -270,6 +276,7 @@ export default {
   watch: {
     isRefreshed(isRefreshed) {
       if (isRefreshed == true) {
+        console.log('isRefreshed');
         this.resetState()
         this.updateIsInitialLoading(true)
         this.updateIsLoading(true)
