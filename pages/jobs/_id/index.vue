@@ -908,12 +908,14 @@ export default {
   },
   fetch(context) {
     const store = context.store
+    store.dispatch('job/updateIsLoading', true)
     // query job
     store.dispatch('job/queryJobDetail', {nuxt: context, params: context.params, uid: store.state.uid})
   },
   watch: {
     uid(uid) {
       if (uid != '') {
+        this.updateIsLoading(true)
         this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: uid})
       }
     },
@@ -964,6 +966,7 @@ export default {
     ...mapActions({
       queryJobDetail: 'job/queryJobDetail',
       apply: 'job/apply',
+      updateIsLoading: 'job/updateIsLoading',
       queryCompanyReviews: 'reviews/queryCompanyReviews',
       updateIsReviewsLoading: 'reviews/updateIsCompanyReviewsLoading',
       resetReviewsState: 'reviews/resetState',

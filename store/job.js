@@ -37,7 +37,7 @@ export const state = () => ({
   reviews: null,
   reviewChartData: null,
   isCandidate: false,
-  isLoading: true,
+  isLoading: false,
 })
 
 export const mutations = {
@@ -152,6 +152,9 @@ export const mutations = {
 }
 
 export const actions = {
+  updateIsLoading({commit}, isLoading) {
+    commit('updateIsLoading', isLoading)
+  },
   queryJobDetail({commit}, {nuxt, params, uid}) {
     const jobId = params.id
     if (jobId != null && jobId != '') {

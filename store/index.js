@@ -533,6 +533,7 @@ export const actions = {
                 router.replace('/recruiter/dashboard')
               }
             } else {
+              dispatch('profile/setPoints', doc.data()['points'])
               commit('updateIsVerified',  doc.data()['isEmailVerified'])
               // emailVerifiedを true に
               if (user.emailVerified && !doc.data()['isEmailVerified']) {

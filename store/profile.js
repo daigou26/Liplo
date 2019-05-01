@@ -4,6 +4,7 @@ import { firestore, storageRef } from '@/plugins/firebase'
 
 export const state = () => ({
   type: null,
+  points: 0,
   position: null,
   isEditingPosition: false,
   companyId: null,
@@ -35,11 +36,15 @@ export const state = () => ({
   birthTimestamp: '',
   isEditingUserInfo: false,
   acceptedOffers: [],
+  isLoading: false,
 })
 
 export const mutations = {
   setType(state, type) {
     state.type = type
+  },
+  setPoints(state, points) {
+    state.points = points
   },
   setPosition(state, position) {
     state.position = position
@@ -134,6 +139,9 @@ export const mutations = {
   setAcceptedOffers(state, acceptedOffers) {
     state.acceptedOffers = acceptedOffers
   },
+  updateIsLoading(state, isLoading) {
+    state.isLoading = isLoading
+  },
 }
 
 export const actions = {
@@ -159,10 +167,21 @@ export const actions = {
           commit('setBirthTimestamp', doc.data()['birthTimestamp'])
           commit('setAcceptedOffers', doc.data()['acceptedOffers'])
         }
+        commit('updateIsLoading', false)
       })
+      .catch((error) => {
+        commit('updateIsLoading', false)
+        console.error("Error adding document: ", error)
+      })
+  },
+  updateIsLoading({commit}, isLoading) {
+    commit('updateIsLoading', isLoading)
   },
   setType({commit}, type) {
     commit('setType', type)
+  },
+  setPoints({commit}, points) {
+    commit('setPoints', points)
   },
   updateIsEditingPosition({commit}, isEditing) {
     commit('updateIsEditingPosition', isEditing)
