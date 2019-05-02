@@ -46,7 +46,7 @@
         >
           <!-- notifications -->
           <v-list
-            v-if="notifications"
+            v-if="notifications && notifications.length > 0"
             three-line
             class="py-0"
             :class="{
@@ -77,6 +77,7 @@
             class="pa-3"
             :class="{
               'mx-3 my-5': $vuetify.breakpoint.xsOnly,
+              'mt-4': $vuetify.breakpoint.mdAndUp,
             }"
           >
             <div class="text-xs-center">

@@ -11,6 +11,7 @@ export const state = () => ({
   isAccepted: false,
   isContracted: false,
   isValid: false,
+  isLoading: false,
 })
 
 export const mutations = {
@@ -40,6 +41,9 @@ export const mutations = {
   },
   setIsValid(state, isValid) {
     state.isValid = isValid
+  },
+  updateIsLoading(state, isLoading) {
+    state.isLoading = isLoading
   },
 }
 
@@ -88,16 +92,22 @@ export const actions = {
           commit('setIsAccepted', doc.data()['isAccepted'])
           commit('setIsContracted', doc.data()['isContracted'])
           commit('setIsValid', doc.data()['isValid'])
+          commit('updateIsLoading', false)
         } else {
           // 404
           console.log('404')
+          commit('updateIsLoading', false)
           nuxt.error({ statusCode: 404, message: 'not found' })
         }
       })
       .catch(function(error) {
+        commit('updateIsLoading', false)
         console.log("Error getting document:", error)
         nuxt.error({ statusCode: 404, message: 'not found' })
       })
+  },
+  updateIsLoading({commit}, isLoading) {
+    commit('updateIsLoading', isLoading)
   },
   resetState({commit}) {
     commit('setCompanyId', null)
@@ -109,5 +119,6 @@ export const actions = {
     commit('setIsAccepted', false)
     commit('setIsContracted', false)
     commit('setIsValid', false)
+    commit('updateIsLoading', false)
   },
 }

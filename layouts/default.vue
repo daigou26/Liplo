@@ -198,6 +198,10 @@ export default {
   border-right: 1px solid;
   border-color: #E0E0E0;
 }
+.border-left {
+  border-left: 1px solid;
+  border-color: #E0E0E0;
+}
 .border-y {
   border-top: 1px solid;
   border-bottom: 1px solid;
