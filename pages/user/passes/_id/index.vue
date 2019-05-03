@@ -220,6 +220,9 @@ export default {
       this.queryPass({nuxt: this.$nuxt, params: this.$route.params})
     }
   },
+  destroyed () {
+    this.updateIsLoading(false)
+  },
   watch: {
     uid(uid) {
       if (uid != null && uid != '') {

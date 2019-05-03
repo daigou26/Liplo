@@ -4,7 +4,19 @@
     row
     wrap
   >
+    <!-- loading -->
+    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
+      <v-layout justify-center>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex v-else-if="isLoading" xs12 :style="{ height: windowHeight + 'px' }">
+      <v-layout align-center justify-center column fill-height>
+        Now Loading...
+      </v-layout>
+    </v-flex>
     <v-flex
+      v-else
       xs12
       md10
       offset-md1
@@ -54,8 +66,8 @@
                     <v-img :src="item.companyImageUrl"/>
                   </v-avatar>
                 </template>
-                <div class="py-3">
-                  <div class="mb-1">{{ item.startedAt }}</div>
+                <div class="py-3 textColor">
+                  <div class="mb-1 light-text-color">{{ item.startedAt }}</div>
                   <div class="title font-weight-bold mb-3 return">{{ item.companyName }}</div>
                   <div class="pb-1">職種:　{{ item.occupation }}</div>
                   <div v-if="!item.end">
@@ -93,12 +105,6 @@ export default {
   },
   data: () => ({
     isQueried: false,
-    mypageItems: [
-      'passes',
-      'career',
-      'feedbacks',
-      'reviews'
-    ],
   }),
   computed: {
     path() {
@@ -109,18 +115,25 @@ export default {
     },
     ...mapState({
       uid: state => state.uid,
+      isRefreshing: state => state.isRefreshing,
       career: state => state.career.career,
+      isLoading: state => state.career.isLoading,
     }),
   },
   mounted() {
     if (this.uid != null && this.uid != '' && !this.isQueried) {
+      this.updateIsLoading(true)
       this.queryCareer(this.uid)
     }
+  },
+  destroyed () {
+    this.updateIsLoading(false)
   },
   watch: {
     uid(uid) {
       if (uid != null && uid != '') {
         this.isQueried = true
+        this.updateIsLoading(true)
         this.queryCareer(uid)
       }
     }
@@ -128,6 +141,7 @@ export default {
   methods: {
     ...mapActions({
       queryCareer: 'career/queryCareer',
+      updateIsLoading: 'career/updateIsLoading',
     }),
   }
 }

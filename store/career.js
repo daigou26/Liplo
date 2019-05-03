@@ -5,6 +5,7 @@ export const state = () => ({
   career: [],
   notReviewedLists: null,
   notReviewedCompany: null,
+  isLoading: false,
 })
 
 export const mutations = {
@@ -16,6 +17,9 @@ export const mutations = {
   },
   setNotReviewedCompany(state, company) {
     state.notReviewedCompany = company
+  },
+  updateIsLoading(state, isLoading) {
+    state.isLoading = isLoading
   },
 }
 
@@ -113,15 +117,21 @@ export const actions = {
           }
           data.push(job)
         })
+        commit('updateIsLoading', false)
         commit('setCareer', data)
       })
       .catch(function(error) {
+        commit('updateIsLoading', false)
         console.log("Error getting document:", error)
       })
+  },
+  updateIsLoading({commit}, isLoading) {
+    commit('updateIsLoading', isLoading)
   },
   resetState({commit}) {
     commit('setCareer', [])
     commit('setNotReviewedLists', null)
     commit('setNotReviewedCompany', null)
+    commit('updateIsLoading', false)
   },
 }
