@@ -203,6 +203,7 @@ export default {
   },
   data: () => ({
     isQueried: false,
+    windowHeight: 0,
     snackbar: false,
     snackbarText: '',
     atmosphere: 3,
@@ -235,6 +236,13 @@ export default {
   },
   mounted() {
     this.showInfiniteLoading = true
+    let toolbarHeight
+    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+      toolbarHeight = 48
+    } else {
+      toolbarHeight = 64
+    }
+    this.windowHeight = window.innerHeight - toolbarHeight - 30
 
     if (this.uid != null && this.uid != '' && !this.isQueried) {
       if (this.$route.query.id != null) {

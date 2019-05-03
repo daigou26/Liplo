@@ -65,7 +65,7 @@
           </v-list>
           <v-card
             v-else
-            class="pa-3"
+            class="px-3 py-4"
             :class="{
               'mx-3 my-5': $vuetify.breakpoint.xsOnly,
               'mt-4': $vuetify.breakpoint.mdAndUp,

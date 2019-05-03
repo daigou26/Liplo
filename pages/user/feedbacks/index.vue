@@ -22,7 +22,7 @@
       offset-md1
       class="break"
       :class="{
-        'px-4': $vuetify.breakpoint.smOnly,
+        'px-4': $vuetify.breakpoint.smAndDown,
       }"
     >
       <v-layout
@@ -41,7 +41,7 @@
         >
           <my-page-menu/>
         </v-flex>
-        <!-- passes -->
+        <!-- feedbacks -->
         <v-flex
           md8
           sm9
@@ -53,49 +53,30 @@
           }"
         >
           <v-flex sm10 xs12 offset-sm1>
-            <!-- passes -->
-            <v-container v-if="passes && passes.length > 0" fluid grid-list-lg>
-              <v-layout row wrap>
-                <v-flex v-for="(pass, index) in passes" :key="index" xs6 md4>
-                  <v-card
-                    :to="'/user/passes/' + pass.passId"
-                    class="text-xs-center py-2"
-                  >
-                    <v-avatar
-                      :size="avatarSize"
-                      :class="{
-                        'grey lighten-3': !pass.companyImageUrl,
-                      }"
-                    >
-                      <img v-if="pass.companyImageUrl" :src="pass.companyImageUrl" alt="avatar">
-                    </v-avatar>
-                    <div
-                      class="pt-3 px-3 font-weight-bold textColor"
-                      :class="{
-                        'subheading': $vuetify.breakpoint.smAndUp,
-                        '': $vuetify.breakpoint.xsOnly,
-                      }"
-                    >
-                      {{ pass.companyName }}
-                    </div>
-                    <div class="pt-2 px-2 caption textColor font-weight-bold">
-                      {{ pass.occupation }}
-                    </div>
-                    <div class="pt-1 px-1 caption light-text-color">
-                      <span v-if="pass.isContracted">内定契約済み</span>
-                      <span v-else-if="pass.isAccepted">内定受諾済み</span>
-                      <span v-else-if="pass.isExpired">有効期限を過ぎました</span>
-                      <span v-else>有効期限: {{ pass.expirationDate }} まで</span>
-                    </div>
-                  </v-card>
-                </v-flex>
-              </v-layout>
-            </v-container>
+            <!-- feedbacks -->
+            <v-list v-if="feedbacks && feedbacks.length > 0" two-line>
+              <template v-for="(feedback, index) in feedbacks">
+                <v-list-tile :to="'/user/feedbacks/' + feedback.feedbackId" >
+                  <v-list-tile-avatar color="grey darken-3">
+                    <v-img
+                      :src="feedback.companyImageUrl"
+                    ></v-img>
+                  </v-list-tile-avatar>
+                  <v-list-tile-content>
+                    <v-list-tile-title class="textColor font-weight-bold">{{ feedback.companyName }}</v-list-tile-title>
+                    <v-list-tile-sub-title class="text-xs-right light-text-color">{{ feedback.timestamp }}</v-list-tile-sub-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+                <v-divider
+                  :inset="true"
+                ></v-divider>
+              </template>
+            </v-list>
             <v-card
               v-else
               class="px-3 py-4"
               :class="{
-                'mx-3': $vuetify.breakpoint.xsOnly,
+                'mx-2': $vuetify.breakpoint.xsOnly,
                 'mt-4': $vuetify.breakpoint.mdAndUp,
                 'mt-3': $vuetify.breakpoint.smAndDown,
               }"
@@ -108,16 +89,16 @@
                     'headline': $vuetify.breakpoint.smAndUp,
                   }"
                 >
-                  内定パスがありません
+                  フィードバックがありません
                 </div>
                 <div class="pt-3 light-text-color">
-                  企業から内定パスをもらった場合はこちらに表示されます
+                  企業からフィードバックが送られた場合はこちらに表示されます
                 </div>
                 <v-btn class="mt-3 font-weight-bold" color="warning" to="/">募集を探す</v-btn>
               </div>
             </v-card>
             <infinite-loading
-              v-if="showInfiniteLoading && passes && passes.length >= 10 && !isPassesLoading"
+              v-if="showInfiniteLoading && feedbacks && feedbacks.length >= 10 && !isLoading"
               :distance="50"
               spinner="waveDots"
               @infinite="infiniteHandler">
@@ -145,13 +126,6 @@ export default {
     showInfiniteLoading: false,
   }),
   computed: {
-    avatarSize() {
-      if (this.breakpoint == 'xs') {
-        return 50
-      } else {
-        return 70
-      }
-    },
     params() {
       return this.$route.params
     },
@@ -164,15 +138,14 @@ export default {
     ...mapState({
       uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
-      passes: state => state.passes.passes,
-      isInitialLoading: state => state.passes.isInitialLoading,
-      isLoading: state => state.passes.isLoading,
-      allPassesQueried: state => state.passes.allPassesQueried,
+      feedbacks: state => state.feedbacks.feedbacks,
+      isInitialLoading: state => state.feedbacks.isInitialLoading,
+      isLoading: state => state.feedbacks.isLoading,
+      allFeedbacksQueried: state => state.feedbacks.allFeedbacksQueried,
     }),
   },
   mounted() {
     this.showInfiniteLoading = true
-
     let toolbarHeight
     if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
       toolbarHeight = 48
@@ -184,7 +157,7 @@ export default {
     if (this.uid != null && this.uid != '' && !this.isQueried) {
       this.resetState()
       this.updateIsInitialLoading(true)
-      this.queryPasses(this.uid)
+      this.queryFeedbacks({uid: this.uid, feedbacks: this.feedbacks})
     }
   },
   watch: {
@@ -193,17 +166,17 @@ export default {
         this.isQueried = true
         this.resetState()
         this.updateIsInitialLoading(true)
-        this.queryPasses(uid)
+        this.queryFeedbacks({uid: uid, feedbacks: this.feedbacks})
       }
     }
   },
   methods: {
     infiniteHandler($state) {
-      if (!this.allPassesQueried) {
-        if (!this.isLoading && this.uid != null) {
+      if (!this.allFeedbacksQueried) {
+        if (!this.isFeedbacksLoading && this.uid != null) {
           this.count += 1
           this.updateIsLoading(true)
-          this.queryPasses(this.uid)
+          this.queryFeedbacks({uid: this.uid, feedbacks: this.feedbacks})
         }
         if (this.count > 20) {
           $state.complete()
@@ -215,10 +188,10 @@ export default {
       }
     },
     ...mapActions({
-      queryPasses: 'passes/queryPasses',
-      updateIsInitialLoading: 'passes/updateIsInitialLoading',
-      updateIsLoading: 'passes/updateIsLoading',
-      resetState: 'passes/resetState',
+      queryFeedbacks: 'feedbacks/queryFeedbacks',
+      updateIsInitialLoading: 'feedbacks/updateIsInitialLoading',
+      updateIsLoading: 'feedbacks/updateIsLoading',
+      resetState: 'feedbacks/resetState',
     }),
   }
 }

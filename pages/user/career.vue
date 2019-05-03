@@ -52,9 +52,9 @@
             'py-4': $vuetify.breakpoint.smAndUp,
           }"
         >
-          <v-flex sm6 xs8 offset-sm3 offset-xs2>
+          <v-flex sm10 xs12 offset-sm1>
             <!-- career timeline -->
-            <v-timeline dense>
+            <v-timeline v-if="career && career.length > 0" dense>
               <v-timeline-item
                 v-for="item in career"
                 :key="item.careerId"
@@ -87,6 +87,31 @@
                 </div>
               </v-timeline-item>
             </v-timeline>
+            <v-card
+              v-else
+              class="px-3 py-4"
+              :class="{
+                'mx-3': $vuetify.breakpoint.xsOnly,
+                'mt-4': $vuetify.breakpoint.mdAndUp,
+                'mt-3': $vuetify.breakpoint.smAndDown,
+              }"
+            >
+              <div class="text-xs-center">
+                <div
+                  class="textColor"
+                  :class="{
+                    'title': $vuetify.breakpoint.xsOnly,
+                    'headline': $vuetify.breakpoint.smAndUp,
+                  }"
+                >
+                  キャリアがありません
+                </div>
+                <div class="pt-3 light-text-color">
+                  企業に採用された場合はこちらに表示されます
+                </div>
+                <v-btn class="mt-3 font-weight-bold" color="warning" to="/">募集を探す</v-btn>
+              </div>
+            </v-card>
           </v-flex>
         </v-flex>
       </v-layout>
@@ -105,6 +130,7 @@ export default {
   },
   data: () => ({
     isQueried: false,
+    windowHeight: 0,
   }),
   computed: {
     path() {
@@ -121,6 +147,14 @@ export default {
     }),
   },
   mounted() {
+    let toolbarHeight
+    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+      toolbarHeight = 48
+    } else {
+      toolbarHeight = 64
+    }
+    this.windowHeight = window.innerHeight - toolbarHeight - 30
+
     if (this.uid != null && this.uid != '' && !this.isQueried) {
       this.updateIsLoading(true)
       this.queryCareer(this.uid)

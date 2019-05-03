@@ -209,6 +209,7 @@ export default {
   },
   data: () => ({
     isQueried: false,
+    windowHeight: 0,
     count: 0,
     showInfiniteLoading: false,
   }),
@@ -244,7 +245,14 @@ export default {
   },
   mounted() {
     this.showInfiniteLoading = true
-
+    let toolbarHeight
+    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+      toolbarHeight = 48
+    } else {
+      toolbarHeight = 64
+    }
+    this.windowHeight = window.innerHeight - toolbarHeight - 30
+    
     if (this.uid != null && this.uid != '' && !this.isQueried) {
       if (this.params.id == null) {
         this.queryUserReviews({uid: this.uid, reviews: this.userReviews})
