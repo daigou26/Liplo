@@ -21,15 +21,19 @@
       md10
       offset-md1
       class="break"
+      :class="{
+        'px-4': $vuetify.breakpoint.smOnly,
+      }"
     >
       <v-layout
         row
         wrap
       >
-        <!-- menu (lg, md)-->
+        <!-- menu (lg, md, sm)-->
         <v-flex
           md4
-          hidden-sm-and-down
+          sm3
+          hidden-xsOnly
           :class="{
             'py-5 px-4': $vuetify.breakpoint.lgAndUp,
             'pa-3': $vuetify.breakpoint.mdOnly,
@@ -37,9 +41,10 @@
         >
           <my-page-menu/>
         </v-flex>
-        <!-- passes (lg, md) -->
+        <!-- passes -->
         <v-flex
           md8
+          sm9
           xs12
           class="py-3"
           :class="{
@@ -47,9 +52,7 @@
             'py-4': $vuetify.breakpoint.smAndUp,
           }"
         >
-          <v-flex md10 sm8 xs12 offset-md1 offset-sm2 >
-            <!-- menu (sm, xs) -->
-            <my-page-menu class="hidden-md-and-up"></my-page-menu>
+          <v-flex sm10 xs12 offset-sm1>
             <!-- passes -->
             <v-container v-if="passes && passes.length > 0" fluid grid-list-lg>
               <v-layout row wrap>
@@ -139,12 +142,6 @@ export default {
     windowHeight: 0,
     count: 0,
     showInfiniteLoading: false,
-    mypageItems: [
-      'passes',
-      'career',
-      'feedbacks',
-      'reviews'
-    ],
   }),
   computed: {
     avatarSize() {

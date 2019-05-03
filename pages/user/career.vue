@@ -9,15 +9,19 @@
       md10
       offset-md1
       class="break"
+      :class="{
+        'px-4': $vuetify.breakpoint.smOnly,
+      }"
     >
       <v-layout
         row
         wrap
       >
-        <!-- menu (lg, md)-->
+        <!-- menu (lg, md, sm)-->
         <v-flex
           md4
-          hidden-sm-and-down
+          sm3
+          hidden-xsOnly
           :class="{
             'py-5 px-4': $vuetify.breakpoint.lgAndUp,
             'pa-3': $vuetify.breakpoint.mdOnly,
@@ -25,18 +29,18 @@
         >
           <my-page-menu/>
         </v-flex>
-        <!-- career timeline (lg, md) -->
+        <!-- career -->
         <v-flex
           md8
+          sm9
           xs12
+          class="py-3"
           :class="{
-            'px-5 pb-3': $vuetify.breakpoint.lgAndUp,
-            'px-3 pb-3': $vuetify.breakpoint.mdOnly,
+            'px-3': $vuetify.breakpoint.mdAndUp,
+            'py-4': $vuetify.breakpoint.smAndUp,
           }"
         >
           <v-flex sm6 xs8 offset-sm3 offset-xs2>
-            <!-- menu (sm, xs) -->
-            <my-page-menu class="hidden-md-and-up"/>
             <!-- career timeline -->
             <v-timeline dense>
               <v-timeline-item

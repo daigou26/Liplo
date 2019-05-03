@@ -384,7 +384,7 @@
                     <v-list-tile-title>プロフィール</v-list-tile-title>
                   </v-list-tile>
                   <v-divider></v-divider>
-                  <v-list-tile to="/user/notifications">
+                  <v-list-tile to="/user/passes">
                     <v-list-tile-title>マイページ</v-list-tile-title>
                   </v-list-tile>
                   <v-divider></v-divider>

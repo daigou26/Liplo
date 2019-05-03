@@ -9,15 +9,19 @@
       md10
       offset-md1
       class="break"
+      :class="{
+        'px-4': $vuetify.breakpoint.smAndDown,
+      }"
     >
       <v-layout
         row
         wrap
       >
-        <!-- menu (lg, md)-->
+        <!-- menu (lg, md, sm)-->
         <v-flex
           md4
-          hidden-sm-and-down
+          sm3
+          hidden-xsOnly
           :class="{
             'py-5 px-4': $vuetify.breakpoint.lgAndUp,
             'pa-3': $vuetify.breakpoint.mdOnly,
@@ -25,19 +29,18 @@
         >
           <my-page-menu/>
         </v-flex>
-        <!-- feedbacks (lg, md) -->
+        <!-- feedbacks -->
         <v-flex
           md8
+          sm9
           xs12
           class="py-3"
           :class="{
-            'px-5': $vuetify.breakpoint.lgAndUp,
-            'px-3': $vuetify.breakpoint.mdOnly,
+            'px-3': $vuetify.breakpoint.mdAndUp,
+            'py-4': $vuetify.breakpoint.smAndUp,
           }"
         >
-          <v-flex md10 sm6 xs8 offset-md1 offset-sm3 offset-xs2>
-            <!-- menu (sm, xs) -->
-            <my-page-menu class="hidden-md-and-up"></my-page-menu>
+          <v-flex sm10 xs12 offset-sm1>
             <!-- feedbacks -->
             <div v-if="params.id == null">
               <v-list v-if="feedbacks" two-line class="border">
@@ -116,12 +119,6 @@ export default {
     isQueried: false,
     count: 0,
     showInfiniteLoading: false,
-    mypageItems: [
-      'passes',
-      'career',
-      'feedbacks',
-      'reviews'
-    ],
   }),
   computed: {
     params() {

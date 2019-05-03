@@ -1,46 +1,21 @@
 <template>
   <v-layout>
     <v-flex xs12>
-      <!-- menu (sm, xs) -->
-      <v-menu
-        content-class="dropdown-menu"
-        transition="slide-y-transition"
-        class="pt-2 pb-4 hidden-md-and-up"
-        style="width: 200px;"
-      >
-        <v-btn
-          slot="activator"
-          flat
-          block
-          style="border-bottom: 1px dashed; border-color: #E0E0E0;"
-        >
-          {{ dropdownText }}
-          <v-icon>arrow_drop_down</v-icon>
-        </v-btn>
-        <v-card>
-          <v-list dense class="py-0">
-            <v-list-tile
-              v-for="item in mypageItems"
-              :key="item.value"
-              :class="{ 'teal lighten-5': path.includes('user/' + item.value) }"
-              :to="'/user/' + item.value"
-            >
-              <v-list-tile-content>
-                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </v-list>
-        </v-card>
-      </v-menu>
-      <!-- menu ( xl, lg, md) -->
-      <v-list class="hidden-sm-and-down pt-5" style="max-width: 250px;">
+      <!-- menu ( xl, lg, md, sm) -->
+      <v-list class="hidden-xs-only pt-5" style="max-width: 250px;">
         <template v-for="(item, index) in mypageItems">
           <v-list-tile
             :class="{ 'teal lighten-5': path.includes('user/' + item.value) }"
             :to="'/user/' + item.value"
           >
             <v-list-tile-content>
-              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+              <v-list-tile-title
+                :class="{
+                  'body-2': $vuetify.breakpoint.smOnly,
+                }"
+              >
+                {{ item.title }}
+              </v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
           <v-divider
@@ -57,10 +32,6 @@ export default {
   data: () => ({
     dropdownText: '',
     mypageItems: [
-      {
-        title: '通知',
-        value: 'notifications'
-      },
       {
         title: '内定パス',
         value: 'passes'
@@ -88,9 +59,7 @@ export default {
     },
   },
   mounted() {
-    if (this.path.includes('user/notifications')) {
-      this.dropdownText = '通知'
-    } else if (this.path.includes('user/career')) {
+    if (this.path.includes('user/career')) {
       this.dropdownText = 'キャリア'
     } else if (this.path.includes('user/reviews')) {
       this.dropdownText = 'レビュー'

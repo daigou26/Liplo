@@ -20,23 +20,11 @@
         row
         wrap
       >
-        <!-- menu (lg, md)-->
-        <v-flex
-          md4
-          hidden-sm-and-down
-          :class="{
-            'py-5 px-4': $vuetify.breakpoint.lgAndUp,
-            'pa-3': $vuetify.breakpoint.mdOnly,
-          }"
-        >
-          <my-page-menu/>
-        </v-flex>
         <!-- notifications -->
         <v-flex
           sm8
           xs12
           offset-sm2
-          offset-md0
           :class="{
             'px-5': $vuetify.breakpoint.lgAndUp,
             'px-3': $vuetify.breakpoint.mdOnly,
@@ -44,6 +32,9 @@
             'py-0': $vuetify.breakpoint.xsOnly,
           }"
         >
+          <div class="textColor title pb-4 hidden-xs-only">
+            通知
+          </div>
           <!-- notifications -->
           <v-list
             v-if="notifications && notifications.length > 0"
@@ -108,12 +99,8 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import MyPageMenu from '~/components/MyPageMenu'
 
 export default {
-  components: {
-    MyPageMenu
-  },
   data: () => ({
     isQueried: false,
     count: 0,
