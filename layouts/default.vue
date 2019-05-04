@@ -32,6 +32,7 @@
           :value="true"
           absolute
           color="transparent"
+          id="bottom-nav"
         >
           <!-- 募集一覧 -->
           <v-btn
@@ -48,8 +49,17 @@
             flat
             to="/user/notifications"
           >
-            <span style="font-size: 10px;">通知</span>
-            <v-icon>notifications_none</v-icon>
+            <span v-if="!hasNewNotification" style="font-size: 10px;">通知</span>
+            <v-icon v-if="!hasNewNotification">notifications_none</v-icon>
+            <v-badge v-if="hasNewNotification" color="red">
+              <template v-slot:badge>
+                <span></span>
+              </template>
+              <div class="text-xs-center">
+                <v-icon>notifications_none</v-icon>
+                <span style="font-size: 10px; display: block;">通知</span>
+              </div>
+            </v-badge>
           </v-btn>
           <!-- メッセージ -->
           <v-btn
@@ -57,8 +67,17 @@
             flat
             to="/messages"
           >
-            <span style="font-size: 10px;">メッセージ</span>
-            <v-icon>chat_bubble_outline</v-icon>
+            <span v-if="!hasNewMessage" style="font-size: 10px;">メッセージ</span>
+            <v-icon v-if="!hasNewMessage">chat_bubble_outline</v-icon>
+            <v-badge v-if="hasNewMessage" color="red">
+              <template v-slot:badge>
+                <span></span>
+              </template>
+              <div class="text-xs-center">
+                <v-icon>chat_bubble_outline</v-icon>
+                <span style="font-size: 10px; display: block;">メッセージ</span>
+              </div>
+            </v-badge>
           </v-btn>
           <!-- プロフィール -->
           <v-btn
@@ -123,6 +142,8 @@ export default {
     ...mapState({
       uid: state => state.uid,
       type: state => state.profile.type,
+      hasNewNotification: state => state.notifications.hasNewNotification,
+      hasNewMessage: state => state.chats.hasNewMessage,
     })
   },
 }
@@ -258,6 +279,12 @@ i.v-icon {
 #toolbar span.v-badge__badge {
   width: 5px;
   height: 5px;
+}
+#bottom-nav span.v-badge__badge {
+  width: 5px;
+  height: 5px;
+  top: 0px;
+  right: -4px;
 }
 @media screen and (min-width: 600px) {
   #job-apply.v-btn {
