@@ -279,6 +279,8 @@ i.v-icon {
 #toolbar span.v-badge__badge {
   width: 5px;
   height: 5px;
+  top: -4px;
+  right: -8px;
 }
 #bottom-nav span.v-badge__badge {
   width: 5px;
