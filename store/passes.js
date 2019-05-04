@@ -45,7 +45,7 @@ export const actions = {
       firestore.collection('passes')
         .where('uid', '==', uid)
         .where('isContracted', '==', true)
-        .orderBy('createdAt', 'desc')
+        .orderBy('contractedDate', 'desc')
         .get()
         .then(function(snapshot) {
           if (!snapshot.empty) {
