@@ -7,10 +7,11 @@
     <v-snackbar
       v-model="snackbar"
       class="px-5"
-      color="orange lighten-1"
+      color="teal lighten-1"
       :multi-line="true"
       :timeout="6000"
-      :top="true"
+      :left="true"
+      :bottom="true"
     >
       {{ snackbarText }}
       <v-btn
@@ -31,20 +32,20 @@
         row
         wrap
       >
-        <!-- menu (lg, md)-->
+        <!-- menu (lg, md, sm)-->
         <v-flex
-          md4
-          hidden-sm-and-down
+          sm4
+          hidden-xs-only
           :class="{
             'py-5 px-4': $vuetify.breakpoint.lgAndUp,
-            'pa-3': $vuetify.breakpoint.mdOnly,
+            'pa-3': $vuetify.breakpoint.mdAndDown,
           }"
         >
           <settings-menu/>
         </v-flex>
-        <!-- settings (lg, md) -->
+        <!-- settings -->
         <v-flex
-          md8
+          sm8
           xs12
           class="py-3"
           :class="{
@@ -52,9 +53,7 @@
             'px-3': $vuetify.breakpoint.mdOnly,
           }"
         >
-          <v-flex md10 sm6 xs8 offset-md1 offset-sm3 offset-xs2>
-            <!-- menu (sm, xs) -->
-            <settings-menu class="hidden-md-and-up"></settings-menu>
+          <v-flex xs10 offset-xs1>
             <!-- スカウト設定 -->
             <div v-if="type == 'user'" class="pt-5">
               <div class="title textColor pb-4">
@@ -65,7 +64,7 @@
                 label="企業からのスカウトを受け取る"
                 color="info"
               ></v-checkbox>
-              <div class="text-xs-right pb-5">
+              <div class="text-xs-right pb-3">
                 <v-btn @click="updateButtonClicked">
                   更新
                 </v-btn>
@@ -79,7 +78,7 @@
             <div class="pt-3">
               現在のメールアドレス： {{ currentEmail }}
             </div>
-            <div class="text-xs-right pt-4">
+            <div class="text-xs-right pt-4 pb-3">
               <v-btn @click="changeEmailDialog = true">
                 メールアドレスを変更する
               </v-btn>

@@ -290,6 +290,8 @@
         <span v-else-if="path.includes('/career')" class="toolbar-title">キャリア</span>
         <span v-else-if="path.includes('/feedbacks')" class="toolbar-title">フィードバック</span>
         <span v-else-if="path.includes('/reviews')" class="toolbar-title">レビュー</span>
+        <span v-else-if="path == '/user/settings/account'" class="toolbar-title">アカウント設定</span>
+        <span v-else-if="path == '/user/settings/notifications'" class="toolbar-title">通知設定</span>
         <span v-else class="toolbar-title">Home</span>
       </no-ssr>
 
@@ -384,18 +386,34 @@
                   <v-icon v-else>person</v-icon>
                 </v-avatar>
                 <v-list>
-                  <v-list-tile to="/user/profile">
+                  <v-list-tile to="/" class="hidden-sm-and-up">
+                    <v-list-tile-title>ホーム</v-list-tile-title>
+                  </v-list-tile>
+                  <v-divider class="hidden-sm-and-up"></v-divider>
+                  <v-list-tile to="/user/profile" class="hidden-xs-only">
                     <v-list-tile-title>プロフィール</v-list-tile-title>
                   </v-list-tile>
-                  <v-divider></v-divider>
-                  <v-list-tile to="/user/passes">
+                  <v-divider class="hidden-xs-only"></v-divider>
+                  <v-list-tile to="/user/menu" class="hidden-sm-and-up">
+                    <v-list-tile-title>プロフィール</v-list-tile-title>
+                  </v-list-tile>
+                  <v-divider class="hidden-sm-and-up"></v-divider>
+                  <v-list-tile to="/user/passes" class="hidden-xs-only">
                     <v-list-tile-title>マイページ</v-list-tile-title>
                   </v-list-tile>
-                  <v-divider></v-divider>
-                  <v-list-tile to="/user/settings/notifications">
+                  <v-divider class="hidden-xs-only"></v-divider>
+                  <v-list-tile to="/user/settings/notifications" class="hidden-xs-only">
                     <v-list-tile-title>設定</v-list-tile-title>
                   </v-list-tile>
-                  <v-divider></v-divider>
+                  <v-divider class="hidden-xs-only"></v-divider>
+                  <v-list-tile to="/user/settings/account" class="hidden-sm-and-up">
+                    <v-list-tile-title>アカウント設定</v-list-tile-title>
+                  </v-list-tile>
+                  <v-divider class="hidden-sm-and-up"></v-divider>
+                  <v-list-tile to="/user/settings/notifications" class="hidden-sm-and-up">
+                    <v-list-tile-title>通知設定</v-list-tile-title>
+                  </v-list-tile>
+                  <v-divider class="hidden-sm-and-up"></v-divider>
                   <v-list-tile @click="signOut">
                     <v-list-tile-title>ログアウト</v-list-tile-title>
                   </v-list-tile>
