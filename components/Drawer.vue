@@ -7,6 +7,9 @@
     :mini-variant="mini"
     mini-variant-width="48"
     id="drawer"
+    :class="{
+      'drawer-mini': $vuetify.breakpoint.smAndDown,
+    }"
   >
     <v-toolbar flat>
       <v-list-tile to="/">
@@ -19,7 +22,11 @@
       </v-list-tile>
     </v-toolbar>
     <v-divider></v-divider>
-    <v-list dense class="pt-0" id="dashboard-menu">
+    <v-list
+      dense
+      class="pt-0"
+      id="dashboard-menu"
+    >
       <v-list-tile
         v-for="item in items"
         :key="item.title"
@@ -72,10 +79,6 @@ export default {
   height: 56px;
 }
 #drawer div.v-toolbar__content {
-  padding-left: 0px;
-  padding-right: 0px;
-}
-#drawer .v-list__tile {
   padding-left: 0px;
   padding-right: 0px;
 }

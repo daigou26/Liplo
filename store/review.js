@@ -15,6 +15,7 @@ export const state = () => ({
   mentor: null,
   growth: null,
   chartData: null,
+  isLoading: false,
 })
 
 export const mutations = {
@@ -57,6 +58,9 @@ export const mutations = {
   setChartData(state, data) {
     state.chartData = data
   },
+  updateIsLoading(state, isLoading) {
+    state.isLoading = isLoading
+  },
 }
 
 export const actions = {
@@ -77,7 +81,7 @@ export const actions = {
   queryReview({commit}, {nuxt, params, companyId, uid}) {
     const reviewId = params.id
 
-    return firestore.collection('reviews')
+    firestore.collection('reviews')
       .doc(reviewId)
       .get()
       .then(function(doc) {
@@ -128,16 +132,22 @@ export const actions = {
             ]
           }
           commit('setChartData', chartData)
+          commit('updateIsLoading', false)
         } else {
           // 404
           console.log('404')
+          commit('updateIsLoading', false)
           nuxt.error({ statusCode: 404, message: 'not found' })
         }
       })
       .catch(function(error) {
+        commit('updateIsLoading', false)
         console.log("Error getting document:", error)
         nuxt.error({ statusCode: 404, message: 'not found' })
       })
+  },
+  updateIsLoading({commit}, isLoading) {
+    commit('updateIsLoading', isLoading)
   },
   resetState({commit}) {
     commit('setCompanyId', null)
@@ -153,5 +163,6 @@ export const actions = {
     commit('setMentor', null)
     commit('setGrowth', null)
     commit('setChartData', null)
+    commit('updateIsLoading', false)
   },
 }

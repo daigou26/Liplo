@@ -2,705 +2,792 @@
   <v-container grid-list-md pa-0>
     <v-layout
       row
+      wrap
       justify-center
     >
-      <v-flex xs12>
-        <v-card flat class="border-side">
-          <!-- Profile画像 & UserName -->
-          <div class="d-flex py-4 align-center">
-            <!-- Profile画像 -->
-            <v-flex xs4 sm2 text-xs-center>
-              <v-avatar
-                :size="avatarSize"
-                class="grey lighten-3 clickable"
-                @click="profileImageClicked"
-              >
-                <img v-if="imageUrl" :src="imageUrl" alt="avatar">
-                <v-icon v-else :size="70">person</v-icon>
-              </v-avatar>
-            </v-flex>
-            <!-- User Name -->
-            <v-flex xs8  class="break text-xs-left">
-              <span class="display-1 textColor font-weight-bold">
-                {{ name }}
-              </span>
-              <v-btn
-                flat
-                @click="userNameClicked"
-              >
-                <v-icon :size="14">edit</v-icon>
-                <span class="caption edit-text-color">編集する</span>
-              </v-btn>
-            </v-flex>
-            <!-- ProfileImage編集 -->
-            <div>
-              <v-dialog
-                :value="isEditingProfileImage"
-                :fullscreen="$vuetify.breakpoint.xsOnly"
-                persistent
-                width="500"
-              >
-                <v-card>
-                  <v-card-title
-                    class="headline orange lighten-3"
-                    primary-title
+      <!-- loading -->
+      <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
+        <v-layout justify-center>
+          Now Loading...
+        </v-layout>
+      </v-flex>
+      <v-flex v-else-if="isLoading" xs12 :style="{ height: windowHeight + 'px' }">
+        <v-layout align-center justify-center column fill-height>
+          Now Loading...
+        </v-layout>
+      </v-flex>
+      <v-flex v-else xs12 pt-3 px-2>
+        <v-layout row wrap>
+          <v-flex xs12 md9>
+            <v-card flat>
+              <!-- Profile画像 & UserName -->
+              <div>
+                <v-card-actions :class="{'px-5 py-3': $vuetify.breakpoint.smAndUp}">
+                  <v-avatar
+                    :size="avatarSize"
+                    class="grey lighten-3 clickable"
+                    @click="profileImageClicked"
                   >
-                    プロフィール画像を変更
-                  </v-card-title>
-                  <v-flex xs10 offset-xs1 text-xs-center>
-                    <div class="py-4">
-                      <v-avatar
-                        :size="selectedImageSize"
-                        class="grey lighten-3"
+                    <img v-if="imageUrl" :src="imageUrl" alt="avatar">
+                    <v-icon v-else>camera_alt</v-icon>
+                  </v-avatar>
+                  <span
+                    class="textColor font-weight-bold px-3"
+                    :class="{
+                      'display-1 px-3': $vuetify.breakpoint.mdAndUp,
+                      'headline': $vuetify.breakpoint.smAndDown,
+                    }"
+                  >
+                    {{ name }}
+                  </span>
+                  <v-btn
+                    flat
+                    :icon="$vuetify.breakpoint.xsOnly"
+                    :small="$vuetify.breakpoint.xsOnly"
+                    :fab="$vuetify.breakpoint.xsOnly"
+                    @click="userNameClicked"
+                  >
+                    <v-icon :size="14">edit</v-icon>
+                    <span class="hidden-xs-only caption edit-text-color">編集する</span>
+                  </v-btn>
+                </v-card-actions>
+                <!-- ProfileImage編集 -->
+                <div v-if="isEditingProfileImage">
+                  <v-dialog
+                    :value="isEditingProfileImage"
+                    :fullscreen="$vuetify.breakpoint.xsOnly"
+                    persistent
+                    width="500"
+                  >
+                    <v-card>
+                      <v-card-title
+                        class="headline orange lighten-3"
+                        primary-title
                       >
-                        <v-img v-if="selectedImage" :src="selectedImage" />
-                        <v-img v-else-if="imageUrl" :src="imageUrl" />
-                        <v-icon v-else style="font-size: 150px">person</v-icon>
-                      </v-avatar>
+                        プロフィール画像を変更
+                      </v-card-title>
+                      <v-flex xs10 offset-xs1 text-xs-center>
+                        <div class="py-4">
+                          <v-avatar
+                            :size="selectedImageSize"
+                            class="grey lighten-3"
+                          >
+                            <v-img v-if="selectedImage" :src="selectedImage" />
+                            <v-img v-else-if="imageUrl" :src="imageUrl" />
+                            <v-icon v-else style="font-size: 150px">person</v-icon>
+                          </v-avatar>
+                        </div>
+                        <input type="file" v-on:change="onFileChange">
+                        <p v-if="!imageFileSizeValid" class="warning-text-color">
+                          {{ imageFileSizeWarning }}
+                        </p>
+                      </v-flex>
+                      <v-divider></v-divider>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                          flat
+                          @click="updateIsEditingProfileImage(false)"
+                        >
+                          キャンセル
+                        </v-btn>
+                        <v-btn
+                          color="primary"
+                          flat
+                          :disabled ="selectedImage == null || !imageFileSizeValid"
+                          @click="updateProfileImage({uid: uid, imageFile: imageFile})"
+                        >
+                          変更
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-dialog>
+                </div>
+                <!-- UserName編集 -->
+                <v-form v-if="isEditingUserName" v-model="editUserNameValid">
+                  <v-dialog
+                    :value="isEditingUserName"
+                    :fullscreen="$vuetify.breakpoint.xsOnly"
+                    persistent
+                    width="500"
+                  >
+                    <v-card>
+                      <v-card-title
+                        class="headline orange lighten-3"
+                        primary-title
+                      >
+                        名前を変更
+                      </v-card-title>
+                      <v-flex xs10 offset-xs1 py-3>
+                        <!-- 苗字の編集画面 -->
+                        <v-text-field
+                          label="姓"
+                          v-model="tempLastName"
+                          :rules="lastNameRules"
+                          required
+                        ></v-text-field>
+                        <!-- 苗字の編集画面 -->
+                        <v-text-field
+                          label="名"
+                          v-model="tempFirstName"
+                          :rules="firstNameRules"
+                          required
+                        ></v-text-field>
+                      </v-flex>
+                      <v-divider></v-divider>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                          flat
+                          @click="updateIsEditingUserName(false)"
+                        >
+                          キャンセル
+                        </v-btn>
+                        <v-btn
+                          color="primary"
+                          flat
+                          :disabled="!editUserNameValid"
+                          @click="updateUserName({uid: uid, firstName: tempFirstName, lastName: tempLastName})"
+                        >
+                          変更
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-dialog>
+                </v-form>
+              </div>
+              <div :class="{'px-5': $vuetify.breakpoint.smAndUp}">
+                <!-- プロフィール完成度 -->
+                <v-card flat class="pa-3 subheading">
+                  <span class="light-text-color">プロフィール完成度: </span>
+                  <span class="font-weight-bold textColor">{{ completionPercentage }}%</span>
+                  <div v-if="completionPercentage != 100" class="pr-5">
+                    <v-progress-linear
+                      background-color="grey lighten-3"
+                      color="teal lighten-3"
+                      height="15"
+                      :value="completionPercentage"
+                    ></v-progress-linear>
+                    <div class="light-text-color caption">
+                      プロフィール完成度が高い程、スカウトされやすくなります。
                     </div>
-                    <input type="file" v-on:change="onFileChange">
-                    <p v-if="!imageFileSizeValid" class="warning-text-color">
-                      {{ imageFileSizeWarning }}
-                    </p>
-                  </v-flex>
-                  <v-divider></v-divider>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                      flat
-                      @click="updateIsEditingProfileImage(false)"
-                    >
-                      キャンセル
-                    </v-btn>
-                    <v-btn
-                      color="primary"
-                      flat
-                      :disabled ="selectedImage == null || !imageFileSizeValid"
-                      @click="updateProfileImage({uid: uid, imageFile: imageFile})"
-                    >
-                      変更
-                    </v-btn>
-                  </v-card-actions>
+                  </div>
                 </v-card>
-              </v-dialog>
-            </div>
-            <!-- UserName編集 -->
-            <v-form v-model="editUserNameValid">
-              <v-dialog
-                :value="isEditingUserName"
-                :fullscreen="$vuetify.breakpoint.xsOnly"
-                persistent
-                width="500"
-              >
-                <v-card>
-                  <v-card-title
-                    class="headline orange lighten-3"
-                    primary-title
+                <!-- スコア -->
+                <v-flex v-if="false" xs8 sm6>
+                  <div class="pt-3 px-3 hidden-md-and-up">
+                    <v-avatar
+                      size="100"
+                      color="orange lighten-3"
+                    >
+                      <div class="white--text" style="display: block">
+                        <div style="font-size: 10px">
+                          スコア
+                        </div>
+                        <span class="headline">{{ points }}</span>
+                      </div>
+                    </v-avatar>
+                    <div class="pt-2 light-text-color caption">
+                      <div>
+                        スコアが高い程、スカウトされやすくなります。
+                      </div>
+                      <div>
+                        スコアは、インターンに採用されたり、企業のレビューを書くことで上げることができます。
+                      </div>
+                    </div>
+                  </div>
+                </v-flex>
+                <!-- 志望する職種 -->
+                <div>
+                  <v-layout
+                    align-center
+                    justify-space-between
+                    row
+                    class="pt-5"
                   >
-                    名前を変更
-                  </v-card-title>
-                  <v-flex xs10 offset-xs1 py-3>
-                    <!-- 苗字の編集画面 -->
-                    <v-text-field
-                      label="姓"
-                      v-model="tempLastName"
-                      :rules="lastNameRules"
-                      required
-                    ></v-text-field>
-                    <!-- 苗字の編集画面 -->
-                    <v-text-field
-                      label="名"
-                      v-model="tempFirstName"
-                      :rules="firstNameRules"
-                      required
-                    ></v-text-field>
+                    <!-- タイトル&編集ボタン -->
+                    <v-flex xs8 sm10>
+                      <v-card-title class="title font-weight-bold">志望する職種</v-card-title>
+                    </v-flex>
+                    <v-flex xs4 sm2 v-show="!isEditingDesiredOccupations">
+                      <v-btn
+                        flat
+                        @click="desiredOccupationsEditButtonClicked"
+                      >
+                        <v-icon :size="14">edit</v-icon>
+                        <span class="caption edit-text-color">編集する</span>
+                      </v-btn>
+                    </v-flex>
+                  </v-layout>
+                  <v-flex xs12 sm10>
+                    <v-divider></v-divider>
                   </v-flex>
-                  <v-divider></v-divider>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                      flat
-                      @click="updateIsEditingUserName(false)"
-                    >
-                      キャンセル
-                    </v-btn>
-                    <v-btn
-                      color="primary"
-                      flat
-                      :disabled="!editUserNameValid"
-                      @click="updateUserName({uid: uid, firstName: tempFirstName, lastName: tempLastName})"
-                    >
-                      変更
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-            </v-form>
-          </div>
-          <div :class="{'px-5': $vuetify.breakpoint.smAndUp}">
-            <!-- 志望する職種 -->
-            <div>
-              <v-layout
-                align-center
-                justify-space-between
-                row
-                class="pt-5"
-              >
-                <!-- タイトル&編集ボタン -->
-                <v-flex xs8 sm10>
-                  <v-card-title class="title font-weight-bold">志望する職種</v-card-title>
-                </v-flex>
-                <v-flex xs4 sm2 v-show="!isEditingDesiredOccupations">
-                  <v-btn
-                    flat
-                    @click="desiredOccupationsEditButtonClicked"
-                  >
-                    <v-icon :size="14">edit</v-icon>
-                    <span class="caption edit-text-color">編集する</span>
-                  </v-btn>
-                </v-flex>
-              </v-layout>
-              <v-flex xs12 sm10>
-                <v-divider></v-divider>
-              </v-flex>
-              <v-flex xs12 sm10 class="break">
-                <div v-if="!isEditingDesiredOccupations && desiredOccupations">
-                  <v-chip v-if="desiredOccupations.engineer">
-                    <span>エンジニア</span>
-                  </v-chip>
-                  <v-chip v-if="desiredOccupations.designer">
-                    <span>デザイナー</span>
-                  </v-chip>
-                  <v-chip v-if="desiredOccupations.sales">
-                    <span>営業</span>
-                  </v-chip>
-                  <v-chip v-if="desiredOccupations.others">
-                    <span>その他</span>
-                  </v-chip>
+                  <v-flex xs12 sm10 class="break">
+                    <div v-if="!isEditingDesiredOccupations && desiredOccupations">
+                      <v-chip v-if="desiredOccupations.engineer">
+                        <span>エンジニア</span>
+                      </v-chip>
+                      <v-chip v-if="desiredOccupations.designer">
+                        <span>デザイナー</span>
+                      </v-chip>
+                      <v-chip v-if="desiredOccupations.sales">
+                        <span>営業</span>
+                      </v-chip>
+                      <v-chip v-if="desiredOccupations.others">
+                        <span>その他</span>
+                      </v-chip>
+                    </div>
+                    <!-- 志望する職種の編集画面 -->
+                    <div v-if="isEditingDesiredOccupations">
+                      <v-select
+                        v-model="tempDesiredOccupations"
+                        :items="desiredOccupationsItems"
+                        attach
+                        chips
+                        solo
+                        multiple
+                      ></v-select>
+                      <v-btn
+                        @click="updateIsEditingDesiredOccupations(false)"
+                      >
+                        キャンセル
+                      </v-btn>
+                      <v-btn
+                        @click="updateDesiredOccupations({uid: uid, desiredOccupations: tempDesiredOccupations})"
+                      >
+                        更新
+                      </v-btn>
+                    </div>
+                  </v-flex>
                 </div>
-                <!-- 志望する職種の編集画面 -->
-                <div v-if="isEditingDesiredOccupations">
-                  <v-select
-                    v-model="tempDesiredOccupations"
-                    :items="desiredOccupationsItems"
-                    attach
-                    chips
-                    solo
-                    multiple
-                  ></v-select>
-                  <v-btn
-                    @click="updateIsEditingDesiredOccupations(false)"
+                <!-- 紹介文 -->
+                <div>
+                  <v-layout
+                    align-center
+                    justify-space-between
+                    row
+                    class="pt-5"
                   >
-                    キャンセル
-                  </v-btn>
-                  <v-btn
-                    @click="updateDesiredOccupations({uid: uid, desiredOccupations: tempDesiredOccupations})"
-                  >
-                    更新
-                  </v-btn>
+                    <!-- タイトル&編集ボタン -->
+                    <v-flex xs8 sm10>
+                      <v-card-title class="title font-weight-bold">紹介文</v-card-title>
+                    </v-flex>
+                    <v-flex xs4 sm2 v-show="!isEditingSelfIntro">
+                      <v-btn
+                        flat
+                        @click="selfIntroEditButtonClicked"
+                      >
+                        <v-icon :size="14">edit</v-icon>
+                        <span class="caption edit-text-color">編集する</span>
+                      </v-btn>
+                    </v-flex>
+                  </v-layout>
+                  <v-flex xs12 sm10>
+                    <v-divider></v-divider>
+                  </v-flex>
+                  <v-flex xs12 sm10 class="break">
+                    <!-- 自己紹介の表示 -->
+                    <v-card-text v-if="!isEditingSelfIntro">
+                      <p class="return">{{ selfIntro }}</p>
+                    </v-card-text>
+                    <!-- 自己紹介の編集画面 -->
+                    <div v-else>
+                      <v-form v-model="editSelfIntroValid">
+                        <v-textarea
+                          solo
+                          label="自己紹介"
+                          v-model="tempSelfIntro"
+                          :rules="selfIntroRules"
+                          required
+                        ></v-textarea>
+                        <v-btn
+                          @click="updateIsEditingSelfIntro(false)"
+                        >
+                          キャンセル
+                        </v-btn>
+                        <v-btn
+                          :disabled="!editSelfIntroValid"
+                          @click="updateSelfIntro({uid: uid, selfIntro: tempSelfIntro})"
+                        >
+                          更新
+                        </v-btn>
+                      </v-form>
+                    </div>
+                  </v-flex>
                 </div>
-              </v-flex>
-            </div>
-            <!-- 紹介文 -->
-            <div>
-              <v-layout
-                align-center
-                justify-space-between
-                row
-                class="pt-5"
-              >
-                <!-- タイトル&編集ボタン -->
-                <v-flex xs8 sm10>
-                  <v-card-title class="title font-weight-bold">紹介文</v-card-title>
-                </v-flex>
-                <v-flex xs4 sm2 v-show="!isEditingSelfIntro">
-                  <v-btn
-                    flat
-                    @click="selfIntroEditButtonClicked"
+                <!-- やりたいこと -->
+                <div>
+                  <v-layout
+                    align-center
+                    justify-space-between
+                    row
+                    class="pt-5"
                   >
-                    <v-icon :size="14">edit</v-icon>
-                    <span class="caption edit-text-color">編集する</span>
-                  </v-btn>
-                </v-flex>
-              </v-layout>
-              <v-flex xs12 sm10>
-                <v-divider></v-divider>
-              </v-flex>
-              <v-flex xs12 sm10 class="break">
-                <!-- 自己紹介の表示 -->
-                <v-card-text v-if="!isEditingSelfIntro">
-                  <p class="return">{{ selfIntro }}</p>
-                </v-card-text>
-                <!-- 自己紹介の編集画面 -->
-                <div v-else>
-                  <v-form v-model="editSelfIntroValid">
-                    <v-textarea
-                      solo
-                      label="自己紹介"
-                      v-model="tempSelfIntro"
-                      :rules="selfIntroRules"
-                      required
-                    ></v-textarea>
-                    <v-btn
-                      @click="updateIsEditingSelfIntro(false)"
-                    >
-                      キャンセル
-                    </v-btn>
-                    <v-btn
-                      :disabled="!editSelfIntroValid"
-                      @click="updateSelfIntro({uid: uid, selfIntro: tempSelfIntro})"
-                    >
-                      更新
-                    </v-btn>
-                  </v-form>
+                    <v-flex xs8 sm10>
+                      <v-card-title class="title font-weight-bold">やりたいこと・実現したいこと</v-card-title>
+                    </v-flex>
+                    <v-flex xs4 sm2 v-show="!isEditingWhatWantToDo">
+                      <v-btn
+                        flat
+                        @click="whatWantToDoEditButtonClicked"
+                      >
+                        <v-icon :size="14">edit</v-icon>
+                        <span class="caption edit-text-color">編集する</span>
+                      </v-btn>
+                    </v-flex>
+                  </v-layout>
+                  <v-flex xs12 sm10>
+                    <v-divider></v-divider>
+                  </v-flex>
+                  <v-flex xs12 sm10 class="break">
+                    <!-- やりたいことの表示 -->
+                    <v-card-text v-if="!isEditingWhatWantToDo">
+                      <p class="return">{{ whatWantToDo }}</p>
+                    </v-card-text>
+                    <!-- やりたいことの編集画面 -->
+                    <div v-else>
+                      <v-form v-model="editWhatWantToDoValid">
+                        <v-textarea
+                          solo
+                          label="やりたいことや実現したいことを書いてください"
+                          v-model="tempWhatWantToDo"
+                          :rules="whatWantToDoRules"
+                          required
+                        ></v-textarea>
+                        <v-btn
+                          @click="updateIsEditingWhatWantToDo(false)"
+                        >
+                          キャンセル
+                        </v-btn>
+                        <v-btn
+                          :disabled="!editWhatWantToDoValid"
+                          @click="updateWhatWantToDo({uid: uid, whatWantToDo: tempWhatWantToDo})"
+                        >
+                          更新
+                        </v-btn>
+                      </v-form>
+                    </div>
+                  </v-flex>
                 </div>
-              </v-flex>
-            </div>
-            <!-- やりたいこと -->
-            <div>
-              <v-layout
-                align-center
-                justify-space-between
-                row
-                class="pt-5"
-              >
-                <v-flex xs8 sm10>
-                  <v-card-title class="title font-weight-bold">やりたいこと・実現したいこと</v-card-title>
-                </v-flex>
-                <v-flex xs4 sm2 v-show="!isEditingWhatWantToDo">
-                  <v-btn
-                    flat
-                    @click="whatWantToDoEditButtonClicked"
+                <!-- ポートフォリオ -->
+                <div>
+                  <v-layout
+                    align-center
+                    justify-space-between
+                    row
+                    class="pt-5"
                   >
-                    <v-icon :size="14">edit</v-icon>
-                    <span class="caption edit-text-color">編集する</span>
-                  </v-btn>
-                </v-flex>
-              </v-layout>
-              <v-flex xs12 sm10>
-                <v-divider></v-divider>
-              </v-flex>
-              <v-flex xs12 sm10 class="break">
-                <!-- やりたいことの表示 -->
-                <v-card-text v-if="!isEditingWhatWantToDo">
-                  <p class="return">{{ whatWantToDo }}</p>
-                </v-card-text>
-                <!-- やりたいことの編集画面 -->
-                <div v-else>
-                  <v-form v-model="editWhatWantToDoValid">
-                    <v-textarea
-                      solo
-                      label="やりたいことや実現したいことを書いてください"
-                      v-model="tempWhatWantToDo"
-                      :rules="whatWantToDoRules"
-                      required
-                    ></v-textarea>
-                    <v-btn
-                      @click="updateIsEditingWhatWantToDo(false)"
-                    >
-                      キャンセル
-                    </v-btn>
-                    <v-btn
-                      :disabled="!editWhatWantToDoValid"
-                      @click="updateWhatWantToDo({uid: uid, whatWantToDo: tempWhatWantToDo})"
-                    >
-                      更新
-                    </v-btn>
-                  </v-form>
+                    <v-flex xs8 sm10>
+                      <v-card-title class="title font-weight-bold">ポートフォリオ</v-card-title>
+                    </v-flex>
+                    <v-flex xs4 sm2 v-show="!isEditingPortfolio">
+                      <v-btn
+                        flat
+                        @click="portfolioEditButtonClicked(null)"
+                      >
+                        <v-icon :size="14">edit</v-icon>
+                        <span class="caption edit-text-color">追加する</span>
+                      </v-btn>
+                    </v-flex>
+                  </v-layout>
+                  <v-flex xs12 sm10>
+                    <v-divider></v-divider>
+                  </v-flex>
+                  <v-flex xs12 sm10>
+                    <!-- ポートフォリオ表示 -->
+                    <v-list v-if="!isEditingPortfolio && this.portfolio != null" class="pl-4">
+                      <template v-for="(item, index) in this.portfolio">
+                          <div class="d-flex pb-3">
+                            <v-flex xs4 sm3 lg2>
+                              <v-img :src="item.imageUrl" height="100"></v-img>
+                            </v-flex>
+                            <v-flex xs8 sm9 lg10 class="px-4 break">
+                              <div>
+                                <span class="font-weight-bold subheading textColor">{{ item.title }}</span>
+                                <v-btn
+                                  class="pa-0 ma-0"
+                                  flat
+                                  @click="portfolioEditButtonClicked(index)"
+                                >
+                                  <v-icon :size="14">edit</v-icon>
+                                  <span class="caption edit-text-color">編集する</span>
+                                </v-btn>
+                              </div>
+                              <p　class="textColor return">{{ item.content }}</p>
+                              <p class="textColor">
+                                {{ item.url }}
+                              </p>
+                            </v-flex>
+                          </div>
+                      </template>
+                    </v-list>
+                    <!-- ポートフォリオ編集画面 -->
+                    <div v-if="isEditingPortfolio">
+                      <v-form v-model="editPortfolioValid">
+                        <div class="d-flex pb-3">
+                          <v-flex xs8 sm9 lg10 class="px-4 break">
+                            <div class="py-3">
+                              <v-img :src="tempPortfolioItemImageUrl" width="200" height="100" class="grey lighten-3"/>
+                              <input type="file" v-on:change="onFileChange">
+                              <p v-if="!imageFileSizeValid" class="warning-text-color">
+                                {{ imageFileSizeWarning }}
+                              </p>
+                            </div>
+                            <v-text-field
+                              solo
+                              label="タイトル"
+                              v-model="tempPortfolioItemTitle"
+                              :rules="portfolioItemTitleRules"
+                              required
+                            ></v-text-field>
+                            <v-text-field
+                              solo
+                              label="説明"
+                              v-model="tempPortfolioItemContent"
+                              :rules="portfolioItemContentRules"
+                              required
+                            ></v-text-field>
+                            <v-text-field
+                              solo
+                              label="URL"
+                              v-model="tempPortfolioItemUrl"
+                              :rules="portfolioItemUrlRules"
+                              required
+                            ></v-text-field>
+                            <v-btn
+                              @click="updateIsEditingPortfolio(false)"
+                            >
+                              キャンセル
+                            </v-btn>
+                            <v-btn
+                              v-if="selectedPortfolioItemIndex != null"
+                              @click="deletePortfolioItem({
+                                uid: uid,
+                                selectedIndex: selectedPortfolioItemIndex,
+                                portfolio: portfolio,
+                                tempPortfolio: tempPortfolio
+                              })"
+                            >
+                              削除
+                            </v-btn>
+                            <v-btn
+                              :disabled="!editPortfolioValid || tempPortfolioItemUrl == null || !imageFileSizeValid"
+                              @click="updatePortfolio({
+                                uid: uid,
+                                isPortfolioImageChanged: isPortfolioImageChanged,
+                                selectedIndex: selectedPortfolioItemIndex,
+                                portfolio: portfolio,
+                                tempPortfolio: tempPortfolio,
+                                imageFile: tempPortfolioImageFile,
+                                imageUrl: tempPortfolioItemImageUrl,
+                                title: tempPortfolioItemTitle,
+                                content: tempPortfolioItemContent,
+                                url: tempPortfolioItemUrl
+                              })"
+                            >
+                              更新
+                            </v-btn>
+                          </v-flex>
+                        </div>
+                      </v-form>
+                    </div>
+                  </v-flex>
                 </div>
-              </v-flex>
-            </div>
-            <!-- ポートフォリオ -->
-            <div>
-              <v-layout
-                align-center
-                justify-space-between
-                row
-                class="pt-5"
-              >
-                <v-flex xs8 sm10>
-                  <v-card-title class="title font-weight-bold">ポートフォリオ</v-card-title>
-                </v-flex>
-                <v-flex xs4 sm2 v-show="!isEditingPortfolio">
-                  <v-btn
-                    flat
-                    @click="portfolioEditButtonClicked(null)"
+                <!-- スキル -->
+                <div>
+                  <v-layout
+                    align-center
+                    justify-space-between
+                    row
+                    class="pt-5"
                   >
-                    <v-icon :size="14">edit</v-icon>
-                    <span class="caption edit-text-color">追加する</span>
-                  </v-btn>
-                </v-flex>
-              </v-layout>
-              <v-flex xs12 sm10>
-                <v-divider></v-divider>
-              </v-flex>
-              <v-flex xs12 sm10>
-                <!-- ポートフォリオ表示 -->
-                <v-list v-if="!isEditingPortfolio && this.portfolio != null" class="pl-4">
-                  <template v-for="(item, index) in this.portfolio">
-                      <div class="d-flex pb-3">
-                        <v-flex xs4 sm3 lg2>
-                          <v-img :src="item.imageUrl" height="100"></v-img>
-                        </v-flex>
-                        <v-flex xs8 sm9 lg10 class="px-4 break">
-                          <div>
-                            <span class="font-weight-bold subheading textColor">{{ item.title }}</span>
+                    <v-flex xs8 sm10>
+                      <v-card-title class="title font-weight-bold">スキル</v-card-title>
+                    </v-flex>
+                    <v-flex xs4 sm2 v-show="!isEditingSkills">
+                      <v-btn
+                        flat
+                        @click="skillsEditButtonClicked(null)"
+                      >
+                        <v-icon :size="14">edit</v-icon>
+                        <span class="caption edit-text-color">編集する</span>
+                      </v-btn>
+                    </v-flex>
+                  </v-layout>
+                  <v-flex xs12 sm10>
+                    <v-divider></v-divider>
+                  </v-flex>
+                  <v-flex xs12 sm10 class="break">
+                    <!-- スキル表示 -->
+                    <v-list v-if="!isEditingSkills && skills != null" class="pl-4">
+                      <template v-for="(item, index) in skills">
+                        <v-chip>
+                          <span>{{ item }}</span>
+                        </v-chip>
+                      </template>
+                    </v-list>
+                    <!-- スキルの編集画面 -->
+                    <div v-if="isEditingSkills">
+                      <v-form v-model="editSkillsValid">
+                        <div class="d-flex pb-3">
+                          <v-flex xs12 class="px-4 break">
+                            <v-combobox
+                              v-model="tempSkills"
+                              chips
+                              clearable
+                              solo
+                              multiple
+                              hide-no-data
+                              hint="スキルを入力後、enterを押すことで入力が確定します"
+                              :rules="skillRules"
+                              required
+                            >
+                              <template v-slot:selection="data">
+                                <v-chip
+                                  close
+                                  @input="removeSkill(data.item)"
+                                >
+                                  <strong>{{ data.item }}</strong>
+                                </v-chip>
+                              </template>
+                            </v-combobox>
+                            <v-btn
+                              @click="updateIsEditingSkills(false)"
+                            >
+                              キャンセル
+                            </v-btn>
+                            <v-btn
+                              :disabled="!editSkillsValid"
+                              @click="updateSkills({
+                                uid: uid,
+                                skills: tempSkills,
+                              })"
+                            >
+                              更新
+                            </v-btn>
+                          </v-flex>
+                        </div>
+                      </v-form>
+                    </div>
+                  </v-flex>
+                </div>
+                <!-- 関連リンク -->
+                <div>
+                  <v-layout
+                    align-center
+                    justify-space-between
+                    row
+                    class="pt-5"
+                  >
+                    <v-flex xs8 sm10>
+                      <v-card-title class="title font-weight-bold">関連リンク</v-card-title>
+                    </v-flex>
+                    <v-flex xs4 sm2 v-show="!isEditingLinks">
+                      <v-btn
+                        flat
+                        @click="linksEditButtonClicked(null)"
+                      >
+                        <v-icon :size="14">edit</v-icon>
+                        <span class="caption edit-text-color">追加する</span>
+                      </v-btn>
+                    </v-flex>
+                  </v-layout>
+                  <v-flex xs12 sm10>
+                    <v-divider></v-divider>
+                  </v-flex>
+                  <v-flex xs12 sm10 class="break">
+                    <!-- 関連リンク表示 -->
+                    <v-list v-if="!isEditingLinks && links != null" class="pl-4">
+                      <template v-for="(item, index) in links">
+                        <div class="py-2">
+                          <div class="font-weight-bold body-2 textColor">
+                            {{ item.title }}
                             <v-btn
                               class="pa-0 ma-0"
                               flat
-                              @click="portfolioEditButtonClicked(index)"
+                              @click="linksEditButtonClicked(index)"
                             >
                               <v-icon :size="14">edit</v-icon>
                               <span class="caption edit-text-color">編集する</span>
                             </v-btn>
                           </div>
-                          <p　class="textColor return">{{ item.content }}</p>
-                          <p class="textColor">
+                          <p>
                             {{ item.url }}
                           </p>
-                        </v-flex>
-                      </div>
-                  </template>
-                </v-list>
-                <!-- ポートフォリオ編集画面 -->
-                <div v-if="isEditingPortfolio">
-                  <v-form v-model="editPortfolioValid">
-                    <div class="d-flex pb-3">
-                      <v-flex xs8 sm9 lg10 class="px-4 break">
-                        <div class="py-3">
-                          <v-img :src="tempPortfolioItemImageUrl" width="200" height="100" class="grey lighten-3"/>
-                          <input type="file" v-on:change="onFileChange">
-                          <p v-if="!imageFileSizeValid" class="warning-text-color">
-                            {{ imageFileSizeWarning }}
-                          </p>
                         </div>
-                        <v-text-field
-                          solo
-                          label="タイトル"
-                          v-model="tempPortfolioItemTitle"
-                          :rules="portfolioItemTitleRules"
-                          required
-                        ></v-text-field>
-                        <v-text-field
-                          solo
-                          label="説明"
-                          v-model="tempPortfolioItemContent"
-                          :rules="portfolioItemContentRules"
-                          required
-                        ></v-text-field>
-                        <v-text-field
-                          solo
-                          label="URL"
-                          v-model="tempPortfolioItemUrl"
-                          :rules="portfolioItemUrlRules"
-                          required
-                        ></v-text-field>
-                        <v-btn
-                          @click="updateIsEditingPortfolio(false)"
-                        >
-                          キャンセル
-                        </v-btn>
-                        <v-btn
-                          v-if="selectedPortfolioItemIndex != null"
-                          @click="deletePortfolioItem({
-                            uid: uid,
-                            selectedIndex: selectedPortfolioItemIndex,
-                            portfolio: portfolio,
-                            tempPortfolio: tempPortfolio
-                          })"
-                        >
-                          削除
-                        </v-btn>
-                        <v-btn
-                          :disabled="!editPortfolioValid || tempPortfolioItemUrl == null || !imageFileSizeValid"
-                          @click="updatePortfolio({
-                            uid: uid,
-                            isPortfolioImageChanged: isPortfolioImageChanged,
-                            selectedIndex: selectedPortfolioItemIndex,
-                            portfolio: portfolio,
-                            tempPortfolio: tempPortfolio,
-                            imageFile: tempPortfolioImageFile,
-                            imageUrl: tempPortfolioItemImageUrl,
-                            title: tempPortfolioItemTitle,
-                            content: tempPortfolioItemContent,
-                            url: tempPortfolioItemUrl
-                          })"
-                        >
-                          更新
-                        </v-btn>
-                      </v-flex>
-                    </div>
-                  </v-form>
-                </div>
-              </v-flex>
-            </div>
-            <!-- スキル -->
-            <div>
-              <v-layout
-                align-center
-                justify-space-between
-                row
-                class="pt-5"
-              >
-                <v-flex xs8 sm10>
-                  <v-card-title class="title font-weight-bold">スキル</v-card-title>
-                </v-flex>
-                <v-flex xs4 sm2 v-show="!isEditingSkills">
-                  <v-btn
-                    flat
-                    @click="skillsEditButtonClicked(null)"
-                  >
-                    <v-icon :size="14">edit</v-icon>
-                    <span class="caption edit-text-color">編集する</span>
-                  </v-btn>
-                </v-flex>
-              </v-layout>
-              <v-flex xs12 sm10>
-                <v-divider></v-divider>
-              </v-flex>
-              <v-flex xs12 sm10 class="break">
-                <!-- スキル表示 -->
-                <v-list v-if="!isEditingSkills && skills != null" class="pl-4">
-                  <template v-for="(item, index) in skills">
-                    <v-chip>
-                      <span>{{ item }}</span>
-                    </v-chip>
-                  </template>
-                </v-list>
-                <!-- スキルの編集画面 -->
-                <div v-if="isEditingSkills">
-                  <v-form v-model="editSkillsValid">
-                    <div class="d-flex pb-3">
-                      <v-flex xs12 class="px-4 break">
-                        <v-combobox
-                          v-model="tempSkills"
-                          chips
-                          clearable
-                          solo
-                          multiple
-                          hide-no-data
-                          hint="スキルを入力後、enterを押すことで入力が確定します"
-                          :rules="skillRules"
-                          required
-                        >
-                          <template v-slot:selection="data">
-                            <v-chip
-                              close
-                              @input="removeSkill(data.item)"
+                      </template>
+                    </v-list>
+                    <!-- 関連リンクの編集画面 -->
+                    <div v-if="isEditingLinks">
+                      <v-form v-model="editLinksValid">
+                        <div class="d-flex pb-3">
+                          <v-flex xs8 sm9 lg10 class="px-4 break">
+                            <v-text-field
+                              solo
+                              label="タイトル"
+                              v-model="tempLinkTitle"
+                              :rules="linkTitleRules"
+                              required
+                            ></v-text-field>
+                            <v-text-field
+                              solo
+                              label="URL"
+                              v-model="tempLinkUrl"
+                              :rules="linkUrlRules"
+                              required
+                            ></v-text-field>
+                            <v-btn
+                              @click="updateIsEditingLinks(false)"
                             >
-                              <strong>{{ data.item }}</strong>
-                            </v-chip>
-                          </template>
-                        </v-combobox>
-                        <v-btn
-                          @click="updateIsEditingSkills(false)"
-                        >
-                          キャンセル
-                        </v-btn>
-                        <v-btn
-                          :disabled="!editSkillsValid"
-                          @click="updateSkills({
-                            uid: uid,
-                            skills: tempSkills,
-                          })"
-                        >
-                          更新
-                        </v-btn>
-                      </v-flex>
+                              キャンセル
+                            </v-btn>
+                            <v-btn
+                              v-if="selectedLinkIndex != null"
+                              @click="deleteLink({
+                                uid: uid,
+                                selectedIndex: selectedLinkIndex,
+                                links: tempLinks
+                              })"
+                            >
+                              削除
+                            </v-btn>
+                            <v-btn
+                              :disabled="!editLinksValid"
+                              @click="updateLinks({
+                                uid: uid,
+                                selectedIndex: selectedLinkIndex,
+                                links: tempLinks,
+                                title: tempLinkTitle,
+                                url: tempLinkUrl
+                              })"
+                            >
+                              更新
+                            </v-btn>
+                          </v-flex>
+                        </div>
+                      </v-form>
                     </div>
-                  </v-form>
+                  </v-flex>
                 </div>
-              </v-flex>
-            </div>
-            <!-- 関連リンク -->
-            <div>
-              <v-layout
-                align-center
-                justify-space-between
-                row
-                class="pt-5"
-              >
-                <v-flex xs8 sm10>
-                  <v-card-title class="title font-weight-bold">関連リンク</v-card-title>
-                </v-flex>
-                <v-flex xs4 sm2 v-show="!isEditingLinks">
-                  <v-btn
-                    flat
-                    @click="linksEditButtonClicked(null)"
+                <!-- 基本情報 -->
+                <div class="pb-5">
+                  <v-layout
+                    align-center
+                    justify-space-between
+                    row
+                    class="pt-5"
                   >
-                    <v-icon :size="14">edit</v-icon>
-                    <span class="caption edit-text-color">追加する</span>
-                  </v-btn>
-                </v-flex>
-              </v-layout>
-              <v-flex xs12 sm10>
-                <v-divider></v-divider>
-              </v-flex>
-              <v-flex xs12 sm10 class="break">
-                <!-- 関連リンク表示 -->
-                <v-list v-if="!isEditingLinks && links != null" class="pl-4">
-                  <template v-for="(item, index) in links">
-                    <div class="py-2">
-                      <div class="font-weight-bold body-2 textColor">
-                        {{ item.title }}
-                        <v-btn
-                          class="pa-0 ma-0"
-                          flat
-                          @click="linksEditButtonClicked(index)"
-                        >
-                          <v-icon :size="14">edit</v-icon>
-                          <span class="caption edit-text-color">編集する</span>
-                        </v-btn>
+                    <v-flex xs8 sm10>
+                      <v-card-title class="title font-weight-bold">基本情報</v-card-title>
+                    </v-flex>
+                    <v-flex xs4 sm2 v-show="!isEditingUserInfo">
+                      <v-btn
+                        class="text-xs-left"
+                        flat
+                        @click="userInfoEditButtonClicked"
+                      >
+                        <v-icon :size="14">edit</v-icon>
+                        <span class="caption edit-text-color">編集する</span>
+                      </v-btn>
+                    </v-flex>
+                  </v-layout>
+                  <v-flex xs12 sm10>
+                    <v-divider></v-divider>
+                  </v-flex>
+                  <v-flex xs12 sm10 class="break">
+                    <!-- 基本情報の表示 -->
+                    <v-list v-if="!isEditingUserInfo" class="pl-4">
+                      <div class="pb-2">
+                        <span>大学:</span>
+                        <span class="pl-2">{{ university }}</span>
                       </div>
-                      <p>
-                        {{ item.url }}
-                      </p>
-                    </div>
-                  </template>
-                </v-list>
-                <!-- 関連リンクの編集画面 -->
-                <div v-if="isEditingLinks">
-                  <v-form v-model="editLinksValid">
-                    <div class="d-flex pb-3">
-                      <v-flex xs8 sm9 lg10 class="px-4 break">
+                      <div class="pb-2">
+                        <span>学部:</span>
+                        <span class="pl-2">{{ faculty }}</span>
+                      </div>
+                      <div class="pb-2">
+                        <span>学科:</span>
+                        <span class="pl-2">{{ department }}</span>
+                      </div>
+                      <div class="pb-2">
+                        <span>生年月日:</span>
+                        <span class="pl-2">{{ birthDate }}</span>
+                      </div>
+                    </v-list>
+                    <!-- 基本情報の編集画面 -->
+                    <div v-else>
+                      <v-form v-model="editUserInfoValid">
                         <v-text-field
                           solo
-                          label="タイトル"
-                          v-model="tempLinkTitle"
-                          :rules="linkTitleRules"
+                          label="大学"
+                          v-model="tempUniversity"
+                          :rules="userInfoRules"
                           required
                         ></v-text-field>
                         <v-text-field
                           solo
-                          label="URL"
-                          v-model="tempLinkUrl"
-                          :rules="linkUrlRules"
+                          label="学部"
+                          v-model="tempFaculty"
+                          :rules="userInfoRules"
+                          required
+                        ></v-text-field>
+                        <v-text-field
+                          solo
+                          label="学科"
+                          v-model="tempDepartment"
+                          :rules="userInfoRules"
                           required
                         ></v-text-field>
                         <v-btn
-                          @click="updateIsEditingLinks(false)"
+                          @click="updateIsEditingUserInfo(false)"
                         >
                           キャンセル
                         </v-btn>
                         <v-btn
-                          v-if="selectedLinkIndex != null"
-                          @click="deleteLink({
+                          :disabled="!editUserInfoValid"
+                          @click="updateUserInfo({
                             uid: uid,
-                            selectedIndex: selectedLinkIndex,
-                            links: tempLinks
-                          })"
-                        >
-                          削除
-                        </v-btn>
-                        <v-btn
-                          :disabled="!editLinksValid"
-                          @click="updateLinks({
-                            uid: uid,
-                            selectedIndex: selectedLinkIndex,
-                            links: tempLinks,
-                            title: tempLinkTitle,
-                            url: tempLinkUrl
+                            university: tempUniversity,
+                            faculty: tempFaculty,
+                            department: tempDepartment
                           })"
                         >
                           更新
                         </v-btn>
-                      </v-flex>
+                      </v-form>
                     </div>
-                  </v-form>
+                  </v-flex>
                 </div>
-              </v-flex>
-            </div>
-            <!-- 基本情報 -->
-            <div class="pb-5">
-              <v-layout
-                align-center
-                justify-space-between
-                row
-                class="pt-5"
-              >
-                <v-flex xs8 sm10>
-                  <v-card-title class="title font-weight-bold">基本情報</v-card-title>
-                </v-flex>
-                <v-flex xs4 sm2 v-show="!isEditingUserInfo">
-                  <v-btn
-                    class="text-xs-left"
-                    flat
-                    @click="userInfoEditButtonClicked"
-                  >
-                    <v-icon :size="14">edit</v-icon>
-                    <span class="caption edit-text-color">編集する</span>
-                  </v-btn>
-                </v-flex>
-              </v-layout>
-              <v-flex xs12 sm10>
-                <v-divider></v-divider>
-              </v-flex>
-              <v-flex xs12 sm10 class="break">
-                <!-- 基本情報の表示 -->
-                <v-list v-if="!isEditingUserInfo" class="pl-4">
-                  <div class="pb-2">
-                    <span>大学:</span>
-                    <span class="pl-2">{{ university }}</span>
+              </div>
+            </v-card>
+          </v-flex>
+          <v-flex md3 hidden-sm-and-down>
+            <!-- スコア -->
+            <v-card class="mt-5 pa-3">
+              <div class="text-xs-center">
+                <v-avatar
+                  size="100"
+                  color="orange lighten-3"
+                >
+                  <div class="white--text" style="display: block">
+                    <div style="font-size: 10px">
+                      スコア
+                    </div>
+                    <span class="headline">{{ points }}</span>
                   </div>
-                  <div class="pb-2">
-                    <span>学部:</span>
-                    <span class="pl-2">{{ faculty }}</span>
-                  </div>
-                  <div class="pb-2">
-                    <span>学科:</span>
-                    <span class="pl-2">{{ department }}</span>
-                  </div>
-                  <div class="pb-2">
-                    <span>生年月日:</span>
-                    <span class="pl-2">{{ birthDate }}</span>
-                  </div>
-                </v-list>
-                <!-- 基本情報の編集画面 -->
-                <div v-else>
-                  <v-form v-model="editUserInfoValid">
-                    <v-text-field
-                      solo
-                      label="大学"
-                      v-model="tempUniversity"
-                      :rules="userInfoRules"
-                      required
-                    ></v-text-field>
-                    <v-text-field
-                      solo
-                      label="学部"
-                      v-model="tempFaculty"
-                      :rules="userInfoRules"
-                      required
-                    ></v-text-field>
-                    <v-text-field
-                      solo
-                      label="学科"
-                      v-model="tempDepartment"
-                      :rules="userInfoRules"
-                      required
-                    ></v-text-field>
-                    <v-btn
-                      @click="updateIsEditingUserInfo(false)"
-                    >
-                      キャンセル
-                    </v-btn>
-                    <v-btn
-                      :disabled="!editUserInfoValid"
-                      @click="updateUserInfo({
-                        uid: uid,
-                        university: tempUniversity,
-                        faculty: tempFaculty,
-                        department: tempDepartment
-                      })"
-                    >
-                      更新
-                    </v-btn>
-                  </v-form>
+                </v-avatar>
+              </div>
+              <div class="pt-3 light-text-color caption">
+                <div>
+                  スコアが高い程、スカウトされやすくなります。（ユーザー検索の際に、上位に表示されます）
                 </div>
-              </v-flex>
-            </div>
-          </div>
-        </v-card>
+                <div class="pt-2">
+                  スコアは、インターンに採用されたり、企業のレビューを書くことで上げることができます。
+                </div>
+              </div>
+            </v-card>
+          </v-flex>
+        </v-layout>
       </v-flex>
     </v-layout>
   </v-container>
@@ -713,7 +800,7 @@ import { firestore, auth, storage, storageRef } from '@/plugins/firebase'
 export default {
   data: () => ({
     isQueried: false,
-    avatarSize: 70,
+    windowHeight: 0,
     imageFileSizeWarning: '2MB以下の画像を選択してください',
     selectedImageSize: 200,
     selectedImage: null,
@@ -794,8 +881,63 @@ export default {
     editUserInfoValid: true,
   }),
   computed: {
+    breakpoint() {
+      return this.$vuetify.breakpoint.name
+    },
+    completionPercentage() {
+      var percentage = 0
+
+      percentage += (this.imageUrl && this.imageUrl != '') ? 10 : 0
+      if (this.desiredOccupations) {
+        var isSelected = false
+        if (this.desiredOccupations.engineer == true) {
+          isSelected = true
+        }
+        if (this.desiredOccupations.designer == true) {
+          isSelected = true
+        }
+        if (this.desiredOccupations.sales == true) {
+          isSelected = true
+        }
+        if (this.desiredOccupations.others == true) {
+          isSelected = true
+        }
+        percentage += isSelected ? 10 : 0
+      }
+      percentage += (this.selfIntro && this.selfIntro != '') ? 10 : 0
+      percentage += (this.whatWantToDo && this.whatWantToDo != '') ? 10 : 0
+      percentage += (this.portfolio && this.portfolio.length > 0) ? 10 : 0
+      percentage += (this.skills && this.skills.length > 0) ? 10 : 0
+      percentage += (this.links && this.links.length > 0) ? 10 : 0
+      percentage += (this.university && this.university != '') ? 10 : 0
+      percentage += (this.faculty && this.faculty != '') ? 10 : 0
+      percentage += (this.department && this.department != '') ? 10 : 0
+      return percentage
+    },
+    avatarSize() {
+      if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+        return 40
+      } else {
+        return 60
+      }
+    },
+    name: function() {
+      return this.lastName + ' ' + this.firstName
+    },
+    birthDate: function() {
+      const date = new Date( this.birthTimestamp * 1000 )
+      const year  = date.getFullYear()
+      const month = date.getMonth() + 1
+      const day  = date.getDate()
+      if (year != null && month != null && day!= null) {
+        return `${year}/${month}/${day}`
+      }
+    },
     ...mapState({
       uid: state => state.uid,
+      isRefreshing: state => state.isRefreshing,
+      isLoading: state => state.profile.isLoading,
+      points: state => state.profile.points,
       imageUrl: state => state.profile.imageUrl,
       imageFileSizeValid: state => state.profile.imageFileSizeValid,
       isEditingProfileImage: state => state.profile.isEditingProfileImage,
@@ -824,21 +966,18 @@ export default {
       birthTimestamp: state => state.profile.birthTimestamp,
       isEditingUserInfo: state => state.profile.isEditingUserInfo,
     }),
-    name: function() {
-      return this.lastName + ' ' + this.firstName
-    },
-    birthDate: function() {
-      const date = new Date( this.birthTimestamp * 1000 )
-      const year  = date.getFullYear()
-      const month = date.getMonth() + 1
-      const day  = date.getDate()
-      if (year != null && month != null && day!= null) {
-        return `${year}/${month}/${day}`
-      }
-    }
   },
   mounted() {
+    let toolbarHeight
+    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+      toolbarHeight = 48
+    } else {
+      toolbarHeight = 64
+    }
+    this.windowHeight = window.innerHeight - toolbarHeight - 30
+
     if (this.uid != null && this.uid != '' && !this.isQueried) {
+      this.updateIsLoading(true)
       this.queryProfile(this.uid)
     }
   },
@@ -846,6 +985,7 @@ export default {
     uid(uid) {
       if (uid != null && uid != '') {
         this.isQueried = true
+        this.updateIsLoading(true)
         this.queryProfile(uid)
       }
     }
@@ -969,6 +1109,7 @@ export default {
     },
     ...mapActions({
       queryProfile: 'profile/queryProfile',
+      updateIsLoading: 'profile/updateIsLoading',
       updateImageFileSizeValid: 'profile/updateImageFileSizeValid',
       updateIsEditingProfileImage: 'profile/updateIsEditingProfileImage',
       updateProfileImage: 'profile/updateProfileImage',

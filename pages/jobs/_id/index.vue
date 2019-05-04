@@ -4,7 +4,12 @@
     row
     wrap
   >
-    <v-flex xs12 v-if="!isLoading">
+    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
+      <v-layout justify-center>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex xs12 v-else-if="!isLoading">
       <v-flex>
         <v-img
           :src="imageUrl"
@@ -841,6 +846,7 @@ export default {
     },
     ...mapState({
       isRefreshed: state => state.isRefreshed,
+      isRefreshing: state => state.isRefreshing,
       type: state => state.profile.type,
       profileImageUrl: state => state.profile.imageUrl,
       firstName: state => state.profile.firstName,
@@ -902,12 +908,14 @@ export default {
   },
   fetch(context) {
     const store = context.store
+    store.dispatch('job/updateIsLoading', true)
     // query job
     store.dispatch('job/queryJobDetail', {nuxt: context, params: context.params, uid: store.state.uid})
   },
   watch: {
     uid(uid) {
       if (uid != '') {
+        this.updateIsLoading(true)
         this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: uid})
       }
     },
@@ -958,6 +966,7 @@ export default {
     ...mapActions({
       queryJobDetail: 'job/queryJobDetail',
       apply: 'job/apply',
+      updateIsLoading: 'job/updateIsLoading',
       queryCompanyReviews: 'reviews/queryCompanyReviews',
       updateIsReviewsLoading: 'reviews/updateIsCompanyReviewsLoading',
       resetReviewsState: 'reviews/resetState',

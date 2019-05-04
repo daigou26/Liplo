@@ -4,6 +4,7 @@ import { firestore } from '@/plugins/firebase'
 export const state = () => ({
   messages: [],
   isInitialQuery: true,
+  isInitialLoading: false,
   isLoading: false,
   allMessagesQueried: false,
   unsubscribe: null,
@@ -30,6 +31,9 @@ export const mutations = {
   updateIsInitialQuery(state, isInitialQuery) {
     state.isInitialQuery = isInitialQuery
   },
+  updateIsInitialLoading(state, isLoading) {
+    state.isInitialLoading = isLoading
+  },
   updateIsLoading(state, isLoading) {
     state.isLoading = isLoading
   },
@@ -48,6 +52,9 @@ export const mutations = {
 }
 
 export const actions = {
+  updateIsInitialLoading({commit}, isLoading) {
+    commit('updateIsInitialLoading', isLoading)
+  },
   updateIsLoading({commit}, isLoading) {
     commit('updateIsLoading', isLoading)
   },
@@ -68,9 +75,21 @@ export const actions = {
           var docCount = 0
           snapshot.forEach(function(doc) {
             docCount += 1
+
+            var timestamp = doc.data()['createdAt']
+            if (timestamp) {
+              let date = new Date( timestamp.seconds * 1000 )
+              let year  = date.getFullYear()
+              let month = date.getMonth() + 1
+              let day  = date.getDate()
+              let hours = date.getHours()
+              let minutes = date.getMinutes()
+              timestamp = `${year}/${month}/${day} ${hours}:${minutes}`
+            }
             const message = {
               message: doc.data()['message'],
               createdAt: doc.data()['createdAt'],
+              timestamp: timestamp,
               pic: doc.data()['pic'],
               user: doc.data()['user'],
             }
@@ -79,6 +98,7 @@ export const actions = {
           if (docCount == 0) {
             commit('setAllMessagesQueried')
           }
+          commit('updateIsInitialLoading', false)
           commit('updateIsLoading', false)
 
           // listenerがあればremove
@@ -125,9 +145,21 @@ export const actions = {
 
               snapshot.docChanges().forEach(function(change) {
                 if (change.type === "added") {
+                  var timestamp = change.doc.data()['createdAt']
+                  if (timestamp) {
+                    let date = new Date( timestamp.seconds * 1000 )
+                    let year  = date.getFullYear()
+                    let month = date.getMonth() + 1
+                    let day  = date.getDate()
+                    let hours = date.getHours()
+                    let minutes = date.getMinutes()
+                    timestamp = `${year}/${month}/${day} ${hours}:${minutes}`
+                  }
+
                   const message = {
                     message: change.doc.data()['message'],
                     createdAt: change.doc.data()['createdAt'],
+                    timestamp: timestamp,
                     pic: change.doc.data()['pic'],
                     user: change.doc.data()['user'],
                   }
@@ -138,6 +170,7 @@ export const actions = {
             commit('setUnsubscribe', listener)
         })
         .catch(function(error) {
+          commit('updateIsInitialLoading', false)
           commit('updateIsLoading', false)
           console.log("Error getting document:", error)
         })
@@ -153,9 +186,21 @@ export const actions = {
           var docCount = 0
           snapshot.forEach(function(doc) {
             docCount += 1
+
+            var timestamp = doc.data()['createdAt']
+            if (timestamp) {
+              let date = new Date( timestamp.seconds * 1000 )
+              let year  = date.getFullYear()
+              let month = date.getMonth() + 1
+              let day  = date.getDate()
+              let hours = date.getHours()
+              let minutes = date.getMinutes()
+              timestamp = `${year}/${month}/${day} ${hours}:${minutes}`
+            }
             const message = {
               message: doc.data()['message'],
               createdAt: doc.data()['createdAt'],
+              timestamp: timestamp,
               pic: doc.data()['pic'],
               user: doc.data()['user'],
             }

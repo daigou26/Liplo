@@ -10,6 +10,7 @@ export const state = () => ({
   authError: null,
   loading: false,
   isRefreshed: false,
+  isRefreshing: true,
   isRecruiterSignedIn: false,
 })
 
@@ -37,6 +38,9 @@ export const mutations = {
   },
   updateIsRefreshed(state, isRefreshed) {
     state.isRefreshed = isRefreshed
+  },
+  updateIsRefreshing(state, isRefreshing) {
+    state.isRefreshing = isRefreshing
   },
   updateIsRecruiterSignedIn(state, isSignedIn) {
     state.isRecruiterSignedIn = isSignedIn
@@ -394,6 +398,7 @@ export const actions = {
                   batch.set(profileRef, profileData)
                   batch.commit()
                     .then(() => {
+                      commit('updateIsRefreshing', false)
                       commit('updateIsRecruiterSignedIn', true)
                       dispatch('profile/setCompanyId', companyId)
                       dispatch('profile/setFirstName', firstName)
@@ -403,6 +408,7 @@ export const actions = {
                       router.replace('/recruiter/dashboard')
                     })
                     .catch((error) => {
+                      commit('updateIsRefreshing', false)
                       console.error("Error adding document: ", error)
                     })
                 }
@@ -460,6 +466,7 @@ export const actions = {
                 })
                 batch.commit()
                   .then(() => {
+                    commit('updateIsRefreshing', false)
                     dispatch('profile/setFirstName', firstName)
                     dispatch('profile/setLastName', lastName)
                     dispatch('profile/setType', 'user')
@@ -468,6 +475,7 @@ export const actions = {
                     dispatch('settings/setAcceptScout', true)
                   })
                   .catch((error) => {
+                    commit('updateIsRefreshing', false)
                     console.error("Error adding document: ", error)
                   })
               }
@@ -513,6 +521,8 @@ export const actions = {
             if (doc.data()['imageUrl'] != null) {
               dispatch('profile/setImageUrl', doc.data()['imageUrl'])
             }
+
+            commit('updateIsRefreshing', false)
             if (doc.data()['type'] == 'recruiter') {
               // メッセージのリスナー
               dispatch('chats/setCompanyMessagesListener', doc.data()['companyId'])
@@ -523,6 +533,7 @@ export const actions = {
                 router.replace('/recruiter/dashboard')
               }
             } else {
+              dispatch('profile/setPoints', doc.data()['points'])
               commit('updateIsVerified',  doc.data()['isEmailVerified'])
               // emailVerifiedを true に
               if (user.emailVerified && !doc.data()['isEmailVerified']) {
@@ -570,6 +581,7 @@ export const actions = {
         })
 
     } else {
+      commit('updateIsRefreshing', false)
       commit('setUid', null)
       if (route.path !== '/' && route.path !== '/signup' && route.path !== '/company_registration' && route.name !== 'jobs-id' && route.name !== 'companies-id') {
         router.push('/')
@@ -578,6 +590,9 @@ export const actions = {
   },
   updateIsRefreshed({commit}, isRefreshed) {
     commit('updateIsRefreshed', isRefreshed)
+  },
+  updateIsRefreshing({commit}, isRefreshing) {
+    commit('updateIsRefreshing', isRefreshing)
   },
   // お問い合わせ
   sendContact({commit}, {name, email, content}) {
@@ -597,5 +612,6 @@ export const actions = {
     commit('setAuthError', null)
     commit('resetLoading')
     commit('updateIsRefreshed', false)
+    commit('updateIsRefreshing', true)
   },
 }

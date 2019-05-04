@@ -1,53 +1,80 @@
 <template>
   <v-layout>
     <v-flex xs12>
-      <!-- menu (sm, xs) -->
-      <v-menu
-        content-class="dropdown-menu"
-        transition="slide-y-transition"
-        class="pt-2 pb-4 hidden-md-and-up"
-        style="width: 200px;"
+      <!-- menu ( xl, lg, md, sm) -->
+      <v-navigation-drawer
+        v-if="breakpoint != 'xs'"
+        class="hidden-xs-only"
+        app
+        width="280"
+        permanent
+        :mini-variant="mini"
+        mini-variant-width="48"
+        id="drawer"
+        :class="{
+          'drawer-mini': $vuetify.breakpoint.smAndDown,
+        }"
       >
-        <v-btn
-          slot="activator"
-          flat
-          block
-          style="border-bottom: 1px dashed; border-color: #E0E0E0;"
-        >
-          {{ dropdownText }}
-          <v-icon>arrow_drop_down</v-icon>
-        </v-btn>
-        <v-card>
-          <v-list dense class="py-0">
+        <v-toolbar flat>
+          <v-list-tile to="/">
+            <v-list-tile-action>
+              <v-icon>home</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title class="font-weight-medium hidden-sm-and-down" style="font-size: 18px">Home</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-toolbar>
+        <v-divider></v-divider>
+        <v-list class="hidden-xs-only py-0" id="my-page-menu">
+          <template v-for="(item, index) in mypageItems">
             <v-list-tile
-              v-for="item in mypageItems"
-              :key="item.value"
               :class="{ 'teal lighten-5': path.includes('user/' + item.value) }"
               :to="'/user/' + item.value"
             >
+              <v-list-tile-action>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-tile-action>
               <v-list-tile-content>
-                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                <v-list-tile-title
+                  :class="{
+                    'body-2': $vuetify.breakpoint.smOnly,
+                  }"
+                >
+                  {{ item.title }}
+                </v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
-          </v-list>
-        </v-card>
-      </v-menu>
-      <!-- menu ( xl, lg, md) -->
-      <v-list class="border hidden-sm-and-down py-0">
+            <v-divider
+              v-if="mypageItems.length != index + 1"
+            ></v-divider>
+          </template>
+        </v-list>
+      </v-navigation-drawer>
+      <!-- <v-list class="hidden-xs-only pt-5" style="position: fixed;">
         <template v-for="(item, index) in mypageItems">
           <v-list-tile
             :class="{ 'teal lighten-5': path.includes('user/' + item.value) }"
             :to="'/user/' + item.value"
           >
+            <v-list-tile-action>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+              <v-list-tile-title
+                :class="{
+                  'body-2': $vuetify.breakpoint.smOnly,
+                }"
+              >
+                {{ item.title }}
+              </v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
           <v-divider
             v-if="mypageItems.length != index + 1"
           ></v-divider>
         </template>
-      </v-list>
+      </v-list> -->
     </v-flex>
   </v-layout>
 </template>
@@ -58,28 +85,31 @@ export default {
     dropdownText: '',
     mypageItems: [
       {
-        title: '通知',
-        value: 'notifications'
-      },
-      {
         title: '内定パス',
-        value: 'passes'
+        value: 'passes',
+        icon: 'card_giftcard'
       },
       {
         title: 'キャリア',
-        value: 'career'
+        value: 'career',
+        icon: 'work_outline'
       },
       {
         title: 'フィードバック',
-        value: 'feedbacks'
+        value: 'feedbacks',
+        icon: 'chat_bubble_outline'
       },
       {
         title: 'レビュー',
-        value: 'reviews'
+        value: 'reviews',
+        icon: 'bar_chart'
       },
     ],
   }),
   computed: {
+    mini() {
+      return (this.breakpoint == 'sm' || this.breakpoint == 'xs') ? true : false
+    },
     path() {
       return this.$route.path
     },
@@ -88,9 +118,7 @@ export default {
     },
   },
   mounted() {
-    if (this.path.includes('user/notifications')) {
-      this.dropdownText = '通知'
-    } else if (this.path.includes('user/career')) {
+    if (this.path.includes('user/career')) {
       this.dropdownText = 'キャリア'
     } else if (this.path.includes('user/reviews')) {
       this.dropdownText = 'レビュー'
@@ -102,3 +130,8 @@ export default {
   },
 }
 </script>
+<style>
+#my-page-menu a.v-list__tile {
+  height: 56px;
+}
+</style>

@@ -3,7 +3,12 @@
     white
     column
   >
-    <v-flex v-if="!isLoading">
+    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 pt-5>
+      <v-layout justify-center>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex v-else-if="!isInitialLoading">
       <!-- footer 表示ボタン -->
       <div class="hidden-xs-only" id="footer-button">
         <v-btn
@@ -234,9 +239,11 @@ export default {
     },
     ...mapState({
       isRefreshed: state => state.isRefreshed,
+      isRefreshing: state => state.isRefreshing,
       uid: state => state.uid,
       jobs: state => state.jobs.jobs,
       order: state => state.jobs.order,
+      isInitialLoading: state => state.jobs.isInitialLoading,
       isLoading: state => state.jobs.isLoading,
       allJobsQueried: state => state.jobs.allJobsQueried,
     })
@@ -257,6 +264,7 @@ export default {
   fetch(context) {
     const store = context.store
     store.dispatch('jobs/resetState')
+    store.dispatch('jobs/updateIsInitialLoading', true)
     store.dispatch('jobs/updateIsLoading', true)
     // filter set
     store.dispatch('jobs/setFilter', context.query)
@@ -268,7 +276,9 @@ export default {
   watch: {
     isRefreshed(isRefreshed) {
       if (isRefreshed == true) {
+        console.log('isRefreshed');
         this.resetState()
+        this.updateIsInitialLoading(true)
         this.updateIsLoading(true)
         // filter set
         this.setFilter(this.$route.query)
@@ -321,6 +331,7 @@ export default {
     },
     ...mapActions({
       queryJobs: 'jobs/queryJobs',
+      updateIsInitialLoading: 'jobs/updateIsInitialLoading',
       updateIsLoading: 'jobs/updateIsLoading',
       setFilter: 'jobs/setFilter',
       setOrder: 'jobs/setOrder',

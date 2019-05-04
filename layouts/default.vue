@@ -18,8 +18,8 @@
             path == '/user/notifications/' ||
             path == '/messages' ||
             path == '/messages/' ||
-            path == '/user' ||
-            path == '/user/'
+            path == '/user/menu' ||
+            path == '/user/menu/'
           )
         "
         class="shadow-top"
@@ -64,7 +64,7 @@
           <v-btn
             color="teal"
             flat
-            to="/user"
+            to="/user/menu"
           >
             <span style="font-size: 10px;">プロフィール</span>
             <v-icon>person_outline</v-icon>
@@ -140,8 +140,9 @@ export default {
   text-decoration: none;
 }
 .toolbar-title {
-  color: inherit;
+  color: #555555;
   text-decoration: inherit;
+  font-size: 16px;
 }
 .job-title {
   font-size: 30px;
@@ -185,8 +186,25 @@ export default {
   border: 1px solid;
   border-color: #E0E0E0;
 }
+.border {
+  border: 1px solid;
+  border-color: #E0E0E0;
+}
+.border-top {
+  border-top: 1px solid;
+  border-color: #E0E0E0;
+}
+.border-right {
+  border-right: 1px solid;
+  border-color: #E0E0E0;
+}
 .border-left {
   border-left: 1px solid;
+  border-color: #E0E0E0;
+}
+.border-y {
+  border-top: 1px solid;
+  border-bottom: 1px solid;
   border-color: #E0E0E0;
 }
 .border-side {
@@ -232,6 +250,10 @@ div.v-toolbar__extension {
 }
 i.v-icon {
   padding: 0px !important;
+}
+.drawer-mini .v-list__tile {
+  padding-left: 0px;
+  padding-right: 0px;
 }
 #toolbar span.v-badge__badge {
   width: 5px;

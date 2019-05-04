@@ -4,23 +4,40 @@
     row
     wrap
   >
+    <!-- loading -->
+    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
+      <v-layout justify-center>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex v-else-if="isNotReviewedCompanyLoading" xs12 :style="{ height: windowHeight + 'px' }">
+      <v-layout align-center justify-center column fill-height>
+        Now Loading...
+      </v-layout>
+    </v-flex>
     <v-flex
+      v-else
       xs12
       md10
       offset-md1
       class="break"
+      :class="{
+        'px-4': $vuetify.breakpoint.smAndDown,
+      }"
     >
       <v-layout
         row
         wrap
       >
+        <!-- snackbar -->
         <v-snackbar
           v-model="snackbar"
           class="px-5"
-          color="orange lighten-1"
+          color="teal lighten-1"
           :multi-line="true"
           :timeout="6000"
-          :top="true"
+          :left="true"
+          :bottom="true"
         >
           {{ snackbarText }}
           <v-btn
@@ -31,44 +48,23 @@
             Close
           </v-btn>
         </v-snackbar>
-        <!-- menu (lg, md)-->
+        <!-- menu (lg, md, sm)-->
+        <my-page-menu/>
+        <!-- feedbacks -->
         <v-flex
-          md4
-          hidden-sm-and-down
-          :class="{
-            'py-5 px-4': $vuetify.breakpoint.lgAndUp,
-            'pa-3': $vuetify.breakpoint.mdOnly,
-          }"
-        >
-          <my-page-menu/>
-        </v-flex>
-        <!-- reviews (lg, md) -->
-        <v-flex
-          md8
           xs12
           class="py-3"
           :class="{
-            'px-5': $vuetify.breakpoint.lgAndUp,
-            'px-3': $vuetify.breakpoint.mdOnly,
+            'px-3': $vuetify.breakpoint.smAndUp,
+            'py-4': $vuetify.breakpoint.smAndUp,
           }"
         >
-          <v-flex
-            md10
-            sm6
-            xs12
-            offset-md1
-            offset-sm3
-            :class="{
-              'pa-3': $vuetify.breakpoint.xsOnly,
-            }"
-          >
-            <!-- menu (sm, xs) -->
-            <my-page-menu class="hidden-md-and-up"/>
+          <v-flex sm10 xs12 offset-sm1>
             <!-- review form -->
             <div
               v-if="notReviewedCompany != null"
               :class="{
-                'px-5 py-2 border': $vuetify.breakpoint.mdAndUp,
+                'px-5 py-2': $vuetify.breakpoint.mdAndUp,
               }"
               id="review-form"
             >
@@ -86,97 +82,96 @@
                   </v-list-tile>
                 </v-card-actions>
               </v-card>
-              <div class="">
-                <span class="font-weight-bold textColor">職種:</span>
-                <p v-if="notReviewedCompany.occupation" class="font-weight-medium body-text">{{ notReviewedCompany.occupation }}</p>
+              <div v-if="notReviewedCompany.occupation">
+                <span class="font-weight-bold textColor">職種:
+                  <span class="light-text-color">{{ notReviewedCompany.occupation }}</span>
+                </span>
               </div>
-              <div class="py-4">
-                <p class="title font-weight-bold textColor">
+              <div class="py-5">
+                <p class="pb-3 title font-weight-bold textColor">
                   レビュー
                 </p>
-                <div class="d-flex py-2">
-                  <span class="textColor pr-2">成長できるか</span>
+                <div class="py-3">
+                  <p class="textColor">成長できる環境か</p>
                   <v-rating
                     v-model="growth"
                     hover
                     half-increments
-                    background-color="orange lighten-3"
-                    color="orange"
-                    class="text-xs-right"
+                    background-color="teal"
+                    color="teal darken-1"
                   />
                 </div>
-                <div class="d-flex py-2">
-                  <span class="textColor pr-2">仕事内容</span>
+                <div class="py-3">
+                  <p class="textColor">仕事内容が募集に書かれていたこととあっているか</p>
                   <v-rating
                     v-model="job"
                     hover
                     half-increments
-                    background-color="orange lighten-3"
-                    color="orange"
-                    class="text-xs-right"
+                    background-color="teal"
+                    color="teal darken-1"
                   />
                 </div>
-                <div class="d-flex py-2">
-                  <span class="textColor pr-2">裁量度</span>
+                <div class="py-3">
+                  <p class="textColor">インターン生に対して裁量が与えられているか</p>
                   <v-rating
                     v-model="discretion"
                     hover
                     half-increments
-                    background-color="orange lighten-3"
-                    color="orange"
-                    class="text-xs-right"
+                    background-color="teal"
+                    color="teal darken-1"
                   />
                 </div>
-                <div class="d-flex py-2">
-                  <span class="textColor pr-2">出勤時間の柔軟性</span>
+                <div class="py-3">
+                  <p class="textColor">勤務時間を柔軟に決められるか</p>
                   <v-rating
                     v-model="flexibleSchedule"
                     hover
                     half-increments
-                    background-color="orange lighten-3"
-                    color="orange"
-                    class="text-xs-right"
+                    background-color="teal"
+                    color="teal darken-1"
                   />
                 </div>
-                <div class="d-flex py-2">
-                  <span class="textColor pr-2">勤務中の自由度</span>
+                <div class="py-3">
+                  <p class="textColor">勤務中の自由度があるか（休憩などが自由にできるか）</p>
                   <v-rating
                     v-model="flexibility"
                     hover
                     half-increments
-                    background-color="orange lighten-3"
-                    color="orange"
-                    class="text-xs-right"
+                    background-color="teal"
+                    color="teal darken-1"
                   />
                 </div>
-                <div class="d-flex py-2">
-                  <span class="textColor pr-2">メンター</span>
+                <div class="py-3">
+                  <p class="textColor">メンターの評価（自分の担当者の評価）</p>
                   <v-rating
                     v-model="mentor"
                     hover
                     half-increments
-                    background-color="orange lighten-3"
-                    color="orange"
-                    class="text-xs-right"
+                    background-color="teal"
+                    color="teal darken-1"
                   />
                 </div>
-                <div class="d-flex py-2">
-                  <span class="textColor pr-2">雰囲気</span>
+                <div class="py-3">
+                  <p class="textColor">社内の雰囲気が良かったかどうか</p>
                   <v-rating
                     v-model="atmosphere"
                     hover
                     half-increments
-                    background-color="orange lighten-3"
-                    color="orange"
-                    class="text-xs-right"
+                    background-color="teal"
+                    color="teal darken-1"
                   />
                 </div>
               </div>
-              <div class="text-xs-right">
+              <div
+                class="py-2"
+                :class="{
+                  'd-flex': $vuetify.breakpoint.smAndUp,
+                }"
+              >
                 <v-form v-model="reviewValid">
                   <v-textarea
                     solo
-                    label="コメントや感想を入力してください。"
+                    placeholder="コメントや感想を入力してください。"
                     v-model="content"
                     :rules="contentRules"
                     required
@@ -207,6 +202,7 @@ export default {
   },
   data: () => ({
     isQueried: false,
+    windowHeight: 0,
     snackbar: false,
     snackbarText: '',
     atmosphere: 3,
@@ -216,12 +212,6 @@ export default {
     flexibility: 3,
     mentor: 3,
     growth: 3,
-    mypageItems: [
-      'passes',
-      'career',
-      'feedbacks',
-      'reviews'
-    ],
     reviewValid: true,
     content: '',
     contentRules: [
@@ -240,14 +230,25 @@ export default {
     },
     ...mapState({
       uid: state => state.uid,
+      isRefreshing: state => state.isRefreshing,
       notReviewedCompany: state => state.career.notReviewedCompany,
+      isNotReviewedCompanyLoading: state => state.career.isNotReviewedCompanyLoading,
     }),
   },
   mounted() {
     this.showInfiniteLoading = true
+    let toolbarHeight
+    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+      toolbarHeight = 48
+    } else {
+      toolbarHeight = 64
+    }
+    this.windowHeight = window.innerHeight - toolbarHeight - 30
 
     if (this.uid != null && this.uid != '' && !this.isQueried) {
       if (this.$route.query.id != null) {
+        this.resetState()
+        this.updateIsNotReviewedCompanyLoading(true)
         this.queryNotReviewedCompany({nuxt: this.$nuxt, uid: this.uid, careerId: this.$route.query.id})
       } else {
         this.$router.replace({ path: '/user/reviews'})
@@ -259,6 +260,8 @@ export default {
       if (uid != null && uid != '') {
         this.isQueried = true
         if (this.$route.query.id != null) {
+          this.resetState()
+          this.updateIsNotReviewedCompanyLoading(true)
           this.queryNotReviewedCompany({nuxt: this.$nuxt, uid: uid, careerId: this.$route.query.id})
         } else {
           this.$router.replace({ path: '/user/reviews'})
@@ -297,6 +300,8 @@ export default {
     ...mapActions({
       postReview: 'review/postReview',
       queryNotReviewedCompany: 'career/queryNotReviewedCompany',
+      updateIsNotReviewedCompanyLoading: 'career/updateIsNotReviewedCompanyLoading',
+      resetState: 'career/resetState',
     }),
   }
 }
@@ -304,5 +309,8 @@ export default {
 <style>
 #review-form div.v-list__tile {
   padding: 0px;
+}
+#review-form i.v-icon {
+  padding: 3px !important;
 }
 </style>

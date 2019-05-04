@@ -12,6 +12,7 @@ export const state = () => ({
   advice: '',
   createdAt: null,
   timestamp: null,
+  isLoading: false,
 })
 
 export const mutations = {
@@ -44,7 +45,10 @@ export const mutations = {
   },
   setTimestamp(state, timestamp) {
     state.timestamp = timestamp
-  }
+  },
+  updateIsLoading(state, isLoading) {
+    state.isLoading = isLoading
+  },
 }
 
 export const actions = {
@@ -75,6 +79,7 @@ export const actions = {
             timestamp = `${year}/${month}/${day}`
           }
           commit('setTimestamp', timestamp)
+          commit('updateIsLoading', false)
 
           if (companyId) {
             if (companyId != doc.data()['companyId']) {
@@ -85,10 +90,12 @@ export const actions = {
         } else {
           // 404
           console.log('404')
+          commit('updateIsLoading', false)
           nuxt.error({ statusCode: 404, message: 'not found' })
         }
       })
       .catch(function(error) {
+        commit('updateIsLoading', false)
         console.log("Error getting document:", error)
         nuxt.error({ statusCode: 404, message: 'not found' })
       })
@@ -125,6 +132,9 @@ export const actions = {
         console.error("Error adding document: ", error)
       })
   },
+  updateIsLoading({commit}, isLoading) {
+    commit('updateIsLoading', isLoading)
+  },
   resetState({commit}) {
     commit('setUid', null)
     commit('setProfileImageUrl', null)
@@ -135,5 +145,6 @@ export const actions = {
     commit('setGoodPoint', '')
     commit('setAdvice', '')
     commit('setCreatedAt', null)
+    commit('updateIsLoading', false)
   },
 }

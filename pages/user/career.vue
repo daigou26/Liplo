@@ -4,41 +4,52 @@
     row
     wrap
   >
+    <!-- loading -->
+    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
+      <v-layout justify-center>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex v-else-if="isLoading" xs12 :style="{ height: windowHeight + 'px' }">
+      <v-layout align-center justify-center column fill-height>
+        Now Loading...
+      </v-layout>
+    </v-flex>
     <v-flex
+      v-else
       xs12
       md10
       offset-md1
       class="break"
+      :class="{
+        'px-4': $vuetify.breakpoint.smAndDown,
+      }"
     >
       <v-layout
         row
         wrap
       >
-        <!-- menu (lg, md)-->
+        <!-- menu (lg, md, sm)-->
+        <my-page-menu/>
+        <!-- career -->
         <v-flex
-          md4
-          hidden-sm-and-down
-          :class="{
-            'py-5 px-4': $vuetify.breakpoint.lgAndUp,
-            'pa-3': $vuetify.breakpoint.mdOnly,
-          }"
-        >
-          <my-page-menu/>
-        </v-flex>
-        <!-- career timeline (lg, md) -->
-        <v-flex
-          md8
           xs12
+          class="py-3"
           :class="{
-            'px-5 pb-3': $vuetify.breakpoint.lgAndUp,
-            'px-3 pb-3': $vuetify.breakpoint.mdOnly,
+            'py-4': $vuetify.breakpoint.smAndUp,
           }"
         >
-          <v-flex sm6 xs8 offset-sm3 offset-xs2>
-            <!-- menu (sm, xs) -->
-            <my-page-menu class="hidden-md-and-up"/>
+          <v-flex
+            sm10
+            xs12
+            offset-sm1
+            class="text-xs-center pr-4"
+            :class="{
+              'pl-5': $vuetify.breakpoint.smAndUp,
+            }"
+          >
             <!-- career timeline -->
-            <v-timeline dense>
+            <v-timeline v-if="career && career.length > 0" dense>
               <v-timeline-item
                 v-for="item in career"
                 :key="item.careerId"
@@ -50,8 +61,8 @@
                     <v-img :src="item.companyImageUrl"/>
                   </v-avatar>
                 </template>
-                <div class="py-3">
-                  <div class="mb-1">{{ item.startedAt }}</div>
+                <v-card class="py-3 textColor">
+                  <div class="mb-1 light-text-color">{{ item.startedAt }}</div>
                   <div class="title font-weight-bold mb-3 return">{{ item.companyName }}</div>
                   <div class="pb-1">職種:　{{ item.occupation }}</div>
                   <div v-if="!item.end">
@@ -68,9 +79,34 @@
                   <div v-else>
                     終了日:　{{ item.endedAt }}
                   </div>
-                </div>
+                </v-card>
               </v-timeline-item>
             </v-timeline>
+            <v-card
+              v-else
+              class="px-3 py-4"
+              :class="{
+                'mx-3': $vuetify.breakpoint.xsOnly,
+                'mt-4': $vuetify.breakpoint.mdAndUp,
+                'mt-3': $vuetify.breakpoint.smAndDown,
+              }"
+            >
+              <div class="text-xs-center">
+                <div
+                  class="textColor"
+                  :class="{
+                    'title': $vuetify.breakpoint.xsOnly,
+                    'headline': $vuetify.breakpoint.smAndUp,
+                  }"
+                >
+                  キャリアがありません
+                </div>
+                <div class="pt-3 light-text-color">
+                  企業に採用された場合はこちらに表示されます
+                </div>
+                <v-btn class="mt-3 font-weight-bold" color="warning" to="/">募集を探す</v-btn>
+              </div>
+            </v-card>
           </v-flex>
         </v-flex>
       </v-layout>
@@ -89,12 +125,7 @@ export default {
   },
   data: () => ({
     isQueried: false,
-    mypageItems: [
-      'passes',
-      'career',
-      'feedbacks',
-      'reviews'
-    ],
+    windowHeight: 0,
   }),
   computed: {
     path() {
@@ -105,18 +136,33 @@ export default {
     },
     ...mapState({
       uid: state => state.uid,
+      isRefreshing: state => state.isRefreshing,
       career: state => state.career.career,
+      isLoading: state => state.career.isLoading,
     }),
   },
   mounted() {
+    let toolbarHeight
+    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+      toolbarHeight = 48
+    } else {
+      toolbarHeight = 64
+    }
+    this.windowHeight = window.innerHeight - toolbarHeight - 30
+
     if (this.uid != null && this.uid != '' && !this.isQueried) {
+      this.updateIsLoading(true)
       this.queryCareer(this.uid)
     }
+  },
+  destroyed () {
+    this.updateIsLoading(false)
   },
   watch: {
     uid(uid) {
       if (uid != null && uid != '') {
         this.isQueried = true
+        this.updateIsLoading(true)
         this.queryCareer(uid)
       }
     }
@@ -124,6 +170,7 @@ export default {
   methods: {
     ...mapActions({
       queryCareer: 'career/queryCareer',
+      updateIsLoading: 'career/updateIsLoading',
     }),
   }
 }
