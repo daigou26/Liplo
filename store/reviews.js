@@ -7,6 +7,7 @@ export const state = () => ({
   allCompanyReviewsQueried: false,
   // ユーザーが記入したレビュー
   userReviews: [],
+  isInitialUserReviewsLoading: false,
   isUserReviewsLoading: false,
   allUserReviewsQueried: false,
 })
@@ -30,7 +31,10 @@ export const mutations = {
   resetUserReviews(state) {
     state.userReviews = []
   },
-  updateUserReviewsLoading(state, isLoading) {
+  updateIsInitialUserReviewsLoading(state, isLoading) {
+    state.isInitialUserReviewsLoading = isLoading
+  },
+  updateIsUserReviewsLoading(state, isLoading) {
     state.isUserReviewsLoading = isLoading
   },
   setAllUserReviewsQueried(state, allUserReviewsQueried) {
@@ -150,21 +154,34 @@ export const actions = {
           var docCount = 0
           snapshot.forEach(function(doc) {
             docCount += 1
+
+            var timestamp = doc.data()['createdAt']
+            if (timestamp) {
+              let date = new Date( timestamp.seconds * 1000 )
+              let year  = date.getFullYear()
+              let month = date.getMonth() + 1
+              let day  = date.getDate()
+              timestamp = `${year}/${month}/${day}`
+            }
             const review = {
               reviewId: doc.id,
               companyImageUrl: doc.data()['companyImageUrl'],
               companyName: doc.data()['companyName'],
               all: doc.data()['all'],
-              createdAt: doc.data()['createdAt']
+              createdAt: doc.data()['createdAt'],
+              timestamp: timestamp
             }
             commit('addUserReview', review)
           })
           if (docCount == 0) {
             commit('setAllUserReviewsQueried',true)
           }
-          commit('updateUserReviewsLoading', false)
+          commit('updateIsInitialUserReviewsLoading', false)
+          commit('updateIsUserReviewsLoading', false)
         })
         .catch(function(error) {
+          commit('updateIsInitialUserReviewsLoading', false)
+          commit('updateIsUserReviewsLoading', false)
           console.log("Error getting document:", error);
         })
     } else if (reviews.length != 0) {
@@ -178,6 +195,15 @@ export const actions = {
         .get()
         .then(function(snapshot) {
           var docCount = 0
+
+          var timestamp = doc.data()['createdAt']
+          if (timestamp) {
+            let date = new Date( timestamp.seconds * 1000 )
+            let year  = date.getFullYear()
+            let month = date.getMonth() + 1
+            let day  = date.getDate()
+            timestamp = `${year}/${month}/${day}`
+          }
           snapshot.forEach(function(doc) {
             docCount += 1
             const review = {
@@ -185,29 +211,35 @@ export const actions = {
               companyImageUrl: doc.data()['companyImageUrl'],
               companyName: doc.data()['companyName'],
               all: doc.data()['all'],
-              createdAt: doc.data()['createdAt']
+              createdAt: doc.data()['createdAt'],
+              timestamp: timestamp
             }
             commit('addUserReview', review)
           })
           if (docCount == 0) {
             commit('setAllUserReviewsQueried', true)
           }
-          commit('updateUserReviewsLoading', false)
+          commit('updateIsUserReviewsLoading', false)
         })
         .catch(function(error) {
+          commit('updateIsUserReviewsLoading', false)
           console.log("Error getting document:", error);
         })
     }
   },
-  updateUserReviewsLoading({commit}, isLoading) {
-    commit('updateUserReviewsLoading', isLoading)
+  updateIsInitialUserReviewsLoading({commit}, isLoading) {
+    commit('updateIsInitialUserReviewsLoading', isLoading)
+  },
+  updateIsUserReviewsLoading({commit}, isLoading) {
+    commit('updateIsUserReviewsLoading', isLoading)
   },
   resetState({commit}) {
     commit('resetCompanyReviews')
     commit('updateIsCompanyReviewsLoading', false)
     commit('setAllCompanyReviewsQueried', false)
     commit('resetUserReviews')
-    commit('updateUserReviewsLoading', false)
+    commit('updateIsInitialUserReviewsLoading', false)
+    commit('updateIsUserReviewsLoading', false)
     commit('setAllUserReviewsQueried', false)
   },
 }

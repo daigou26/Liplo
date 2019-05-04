@@ -6,6 +6,8 @@ export const state = () => ({
   notReviewedLists: null,
   notReviewedCompany: null,
   isLoading: false,
+  isNotReviewedListsLoading: false,
+  isNotReviewedCompanyLoading: false,
 })
 
 export const mutations = {
@@ -20,6 +22,12 @@ export const mutations = {
   },
   updateIsLoading(state, isLoading) {
     state.isLoading = isLoading
+  },
+  updateIsNotReviewedListsLoading(state, isLoading) {
+    state.isNotReviewedListsLoading = isLoading
+  },
+  updateIsNotReviewedCompanyLoading(state, isLoading) {
+    state.isNotReviewedCompanyLoading = isLoading
   },
 }
 
@@ -45,11 +53,14 @@ export const actions = {
             nuxt.error({ statusCode: 404, message: 'not found' })
           }
           commit('setNotReviewedCompany', company)
+          commit('updateIsNotReviewedCompanyLoading', false)
         } else {
+          commit('updateIsNotReviewedCompanyLoading', false)
           nuxt.error({ statusCode: 404, message: 'not found' })
         }
       })
       .catch(function(error) {
+        commit('updateIsNotReviewedCompanyLoading', false)
         console.log("Error getting document:", error)
         nuxt.error({ statusCode: 404, message: 'not found' })
       })
@@ -74,8 +85,10 @@ export const actions = {
           data.push(company)
         })
         commit('setNotReviewedLists', data)
+        commit('updateIsNotReviewedListsLoading', false)
       })
       .catch(function(error) {
+        commit('updateIsNotReviewedListsLoading', false)
         console.log("Error getting document:", error)
       })
   },
@@ -128,10 +141,18 @@ export const actions = {
   updateIsLoading({commit}, isLoading) {
     commit('updateIsLoading', isLoading)
   },
+  updateIsNotReviewedListsLoading({commit}, isLoading) {
+    commit('updateIsNotReviewedListsLoading', isLoading)
+  },
+  updateIsNotReviewedCompanyLoading({commit}, isLoading) {
+    commit('updateIsNotReviewedCompanyLoading', isLoading)
+  },
   resetState({commit}) {
     commit('setCareer', [])
     commit('setNotReviewedLists', null)
     commit('setNotReviewedCompany', null)
     commit('updateIsLoading', false)
+    commit('updateIsNotReviewedListsLoading', false)
+    commit('updateIsNotReviewedCompanyLoading', false)
   },
 }
