@@ -251,6 +251,10 @@ div.v-toolbar__extension {
 i.v-icon {
   padding: 0px !important;
 }
+.drawer-mini .v-list__tile {
+  padding-left: 0px;
+  padding-right: 0px;
+}
 #toolbar span.v-badge__badge {
   width: 5px;
   height: 5px;

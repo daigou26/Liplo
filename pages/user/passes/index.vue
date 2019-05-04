@@ -30,21 +30,9 @@
         wrap
       >
         <!-- menu (lg, md, sm)-->
-        <v-flex
-          md4
-          sm3
-          hidden-xsOnly
-          :class="{
-            'py-5 px-4': $vuetify.breakpoint.lgAndUp,
-            'pa-3': $vuetify.breakpoint.mdOnly,
-          }"
-        >
-          <my-page-menu/>
-        </v-flex>
+        <my-page-menu/>
         <!-- passes -->
         <v-flex
-          md8
-          sm9
           xs12
           class="py-3"
           :class="{

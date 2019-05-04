@@ -30,21 +30,9 @@
         wrap
       >
         <!-- menu (lg, md, sm)-->
-        <v-flex
-          md4
-          sm3
-          hidden-xsOnly
-          :class="{
-            'py-5 px-4': $vuetify.breakpoint.lgAndUp,
-            'pa-3': $vuetify.breakpoint.mdOnly,
-          }"
-        >
-          <my-page-menu/>
-        </v-flex>
+        <my-page-menu/>
         <!-- career -->
         <v-flex
-          md8
-          sm9
           xs12
           class="py-3"
           :class="{
@@ -52,7 +40,15 @@
             'py-4': $vuetify.breakpoint.smAndUp,
           }"
         >
-          <v-flex sm10 xs12 offset-sm1>
+          <v-flex
+            sm10
+            xs12
+            offset-sm1
+            class="text-xs-center pr-4"
+            :class="{
+              'pl-5': $vuetify.breakpoint.smAndUp,
+            }"
+          >
             <!-- career timeline -->
             <v-timeline v-if="career && career.length > 0" dense>
               <v-timeline-item
@@ -66,7 +62,7 @@
                     <v-img :src="item.companyImageUrl"/>
                   </v-avatar>
                 </template>
-                <div class="py-3 textColor">
+                <v-card class="py-3 textColor">
                   <div class="mb-1 light-text-color">{{ item.startedAt }}</div>
                   <div class="title font-weight-bold mb-3 return">{{ item.companyName }}</div>
                   <div class="pb-1">職種:　{{ item.occupation }}</div>
@@ -84,7 +80,7 @@
                   <div v-else>
                     終了日:　{{ item.endedAt }}
                   </div>
-                </div>
+                </v-card>
               </v-timeline-item>
             </v-timeline>
             <v-card
