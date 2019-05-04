@@ -61,7 +61,7 @@
               icon="info"
               outline
             >
-              <span class="font-weight-bold ">内定承諾済みです。採用担当者から内定契約に関するメッセージが届きます。
+              <span class="font-weight-bold">内定承諾済みです。採用担当者から内定契約に関するメッセージが届きます。
                 届かない場合は、企業とのメッセージでご確認お願いします。
               </span>
             </v-alert>

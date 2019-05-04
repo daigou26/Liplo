@@ -229,6 +229,7 @@ export const actions = {
         isContracted: true,
         isAccepted: true,
         isValid: false,
+        contractedDate: new Date(),
       })
     }
 

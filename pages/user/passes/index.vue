@@ -34,20 +34,22 @@
         <!-- passes -->
         <v-flex
           xs12
-          class="py-3"
+          class="pa-3"
           :class="{
-            'px-3': $vuetify.breakpoint.mdAndUp,
             'py-4': $vuetify.breakpoint.smAndUp,
           }"
         >
-          <v-flex sm10 xs12 offset-sm1>
-            <!-- passes -->
-            <v-container v-if="passes && passes.length > 0" fluid grid-list-lg>
-              <v-layout row wrap>
-                <v-flex v-for="(pass, index) in passes" :key="index" xs6 md4>
+          <v-flex xs12>
+            <!-- 契約済み -->
+            <div v-if="contractedPasses && contractedPasses.length > 0" class="title">
+              契約済みの企業
+            </div>
+            <v-container v-if="contractedPasses && contractedPasses.length > 0" fluid grid-list-lg mb-4>
+              <v-layout row >
+                <v-flex v-for="(pass, index) in contractedPasses" :key="index" xs6 md4>
                   <v-card
                     :to="'/user/passes/' + pass.passId"
-                    class="text-xs-center py-2"
+                    class="text-xs-center py-2 contracted"
                   >
                     <v-avatar
                       :size="avatarSize"
@@ -70,7 +72,49 @@
                       {{ pass.occupation }}
                     </div>
                     <div class="pt-1 px-1 caption light-text-color">
-                      <span v-if="pass.isContracted">内定契約済み</span>
+                      {{ pass.contractedDate }} に契約
+                    </div>
+                  </v-card>
+                </v-flex>
+              </v-layout>
+            </v-container>
+            <!-- 未契約 -->
+            <div v-if="passes && passes.length > 0" class="title">
+              未契約の企業
+            </div>
+            <v-container v-if="passes && passes.length > 0" fluid grid-list-lg>
+              <v-layout row wrap>
+                <v-flex v-for="(pass, index) in passes" :key="index" xs6 md4>
+                  <v-card
+                    :to="'/user/passes/' + pass.passId"
+                    class="text-xs-center py-2"
+                    :class="{
+                      'accepted': pass.isAccepted,
+                      'invalid': !pass.isValid || pass.isExpired,
+                    }"
+                  >
+                    <v-avatar
+                      :size="avatarSize"
+                      :class="{
+                        'grey lighten-3': !pass.companyImageUrl,
+                      }"
+                    >
+                      <img v-if="pass.companyImageUrl" :src="pass.companyImageUrl" alt="avatar">
+                    </v-avatar>
+                    <div
+                      class="pt-3 px-3 font-weight-bold textColor"
+                      :class="{
+                        'subheading': $vuetify.breakpoint.smAndUp,
+                        '': $vuetify.breakpoint.xsOnly,
+                      }"
+                    >
+                      {{ pass.companyName }}
+                    </div>
+                    <div class="pt-2 px-2 caption textColor font-weight-bold">
+                      {{ pass.occupation }}
+                    </div>
+                    <div class="pt-1 px-1 caption light-text-color">
+                      <span v-if="!pass.isValid">無効になりました</span>
                       <span v-else-if="pass.isAccepted">内定受諾済み</span>
                       <span v-else-if="pass.isExpired">有効期限を過ぎました</span>
                       <span v-else>有効期限: {{ pass.expirationDate }} まで</span>
@@ -80,7 +124,7 @@
               </v-layout>
             </v-container>
             <v-card
-              v-else
+              v-if="(passes == null || passes.length == 0) && (contractedPasses == null || contractedPasses.length == 0)"
               class="px-3 py-4"
               :class="{
                 'mx-3': $vuetify.breakpoint.xsOnly,
@@ -153,6 +197,7 @@ export default {
       uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
       passes: state => state.passes.passes,
+      contractedPasses: state => state.passes.contractedPasses,
       isInitialLoading: state => state.passes.isInitialLoading,
       isLoading: state => state.passes.isLoading,
       allPassesQueried: state => state.passes.allPassesQueried,
@@ -211,3 +256,14 @@ export default {
   }
 }
 </script>
+<style>
+.contracted {
+  background-image: linear-gradient(-135deg, #FB8C00 20px, transparent 0);
+}
+.accepted {
+  background-image: linear-gradient(-135deg, #66BB6A 20px, transparent 0);
+}
+.invalid {
+  background-image: linear-gradient(-135deg, #90A4AE 20px, transparent 0);
+}
+</style>
