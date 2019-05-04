@@ -3,6 +3,7 @@
     <v-flex xs12>
       <!-- menu ( xl, lg, md, sm) -->
       <v-navigation-drawer
+        v-if="breakpoint != 'xs'"
         class="hidden-xs-only"
         app
         width="280"

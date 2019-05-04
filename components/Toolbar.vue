@@ -291,14 +291,14 @@
 
     </v-toolbar-title>
     <v-spacer></v-spacer>
-    <v-toolbar-items class="hidden-xs-only">
+    <v-toolbar-items>
       <!-- messages -->
       <v-btn
         v-if="uid"
         flat
         to="/messages"
         active-class
-        class="pr-4"
+        class="pr-4 hidden-xs-only"
       >
         <span v-if="!hasNewMessage" class="font-weight-bold textColor">メッセージ</span>
         <v-badge v-else overlap color="red">
@@ -309,7 +309,7 @@
         </v-badge>
       </v-btn>
       <!-- notifications -->
-      <v-menu v-if="uid" offset-y offset-x min-width="400">
+      <v-menu v-if="uid" offset-y offset-x min-width="400" class="hidden-xs-only">
         <v-btn flat slot="activator" @click="notificationsButtonClicked">
           <span v-if="!hasNewNotification" class="font-weight-bold textColor">通知</span>
           <v-badge v-else overlap color="red">
@@ -400,7 +400,7 @@
             </div>
           </div>
           <!-- ログインしていない場合に表示される -->
-          <div v-else>
+          <div v-else class="hidden-xs-only">
             <v-btn flat @click="signUpButtonClicked">
               <span class="font-weight-bold" style="color: #555555">登録する</span>
             </v-btn>
@@ -711,7 +711,6 @@ export default {
   },
   data: () => ({
     isInitialNotificationQueried: false,
-    avatarSize: 40,
     dialog: false,
     signUpDialog: false,
     signUpForm: false,
@@ -751,6 +750,13 @@ export default {
     companyInvoiceEmail: '',
   }),
   computed: {
+    avatarSize() {
+      if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+        return 30
+      } else {
+        return 40
+      }
+    },
     userType() {
       return this.query.type != null ? 'recruiter' : 'user'
     },
