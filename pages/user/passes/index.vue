@@ -22,7 +22,7 @@
       offset-md1
       class="break"
       :class="{
-        'px-4': $vuetify.breakpoint.smOnly,
+        'px-4': $vuetify.breakpoint.smAndDown,
       }"
     >
       <v-layout
@@ -34,14 +34,21 @@
         <!-- passes -->
         <v-flex
           xs12
-          class="pa-3"
+          class="py-3"
           :class="{
             'py-4': $vuetify.breakpoint.smAndUp,
           }"
         >
           <v-flex xs12>
             <!-- 契約済み -->
-            <div v-if="contractedPasses && contractedPasses.length > 0" class="title">
+            <div
+              v-if="contractedPasses && contractedPasses.length > 0"
+              class="textColor"
+              :class="{
+                'title': $vuetify.breakpoint.smAndUp,
+                'subheading': $vuetify.breakpoint.xsOnly,
+              }"
+            >
               契約済みの企業
             </div>
             <v-container v-if="contractedPasses && contractedPasses.length > 0" fluid grid-list-lg mb-4>
@@ -63,7 +70,6 @@
                       class="pt-3 px-3 font-weight-bold textColor"
                       :class="{
                         'subheading': $vuetify.breakpoint.smAndUp,
-                        '': $vuetify.breakpoint.xsOnly,
                       }"
                     >
                       {{ pass.companyName }}
@@ -79,7 +85,14 @@
               </v-layout>
             </v-container>
             <!-- 未契約 -->
-            <div v-if="passes && passes.length > 0" class="title">
+            <div
+              v-if="passes && passes.length > 0"
+              class="textColor"
+              :class="{
+                'title': $vuetify.breakpoint.smAndUp,
+                'subheading': $vuetify.breakpoint.xsOnly,
+              }"
+            >
               未契約の企業
             </div>
             <v-container v-if="passes && passes.length > 0" fluid grid-list-lg>

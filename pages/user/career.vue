@@ -22,7 +22,7 @@
       offset-md1
       class="break"
       :class="{
-        'px-4': $vuetify.breakpoint.smOnly,
+        'px-4': $vuetify.breakpoint.smAndDown,
       }"
     >
       <v-layout
@@ -36,7 +36,6 @@
           xs12
           class="py-3"
           :class="{
-            'px-3': $vuetify.breakpoint.mdAndUp,
             'py-4': $vuetify.breakpoint.smAndUp,
           }"
         >

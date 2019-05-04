@@ -280,12 +280,16 @@
     <v-flex xs12 slot="extension" v-if="jobsToolbarExtension && !isJobsLoading">
       <filter-extension></filter-extension>
     </v-flex>
-    <v-toolbar-title>
+    <v-toolbar-title class="font-weight-bold">
       <no-ssr>
         <nuxt-link v-if="breakpoint != 'xs'" to="/" class="toolbar-title">Home</nuxt-link>
         <span v-else-if="path == '/'"　class="toolbar-title">募集</span>
         <span v-else-if="path.includes('/user/notifications')"　class="toolbar-title">通知</span>
         <span v-else-if="path.includes('/messages')"　class="toolbar-title">メッセージ</span>
+        <span v-else-if="path.includes('/passes')" class="toolbar-title">内定パス</span>
+        <span v-else-if="path.includes('/career')" class="toolbar-title">キャリア</span>
+        <span v-else-if="path.includes('/feedbacks')" class="toolbar-title">フィードバック</span>
+        <span v-else-if="path.includes('/reviews')" class="toolbar-title">レビュー</span>
         <span v-else class="toolbar-title">Home</span>
       </no-ssr>
 

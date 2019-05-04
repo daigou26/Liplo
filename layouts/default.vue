@@ -140,7 +140,7 @@ export default {
   text-decoration: none;
 }
 .toolbar-title {
-  color: inherit;
+  color: #555555;
   text-decoration: inherit;
   font-size: 16px;
 }
