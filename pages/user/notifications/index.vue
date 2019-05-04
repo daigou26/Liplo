@@ -35,6 +35,12 @@
           <div class="textColor title pb-4 hidden-xs-only">
             通知
           </div>
+          <div class="text-xs-right">
+            <v-btn small flat color="teal" @click="updateAllIsUnread(uid)">すべて既読にする</v-btn>
+          </div>
+          <v-divider
+            v-if="breakpoint == 'xs'"
+          ></v-divider>
           <!-- notifications -->
           <v-list
             v-if="notifications && notifications.length > 0"
@@ -173,6 +179,7 @@ export default {
       }
     },
     ...mapActions({
+      updateAllIsUnread: 'notifications/updateAllIsUnread',
       updateIsUnread: 'notifications/updateIsUnread',
       queryNotifications: 'notifications/queryNotifications',
       updateIsInitialLoading: 'notifications/updateIsInitialLoading',
