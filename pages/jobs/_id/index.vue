@@ -301,6 +301,72 @@
                 レビューを見るには、ログインする必要があります。
               </div>
               <div v-else-if="reviews" class="pt-3">
+                <v-hover>
+                  <v-card slot-scope="{ hover }" flat class="pb-4">
+                    <v-card-actions>
+                      <v-icon style="font-size: 18px">info</v-icon>
+                      <span class="light-text-color caption">ヒント（レビューの項目について）</span>
+                    </v-card-actions>
+                    <v-card v-if="hover" flat class="caption pa-2">
+                      <div>
+                        <div class="textColor">
+                          成長できるか：
+                        </div>
+                        <div class="light-text-xolor">
+                          インターンに行って成長できたかどうか
+                        </div>
+                      </div>
+                      <div class="pt-2">
+                        <div class="textColor">
+                          仕事内容：
+                        </div>
+                        <div class="light-text-xolor">
+                          募集に書かれていた内容と合っていたかどうか
+                        </div>
+                      </div>
+                      <div class="pt-2">
+                        <div class="textColor">
+                          裁量度：
+                        </div>
+                        <div class="light-text-xolor">
+                          インターン生にも裁量が与えられていたかどうか
+                        </div>
+                      </div>
+                      <div class="pt-2">
+                        <div class="textColor">
+                          勤務中の自由度：
+                        </div>
+                        <div class="light-text-xolor">
+                          休憩などが自由にできるかどうか
+                        </div>
+                      </div>
+                      <div class="pt-2">
+                        <div class="textColor">
+                          勤務時間の柔軟性：
+                        </div>
+                        <div class="light-text-xolor">
+                          勤務時間、日程を自由に決められるかどうか
+                        </div>
+                      </div>
+                      <div class="pt-2">
+                        <div class="textColor">
+                          メンター：
+                        </div>
+                        <div class="light-text-xolor">
+                          メンター（インターン生の担当者）の評価
+                        </div>
+                      </div>
+                      <div class="pt-2">
+                        <div class="textColor">
+                          雰囲気：
+                        </div>
+                        <div class="light-text-xolor">
+                          社内の雰囲気、人間関係などが良好かどうか
+                        </div>
+                      </div>
+                    </v-card>
+                  </v-card>
+                </v-hover>
                 <!-- sm以下の場合は、チャートを使わない -->
                 <div class="hidden-md-and-up pb-5">
                   <div class="d-flex">
@@ -528,7 +594,77 @@
                 レビューを見るには、ログインが必要です。
               </div>
               <div v-else-if="reviews">
-                <radar-chart v-if="showChart && reviewChartData" :data="reviewChartData" :options="reviewChartOptions" />
+                <v-hover>
+                  <v-card slot-scope="{ hover }" flat>
+                    <v-card-actions>
+                      <v-icon style="font-size: 18px">info</v-icon>
+                      <span class="light-text-color caption">ヒント（レビューの項目について）</span>
+                    </v-card-actions>
+                    <v-card v-if="hover" flat class="caption pa-2">
+                      <div>
+                        <div class="textColor">
+                          成長できるか：
+                        </div>
+                        <div class="light-text-xolor">
+                          インターンに行って成長できたかどうか
+                        </div>
+                      </div>
+                      <div class="pt-2">
+                        <div class="textColor">
+                          仕事内容：
+                        </div>
+                        <div class="light-text-xolor">
+                          募集に書かれていた内容と合っていたかどうか
+                        </div>
+                      </div>
+                      <div class="pt-2">
+                        <div class="textColor">
+                          裁量度：
+                        </div>
+                        <div class="light-text-xolor">
+                          インターン生にも裁量が与えられていたかどうか
+                        </div>
+                      </div>
+                      <div class="pt-2">
+                        <div class="textColor">
+                          勤務中の自由度：
+                        </div>
+                        <div class="light-text-xolor">
+                          休憩などが自由にできるかどうか
+                        </div>
+                      </div>
+                      <div class="pt-2">
+                        <div class="textColor">
+                          勤務時間の柔軟性：
+                        </div>
+                        <div class="light-text-xolor">
+                          勤務時間、日程を自由に決められるかどうか
+                        </div>
+                      </div>
+                      <div class="pt-2">
+                        <div class="textColor">
+                          メンター：
+                        </div>
+                        <div class="light-text-xolor">
+                          メンター（インターン生の担当者）の評価
+                        </div>
+                      </div>
+                      <div class="pt-2">
+                        <div class="textColor">
+                          雰囲気：
+                        </div>
+                        <div class="light-text-xolor">
+                          社内の雰囲気、人間関係などが良好かどうか
+                        </div>
+                      </div>
+                    </v-card>
+                  </v-card>
+                </v-hover>
+                <radar-chart
+                  v-if="showChart && reviewChartData"
+                  :data="reviewChartData"
+                  :options="reviewChartOptions"
+                />
                 <v-list class="pl-3">
                   <template v-for="(item, index) in reviews.comments">
                     <div class="py-2">
