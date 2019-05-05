@@ -30,12 +30,24 @@
           <v-spacer></v-spacer>
           <v-icon>sort</v-icon>
           <v-btn flat class="ma-0" @click="sortButtonClicked('recent')">
-            <span v-if="order == 'recent'" class="teal--text text--darken-1 font-weight-bold">新着順</span>
-            <span v-else class="textColor">新着順</span>
+            <span
+              :class="{
+                'teal--text text--darken-1 font-weight-bold': order == 'recent',
+                'textColor': order != 'recent',
+              }"
+            >
+              新着順
+            </span>
           </v-btn>
           <v-btn flat class="ma-0 pa-0" @click="sortButtonClicked('rating')">
-            <span v-if="order == 'rating'" class="teal--text text--darken-1 font-weight-bold">評価順</span>
-            <span v-else class="textColor">評価順</span>
+            <span
+              :class="{
+                'teal--text text--darken-1 font-weight-bold': order == 'rating',
+                'textColor': order != 'recent',
+              }"
+            >
+              評価順
+            </span>
           </v-btn>
         </v-card-actions>
       </v-flex>
@@ -100,7 +112,7 @@
                               class="textColor font-weight-bold"
                             >
                               {{ job.companyName }}
-                              <span v-if="hover" class="pl-2 caption green--text">企業情報を見る</span>
+                              <span v-show="hover" class="pl-2 caption green--text">企業情報を見る</span>
                             </v-list-tile-title>
                             <v-list-tile-sub-title v-if="job.rating">
                               <v-card-actions class="pa-0">
@@ -142,7 +154,7 @@
       </v-container>
       <!-- footer -->
       <v-footer
-        v-if="footer"
+        v-show="footer"
         class="shadow-top"
         id="footer"
         fixed

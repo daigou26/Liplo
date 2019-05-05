@@ -52,7 +52,7 @@
                   </v-btn>
                 </v-card-actions>
                 <!-- ProfileImage編集 -->
-                <div v-if="isEditingProfileImage">
+                <div v-show="isEditingProfileImage">
                   <v-dialog
                     :value="isEditingProfileImage"
                     :fullscreen="$vuetify.breakpoint.xsOnly"
@@ -78,7 +78,7 @@
                           </v-avatar>
                         </div>
                         <input type="file" v-on:change="onFileChange">
-                        <p v-if="!imageFileSizeValid" class="warning-text-color">
+                        <p v-show="!imageFileSizeValid" class="warning-text-color">
                           {{ imageFileSizeWarning }}
                         </p>
                       </v-flex>
@@ -104,7 +104,7 @@
                   </v-dialog>
                 </div>
                 <!-- UserName編集 -->
-                <v-form v-if="isEditingUserName" v-model="editUserNameValid">
+                <v-form v-show="isEditingUserName" v-model="editUserNameValid">
                   <v-dialog
                     :value="isEditingUserName"
                     :fullscreen="$vuetify.breakpoint.xsOnly"
@@ -223,7 +223,7 @@
                     <v-divider></v-divider>
                   </v-flex>
                   <v-flex xs12 sm10 class="break">
-                    <div v-if="!isEditingDesiredOccupations && desiredOccupations">
+                    <div v-show="!isEditingDesiredOccupations && desiredOccupations">
                       <v-chip v-if="desiredOccupations.engineer">
                         <span>エンジニア</span>
                       </v-chip>
@@ -238,7 +238,7 @@
                       </v-chip>
                     </div>
                     <!-- 志望する職種の編集画面 -->
-                    <div v-if="isEditingDesiredOccupations">
+                    <div v-show="isEditingDesiredOccupations">
                       <v-select
                         v-model="tempDesiredOccupations"
                         :items="desiredOccupationsItems"
@@ -287,11 +287,11 @@
                   </v-flex>
                   <v-flex xs12 sm10 class="break">
                     <!-- 自己紹介の表示 -->
-                    <v-card-text v-if="!isEditingSelfIntro">
+                    <v-card-text v-show="!isEditingSelfIntro">
                       <p class="return">{{ selfIntro }}</p>
                     </v-card-text>
                     <!-- 自己紹介の編集画面 -->
-                    <div v-else>
+                    <div v-show="isEditingSelfIntro">
                       <v-form v-model="editSelfIntroValid">
                         <v-textarea
                           solo
@@ -341,11 +341,11 @@
                   </v-flex>
                   <v-flex xs12 sm10 class="break">
                     <!-- やりたいことの表示 -->
-                    <v-card-text v-if="!isEditingWhatWantToDo">
+                    <v-card-text v-show="!isEditingWhatWantToDo">
                       <p class="return">{{ whatWantToDo }}</p>
                     </v-card-text>
                     <!-- やりたいことの編集画面 -->
-                    <div v-else>
+                    <div v-show="isEditingWhatWantToDo">
                       <v-form v-model="editWhatWantToDoValid">
                         <v-textarea
                           solo
@@ -395,7 +395,7 @@
                   </v-flex>
                   <v-flex xs12 sm10>
                     <!-- ポートフォリオ表示 -->
-                    <v-list v-if="!isEditingPortfolio && this.portfolio != null" class="pl-4">
+                    <v-list v-show="!isEditingPortfolio && this.portfolio != null" class="pl-4">
                       <template v-for="(item, index) in this.portfolio">
                           <div class="d-flex pb-3">
                             <v-flex xs4 sm3 lg2>
@@ -422,7 +422,7 @@
                       </template>
                     </v-list>
                     <!-- ポートフォリオ編集画面 -->
-                    <div v-if="isEditingPortfolio">
+                    <div v-show="isEditingPortfolio">
                       <v-form v-model="editPortfolioValid">
                         <div class="d-flex pb-3">
                           <v-flex xs8 sm9 lg10 class="px-4 break">
@@ -460,7 +460,7 @@
                               キャンセル
                             </v-btn>
                             <v-btn
-                              v-if="selectedPortfolioItemIndex != null"
+                              v-show="selectedPortfolioItemIndex != null"
                               @click="deletePortfolioItem({
                                 uid: uid,
                                 selectedIndex: selectedPortfolioItemIndex,
@@ -519,7 +519,7 @@
                   </v-flex>
                   <v-flex xs12 sm10 class="break">
                     <!-- スキル表示 -->
-                    <v-list v-if="!isEditingSkills && skills != null" class="pl-4">
+                    <v-list v-show="!isEditingSkills && skills != null" class="pl-4">
                       <template v-for="(item, index) in skills">
                         <v-chip>
                           <span>{{ item }}</span>
@@ -527,7 +527,7 @@
                       </template>
                     </v-list>
                     <!-- スキルの編集画面 -->
-                    <div v-if="isEditingSkills">
+                    <div v-show="isEditingSkills">
                       <v-form v-model="editSkillsValid">
                         <div class="d-flex pb-3">
                           <v-flex xs12 class="px-4 break">
@@ -597,7 +597,7 @@
                   </v-flex>
                   <v-flex xs12 sm10 class="break">
                     <!-- 関連リンク表示 -->
-                    <v-list v-if="!isEditingLinks && links != null" class="pl-4">
+                    <v-list v-show="!isEditingLinks && links != null" class="pl-4">
                       <template v-for="(item, index) in links">
                         <div class="py-2">
                           <div class="font-weight-bold body-2 textColor">
@@ -618,7 +618,7 @@
                       </template>
                     </v-list>
                     <!-- 関連リンクの編集画面 -->
-                    <div v-if="isEditingLinks">
+                    <div v-show="isEditingLinks">
                       <v-form v-model="editLinksValid">
                         <div class="d-flex pb-3">
                           <v-flex xs8 sm9 lg10 class="px-4 break">
@@ -642,7 +642,7 @@
                               キャンセル
                             </v-btn>
                             <v-btn
-                              v-if="selectedLinkIndex != null"
+                              v-show="selectedLinkIndex != null"
                               @click="deleteLink({
                                 uid: uid,
                                 selectedIndex: selectedLinkIndex,
@@ -696,7 +696,7 @@
                   </v-flex>
                   <v-flex xs12 sm10 class="break">
                     <!-- 基本情報の表示 -->
-                    <v-list v-if="!isEditingUserInfo" class="pl-4">
+                    <v-list v-show="!isEditingUserInfo" class="pl-4">
                       <div class="pb-2">
                         <span>大学:</span>
                         <span class="pl-2">{{ university }}</span>
@@ -715,7 +715,7 @@
                       </div>
                     </v-list>
                     <!-- 基本情報の編集画面 -->
-                    <div v-else>
+                    <div v-show="isEditingUserInfo">
                       <v-form v-model="editUserInfoValid">
                         <v-text-field
                           solo

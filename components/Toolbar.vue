@@ -448,7 +448,7 @@
                     :class="{'px-2': $vuetify.breakpoint.smAndUp, 'px-3 mt-4': $vuetify.breakpoint.xsOnly}"
                   >
                     <!-- ログインフォーム -->
-                    <div v-if="signInDialog">
+                    <div v-show="signInDialog">
                       <v-form v-model="valid">
                         <v-container>
                           <v-layout
@@ -505,7 +505,7 @@
                       </v-form>
                     </div>
                     <!-- 登録フォーム -->
-                    <div v-else-if="signUpForm">
+                    <div v-show="!signInDialog && signUpForm">
                       <v-form v-model="valid">
                         <v-container>
                           <v-layout
@@ -580,7 +580,7 @@
                       </v-form>
                     </div>
                     <!-- 登録方法 -->
-                    <div v-else>
+                    <div v-show="!signInDialog && !signUpForm">
                       <!-- メールアドレス登録 -->
                       <v-btn
                         block
@@ -596,7 +596,7 @@
                   <v-divider class="mt-4"></v-divider>
                   <!-- アカウントを持っている場合はログイン画面へ -->
                   <v-flex xs12 class="text-xs-center px-2">
-                    <div v-if="signInDialog">
+                    <div v-show="signInDialog">
                       <span>アカウントをお持ちでない方は</span>
                       <v-btn
                         flat
@@ -606,7 +606,7 @@
                         <span>登録</span>
                       </v-btn>
                     </div>
-                    <div v-else>
+                    <div v-show="!signInDialog">
                       <span>アカウントをお持ちの方は</span>
                       <v-btn
                         flat
@@ -618,7 +618,6 @@
                     </div>
                   </v-flex>
                 </v-card>
-
               </v-dialog>
             </div>
           </div>

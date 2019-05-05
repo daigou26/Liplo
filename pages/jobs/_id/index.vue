@@ -297,17 +297,17 @@
               >
                 レビュー
               </p>
-              <div v-if="!uid" class="pt-3">
+              <div v-show="!uid" class="pt-3">
                 レビューを見るには、ログインする必要があります。
               </div>
-              <div v-else-if="reviews" class="pt-3">
+              <div v-show="uid && reviews" class="pt-3">
                 <v-hover>
                   <v-card slot-scope="{ hover }" flat>
                     <v-card-actions>
                       <v-icon style="font-size: 18px">info</v-icon>
                       <span class="light-text-color caption">ヒント（レビューの項目について）</span>
                     </v-card-actions>
-                    <v-card v-if="hover" flat class="caption pa-2">
+                    <v-card v-show="hover" flat class="caption pa-2">
                       <div>
                         <div class="textColor">
                           成長できるか：
@@ -525,7 +525,7 @@
                   </v-flex>
                 </div>
               </div>
-              <div v-else class="pt-2">
+              <div v-show="uid && (reviews == null || reviews.length == 0)" class="pt-2">
                 まだレビューがありません
               </div>
             </div>
@@ -603,17 +603,17 @@
               <p class="title font-weight-bold textColor">
                 レビュー
               </p>
-              <div v-if="!uid">
+              <div v-show="!uid">
                 レビューを見るには、ログインが必要です。
               </div>
-              <div v-else-if="reviews">
+              <div v-show="uid && reviews">
                 <v-hover>
                   <v-card slot-scope="{ hover }" flat>
                     <v-card-actions>
                       <v-icon style="font-size: 18px">info</v-icon>
                       <span class="light-text-color caption">ヒント（レビューの項目について）</span>
                     </v-card-actions>
-                    <v-card v-if="hover" flat class="caption pa-2">
+                    <v-card v-show="hover" flat class="caption pa-2">
                       <div>
                         <div class="textColor">
                           成長できるか：
@@ -715,7 +715,7 @@
                   すべて見る
                 </div>
               </div>
-              <div v-else class="pt-2">
+              <div v-show="uid && (reviews == null || reviews.length == 0)" class="pt-2">
                 まだレビューがありません
               </div>
             </div>
@@ -826,7 +826,7 @@
           width="500"
         >
           <!-- レビュー -->
-          <v-card v-if="!otherReviewsDialog" class="py-3 px-3">
+          <v-card v-show="!otherReviewsDialog" class="py-3 px-3">
             <v-toolbar flat color="white">
               <v-toolbar-side-icon
                 @click="reviewsDialog=false"
@@ -897,14 +897,14 @@
               </v-container>
             </v-flex>
           </v-card>
-          <v-card v-else class="py-3 px-3">
+          <v-card v-show="otherReviewsDialog" class="py-3 px-3">
             <v-toolbar flat color="white">
               <v-toolbar-side-icon
                 @click="otherReviewsDialog=false"
                 class="ml-2"
               >
-                <v-icon v-if="reviewsDialog">arrow_back</v-icon>
-                <v-icon v-else>close</v-icon>
+                <v-icon v-show="reviewsDialog">arrow_back</v-icon>
+                <v-icon v-show="!reviewsDialog">close</v-icon>
               </v-toolbar-side-icon>
               <v-toolbar-title class="font-weight-bold textColor">
                 このユーザーが記入したレビュー

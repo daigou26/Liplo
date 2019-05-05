@@ -51,30 +51,6 @@
           </template>
         </v-list>
       </v-navigation-drawer>
-      <!-- <v-list class="hidden-xs-only pt-5" style="position: fixed;">
-        <template v-for="(item, index) in mypageItems">
-          <v-list-tile
-            :class="{ 'teal lighten-5': path.includes('user/' + item.value) }"
-            :to="'/user/' + item.value"
-          >
-            <v-list-tile-action>
-              <v-icon>{{ item.icon }}</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title
-                :class="{
-                  'body-2': $vuetify.breakpoint.smOnly,
-                }"
-              >
-                {{ item.title }}
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-          <v-divider
-            v-if="mypageItems.length != index + 1"
-          ></v-divider>
-        </template>
-      </v-list> -->
     </v-flex>
   </v-layout>
 </template>
