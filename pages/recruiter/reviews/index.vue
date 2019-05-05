@@ -109,7 +109,7 @@ export default {
     ...mapActions({
       queryCompanyReviews: 'reviews/queryCompanyReviews',
       updateIsLoading: 'reviews/updateIsCompanyReviewsLoading',
-      resetState: 'reviews/resetState',
+      resetState: 'reviews/resetCompanyReviewsState',
     }),
   }
 }

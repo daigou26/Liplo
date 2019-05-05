@@ -143,7 +143,9 @@ export const actions = {
   updateIsCompanyReviewsLoading({commit}, isLoading) {
     commit('updateIsCompanyReviewsLoading', isLoading)
   },
-  queryUserReviews({commit}, {uid, reviews}) {
+  queryUserReviews({commit, state}, uid) {
+    const reviews = state.userReviews
+
     if (reviews.length == 0) {
       return firestore.collection('reviews')
         .where('uid', '==', uid)
@@ -165,9 +167,12 @@ export const actions = {
             }
             const review = {
               reviewId: doc.id,
+              companyId: doc.data()['companyId'],
               companyImageUrl: doc.data()['companyImageUrl'],
               companyName: doc.data()['companyName'],
               all: doc.data()['all'],
+              content: doc.data()['content'],
+              occupation: doc.data()['occupation'],
               createdAt: doc.data()['createdAt'],
               timestamp: timestamp
             }
@@ -208,9 +213,12 @@ export const actions = {
             docCount += 1
             const review = {
               reviewId: doc.id,
+              companyId: doc.data()['companyId'],
               companyImageUrl: doc.data()['companyImageUrl'],
               companyName: doc.data()['companyName'],
               all: doc.data()['all'],
+              content: doc.data()['content'],
+              occupation: doc.data()['occupation'],
               createdAt: doc.data()['createdAt'],
               timestamp: timestamp
             }
@@ -233,10 +241,12 @@ export const actions = {
   updateIsUserReviewsLoading({commit}, isLoading) {
     commit('updateIsUserReviewsLoading', isLoading)
   },
-  resetState({commit}) {
+  resetCompanyReviewsState({commit}) {
     commit('resetCompanyReviews')
     commit('updateIsCompanyReviewsLoading', false)
     commit('setAllCompanyReviewsQueried', false)
+  },
+  resetUserReviewsState({commit}) {
     commit('resetUserReviews')
     commit('updateIsInitialUserReviewsLoading', false)
     commit('updateIsUserReviewsLoading', false)

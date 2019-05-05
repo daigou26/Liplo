@@ -181,7 +181,7 @@ export default {
       this.resetCareerState()
       this.updateIsInitialUserReviewsLoading(true)
       this.updateIsNotReviewedListsLoading(true)
-      this.queryUserReviews({uid: this.uid, reviews: this.userReviews})
+      this.queryUserReviews(this.uid)
       this.queryNotReviewedLists(this.uid)
     }
   },
@@ -193,7 +193,7 @@ export default {
         this.resetCareerState()
         this.updateIsInitialUserReviewsLoading(true)
         this.updateIsNotReviewedListsLoading(true)
-        this.queryUserReviews({uid: uid, reviews: this.userReviews})
+        this.queryUserReviews(uid)
         this.queryNotReviewedLists(uid)
       }
     }
@@ -204,7 +204,7 @@ export default {
         if (!this.isUserReviewsLoading && this.uid != null) {
           this.count += 1
           this.updateIsUserReviewsLoading(true)
-          this.queryUserReviews({uid: this.uid, reviews: this.userReviews})
+          this.queryUserReviews(this.uid)
         }
         if (this.count > 20) {
           $state.complete()
@@ -219,7 +219,7 @@ export default {
       queryUserReviews: 'reviews/queryUserReviews',
       updateIsInitialUserReviewsLoading: 'reviews/updateIsInitialUserReviewsLoading',
       updateIsUserReviewsLoading: 'reviews/updateIsUserReviewsLoading',
-      resetReviewsState: 'reviews/resetState',
+      resetReviewsState: 'reviews/resetUserReviewsState',
       queryNotReviewedLists: 'career/queryNotReviewedLists',
       updateIsNotReviewedListsLoading: 'career/updateIsNotReviewedListsLoading',
       resetCareerState: 'career/resetState',
