@@ -1832,6 +1832,7 @@ exports.sendReview = functions.region('asia-northeast1')
     const occupation = snap.data().occupation
     const createdAt = snap.data().createdAt
     const comment = {
+      uid: uid,
       reviewId: context.params.reviewId,
       occupation: occupation,
       content: content,
