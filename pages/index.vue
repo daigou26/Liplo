@@ -288,7 +288,6 @@ export default {
   watch: {
     isRefreshed(isRefreshed) {
       if (isRefreshed == true) {
-        console.log('isRefreshed');
         this.resetState()
         this.updateIsInitialLoading(true)
         this.updateIsLoading(true)
