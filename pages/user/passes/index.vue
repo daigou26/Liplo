@@ -52,8 +52,8 @@
               契約済みの企業
             </div>
             <v-container v-if="contractedPasses && contractedPasses.length > 0" fluid grid-list-lg mb-4>
-              <v-layout row >
-                <v-flex v-for="(pass, index) in contractedPasses" :key="index" xs6 md4>
+              <v-layout row wrap>
+                <v-flex v-for="(pass, index) in contractedPasses" :key="pass.passId" xs6 md4>
                   <v-card
                     :to="'/user/passes/' + pass.passId"
                     class="text-xs-center py-2 contracted"
@@ -97,7 +97,7 @@
             </div>
             <v-container v-if="passes && passes.length > 0" fluid grid-list-lg>
               <v-layout row wrap>
-                <v-flex v-for="(pass, index) in passes" :key="index" xs6 md4>
+                <v-flex v-for="(pass, index) in passes" :key="pass.passId" xs6 md4>
                   <v-card
                     :to="'/user/passes/' + pass.passId"
                     class="text-xs-center py-2"

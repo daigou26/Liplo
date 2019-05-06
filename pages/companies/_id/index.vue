@@ -81,20 +81,21 @@
               <v-card flat>
                 <v-card-text class="overflow-hidden py-0">
                   <v-layout row align-content-center class="horiz-scroll">
-                    <div
-                      v-for="member in members"
-                      class="pr-3 pb-2">
-                      <div>
-                        <v-avatar
-                          class="grey lighten-3"
-                        >
-                          <v-img :src="member.imageUrl" :size="50"></v-img>
-                        </v-avatar>
-                        <div class="sub-title1 font-weight-bold textColor text-xs-center">
-                          {{ member.name }}
+                    <template v-for="member in members">
+                      <div
+                        class="pr-3 pb-2">
+                        <div>
+                          <v-avatar
+                            class="grey lighten-3"
+                          >
+                            <v-img :src="member.imageUrl" :size="50"></v-img>
+                          </v-avatar>
+                          <div class="sub-title1 font-weight-bold textColor text-xs-center">
+                            {{ member.name }}
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </template>
                   </v-layout>
                 </v-card-text>
               </v-card>
@@ -308,17 +309,18 @@
               <v-card flat>
                 <v-card-text class="overflow-hidden py-0">
                   <v-layout align-content-center class="horiz-scroll">
-                    <div
-                      v-for="media in mediaList"
-                      class="pr-3 pb-2"
-                    >
-                      <div>
-                        <img :src="media.src" height="133" width="200"/>
-                        <div class="sub-title1 font-weight-bold textColor">
-                          エンジニア、デザイナー募集
+                    <template v-for="media in mediaList">
+                      <div
+                        class="pr-3 pb-2"
+                      >
+                        <div>
+                          <img :src="media.src" height="133" width="200"/>
+                          <div class="sub-title1 font-weight-bold textColor">
+                            エンジニア、デザイナー募集
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </template>
                   </v-layout>
                 </v-card-text>
               </v-card>
