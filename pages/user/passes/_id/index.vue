@@ -43,7 +43,7 @@
           <v-flex sm10 xs12 offset-sm1>
             <!-- 未承諾 & 未契約 -->
             <v-alert
-              v-if="!isContracted && !isAccepted && isValid"
+              v-if="!isContracted && !isAccepted && isValid && !isExpired"
               :value="true"
               color="teal lighten-1"
               outline
@@ -77,7 +77,7 @@
             </v-alert>
             <!-- 無効 -->
             <v-alert
-              v-if="!isContracted && !isAccepted && !isValid"
+              v-if="!isContracted && !isAccepted && (!isValid || isExpired)"
               :value="true"
               color="blue-grey lighten-2"
               outline
@@ -88,7 +88,7 @@
                   期限切れなどの理由により、無効になりました。
                 </div>
                 <div>
-                  何か問題がありましたら、メッセージにてご確認お願いします。
+                  何か問題がございましたら、担当者とのメッセージにてご確認お願いします。
                 </div>
               </span>
             </v-alert>
@@ -125,7 +125,7 @@
                 <span class="font-weight-bold textColor">担当者からのメッセージ：</span>
                 <p v-if="message" class="pt-2 body-text light-text-color return">{{ message }}</p>
               </div>
-              <div v-if="!isContracted && !isAccepted && isValid" class="text-xs-right">
+              <div v-if="!isContracted && !isAccepted && isValid && !isExpired" class="text-xs-right">
                 <v-form v-model="acceptOfferValid">
                   <v-textarea
                     v-if="!isAccepted"
@@ -191,6 +191,7 @@ export default {
       isAccepted: state => state.pass.isAccepted,
       isContracted: state => state.pass.isContracted,
       isValid: state => state.pass.isValid,
+      isExpired: state => state.pass.isExpired,
       isLoading: state => state.pass.isLoading,
     }),
   },

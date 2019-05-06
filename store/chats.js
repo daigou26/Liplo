@@ -64,19 +64,22 @@ export const actions = {
         chatsRef = chatsRef.where('companyId', '==', companyId)
       }
 
-      return chatsRef.orderBy("updatedAt", "desc").limit(20).get()
+      return chatsRef
+        .orderBy('updatedAt', 'desc')
+        .limit(20)
+        .get()
         .then(function(snapshot) {
           var docCount = 0
           snapshot.forEach(function(doc) {
             docCount += 1
 
-            var updatedAt = doc.data()['updatedAt']
-            if (updatedAt) {
-              let date = new Date( updatedAt.seconds * 1000 )
+            var timestamp = doc.data()['updatedAt']
+            if (timestamp) {
+              let date = new Date( timestamp.seconds * 1000 )
               let year  = date.getFullYear()
               let month = date.getMonth() + 1
               let day  = date.getDate()
-              updatedAt = `${year}/${month}/${day}`
+              timestamp = `${year}/${month}/${day}`
             }
 
             const chat = {
@@ -90,7 +93,8 @@ export const actions = {
               lastMessage: doc.data()['lastMessage'],
               picUnreadCount: doc.data()['picUnreadCount'],
               userUnreadCount: doc.data()['userUnreadCount'],
-              updatedAt: updatedAt
+              updatedAt: doc.data()['updatedAt'],
+              timestamp: timestamp,
             }
             commit('addChat', chat)
           })
@@ -118,21 +122,22 @@ export const actions = {
       return chatsRef
         .orderBy('updatedAt', 'desc')
         .startAfter(lastDate)
-        .limit(10)
+        .limit(20)
         .get()
         .then(function(snapshot) {
           var docCount = 0
           snapshot.forEach(function(doc) {
             docCount += 1
 
-            var updatedAt = doc.data()['updatedAt']
-            if (updatedAt) {
-              let date = new Date( updatedAt.seconds * 1000 )
+            var timestamp = doc.data()['updatedAt']
+            if (timestamp) {
+              let date = new Date( timestamp.seconds * 1000 )
               let year  = date.getFullYear()
               let month = date.getMonth() + 1
               let day  = date.getDate()
-              updatedAt = `${year}/${month}/${day}`
+              timestamp = `${year}/${month}/${day}`
             }
+
             const chat = {
               chatId: doc.id,
               uid: doc.data()['uid'],
@@ -144,7 +149,8 @@ export const actions = {
               lastMessage: doc.data()['lastMessage'],
               picUnreadCount: doc.data()['picUnreadCount'],
               userUnreadCount: doc.data()['userUnreadCount'],
-              updatedAt: updatedAt
+              updatedAt: doc.data()['updatedAt'],
+              timestamp: timestamp,
             }
             commit('addChat', chat)
           })

@@ -166,7 +166,7 @@ export default {
           this.updateIsLoading(true)
           this.queryFeedbacks({uid: this.uid, feedbacks: this.feedbacks})
         }
-        if (this.count > 20) {
+        if (this.count > 30) {
           $state.complete()
         } else {
           $state.loaded()

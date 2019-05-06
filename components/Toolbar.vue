@@ -185,7 +185,7 @@
                 <v-list-tile to="/recruiter/notifications" class="hidden-sm-and-up">
                   <v-list-tile-title>通知</v-list-tile-title>
                 </v-list-tile>
-                <v-divider></v-divider>
+                <v-divider class="hidden-sm-and-up"></v-divider>
                 <v-list-tile to="/user/settings/notifications">
                   <v-list-tile-title>設定</v-list-tile-title>
                 </v-list-tile>
@@ -449,7 +449,7 @@
                   >
                     <!-- ログインフォーム -->
                     <div v-show="signInDialog">
-                      <v-form v-model="valid">
+                      <v-form v-model="signInValid">
                         <v-container>
                           <v-layout
                             column
@@ -489,7 +489,7 @@
                             <!-- ログインボタン -->
                             <v-btn
                               block
-                              :disabled="!valid || loading"
+                              :disabled="!signInValid || loading"
                               class="orange darken-1"
                               @click="signIn"
                             >
@@ -506,7 +506,7 @@
                     </div>
                     <!-- 登録フォーム -->
                     <div v-show="!signInDialog && signUpForm">
-                      <v-form v-model="valid">
+                      <v-form v-model="signUpValid">
                         <v-container>
                           <v-layout
                             column
@@ -564,7 +564,7 @@
                             <!-- 登録ボタン -->
                             <v-btn
                               block
-                              :disabled="!valid || loading"
+                              :disabled="!signUpValid || loading"
                               class="orange darken-1"
                               @click="signUp"
                             >
@@ -737,7 +737,8 @@ export default {
     signUpForm: false,
     signInDialog: false,
     dropdownMenu: false,
-    valid: true,
+    signInValid: true,
+    signUpValid: true,
     recruiterSignUpDialog: false,
     recruiterSignUpValid: true,
     firstName: '',

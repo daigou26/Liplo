@@ -169,7 +169,7 @@ export default {
           this.updateIsLoading(true)
           this.queryNotifications(this.uid)
         }
-        if (this.count > 20) {
+        if (this.count > 30) {
           $state.complete()
         } else {
           $state.loaded()

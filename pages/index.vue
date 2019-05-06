@@ -158,7 +158,6 @@
         class="shadow-top"
         id="footer"
         fixed
-        app
         color="white"
         height="300"
       >
@@ -330,7 +329,7 @@ export default {
           this.count += 1
           this.updateIsLoading(true)
           this.queryJobs(this.$route.query)
-          if (this.count > 20) {
+          if (this.count > 100) {
             $state.complete()
           } else {
             $state.loaded()

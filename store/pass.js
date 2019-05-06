@@ -11,6 +11,7 @@ export const state = () => ({
   isAccepted: false,
   isContracted: false,
   isValid: false,
+  isExpired: false,
   isLoading: false,
 })
 
@@ -41,6 +42,9 @@ export const mutations = {
   },
   setIsValid(state, isValid) {
     state.isValid = isValid
+  },
+  setIsExpired(state, isExpired) {
+    state.isExpired = isExpired
   },
   updateIsLoading(state, isLoading) {
     state.isLoading = isLoading
@@ -74,6 +78,13 @@ export const actions = {
       .get()
       .then(function(doc) {
         if (doc.exists) {
+          const currentDate = Math.round(new Date() / 1000)
+          if (doc.data()['expirationDate'].seconds < currentDate) {
+            commit('setIsExpired', true)
+          } else {
+            commit('setIsExpired', false)
+          }
+
           let expirationDate = doc.data()['expirationDate']
           if (expirationDate) {
             let date = new Date( expirationDate.seconds * 1000 )
@@ -119,6 +130,7 @@ export const actions = {
     commit('setIsAccepted', false)
     commit('setIsContracted', false)
     commit('setIsValid', false)
+    commit('setIsExpired', false)
     commit('updateIsLoading', false)
   },
 }

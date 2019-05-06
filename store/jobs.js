@@ -175,7 +175,7 @@ export const actions = {
     }
 
     if (jobs.length == 0) {
-      jobsRef.limit(10)
+      jobsRef.limit(20)
         .get()
         .then(function(snapshot) {
           var docCount = 0
@@ -239,7 +239,7 @@ export const actions = {
       const lastDate = jobs[lastIndex].createdAt
 
       jobsRef.startAfter(lastDate)
-        .limit(10)
+        .limit(20)
         .get()
         .then(function(snapshot) {
           var docCount = 0

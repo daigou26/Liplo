@@ -206,7 +206,7 @@ export default {
           this.updateIsUserReviewsLoading(true)
           this.queryUserReviews(this.uid)
         }
-        if (this.count > 20) {
+        if (this.count > 30) {
           $state.complete()
         } else {
           $state.loaded()

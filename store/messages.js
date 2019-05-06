@@ -68,7 +68,7 @@ export const actions = {
     if (messages.length == 0) {
       firestore.collection('chats').doc(chatId)
         .collection('messages')
-        .orderBy("createdAt", "desc")
+        .orderBy('createdAt', 'desc')
         .limit(10)
         .get()
         .then(function(snapshot) {

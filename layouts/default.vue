@@ -6,7 +6,14 @@
       <v-container fluid pa-0>
         <nuxt />
       </v-container>
-      <footer-content></footer-content>
+      <footer-content
+        v-if="
+          path != '/' &&
+          !path.includes('/messages') &&
+          ( path == '/user/profile' || !path.includes('/user')) &&
+          !path.includes('/recruiter/')
+        "
+      ></footer-content>
       <v-footer
         v-if="
           uid &&

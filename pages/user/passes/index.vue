@@ -103,7 +103,7 @@
                     class="text-xs-center py-2"
                     :class="{
                       'accepted': pass.isAccepted,
-                      'invalid': !pass.isValid || pass.isExpired,
+                      'invalid': (!pass.isValid || pass.isExpired) && !pass.isAccepted,
                     }"
                   >
                     <v-avatar
@@ -130,7 +130,7 @@
                       <span v-if="!pass.isValid">無効になりました</span>
                       <span v-else-if="pass.isAccepted">内定受諾済み</span>
                       <span v-else-if="pass.isExpired">有効期限を過ぎました</span>
-                      <span v-else>有効期限: {{ pass.expirationDate }} まで</span>
+                      <span v-else>有効期限: {{ pass.timestamp }} まで</span>
                     </div>
                   </v-card>
                 </v-flex>
@@ -162,7 +162,7 @@
               </div>
             </v-card>
             <infinite-loading
-              v-if="showInfiniteLoading && passes && passes.length >= 10 && !isPassesLoading"
+              v-if="showInfiniteLoading && passes && passes.length >= 1 && !isLoading"
               :distance="50"
               spinner="waveDots"
               @infinite="infiniteHandler">
