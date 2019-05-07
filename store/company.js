@@ -140,7 +140,8 @@ export const actions = {
   // recruiter dashboard でのクエリ
   queryCompany({commit}, {nuxt, companyId}) {
     if (companyId != null && companyId != '') {
-      firestore.collection('companies').doc(companyId)
+      firestore.collection('companies')
+        .doc(companyId)
         .get()
         .then(function(doc) {
           if (doc.exists) {
@@ -343,7 +344,6 @@ export const actions = {
                       occupation: doc.data()['occupation'],
                       period: doc.data()['period'],
                       workday: doc.data()['workday'],
-                      rating: doc.data()['rating'],
                       createdAt: doc.data()['createdAt'],
                       timestamp: timestamp
                     }

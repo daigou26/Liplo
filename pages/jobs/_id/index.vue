@@ -297,10 +297,10 @@
               >
                 レビュー
               </p>
-              <div v-show="!uid" class="pt-3">
+              <div v-if="!uid" class="pt-3">
                 レビューを見るには、ログインする必要があります。
               </div>
-              <div v-show="uid && reviews" class="pt-3">
+              <div v-if="uid && reviews" class="pt-3">
                 <v-hover>
                   <v-card slot-scope="{ hover }" flat>
                     <v-card-actions>
@@ -525,7 +525,7 @@
                   </v-flex>
                 </div>
               </div>
-              <div v-show="uid && (reviews == null || reviews.length == 0)" class="pt-2">
+              <div v-if="uid && (reviews == null || reviews.length == 0)" class="pt-2">
                 まだレビューがありません
               </div>
             </div>
@@ -603,10 +603,10 @@
               <p class="title font-weight-bold textColor">
                 レビュー
               </p>
-              <div v-show="!uid">
+              <div v-if="!uid">
                 レビューを見るには、ログインが必要です。
               </div>
-              <div v-show="uid && reviews">
+              <div v-if="uid && reviews">
                 <v-hover>
                   <v-card slot-scope="{ hover }" flat>
                     <v-card-actions>
@@ -715,7 +715,7 @@
                   すべて見る
                 </div>
               </div>
-              <div v-show="uid && (reviews == null || reviews.length == 0)" class="pt-2">
+              <div v-if="uid && (reviews == null || reviews.length == 0)" class="pt-2">
                 まだレビューがありません
               </div>
             </div>

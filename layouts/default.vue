@@ -11,7 +11,8 @@
           path != '/' &&
           !path.includes('/messages') &&
           ( path == '/user/profile' || !path.includes('/user')) &&
-          !path.includes('/recruiter/')
+          !path.includes('/recruiter/') &&
+          routeName != 'companies-id-jobs'
         "
       ></footer-content>
       <v-footer
