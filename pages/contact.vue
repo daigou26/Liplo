@@ -110,7 +110,7 @@ export default {
     content: '',
     contentRules: [
       v => !!v || '名前を入力してください',
-      v => (v && v.length <= 500) || '500文字を超えています'
+      v => (v && v.length <= 1000) || '1000文字を超えています'
     ],
   }),
   computed: {

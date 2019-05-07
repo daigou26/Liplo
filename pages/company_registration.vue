@@ -40,15 +40,6 @@
                   justify-center
                 >
                   <v-flex xs12>
-                    <!-- Error Message -->
-                    <!-- <v-alert
-                      :value="authError != null"
-                      type="error"
-                      class="mb-5"
-                      outline
-                    >
-                      {{ authError }}
-                    </v-alert> -->
                     <!-- 企業名 -->
                     <v-text-field
                       v-model="companyName"

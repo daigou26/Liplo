@@ -824,12 +824,12 @@ export default {
     ],
     tempSelfIntro: '',
     selfIntroRules: [
-      v => (v.length <= 300) || '300字以内で入力してください'
+      v => (v.length <= 1000) || '1000字以内で入力してください'
     ],
     editSelfIntroValid: true,
     tempWhatWantToDo: '',
     whatWantToDoRules: [
-      v => (v.length <= 300) || '300字以内で入力してください'
+      v => (v.length <= 1000) || '1000字以内で入力してください'
     ],
     editWhatWantToDoValid: true,
     tempPortfolio: null,
@@ -840,15 +840,15 @@ export default {
     tempPortfolioImageFile: null,
     portfolioItemTitleRules: [
       v => !!v || 'タイトルを入力してください',
-      v => (v && v.length <= 20) || '20字以内で入力してください'
+      v => (v && v.length <= 50) || '50字以内で入力してください'
     ],
     portfolioItemContentRules: [
       v => !!v || '説明を入力してください',
-      v => (v && v.length <= 50) || '50字以内で入力してください'
+      v => (v && v.length <= 100) || '100字以内で入力してください'
     ],
     portfolioItemUrlRules: [
       v => !!v || 'URLを入力してください',
-      v => (v && v.length <= 50) || '50字以内で入力してください',
+      v => (v && v.length <= 100) || '100字以内で入力してください',
       v => (v.includes('http://') || v.includes('https://')) || '無効なURLです'
     ],
     editPortfolioValid: true,
@@ -863,11 +863,11 @@ export default {
     tempLinkUrl: '',
     linkTitleRules: [
       v => !!v || 'タイトルを入力してください',
-      v => (v && v.length <= 30) || '30字以内で入力してください'
+      v => (v && v.length <= 50) || '50字以内で入力してください'
     ],
     linkUrlRules: [
       v => !!v || 'URLを入力してください',
-      v => (v && v.length <= 100) || '100字以内で入力してください',
+      v => (v && v.length <= 200) || '200字以内で入力してください',
       v => (v.includes('http://') || v.includes('https://')) || '無効なURLです'
     ],
     editLinksValid: true,
