@@ -180,6 +180,9 @@ export const actions = {
   },
   async signOut({dispatch, commit}) {
     auth.signOut()
+    dispatch('jobs/resetState')
+    dispatch('job/resetState')
+    dispatch('company/resetState')
     dispatch('chats/resetMessagesListener')
     dispatch('chats/resetHasNewMessage')
     dispatch('notifications/resetNotificationsListener')
@@ -193,11 +196,16 @@ export const actions = {
     dispatch('messages/resetState')
     dispatch('profile/resetState')
     dispatch('review/resetState')
-    dispatch('reviews/resetState')
+    dispatch('reviews/resetCompanyReviewsState')
+    dispatch('reviews/resetUserReviewsState')
     dispatch('pass/resetState')
     dispatch('passes/resetState')
+    dispatch('companyJob/resetState')
     dispatch('companyJobs/resetState')
+    dispatch('companyProfile/resetState')
     dispatch('settings/resetState')
+    dispatch('users/resetState')
+    dispatch('user/resetState')
   },
   async changeEmail({dispatch, commit}, {type, newEmail, password}) {
     var user = auth.currentUser
@@ -287,6 +295,9 @@ export const actions = {
           // delete
           user.delete().then(function() {
             commit('resetLoading')
+            dispatch('jobs/resetState')
+            dispatch('job/resetState')
+            dispatch('company/resetState')
             dispatch('chats/resetMessagesListener')
             dispatch('chats/resetHasNewMessage')
             dispatch('notifications/resetNotificationsListener')
@@ -300,11 +311,17 @@ export const actions = {
             dispatch('messages/resetState')
             dispatch('profile/resetState')
             dispatch('review/resetState')
-            dispatch('reviews/resetState')
+            dispatch('reviews/resetCompanyReviewsState')
+            dispatch('reviews/resetUserReviewsState')
             dispatch('pass/resetState')
             dispatch('passes/resetState')
+            dispatch('companyJob/resetState')
             dispatch('companyJobs/resetState')
+            dispatch('companyProfile/resetState')
             dispatch('settings/resetState')
+            dispatch('users/resetState')
+            dispatch('user/resetState')
+            dispatch('jobs/resetToolbarExtension')
           }).catch(function(error) {
             console.error("Error adding document: ", error)
             commit('setAuthError', 'アカウントが削除できませんでした')
@@ -359,6 +376,7 @@ export const actions = {
     type,
     firstName,
     lastName,
+    birthDate,
     companyId,
     position
   }) {
@@ -448,12 +466,17 @@ export const actions = {
                   acceptScout: true,
                   isDeleted: false,
                 })
+                if (typeof birthDate == 'string') {
+                  var arr = birthDate.split('-')
+                  birthDate = new Date(arr[0], arr[1] - 1, arr[2]);
+                }
                 const profileRef = firestore.collection('users')
                   .doc(user.uid).collection('profile').doc(user.uid)
                 batch.set(profileRef, {
                   firstName: firstName,
                   lastName: lastName,
-                  email: user.email
+                  email: user.email,
+                  birthDate: birthDate,
                 })
                 const detailRef = firestore.collection('users')
                   .doc(user.uid).collection('detail').doc(user.uid)
@@ -463,6 +486,7 @@ export const actions = {
                   email: user.email,
                   isDeleted: false,
                   acceptScout: true,
+                  birthDate: birthDate,
                 })
                 batch.commit()
                   .then(() => {

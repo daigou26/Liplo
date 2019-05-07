@@ -30,12 +30,24 @@
           <v-spacer></v-spacer>
           <v-icon>sort</v-icon>
           <v-btn flat class="ma-0" @click="sortButtonClicked('recent')">
-            <span v-if="order == 'recent'" class="teal--text text--darken-1 font-weight-bold">新着順</span>
-            <span v-else class="textColor">新着順</span>
+            <span
+              :class="{
+                'teal--text text--darken-1 font-weight-bold': order == 'recent',
+                'textColor': order != 'recent',
+              }"
+            >
+              新着順
+            </span>
           </v-btn>
           <v-btn flat class="ma-0 pa-0" @click="sortButtonClicked('rating')">
-            <span v-if="order == 'rating'" class="teal--text text--darken-1 font-weight-bold">評価順</span>
-            <span v-else class="textColor">評価順</span>
+            <span
+              :class="{
+                'teal--text text--darken-1 font-weight-bold': order == 'rating',
+                'textColor': order != 'recent',
+              }"
+            >
+              評価順
+            </span>
           </v-btn>
         </v-card-actions>
       </v-flex>
@@ -59,7 +71,7 @@
                     <v-card flat :to='"jobs/" + job.jobId' class="clickable">
                       <v-img
                         :src="job.imageUrl"
-                        aspect-ratio="2.75"
+                        :aspect-ratio="imageRatio"
                       ></v-img>
                       <div
                         class="pt-3 px-4 text-xs-left caption textColor font-weight-bold"
@@ -100,7 +112,7 @@
                               class="textColor font-weight-bold"
                             >
                               {{ job.companyName }}
-                              <span v-if="hover" class="pl-2 caption green--text">企業情報を見る</span>
+                              <span v-show="hover" class="pl-2 caption green--text">企業情報を見る</span>
                             </v-list-tile-title>
                             <v-list-tile-sub-title v-if="job.rating">
                               <v-card-actions class="pa-0">
@@ -142,11 +154,10 @@
       </v-container>
       <!-- footer -->
       <v-footer
-        v-if="footer"
+        v-show="footer"
         class="shadow-top"
         id="footer"
         fixed
-        app
         color="white"
         height="300"
       >
@@ -221,6 +232,15 @@ export default {
     }
   },
   computed: {
+    imageRatio() {
+      switch (this.$vuetify.breakpoint.name) {
+        case 'xs': return '2'
+        case 'sm': return '2.5'
+        case 'md': return '3'
+        case 'lg': return '3'
+        case 'xl': return '3'
+      }
+    },
     breakpoint() {
       return this.$vuetify.breakpoint.name
     },
@@ -276,7 +296,6 @@ export default {
   watch: {
     isRefreshed(isRefreshed) {
       if (isRefreshed == true) {
-        console.log('isRefreshed');
         this.resetState()
         this.updateIsInitialLoading(true)
         this.updateIsLoading(true)
@@ -319,7 +338,7 @@ export default {
           this.count += 1
           this.updateIsLoading(true)
           this.queryJobs(this.$route.query)
-          if (this.count > 20) {
+          if (this.count > 100) {
             $state.complete()
           } else {
             $state.loaded()

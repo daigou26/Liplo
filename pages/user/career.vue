@@ -151,6 +151,7 @@ export default {
     this.windowHeight = window.innerHeight - toolbarHeight - 30
 
     if (this.uid != null && this.uid != '' && !this.isQueried) {
+      this.resetState()
       this.updateIsLoading(true)
       this.queryCareer(this.uid)
     }
@@ -162,6 +163,7 @@ export default {
     uid(uid) {
       if (uid != null && uid != '') {
         this.isQueried = true
+        this.resetState()
         this.updateIsLoading(true)
         this.queryCareer(uid)
       }
@@ -171,6 +173,7 @@ export default {
     ...mapActions({
       queryCareer: 'career/queryCareer',
       updateIsLoading: 'career/updateIsLoading',
+      resetState: 'career/resetState',
     }),
   }
 }

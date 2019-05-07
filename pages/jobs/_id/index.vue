@@ -300,14 +300,14 @@
               <div v-if="!uid" class="pt-3">
                 レビューを見るには、ログインする必要があります。
               </div>
-              <div v-else-if="reviews" class="pt-3">
+              <div v-if="uid && reviews" class="pt-3">
                 <v-hover>
                   <v-card slot-scope="{ hover }" flat>
                     <v-card-actions>
                       <v-icon style="font-size: 18px">info</v-icon>
                       <span class="light-text-color caption">ヒント（レビューの項目について）</span>
                     </v-card-actions>
-                    <v-card v-if="hover" flat class="caption pa-2">
+                    <v-card v-show="hover" flat class="caption pa-2">
                       <div>
                         <div class="textColor">
                           成長できるか：
@@ -525,7 +525,7 @@
                   </v-flex>
                 </div>
               </div>
-              <div v-else class="pt-2">
+              <div v-if="uid && (reviews == null || reviews.length == 0)" class="pt-2">
                 まだレビューがありません
               </div>
             </div>
@@ -606,14 +606,14 @@
               <div v-if="!uid">
                 レビューを見るには、ログインが必要です。
               </div>
-              <div v-else-if="reviews">
+              <div v-if="uid && reviews">
                 <v-hover>
                   <v-card slot-scope="{ hover }" flat>
                     <v-card-actions>
                       <v-icon style="font-size: 18px">info</v-icon>
                       <span class="light-text-color caption">ヒント（レビューの項目について）</span>
                     </v-card-actions>
-                    <v-card v-if="hover" flat class="caption pa-2">
+                    <v-card v-show="hover" flat class="caption pa-2">
                       <div>
                         <div class="textColor">
                           成長できるか：
@@ -715,7 +715,7 @@
                   すべて見る
                 </div>
               </div>
-              <div v-else class="pt-2">
+              <div v-if="uid && (reviews == null || reviews.length == 0)" class="pt-2">
                 まだレビューがありません
               </div>
             </div>
@@ -826,7 +826,7 @@
           width="500"
         >
           <!-- レビュー -->
-          <v-card v-if="!otherReviewsDialog" class="py-3 px-3">
+          <v-card v-show="!otherReviewsDialog" class="py-3 px-3">
             <v-toolbar flat color="white">
               <v-toolbar-side-icon
                 @click="reviewsDialog=false"
@@ -897,14 +897,14 @@
               </v-container>
             </v-flex>
           </v-card>
-          <v-card v-else class="py-3 px-3">
+          <v-card v-show="otherReviewsDialog" class="py-3 px-3">
             <v-toolbar flat color="white">
               <v-toolbar-side-icon
                 @click="otherReviewsDialog=false"
                 class="ml-2"
               >
-                <v-icon v-if="reviewsDialog">arrow_back</v-icon>
-                <v-icon v-else>close</v-icon>
+                <v-icon v-show="reviewsDialog">arrow_back</v-icon>
+                <v-icon v-show="!reviewsDialog">close</v-icon>
               </v-toolbar-side-icon>
               <v-toolbar-title class="font-weight-bold textColor">
                 このユーザーが記入したレビュー
@@ -1162,6 +1162,7 @@ export default {
   },
   fetch(context) {
     const store = context.store
+    store.dispatch('job/resetState')
     store.dispatch('job/updateIsLoading', true)
     // query job
     store.dispatch('job/queryJobDetail', {nuxt: context, params: context.params, uid: store.state.uid})
@@ -1169,6 +1170,7 @@ export default {
   watch: {
     uid(uid) {
       if (uid != '') {
+        this.resetJobState()
         this.updateIsLoading(true)
         this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: uid})
       }
@@ -1186,7 +1188,7 @@ export default {
           this.count += 1
           this.updateIsReviewsLoading(true)
           this.queryCompanyReviews(this.companyId)
-          if (this.count > 20) {
+          if (this.count > 50) {
             $state.complete()
           } else {
             $state.loaded()
@@ -1248,6 +1250,7 @@ export default {
       queryJobDetail: 'job/queryJobDetail',
       apply: 'job/apply',
       updateIsLoading: 'job/updateIsLoading',
+      resetJobState: 'job/resetState',
       queryCompanyReviews: 'reviews/queryCompanyReviews',
       updateIsReviewsLoading: 'reviews/updateIsCompanyReviewsLoading',
       resetReviewsState: 'reviews/resetCompanyReviewsState',

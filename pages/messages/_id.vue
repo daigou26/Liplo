@@ -86,7 +86,7 @@
                     <v-list-tile-sub-title >{{ chat.lastMessage }}</v-list-tile-sub-title>
                   </v-list-tile-content>
                   <v-list-tile-action class="pt-3" style="padding-bottom: 12px;">
-                    <v-list-tile-action-text>{{ chat.updatedAt }}</v-list-tile-action-text>
+                    <v-list-tile-action-text>{{ chat.timestamp }}</v-list-tile-action-text>
                     <v-avatar
                       v-show="chat.userUnreadCount && chat.userUnreadCount != 0"
                       size="24"
@@ -259,7 +259,7 @@
                     <v-list-tile-sub-title >{{ chat.lastMessage }}</v-list-tile-sub-title>
                   </v-list-tile-content>
                   <v-list-tile-action class="pt-3" style="padding-bottom: 12px;">
-                    <v-list-tile-action-text>{{ chat.updatedAt }}</v-list-tile-action-text>
+                    <v-list-tile-action-text>{{ chat.timestamp }}</v-list-tile-action-text>
                     <v-avatar
                       v-show="chat.userUnreadCount && chat.userUnreadCount != 0"
                       size="24"
@@ -389,7 +389,8 @@ export default {
     showInfiniteLoading: false,
     windowHeight: 0,
     messagesHeight: 0,
-    count: 0,
+    chatsCount: 0,
+    messagesCount: 0,
   }),
   computed: {
     params() {
@@ -559,11 +560,11 @@ export default {
     chatsInfiniteHandler($state) {
       if (!this.allChatsQueried) {
         if (!this.isChatsLoading && this.uid != null) {
-          this.count += 1
+          this.chatsCount += 1
           this.updateIsChatsLoading(true)
           this.queryChats({uid: this.uid, companyId: null, chats: this.chats})
 
-          if (this.count > 20) {
+          if (this.chatsCount > 50) {
             $state.complete()
           } else {
             $state.loaded()
@@ -576,11 +577,11 @@ export default {
     messagesInfiniteHandler($state) {
       if (!this.allMessagesQueried) {
         if (!this.isMessagesLoading && this.uid != null) {
-          this.count += 1
+          this.messagesCount += 1
           this.updateIsMessagesLoading(true)
           this.queryMessages({params: this.params, infiniteState: $state})
 
-          if (this.count > 20) {
+          if (this.messagesCount > 50) {
             $state.complete()
           }
         }

@@ -1,11 +1,5 @@
 <template>
   <v-flex
-    v-if="
-      path != '/' &&
-      !path.includes('/messages') &&
-      ( path == '/user/profile' || !path.includes('/user')) &&
-      !path.includes('/recruiter/')
-    "
     xs12
     pt-3
   >

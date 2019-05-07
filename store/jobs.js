@@ -175,7 +175,7 @@ export const actions = {
     }
 
     if (jobs.length == 0) {
-      jobsRef.limit(10)
+      jobsRef.limit(20)
         .get()
         .then(function(snapshot) {
           var docCount = 0
@@ -239,7 +239,7 @@ export const actions = {
       const lastDate = jobs[lastIndex].createdAt
 
       jobsRef.startAfter(lastDate)
-        .limit(10)
+        .limit(20)
         .get()
         .then(function(snapshot) {
           var docCount = 0
@@ -282,6 +282,135 @@ export const actions = {
               period: doc.data()['period'],
               workday: doc.data()['workday'],
               rating: doc.data()['rating'],
+              createdAt: doc.data()['createdAt'],
+              timestamp: timestamp,
+            }
+            commit('addJob', job)
+          })
+          if (docCount == 0) {
+            commit('setAllJobsQueried', true)
+          }
+          commit('updateIsLoading', false)
+        })
+        .catch(function(error) {
+          commit('updateIsLoading', false)
+          console.log("Error getting document:", error);
+        })
+    }
+  },
+  queryCompanyJobs({commit, state}, companyId) {
+    const jobs = state.jobs
+
+    if (jobs == null || jobs.length == 0) {
+      firestore.collection('jobs')
+        .where('companyId', '==', companyId)
+        .orderBy('createdAt', 'desc')
+        .limit(20)
+        .get()
+        .then(function(snapshot) {
+          var docCount = 0
+          snapshot.forEach(function(doc) {
+            docCount += 1
+
+            let createdAt = new Date( doc.data()['createdAt'].seconds * 1000 )
+            let currentDate = new Date()
+
+            var timestamp = Math.floor((currentDate - createdAt) / 3600000)
+            if (timestamp < 24) {
+              if (timestamp <= 1) {
+                timestamp = '1時間以内'
+              } else {
+                timestamp = String(timestamp) + '時間前'
+              }
+            } else {
+              timestamp = Math.floor((currentDate - createdAt) / 86400000)
+              if (timestamp < 31) {
+                timestamp = String(timestamp) + '日前'
+              } else {
+                timestamp = Math.floor((currentDate - createdAt) / (86400000 * 31))
+                if (timestamp <= 11) {
+                  timestamp = String(timestamp) + 'ヶ月前'
+                } else {
+                  timestamp = '1年以上前'
+                }
+              }
+            }
+
+            const job = {
+              jobId: doc.id,
+              title: doc.data()['title'],
+              content: doc.data()['content'],
+              imageUrl: doc.data()['imageUrl'],
+              companyId: doc.data()['companyId'],
+              companyName: doc.data()['companyName'],
+              companyImageUrl: doc.data()['companyImageUrl'],
+              occupation: doc.data()['occupation'],
+              period: doc.data()['period'],
+              createdAt: doc.data()['createdAt'],
+              timestamp: timestamp
+            }
+            commit('addJob', job)
+          })
+          if (docCount == 0) {
+            commit('setAllJobsQueried', true)
+          }
+          commit('updateIsInitialLoading', false)
+          commit('updateIsLoading', false)
+        })
+        .catch(function(error) {
+          commit('updateIsInitialLoading', false)
+          commit('updateIsLoading', false)
+          console.log("Error getting document:", error);
+        })
+    } else if (jobs.length != 0) {
+      const lastIndex = jobs.length - 1
+      const lastDate = jobs[lastIndex].createdAt
+
+      firestore.collection('jobs')
+        .where('companyId', '==', companyId)
+        .orderBy('createdAt', 'desc')
+        .startAfter(lastDate)
+        .limit(20)
+        .get()
+        .then(function(snapshot) {
+          var docCount = 0
+          snapshot.forEach(function(doc) {
+            docCount += 1
+
+            let createdAt = new Date( doc.data()['createdAt'].seconds * 1000 )
+            let currentDate = new Date()
+
+            var timestamp = Math.floor((currentDate - createdAt) / 3600000)
+            if (timestamp < 24) {
+              if (timestamp <= 1) {
+                timestamp = '1時間以内'
+              } else {
+                timestamp = String(timestamp) + '時間前'
+              }
+            } else {
+              timestamp = Math.floor((currentDate - createdAt) / 86400000)
+              if (timestamp < 31) {
+                timestamp = String(timestamp) + '日前'
+              } else {
+                timestamp = Math.floor((currentDate - createdAt) / (86400000 * 31))
+                if (timestamp <= 11) {
+                  timestamp = String(timestamp) + 'ヶ月前'
+                } else {
+                  timestamp = '1年以上前'
+                }
+              }
+            }
+
+            const job = {
+              jobId: doc.id,
+              title: doc.data()['title'],
+              content: doc.data()['content'],
+              imageUrl: doc.data()['imageUrl'],
+              companyId: doc.data()['companyId'],
+              companyName: doc.data()['companyName'],
+              companyImageUrl: doc.data()['companyImageUrl'],
+              occupation: doc.data()['occupation'],
+              period: doc.data()['period'],
               createdAt: doc.data()['createdAt'],
               timestamp: timestamp,
             }
@@ -349,5 +478,18 @@ export const actions = {
     commit('updateIsInitialLoading', false)
     commit('updateIsLoading', false)
     commit('setAllJobsQueried', false)
+    commit('updateEngineer', false)
+    commit('updateDesigner', false)
+    commit('updateSales', false)
+    commit('updateOthers', false)
+    commit('updateExperience', false)
+    commit('updateFunding', false)
+    commit('updateFounder20s', false)
+    commit('updateMedia', false)
+    commit('updateFriend', false)
+    commit('updateOverseas', false)
+    commit('updateWeekend', false)
+    commit('setWorkweek', null)
+    commit('setOrder', null)
   },
 }

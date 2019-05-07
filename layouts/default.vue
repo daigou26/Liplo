@@ -6,7 +6,15 @@
       <v-container fluid pa-0>
         <nuxt />
       </v-container>
-      <footer-content></footer-content>
+      <footer-content
+        v-if="
+          path != '/' &&
+          !path.includes('/messages') &&
+          ( path == '/user/profile' || !path.includes('/user')) &&
+          !path.includes('/recruiter/') &&
+          routeName != 'companies-id-jobs'
+        "
+      ></footer-content>
       <v-footer
         v-if="
           uid &&
@@ -158,6 +166,9 @@ export default {
   -moz-border-radius: 15px;
 }
 #footer a{
+  text-decoration: none;
+}
+.link-text {
   text-decoration: none;
 }
 .toolbar-title {

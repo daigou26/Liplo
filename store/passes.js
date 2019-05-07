@@ -89,19 +89,19 @@ export const actions = {
       firestore.collection('passes')
         .where('uid', '==', uid)
         .where('isContracted', '==', false)
-        .orderBy('expirationDate', 'asc')
+        .orderBy('createdAt', 'desc')
         .limit(10)
         .get()
         .then(function(snapshot) {
           var docCount = 0
           snapshot.forEach(function(doc) {
-            let expirationDate = doc.data()['expirationDate']
-            if (expirationDate) {
-              let date = new Date( expirationDate.seconds * 1000 )
+            let timestamp = doc.data()['expirationDate']
+            if (timestamp) {
+              let date = new Date( timestamp.seconds * 1000 )
               let year  = date.getFullYear()
               let month = date.getMonth() + 1
               let day  = date.getDate()
-              expirationDate = `${year}/${month}/${day}`
+              timestamp = `${year}/${month}/${day}`
             }
 
             docCount += 1
@@ -110,13 +110,15 @@ export const actions = {
               companyImageUrl: doc.data()['companyImageUrl'],
               companyName: doc.data()['companyName'],
               occupation: doc.data()['occupation'],
-              expirationDate: expirationDate,
               isAccepted: doc.data()['isAccepted'],
               isContracted: doc.data()['isContracted'],
-              isValid: doc.data()['isValid']
+              isValid: doc.data()['isValid'],
+              createdAt: doc.data()['createdAt'],
+              expirationDate: doc.data()['expirationDate'],
+              timestamp: timestamp,
             }
-            const currentDate = new Date()
-            if (doc.data()['expirationDate'].seconds < currentDate.seconds) {
+            const currentDate = Math.round(new Date() / 1000)
+            if (doc.data()['expirationDate'].seconds < currentDate) {
               pass.isExpired = true
             } else {
               pass.isExpired = false
@@ -148,20 +150,20 @@ export const actions = {
       firestore.collection('passes')
         .where('uid', '==', uid)
         .where('isContracted', '==', false)
-        .orderBy('expirationDate', 'asc')
+        .orderBy('createdAt', 'desc')
         .startAfter(lastDate)
         .limit(10)
         .get()
         .then(function(snapshot) {
           var docCount = 0
           snapshot.forEach(function(doc) {
-            let expirationDate = doc.data()['expirationDate']
-            if (expirationDate) {
-              let date = new Date( expirationDate.seconds * 1000 )
+            let timestamp = doc.data()['expirationDate']
+            if (timestamp) {
+              let date = new Date( timestamp.seconds * 1000 )
               let year  = date.getFullYear()
               let month = date.getMonth() + 1
               let day  = date.getDate()
-              expirationDate = `${year}/${month}/${day}`
+              timestamp = `${year}/${month}/${day}`
             }
 
             docCount += 1
@@ -170,13 +172,15 @@ export const actions = {
               companyImageUrl: doc.data()['companyImageUrl'],
               companyName: doc.data()['companyName'],
               occupation: doc.data()['occupation'],
-              expirationDate: expirationDate,
               isAccepted: doc.data()['isAccepted'],
               isContracted: doc.data()['isContracted'],
-              isValid: doc.data()['isValid']
+              isValid: doc.data()['isValid'],
+              createdAt: doc.data()['createdAt'],
+              expirationDate: doc.data()['expirationDate'],
+              timestamp: timestamp,
             }
-            const currentDate = new Date()
-            if (doc.data()['expirationDate'].seconds < currentDate.seconds) {
+            const currentDate = Math.round(new Date() / 1000)
+            if (doc.data()['expirationDate'].seconds < currentDate) {
               pass.isExpired = true
             } else {
               pass.isExpired = false

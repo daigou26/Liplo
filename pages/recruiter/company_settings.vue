@@ -149,21 +149,17 @@ export default {
       type: state => state.profile.type,
       companyId: state => state.profile.companyId,
       currentEmail: state => state.profile.email,
-      isLoading: state => state.settings.isLoading,
       invoiceEmail: state => state.company.invoiceEmail,
-      isLoading: state => state.company.isLoading,
     }),
   },
   mounted() {
     if (this.companyId != null && !this.isQueried) {
-      this.updateIsLoading(true)
       this.queryCompanyInvoiceEmail(this.companyId)
     }
   },
   watch: {
     companyId(companyId) {
       if (companyId) {
-        this.updateIsLoading(true)
         this.queryCompanyInvoiceEmail(companyId)
       }
     },
@@ -178,7 +174,6 @@ export default {
     ...mapActions({
       queryCompanyInvoiceEmail: 'company/queryCompanyInvoiceEmail',
       updateInvoiceEmail: 'company/updateCompanyInvoiceEmail',
-      updateIsLoading: 'company/updateIsLoading',
     }),
   }
 }

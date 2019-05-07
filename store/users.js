@@ -180,11 +180,6 @@ export const actions = {
   resetUsers({commit}) {
     commit('resetUsers')
   },
-  resetState({commit}) {
-    commit('resetUsers')
-    commit('updateIsLoading', false)
-    commit('resetAllUsersQueried')
-  },
   setFilter({commit}, queryParams) {
     const occupationParams = queryParams.occupation
     if (occupationParams != null) {
@@ -199,5 +194,10 @@ export const actions = {
   },
   resetToolbarExtension({commit}) {
     commit('resetToolbarExtension')
+  },
+  resetState({commit}) {
+    commit('resetUsers')
+    commit('updateIsLoading', false)
+    commit('resetAllUsersQueried')
   },
 }

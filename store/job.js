@@ -25,8 +25,8 @@ export const state = () => ({
   period: null,
   workday: 0,
   idealCandidate: '',
-  occupation: '',
-  features: '',
+  occupation: null,
+  features: null,
   field: '',
   createdAt: '',
   url :'',
@@ -161,8 +161,8 @@ export const actions = {
       firestore.collection('jobs').doc(jobId).collection('detail').doc(jobId).get()
         .then(function(doc) {
           if (doc.exists) {
-            var isQueriedCompanyDetail = false
-            var isQueriedCandidates = false
+            var isCompanyDetailQueried = false
+            var isCandidateQueried = false
             const companyId = doc.data()['companyId']
 
             // 投稿日
@@ -263,9 +263,9 @@ export const actions = {
                         commit('setReviewChartData', reviewChartData)
                       }
 
-                      isQueriedCompanyDetail = true
+                      isCompanyDetailQueried = true
                       if (uid) {
-                        if (isQueriedCandidates && isQueriedCompanyDetail) {
+                        if (isCandidateQueried && isCompanyDetailQueried) {
                           commit('updateIsLoading', false)
                         }
                       } else {
@@ -275,8 +275,8 @@ export const actions = {
                   })
                   .catch(function(error) {
                     console.log("Error getting document:", error)
-                    isQueriedCompanyDetail = true
-                    if (isQueriedCandidates && isQueriedCompanyDetail) {
+                    isCompanyDetailQueried = true
+                    if (isCandidateQueried && isCompanyDetailQueried) {
                       commit('updateIsLoading', false)
                     }
                   })
@@ -294,15 +294,15 @@ export const actions = {
                       commit('updateIsCandidate', true)
                     }
 
-                    isQueriedCandidates = true
-                    if (isQueriedCandidates && isQueriedCompanyDetail) {
+                    isCandidateQueried = true
+                    if (isCandidateQueried && isCompanyDetailQueried) {
                       commit('updateIsLoading', false)
                     }
                   })
                   .catch(function(error) {
                     console.log("Error getting document:", error)
-                    isQueriedCandidates = true
-                    if (isQueriedCandidates && isQueriedCompanyDetail) {
+                    isCandidateQueried = true
+                    if (isCandidateQueried && isCompanyDetailQueried) {
                       commit('updateIsLoading', false)
                     }
                   })
@@ -365,4 +365,42 @@ export const actions = {
         console.error("Error adding document: ", error)
       })
   },
+  resetState({commit}) {
+    commit('setImageUrl', '')
+    commit('setTitle', '')
+    commit('setCompanyId', '')
+    commit('setCompanyName', '')
+    commit('setCompanyImageUrl', '')
+    commit('setLocation', '')
+    commit('setFoundedDate', '')
+    commit('setUrl', '')
+    commit('setEmployeesCount', null)
+    commit('setMission', null)
+    commit('setVision', null)
+    commit('setValue', null)
+    commit('setCulture', null)
+    commit('setSystem', null)
+    commit('setWhy', '')
+    commit('setWhat', '')
+    commit('setServices', null)
+    commit('setWelfare', null)
+    commit('setDescription', '')
+    commit('setWage', '')
+    commit('setRequiredSkills', '')
+    commit('setIdealSkills', '')
+    commit('setEnvironment', '')
+    commit('setWelfare', '')
+    commit('setWorkweek', null)
+    commit('setPeriod', null)
+    commit('setWorkday', 0)
+    commit('setIdealCandidate', '')
+    commit('setOccupation', null)
+    commit('setFeatures', null)
+    commit('setCreatedAt', '')
+    commit('setFeedback', null)
+    commit('setReviews', null)
+    commit('setReviewChartData', null)
+    commit('updateIsCandidate', false)
+    commit('updateIsLoading', false)
+  }
 }

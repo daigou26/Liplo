@@ -52,7 +52,7 @@
                   </v-btn>
                 </v-card-actions>
                 <!-- ProfileImage編集 -->
-                <div v-if="isEditingProfileImage">
+                <div v-show="isEditingProfileImage">
                   <v-dialog
                     :value="isEditingProfileImage"
                     :fullscreen="$vuetify.breakpoint.xsOnly"
@@ -78,7 +78,7 @@
                           </v-avatar>
                         </div>
                         <input type="file" v-on:change="onFileChange">
-                        <p v-if="!imageFileSizeValid" class="warning-text-color">
+                        <p v-show="!imageFileSizeValid" class="warning-text-color">
                           {{ imageFileSizeWarning }}
                         </p>
                       </v-flex>
@@ -104,7 +104,7 @@
                   </v-dialog>
                 </div>
                 <!-- UserName編集 -->
-                <v-form v-if="isEditingUserName" v-model="editUserNameValid">
+                <v-form v-show="isEditingUserName" v-model="editUserNameValid">
                   <v-dialog
                     :value="isEditingUserName"
                     :fullscreen="$vuetify.breakpoint.xsOnly"
@@ -238,7 +238,7 @@
                       </v-chip>
                     </div>
                     <!-- 志望する職種の編集画面 -->
-                    <div v-if="isEditingDesiredOccupations">
+                    <div v-show="isEditingDesiredOccupations">
                       <v-select
                         v-model="tempDesiredOccupations"
                         :items="desiredOccupationsItems"
@@ -287,11 +287,11 @@
                   </v-flex>
                   <v-flex xs12 sm10 class="break">
                     <!-- 自己紹介の表示 -->
-                    <v-card-text v-if="!isEditingSelfIntro">
+                    <v-card-text v-show="!isEditingSelfIntro">
                       <p class="return">{{ selfIntro }}</p>
                     </v-card-text>
                     <!-- 自己紹介の編集画面 -->
-                    <div v-else>
+                    <div v-show="isEditingSelfIntro">
                       <v-form v-model="editSelfIntroValid">
                         <v-textarea
                           solo
@@ -341,11 +341,11 @@
                   </v-flex>
                   <v-flex xs12 sm10 class="break">
                     <!-- やりたいことの表示 -->
-                    <v-card-text v-if="!isEditingWhatWantToDo">
+                    <v-card-text v-show="!isEditingWhatWantToDo">
                       <p class="return">{{ whatWantToDo }}</p>
                     </v-card-text>
                     <!-- やりたいことの編集画面 -->
-                    <div v-else>
+                    <div v-show="isEditingWhatWantToDo">
                       <v-form v-model="editWhatWantToDoValid">
                         <v-textarea
                           solo
@@ -395,7 +395,7 @@
                   </v-flex>
                   <v-flex xs12 sm10>
                     <!-- ポートフォリオ表示 -->
-                    <v-list v-if="!isEditingPortfolio && this.portfolio != null" class="pl-4">
+                    <v-list v-show="!isEditingPortfolio && this.portfolio != null" class="pl-4">
                       <template v-for="(item, index) in this.portfolio">
                           <div class="d-flex pb-3">
                             <v-flex xs4 sm3 lg2>
@@ -422,7 +422,7 @@
                       </template>
                     </v-list>
                     <!-- ポートフォリオ編集画面 -->
-                    <div v-if="isEditingPortfolio">
+                    <div v-show="isEditingPortfolio">
                       <v-form v-model="editPortfolioValid">
                         <div class="d-flex pb-3">
                           <v-flex xs8 sm9 lg10 class="px-4 break">
@@ -460,7 +460,7 @@
                               キャンセル
                             </v-btn>
                             <v-btn
-                              v-if="selectedPortfolioItemIndex != null"
+                              v-show="selectedPortfolioItemIndex != null"
                               @click="deletePortfolioItem({
                                 uid: uid,
                                 selectedIndex: selectedPortfolioItemIndex,
@@ -527,7 +527,7 @@
                       </template>
                     </v-list>
                     <!-- スキルの編集画面 -->
-                    <div v-if="isEditingSkills">
+                    <div v-show="isEditingSkills">
                       <v-form v-model="editSkillsValid">
                         <div class="d-flex pb-3">
                           <v-flex xs12 class="px-4 break">
@@ -618,7 +618,7 @@
                       </template>
                     </v-list>
                     <!-- 関連リンクの編集画面 -->
-                    <div v-if="isEditingLinks">
+                    <div v-show="isEditingLinks">
                       <v-form v-model="editLinksValid">
                         <div class="d-flex pb-3">
                           <v-flex xs8 sm9 lg10 class="px-4 break">
@@ -642,7 +642,7 @@
                               キャンセル
                             </v-btn>
                             <v-btn
-                              v-if="selectedLinkIndex != null"
+                              v-show="selectedLinkIndex != null"
                               @click="deleteLink({
                                 uid: uid,
                                 selectedIndex: selectedLinkIndex,
@@ -696,7 +696,7 @@
                   </v-flex>
                   <v-flex xs12 sm10 class="break">
                     <!-- 基本情報の表示 -->
-                    <v-list v-if="!isEditingUserInfo" class="pl-4">
+                    <v-list v-show="!isEditingUserInfo" class="pl-4">
                       <div class="pb-2">
                         <span>大学:</span>
                         <span class="pl-2">{{ university }}</span>
@@ -715,7 +715,7 @@
                       </div>
                     </v-list>
                     <!-- 基本情報の編集画面 -->
-                    <div v-else>
+                    <div v-show="isEditingUserInfo">
                       <v-form v-model="editUserInfoValid">
                         <v-text-field
                           solo
@@ -795,7 +795,6 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex'
-import { firestore, auth, storage, storageRef } from '@/plugins/firebase'
 
 export default {
   data: () => ({
@@ -825,12 +824,12 @@ export default {
     ],
     tempSelfIntro: '',
     selfIntroRules: [
-      v => (v.length <= 300) || '300字以内で入力してください'
+      v => (v.length <= 1000) || '1000字以内で入力してください'
     ],
     editSelfIntroValid: true,
     tempWhatWantToDo: '',
     whatWantToDoRules: [
-      v => (v.length <= 300) || '300字以内で入力してください'
+      v => (v.length <= 1000) || '1000字以内で入力してください'
     ],
     editWhatWantToDoValid: true,
     tempPortfolio: null,
@@ -841,15 +840,15 @@ export default {
     tempPortfolioImageFile: null,
     portfolioItemTitleRules: [
       v => !!v || 'タイトルを入力してください',
-      v => (v && v.length <= 20) || '20字以内で入力してください'
+      v => (v && v.length <= 50) || '50字以内で入力してください'
     ],
     portfolioItemContentRules: [
       v => !!v || '説明を入力してください',
-      v => (v && v.length <= 50) || '50字以内で入力してください'
+      v => (v && v.length <= 100) || '100字以内で入力してください'
     ],
     portfolioItemUrlRules: [
       v => !!v || 'URLを入力してください',
-      v => (v && v.length <= 50) || '50字以内で入力してください',
+      v => (v && v.length <= 100) || '100字以内で入力してください',
       v => (v.includes('http://') || v.includes('https://')) || '無効なURLです'
     ],
     editPortfolioValid: true,
@@ -864,11 +863,11 @@ export default {
     tempLinkUrl: '',
     linkTitleRules: [
       v => !!v || 'タイトルを入力してください',
-      v => (v && v.length <= 30) || '30字以内で入力してください'
+      v => (v && v.length <= 50) || '50字以内で入力してください'
     ],
     linkUrlRules: [
       v => !!v || 'URLを入力してください',
-      v => (v && v.length <= 100) || '100字以内で入力してください',
+      v => (v && v.length <= 200) || '200字以内で入力してください',
       v => (v.includes('http://') || v.includes('https://')) || '無効なURLです'
     ],
     editLinksValid: true,
@@ -925,7 +924,7 @@ export default {
       return this.lastName + ' ' + this.firstName
     },
     birthDate: function() {
-      const date = new Date( this.birthTimestamp * 1000 )
+      const date = new Date( this.birthTimestamp.seconds * 1000 )
       const year  = date.getFullYear()
       const month = date.getMonth() + 1
       const day  = date.getDate()
@@ -977,6 +976,7 @@ export default {
     this.windowHeight = window.innerHeight - toolbarHeight - 30
 
     if (this.uid != null && this.uid != '' && !this.isQueried) {
+      this.resetState()
       this.updateIsLoading(true)
       this.queryProfile(this.uid)
     }
@@ -985,6 +985,7 @@ export default {
     uid(uid) {
       if (uid != null && uid != '') {
         this.isQueried = true
+        this.resetState()
         this.updateIsLoading(true)
         this.queryProfile(uid)
       }
@@ -1134,6 +1135,7 @@ export default {
       deleteLink: 'profile/deleteLink',
       updateIsEditingUserInfo: 'profile/updateIsEditingUserInfo',
       updateUserInfo: 'profile/updateUserInfo',
+      resetState: 'profile/resetProfileState',
     }),
   }
 }

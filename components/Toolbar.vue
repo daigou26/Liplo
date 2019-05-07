@@ -185,7 +185,7 @@
                 <v-list-tile to="/recruiter/notifications" class="hidden-sm-and-up">
                   <v-list-tile-title>通知</v-list-tile-title>
                 </v-list-tile>
-                <v-divider></v-divider>
+                <v-divider class="hidden-sm-and-up"></v-divider>
                 <v-list-tile to="/user/settings/notifications">
                   <v-list-tile-title>設定</v-list-tile-title>
                 </v-list-tile>
@@ -448,8 +448,8 @@
                     :class="{'px-2': $vuetify.breakpoint.smAndUp, 'px-3 mt-4': $vuetify.breakpoint.xsOnly}"
                   >
                     <!-- ログインフォーム -->
-                    <div v-if="signInDialog">
-                      <v-form v-model="valid">
+                    <div v-show="signInDialog">
+                      <v-form v-model="signInValid">
                         <v-container>
                           <v-layout
                             column
@@ -489,7 +489,7 @@
                             <!-- ログインボタン -->
                             <v-btn
                               block
-                              :disabled="!valid || loading"
+                              :disabled="!signInValid || loading"
                               class="orange darken-1"
                               @click="signIn"
                             >
@@ -505,8 +505,8 @@
                       </v-form>
                     </div>
                     <!-- 登録フォーム -->
-                    <div v-else-if="signUpForm">
-                      <v-form v-model="valid">
+                    <div v-show="!signInDialog && signUpForm">
+                      <v-form v-model="signUpValid">
                         <v-container>
                           <v-layout
                             column
@@ -549,6 +549,35 @@
                                 solo
                                 required
                               ></v-text-field>
+                              <!-- 生年月日 -->
+                              <v-menu
+                                ref="birthDateMenu"
+                                v-model="birthDateMenu"
+                                :close-on-content-click="false"
+                                :nudge-right="40"
+                                :return-value.sync="birthDate"
+                                lazy
+                                transition="scale-transition"
+                                offset-y
+                                full-width
+                                min-width="290px"
+                              >
+                                <template v-slot:activator="{ on }">
+                                  <v-text-field
+                                    v-model="birthDate"
+                                    label="生年月日"
+                                    append-icon="event"
+                                    solo
+                                    readonly
+                                    v-on="on"
+                                  ></v-text-field>
+                                </template>
+                                <v-date-picker v-model="birthDate" color="teal" locale="ja">
+                                  <v-spacer></v-spacer>
+                                  <v-btn flat color="teal" @click="birthDateMenu = false">Cancel</v-btn>
+                                  <v-btn flat color="teal" @click="$refs.birthDateMenu.save(birthDate)">OK</v-btn>
+                                </v-date-picker>
+                              </v-menu>
                               <!-- パスワード -->
                               <v-text-field
                                 v-model="password"
@@ -564,7 +593,7 @@
                             <!-- 登録ボタン -->
                             <v-btn
                               block
-                              :disabled="!valid || loading"
+                              :disabled="!signUpValid || loading || birthDate == null"
                               class="orange darken-1"
                               @click="signUp"
                             >
@@ -580,11 +609,13 @@
                       </v-form>
                     </div>
                     <!-- 登録方法 -->
-                    <div v-else>
+                    <div v-show="!signInDialog && !signUpForm">
                       <!-- メールアドレス登録 -->
                       <v-btn
                         block
-                        color="primary"
+                        color="teal"
+                        class="my-3 mb-5"
+                        style="color: white;"
                         @click="signUpForm=true"
                       >
                         <v-icon>mail_outline</v-icon>
@@ -596,21 +627,21 @@
                   <v-divider class="mt-4"></v-divider>
                   <!-- アカウントを持っている場合はログイン画面へ -->
                   <v-flex xs12 class="text-xs-center px-2">
-                    <div v-if="signInDialog">
+                    <div v-show="signInDialog">
                       <span>アカウントをお持ちでない方は</span>
                       <v-btn
                         flat
-                        color="primary"
+                        color="teal"
                         @click="signUpButtonClicked"
                       >
                         <span>登録</span>
                       </v-btn>
                     </div>
-                    <div v-else>
+                    <div v-show="!signInDialog">
                       <span>アカウントをお持ちの方は</span>
                       <v-btn
                         flat
-                        color="primary"
+                        color="teal"
                         @click="signInButtonClicked"
                       >
                         <span>ログイン</span>
@@ -618,7 +649,6 @@
                     </div>
                   </v-flex>
                 </v-card>
-
               </v-dialog>
             </div>
           </div>
@@ -738,7 +768,8 @@ export default {
     signUpForm: false,
     signInDialog: false,
     dropdownMenu: false,
-    valid: true,
+    signInValid: true,
+    signUpValid: true,
     recruiterSignUpDialog: false,
     recruiterSignUpValid: true,
     firstName: '',
@@ -756,6 +787,8 @@ export default {
       v => !!v || 'メールアドレスを入力してください',
       v => /.+@.+/.test(v) || '無効なメールアドレスです'
     ],
+    birthDate: null,
+    birthDateMenu: false,
     passwordShow: false,
     password: '',
     passwordRules: [
@@ -823,6 +856,7 @@ export default {
         type: this.userType,
         firstName: this.firstName,
         lastName: this.lastName,
+        birthDate: this.birthDate,
         companyId: this.query.id,
         position: this.position,
       })

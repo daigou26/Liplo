@@ -668,7 +668,6 @@ export const actions = {
     commit('updateIsEditingCompanyInfo', false)
     commit('setWorkday', 0)
     commit('setFeatures', '')
-    commit('setField', '')
     commit('setAddMemberError', '')
     commit('updateAddMemberLoading', false)
   },

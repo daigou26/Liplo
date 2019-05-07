@@ -67,6 +67,7 @@ export const actions = {
 
             const review = {
               reviewId: doc.id,
+              uid: doc.data()['uid'],
               all: doc.data()['all'],
               content: doc.data()['content'],
               occupation: doc.data()['occupation'],
@@ -115,6 +116,7 @@ export const actions = {
 
             const review = {
               reviewId: doc.id,
+              uid: doc.data()['uid'],
               all: doc.data()['all'],
               content: doc.data()['content'],
               occupation: doc.data()['occupation'],
