@@ -1162,6 +1162,7 @@ export default {
   },
   fetch(context) {
     const store = context.store
+    store.dispatch('job/resetState')
     store.dispatch('job/updateIsLoading', true)
     // query job
     store.dispatch('job/queryJobDetail', {nuxt: context, params: context.params, uid: store.state.uid})
@@ -1169,6 +1170,7 @@ export default {
   watch: {
     uid(uid) {
       if (uid != '') {
+        this.resetJobState()
         this.updateIsLoading(true)
         this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: uid})
       }
@@ -1248,6 +1250,7 @@ export default {
       queryJobDetail: 'job/queryJobDetail',
       apply: 'job/apply',
       updateIsLoading: 'job/updateIsLoading',
+      resetJobState: 'job/resetState',
       queryCompanyReviews: 'reviews/queryCompanyReviews',
       updateIsReviewsLoading: 'reviews/updateIsCompanyReviewsLoading',
       resetReviewsState: 'reviews/resetCompanyReviewsState',

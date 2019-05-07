@@ -205,6 +205,7 @@ export default {
     this.windowHeight = window.innerHeight - toolbarHeight - 30
 
     if (this.uid != null && this.uid != '' && !this.isQueried) {
+      this.resetState()
       this.updateIsLoading(true)
       this.queryPass({nuxt: this.$nuxt, params: this.$route.params})
     }
@@ -216,6 +217,7 @@ export default {
     uid(uid) {
       if (uid != null && uid != '') {
         this.isQueried = true
+        this.resetState()
         this.updateIsLoading(true)
         this.queryPass({nuxt: this.$nuxt, params: this.$route.params})
       }
@@ -229,6 +231,7 @@ export default {
       updateIsLoading: 'pass/updateIsLoading',
       queryPass: 'pass/queryPass',
       acceptOffer: 'pass/acceptOffer',
+      resetState: 'pass/resetState'
     }),
   }
 }

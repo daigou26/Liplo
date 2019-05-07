@@ -659,9 +659,7 @@ export const actions = {
         console.error("Error adding document: ", error)
       })
   },
-  resetState({commit}) {
-    commit('setType', null)
-    commit('setImageUrl', '')
+  resetProfileState({commit}) {
     commit('updateImageFileSizeValid', true)
     commit('updateIsEditingProfileImage', false)
     commit('setFirstName', '')
@@ -682,7 +680,6 @@ export const actions = {
     commit('setLinks', null)
     commit('setSelectedLinkIndex', null)
     commit('updateIsEditingLinks', false)
-    commit('setEmail', '')
     commit('setUniversity', '')
     commit('setFaculty', '')
     commit('setDepartment', '')
@@ -690,4 +687,11 @@ export const actions = {
     commit('updateIsEditingUserInfo', null)
     commit('setAcceptedOffers', [])
   },
+  resetState({commit}) {
+    commit('setImageUrl', '')
+    commit('setType', null)
+    commit('setCompanyId', '')
+    commit('setEmail', '')
+    commit('setPoints', 0)
+  }
 }

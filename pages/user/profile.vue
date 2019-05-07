@@ -223,7 +223,7 @@
                     <v-divider></v-divider>
                   </v-flex>
                   <v-flex xs12 sm10 class="break">
-                    <div v-show="!isEditingDesiredOccupations && desiredOccupations">
+                    <div v-if="!isEditingDesiredOccupations && desiredOccupations">
                       <v-chip v-if="desiredOccupations.engineer">
                         <span>エンジニア</span>
                       </v-chip>
@@ -519,7 +519,7 @@
                   </v-flex>
                   <v-flex xs12 sm10 class="break">
                     <!-- スキル表示 -->
-                    <v-list v-show="!isEditingSkills && skills != null" class="pl-4">
+                    <v-list v-if="!isEditingSkills && skills != null" class="pl-4">
                       <template v-for="(item, index) in skills">
                         <v-chip>
                           <span>{{ item }}</span>
@@ -597,7 +597,7 @@
                   </v-flex>
                   <v-flex xs12 sm10 class="break">
                     <!-- 関連リンク表示 -->
-                    <v-list v-show="!isEditingLinks && links != null" class="pl-4">
+                    <v-list v-if="!isEditingLinks && links != null" class="pl-4">
                       <template v-for="(item, index) in links">
                         <div class="py-2">
                           <div class="font-weight-bold body-2 textColor">
@@ -976,6 +976,7 @@ export default {
     this.windowHeight = window.innerHeight - toolbarHeight - 30
 
     if (this.uid != null && this.uid != '' && !this.isQueried) {
+      this.resetState()
       this.updateIsLoading(true)
       this.queryProfile(this.uid)
     }
@@ -984,6 +985,7 @@ export default {
     uid(uid) {
       if (uid != null && uid != '') {
         this.isQueried = true
+        this.resetState()
         this.updateIsLoading(true)
         this.queryProfile(uid)
       }
@@ -1133,6 +1135,7 @@ export default {
       deleteLink: 'profile/deleteLink',
       updateIsEditingUserInfo: 'profile/updateIsEditingUserInfo',
       updateUserInfo: 'profile/updateUserInfo',
+      resetState: 'profile/resetProfileState',
     }),
   }
 }

@@ -180,6 +180,9 @@ export const actions = {
   },
   async signOut({dispatch, commit}) {
     auth.signOut()
+    dispatch('jobs/resetState')
+    dispatch('job/resetState')
+    dispatch('company/resetState')
     dispatch('chats/resetMessagesListener')
     dispatch('chats/resetHasNewMessage')
     dispatch('notifications/resetNotificationsListener')
@@ -197,8 +200,12 @@ export const actions = {
     dispatch('reviews/resetUserReviewsState')
     dispatch('pass/resetState')
     dispatch('passes/resetState')
+    dispatch('companyJob/resetState')
     dispatch('companyJobs/resetState')
+    dispatch('companyProfile/resetState')
     dispatch('settings/resetState')
+    dispatch('users/resetState')
+    dispatch('user/resetState')
   },
   async changeEmail({dispatch, commit}, {type, newEmail, password}) {
     var user = auth.currentUser
@@ -300,6 +307,7 @@ export const actions = {
             dispatch('resetState')
             dispatch('messages/resetState')
             dispatch('profile/resetState')
+            dispatch('profile/resetProfileState')
             dispatch('review/resetState')
             dispatch('reviews/resetState')
             dispatch('pass/resetState')
