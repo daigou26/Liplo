@@ -478,5 +478,18 @@ export const actions = {
     commit('updateIsInitialLoading', false)
     commit('updateIsLoading', false)
     commit('setAllJobsQueried', false)
+    commit('updateEngineer', false)
+    commit('updateDesigner', false)
+    commit('updateSales', false)
+    commit('updateOthers', false)
+    commit('updateExperience', false)
+    commit('updateFunding', false)
+    commit('updateFounder20s', false)
+    commit('updateMedia', false)
+    commit('updateFriend', false)
+    commit('updateOverseas', false)
+    commit('updateWeekend', false)
+    commit('setWorkweek', null)
+    commit('setOrder', null)
   },
 }

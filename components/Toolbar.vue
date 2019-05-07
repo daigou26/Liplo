@@ -815,6 +815,7 @@ export default {
     this.updateIsRefreshed(true)
     // ログイン時、dbにuser(recruiter)情報保存
     auth.onAuthStateChanged((user) => {
+      console.log('auth');
       this.setAuthInfo({
         url: window.location.origin,
         route: this.$route,

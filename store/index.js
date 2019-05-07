@@ -314,6 +314,7 @@ export const actions = {
             dispatch('passes/resetState')
             dispatch('companyJobs/resetState')
             dispatch('settings/resetState')
+            dispatch('jobs/resetToolbarExtension')
           }).catch(function(error) {
             console.error("Error adding document: ", error)
             commit('setAuthError', 'アカウントが削除できませんでした')
