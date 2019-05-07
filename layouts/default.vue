@@ -167,6 +167,9 @@ export default {
 #footer a{
   text-decoration: none;
 }
+.link-text {
+  text-decoration: none;
+}
 .toolbar-title {
   color: #555555;
   text-decoration: inherit;

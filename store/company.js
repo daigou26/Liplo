@@ -6,7 +6,6 @@ export const state = () => ({
   companyId: '',
   companyName: '',
   companyImageUrl: '',
-  rating: null,
   currentCandidates: null,
   allCandidates: null,
   feedback: null,
@@ -15,6 +14,7 @@ export const state = () => ({
   location: '',
   foundedDate: '',
   url: '',
+  employeesCount: null,
   mission: null,
   vision: null,
   value: null,
@@ -25,14 +25,12 @@ export const state = () => ({
   services: null,
   welfare: null,
   workday: 0,
-  occupation: '',
-  features: '',
-  field: '',
   reviews: null,
   reviewChartData: null,
   feedbackChartData: null,
   feedbackChartOptions: null,
   invoiceEmail: null,
+  jobs: [],
   isLoading: false,
 })
 
@@ -48,9 +46,6 @@ export const mutations = {
   },
   setCompanyImageUrl(state, companyImageUrl) {
     state.companyImageUrl = companyImageUrl
-  },
-  setRating(state, rating) {
-    state.rating = rating
   },
   setCurrentCandidates(state, candidates) {
     state.currentCandidates = candidates
@@ -75,6 +70,9 @@ export const mutations = {
   },
   setUrl(state, url) {
     state.url = url
+  },
+  setEmployeesCount(state, employeesCount) {
+    state.employeesCount = employeesCount
   },
   setMission(state, mission) {
     state.mission = mission
@@ -127,6 +125,12 @@ export const mutations = {
   setInvoiceEmail(state, email) {
     state.invoiceEmail = email
   },
+  addJob(state, job) {
+    state.jobs.push(job)
+  },
+  resetJobs(state) {
+    state.jobs = []
+  },
   updateIsLoading(state, isLoading) {
     state.isLoading = isLoading
   }
@@ -140,7 +144,6 @@ export const actions = {
         .get()
         .then(function(doc) {
           if (doc.exists) {
-            commit('setRating', doc.data()['rating'])
             commit('setCurrentCandidates', doc.data()['currentCandidates'])
             commit('setAllCandidates', doc.data()['allCandidates'])
             commit('setFeedback', doc.data()['feedback'])
@@ -207,7 +210,6 @@ export const actions = {
               }
               commit('setFeedbackChartData', feedbackChartData)
               commit('setFeedbackChartOptions', feedbackChartOptions)
-
             }
           } else {
             // 404
@@ -253,6 +255,7 @@ export const actions = {
             commit('setLocation', doc.data()['location'])
             commit('setFoundedDate', foundedDate)
             commit('setUrl', doc.data()['url'])
+            commit('setEmployeesCount', doc.data()['employeesCount'])
             commit('setMission', doc.data()['mission'] ? doc.data()['mission'] : null)
             commit('setVision', doc.data()['vision'] ? doc.data()['vision'] : null)
             commit('setValue', doc.data()['value'] ? doc.data()['value'] : null)
@@ -262,10 +265,7 @@ export const actions = {
             commit('setWhat', doc.data()['what'])
             commit('setServices', doc.data()['services'])
             commit('setWelfare', doc.data()['welfare'])
-            commit('setWorkday', doc.data()['workday'])
             commit('setReviews', doc.data()['reviews'])
-            // commit('setOccupation', doc.data()['occupation'])
-            // commit('setFeatures', doc.data()['features'])
 
             if (!doc.data()['isDeleted']) {
               // chart Data
@@ -299,25 +299,85 @@ export const actions = {
                 }
                 commit('setReviewChartData', reviewChartData)
               }
+
+              // 募集をクエリ
+              firestore.collection('jobs')
+                .where('companyId', '==', companyId)
+                .orderBy('createdAt', 'desc')
+                .limit(6)
+                .get()
+                .then(function(snapshot) {
+                  snapshot.forEach(function(doc) {
+                    let createdAt = new Date( doc.data()['createdAt'].seconds * 1000 )
+                    let currentDate = new Date()
+
+                    var timestamp = Math.floor((currentDate - createdAt) / 3600000)
+                    if (timestamp < 24) {
+                      if (timestamp <= 1) {
+                        timestamp = '1時間以内'
+                      } else {
+                        timestamp = String(timestamp) + '時間前'
+                      }
+                    } else {
+                      timestamp = Math.floor((currentDate - createdAt) / 86400000)
+                      if (timestamp < 31) {
+                        timestamp = String(timestamp) + '日前'
+                      } else {
+                        timestamp = Math.floor((currentDate - createdAt) / (86400000 * 31))
+                        if (timestamp <= 11) {
+                          timestamp = String(timestamp) + 'ヶ月前'
+                        } else {
+                          timestamp = '1年以上前'
+                        }
+                      }
+                    }
+
+                    const job = {
+                      jobId: doc.id,
+                      title: doc.data()['title'],
+                      content: doc.data()['content'],
+                      imageUrl: doc.data()['imageUrl'],
+                      companyId: doc.data()['companyId'],
+                      companyName: doc.data()['companyName'],
+                      companyImageUrl: doc.data()['companyImageUrl'],
+                      occupation: doc.data()['occupation'],
+                      period: doc.data()['period'],
+                      workday: doc.data()['workday'],
+                      rating: doc.data()['rating'],
+                      createdAt: doc.data()['createdAt'],
+                      timestamp: timestamp
+                    }
+                    commit('addJob', job)
+                  })
+                  commit('updateIsLoading', false)
+                })
+                .catch(function(error) {
+                  console.log("Error getting document:", error)
+                  commit('updateIsLoading', false)
+                })
             } else {
               // 削除済みの場合
               // 404
               console.log('404')
+              commit('updateIsLoading', false)
               nuxt.error({ statusCode: 404, message: 'not found' })
             }
           } else {
             // 404
             console.log('404')
+            commit('updateIsLoading', false)
             nuxt.error({ statusCode: 404, message: 'not found' })
           }
         })
         .catch(function(error) {
+          commit('updateIsLoading', false)
           console.log("Error getting document:", error)
           nuxt.error({ statusCode: 404, message: 'not found' })
 
         })
       } else {
         console.log('404')
+        commit('updateIsLoading', false)
         nuxt.error({ statusCode: 404, message: 'not found' })
       }
   },
@@ -375,11 +435,9 @@ export const actions = {
         if (doc.exists) {
           commit('setInvoiceEmail', doc.data()['invoiceEmail'])
         }
-        commit('updateIsLoading', false)
       })
       .catch(function(error) {
         console.log("Error getting document:", error)
-        commit('updateIsLoading', false)
       })
   },
   updateCompanyInvoiceEmail({commit}, {companyId, email}) {
@@ -397,5 +455,36 @@ export const actions = {
   },
   updateIsLoading({commit}, isLoading) {
     commit('updateIsLoading', isLoading)
+  },
+  resetState({commit}) {
+    commit('setCurrentCandidates', null)
+    commit('setAllCandidates', null)
+    commit('setFeedback', null)
+    commit('setImageUrl', '')
+    commit('setCompanyId', '')
+    commit('setCompanyName', '')
+    commit('setCompanyImageUrl', '')
+    commit('setEmail', '')
+    commit('setMembers', null)
+    commit('setLocation', '')
+    commit('setFoundedDate', '')
+    commit('setUrl', '')
+    commit('setEmployeesCount', null)
+    commit('setMission', null)
+    commit('setVision', null)
+    commit('setValue', null)
+    commit('setCulture', null)
+    commit('setSystem', null)
+    commit('setWhy', '')
+    commit('setWhat', '')
+    commit('setServices', null)
+    commit('setWelfare', null)
+    commit('setReviews', null)
+    commit('setFeedbackChartData', null)
+    commit('setFeedbackChartOptions', null)
+    commit('setReviewChartData', null)
+    commit('setInvoiceEmail', null)
+    commit('resetJobs')
+    commit('updateIsLoading', false)
   }
 }

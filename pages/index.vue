@@ -71,7 +71,7 @@
                     <v-card flat :to='"jobs/" + job.jobId' class="clickable">
                       <v-img
                         :src="job.imageUrl"
-                        aspect-ratio="2.75"
+                        :aspect-ratio="imageRatio"
                       ></v-img>
                       <div
                         class="pt-3 px-4 text-xs-left caption textColor font-weight-bold"
@@ -232,6 +232,15 @@ export default {
     }
   },
   computed: {
+    imageRatio() {
+      switch (this.$vuetify.breakpoint.name) {
+        case 'xs': return '2'
+        case 'sm': return '2.5'
+        case 'md': return '3'
+        case 'lg': return '3'
+        case 'xl': return '3'
+      }
+    },
     breakpoint() {
       return this.$vuetify.breakpoint.name
     },

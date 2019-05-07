@@ -795,7 +795,6 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex'
-import { firestore, auth, storage, storageRef } from '@/plugins/firebase'
 
 export default {
   data: () => ({

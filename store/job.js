@@ -161,8 +161,8 @@ export const actions = {
       firestore.collection('jobs').doc(jobId).collection('detail').doc(jobId).get()
         .then(function(doc) {
           if (doc.exists) {
-            var isQueriedCompanyDetail = false
-            var isQueriedCandidates = false
+            var isCompanyDetailQueried = false
+            var isCandidateQueried = false
             const companyId = doc.data()['companyId']
 
             // 投稿日
@@ -263,9 +263,9 @@ export const actions = {
                         commit('setReviewChartData', reviewChartData)
                       }
 
-                      isQueriedCompanyDetail = true
+                      isCompanyDetailQueried = true
                       if (uid) {
-                        if (isQueriedCandidates && isQueriedCompanyDetail) {
+                        if (isCandidateQueried && isCompanyDetailQueried) {
                           commit('updateIsLoading', false)
                         }
                       } else {
@@ -275,8 +275,8 @@ export const actions = {
                   })
                   .catch(function(error) {
                     console.log("Error getting document:", error)
-                    isQueriedCompanyDetail = true
-                    if (isQueriedCandidates && isQueriedCompanyDetail) {
+                    isCompanyDetailQueried = true
+                    if (isCandidateQueried && isCompanyDetailQueried) {
                       commit('updateIsLoading', false)
                     }
                   })
@@ -294,15 +294,15 @@ export const actions = {
                       commit('updateIsCandidate', true)
                     }
 
-                    isQueriedCandidates = true
-                    if (isQueriedCandidates && isQueriedCompanyDetail) {
+                    isCandidateQueried = true
+                    if (isCandidateQueried && isCompanyDetailQueried) {
                       commit('updateIsLoading', false)
                     }
                   })
                   .catch(function(error) {
                     console.log("Error getting document:", error)
-                    isQueriedCandidates = true
-                    if (isQueriedCandidates && isQueriedCompanyDetail) {
+                    isCandidateQueried = true
+                    if (isCandidateQueried && isCompanyDetailQueried) {
                       commit('updateIsLoading', false)
                     }
                   })

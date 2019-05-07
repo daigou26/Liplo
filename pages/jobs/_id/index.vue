@@ -1186,7 +1186,7 @@ export default {
           this.count += 1
           this.updateIsReviewsLoading(true)
           this.queryCompanyReviews(this.companyId)
-          if (this.count > 20) {
+          if (this.count > 50) {
             $state.complete()
           } else {
             $state.loaded()
