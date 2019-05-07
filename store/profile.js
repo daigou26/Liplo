@@ -164,7 +164,7 @@ export const actions = {
           commit('setUniversity', doc.data()['university'] != null ? doc.data()['university'] : '')
           commit('setFaculty', doc.data()['faculty'] != null ? doc.data()['faculty'] : '')
           commit('setDepartment', doc.data()['department'] != null ? doc.data()['department'] : '')
-          commit('setBirthTimestamp', doc.data()['birthTimestamp'])
+          commit('setBirthTimestamp', doc.data()['birthDate'])
           commit('setAcceptedOffers', doc.data()['acceptedOffers'])
         }
         commit('updateIsLoading', false)

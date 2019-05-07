@@ -549,6 +549,35 @@
                                 solo
                                 required
                               ></v-text-field>
+                              <!-- 生年月日 -->
+                              <v-menu
+                                ref="birthDateMenu"
+                                v-model="birthDateMenu"
+                                :close-on-content-click="false"
+                                :nudge-right="40"
+                                :return-value.sync="birthDate"
+                                lazy
+                                transition="scale-transition"
+                                offset-y
+                                full-width
+                                min-width="290px"
+                              >
+                                <template v-slot:activator="{ on }">
+                                  <v-text-field
+                                    v-model="birthDate"
+                                    label="生年月日"
+                                    append-icon="event"
+                                    solo
+                                    readonly
+                                    v-on="on"
+                                  ></v-text-field>
+                                </template>
+                                <v-date-picker v-model="birthDate" color="teal" locale="ja">
+                                  <v-spacer></v-spacer>
+                                  <v-btn flat color="teal" @click="birthDateMenu = false">Cancel</v-btn>
+                                  <v-btn flat color="teal" @click="$refs.birthDateMenu.save(birthDate)">OK</v-btn>
+                                </v-date-picker>
+                              </v-menu>
                               <!-- パスワード -->
                               <v-text-field
                                 v-model="password"
@@ -564,7 +593,7 @@
                             <!-- 登録ボタン -->
                             <v-btn
                               block
-                              :disabled="!signUpValid || loading"
+                              :disabled="!signUpValid || loading || birthDate == null"
                               class="orange darken-1"
                               @click="signUp"
                             >
@@ -584,7 +613,9 @@
                       <!-- メールアドレス登録 -->
                       <v-btn
                         block
-                        color="primary"
+                        color="teal"
+                        class="my-3 mb-5"
+                        style="color: white;"
                         @click="signUpForm=true"
                       >
                         <v-icon>mail_outline</v-icon>
@@ -600,7 +631,7 @@
                       <span>アカウントをお持ちでない方は</span>
                       <v-btn
                         flat
-                        color="primary"
+                        color="teal"
                         @click="signUpButtonClicked"
                       >
                         <span>登録</span>
@@ -610,7 +641,7 @@
                       <span>アカウントをお持ちの方は</span>
                       <v-btn
                         flat
-                        color="primary"
+                        color="teal"
                         @click="signInButtonClicked"
                       >
                         <span>ログイン</span>
@@ -756,6 +787,8 @@ export default {
       v => !!v || 'メールアドレスを入力してください',
       v => /.+@.+/.test(v) || '無効なメールアドレスです'
     ],
+    birthDate: null,
+    birthDateMenu: false,
     passwordShow: false,
     password: '',
     passwordRules: [
@@ -815,7 +848,6 @@ export default {
     this.updateIsRefreshed(true)
     // ログイン時、dbにuser(recruiter)情報保存
     auth.onAuthStateChanged((user) => {
-      console.log('auth');
       this.setAuthInfo({
         url: window.location.origin,
         route: this.$route,
@@ -824,6 +856,7 @@ export default {
         type: this.userType,
         firstName: this.firstName,
         lastName: this.lastName,
+        birthDate: this.birthDate,
         companyId: this.query.id,
         position: this.position,
       })

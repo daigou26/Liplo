@@ -924,7 +924,7 @@ export default {
       return this.lastName + ' ' + this.firstName
     },
     birthDate: function() {
-      const date = new Date( this.birthTimestamp * 1000 )
+      const date = new Date( this.birthTimestamp.seconds * 1000 )
       const year  = date.getFullYear()
       const month = date.getMonth() + 1
       const day  = date.getDate()
