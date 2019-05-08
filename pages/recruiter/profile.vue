@@ -4,7 +4,18 @@
     white
     wrap
   >
-    <v-flex xs12 class="py-3 break">
+    <!-- loading -->
+    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
+      <v-layout justify-center>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex v-else-if="isLoading" xs12 :style="{ height: windowHeight + 'px' }">
+      <v-layout align-center justify-center column fill-height>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex v-else xs12 class="py-3 break">
       <!-- Profile画像 & UserName -->
       <div class="py-4 align-center">
         <v-card flat>
@@ -17,8 +28,8 @@
               class="grey lighten-3 clickable"
               @click="profileImageClicked"
             >
-              <img v-if="imageUrl" :src="imageUrl" alt="avatar">
-              <v-icon v-else :size="60">person</v-icon>
+              <img v-if="imageUrl" :src="imageUrl">
+              <v-icon v-else >camera_alt</v-icon>
             </v-avatar>
             <div class="pt-2">
               <div class="title textColor font-weight-bold break pl-4">
@@ -64,7 +75,7 @@
                   </v-avatar>
                 </div>
                 <input type="file" v-on:change="onFileChange">
-                <p v-if="!imageFileSizeValid" class="warning-text-color">
+                <p v-show="!imageFileSizeValid" class="warning-text-color">
                   {{ imageFileSizeWarning }}
                 </p>
               </v-flex>
@@ -234,11 +245,11 @@
           </v-flex>
           <v-flex xs12 sm10 class="break">
             <!-- 自己紹介の表示 -->
-            <v-card-text v-if="!isEditingSelfIntro">
+            <v-card-text v-show="!isEditingSelfIntro">
               <p class="return">{{ selfIntro }}</p>
             </v-card-text>
             <!-- 自己紹介の編集画面 -->
-            <div v-else>
+            <div v-show="isEditingSelfIntro">
               <v-form v-model="editSelfIntroValid">
                 <v-textarea
                   solo
@@ -273,7 +284,8 @@ import { mapActions, mapState, mapGetters } from 'vuex'
 export default {
   data: () => ({
     isQueried: false,
-    imageFileSizeWarning: '2MB以下の画像を選択してください',
+    windowHeight: 0,
+    imageFileSizeWarning: '5MB以下の画像を選択してください',
     selectedImageSize: 200,
     selectedImage: null,
     imageFile: null,
@@ -290,12 +302,12 @@ export default {
     editUserNameValid: true,
     tempSelfIntro: '',
     selfIntroRules: [
-      v => (v.length <= 300) || '300字以内で入力してください'
+      v => (v.length <= 1000) || '300字以内で入力してください'
     ],
     editSelfIntroValid: true,
     tempPosition: '',
     positionRules: [
-      v => (v.length <= 15) || '15字以内で入力してください'
+      v => (v.length <= 30) || '30字以内で入力してください'
     ],
     editPositionValid: true,
   }),
@@ -311,6 +323,8 @@ export default {
     },
     ...mapState({
       uid: state => state.uid,
+      isRefreshing: state => state.isRefreshing,
+      isLoading: state => state.profile.isLoading,
       imageUrl: state => state.profile.imageUrl,
       imageFileSizeValid: state => state.profile.imageFileSizeValid,
       isEditingProfileImage: state => state.profile.isEditingProfileImage,
@@ -324,7 +338,17 @@ export default {
     }),
   },
   mounted() {
+    let toolbarHeight
+    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+      toolbarHeight = 48
+    } else {
+      toolbarHeight = 64
+    }
+    this.windowHeight = window.innerHeight - toolbarHeight - 30
+
     if (this.uid != null && this.uid != '' && !this.isQueried) {
+      this.resetState()
+      this.updateIsLoading(true)
       this.queryProfile(this.uid)
     }
   },
@@ -332,6 +356,8 @@ export default {
     uid(uid) {
       if (uid != null && uid != '') {
         this.isQueried = true
+        this.resetState()
+        this.updateIsLoading(true)
         this.queryProfile(uid)
       }
     }
@@ -346,8 +372,8 @@ export default {
     onFileChange(e) {
       this.updateImageFileSizeValid(true)
       let files = e.target.files || e.dataTransfer.files
-      // 画像サイズは2MB以下のみ
-      if (files[0] != null && files[0].size/1024/1024 <= 2) {
+      // 画像サイズは5MB以下のみ
+      if (files[0] != null && files[0].size/1024/1024 <= 5) {
         if (this.isEditingProfileImage) {
           this.imageFile = files[0]
         }
@@ -384,6 +410,7 @@ export default {
     },
     ...mapActions({
       queryProfile: 'profile/queryProfile',
+      updateIsLoading: 'profile/updateIsLoading',
       updateImageFileSizeValid: 'profile/updateImageFileSizeValid',
       updateIsEditingProfileImage: 'profile/updateIsEditingProfileImage',
       updateProfileImage: 'profile/updateProfileImage',
@@ -393,6 +420,7 @@ export default {
       updateSelfIntro: 'profile/updateSelfIntro',
       updateIsEditingPosition: 'profile/updateIsEditingPosition',
       updatePosition: 'profile/updatePosition',
+      resetState: 'profile/resetProfileState',
     }),
   }
 }

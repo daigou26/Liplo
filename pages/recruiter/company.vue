@@ -1060,7 +1060,7 @@ export default {
     snackbar: false,
     snackbarText: '',
     isQueried: false,
-    imageFileSizeWarning: '2MB以下の画像を選択してください',
+    imageFileSizeWarning: '5MB以下の画像を選択してください',
     selectedTopImageSize: 200,
     selectedTopImage: null,
     topImageFile: null,
@@ -1250,8 +1250,8 @@ export default {
     onFileChange(e) {
       this.updateImageFileSizeValid(true)
       let files = e.target.files || e.dataTransfer.files
-      // 画像サイズは2MB以下のみ
-      if (files[0] != null && files[0].size/1024/1024 <= 2) {
+      // 画像サイズは5MB以下のみ
+      if (files[0] != null && files[0].size/1024/1024 <= 5) {
         if (this.isEditingTopImage) {
           this.topImageFile = files[0]
         } else if (this.isEditingCompanyImage) {

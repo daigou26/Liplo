@@ -800,7 +800,7 @@ export default {
   data: () => ({
     isQueried: false,
     windowHeight: 0,
-    imageFileSizeWarning: '2MB以下の画像を選択してください',
+    imageFileSizeWarning: '5MB以下の画像を選択してください',
     selectedImageSize: 200,
     selectedImage: null,
     imageFile: null,
@@ -1001,8 +1001,8 @@ export default {
     onFileChange(e) {
       this.updateImageFileSizeValid(true)
       let files = e.target.files || e.dataTransfer.files
-      // 画像サイズは2MB以下のみ
-      if (files[0] != null && files[0].size/1024/1024 <= 2) {
+      // 画像サイズは5MB以下のみ
+      if (files[0] != null && files[0].size/1024/1024 <= 5) {
         if (this.isEditingProfileImage) {
           this.imageFile = files[0]
         } else if (this.isEditingPortfolio) {
