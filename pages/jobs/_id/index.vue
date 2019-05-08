@@ -31,7 +31,7 @@
         </div>
         <!-- title -->
         <div
-          class="pt-1 font-weight-bold"
+          class="pt-1 font-weight-bold textColor"
           :class="{
             'job-title': $vuetify.breakpoint.mdAndUp,
             'headline': $vuetify.breakpoint.smOnly,
@@ -540,29 +540,34 @@
               >
                 企業情報
               </p>
-              <div v-if="url" class="pb-2">
-                <v-card-actions class="pa-0">
-                  <v-icon style="font-size: 18px">link</v-icon>
-                  <a :href="url" class="pl-2">{{ url }}</a>
-                </v-card-actions>
+              <div v-if="url || foundedDate || location || employeesCount">
+                <div v-if="url" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">link</v-icon>
+                    <a :href="url" class="pl-2">{{ url }}</a>
+                  </v-card-actions>
+                </div>
+                <div v-if="foundedDate" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">flag</v-icon>
+                    <span class="pl-2">{{ foundedDate }}に設立</span>
+                  </v-card-actions>
+                </div>
+                <div v-if="location" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">place</v-icon>
+                    <span class="pl-2">{{ location }}</span>
+                  </v-card-actions>
+                </div>
+                <div v-if="employeesCount" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">group</v-icon>
+                    <span class="pl-2">{{ employeesCount }}人のメンバー</span>
+                  </v-card-actions>
+                </div>
               </div>
-              <div v-if="foundedDate" class="pb-2">
-                <v-card-actions class="pa-0">
-                  <v-icon style="font-size: 18px">flag</v-icon>
-                  <span class="pl-2">{{ foundedDate }}に設立</span>
-                </v-card-actions>
-              </div>
-              <div v-if="location" class="pb-2">
-                <v-card-actions class="pa-0">
-                  <v-icon style="font-size: 18px">place</v-icon>
-                  <span class="pl-2">{{ location }}</span>
-                </v-card-actions>
-              </div>
-              <div v-if="employeesCount" class="pb-2">
-                <v-card-actions class="pa-0">
-                  <v-icon style="font-size: 18px">group</v-icon>
-                  <span class="pl-2">{{ employeesCount }}人のメンバー</span>
-                </v-card-actions>
+              <div v-else>
+                企業情報がありません
               </div>
             </div>
           </v-flex>
@@ -573,29 +578,34 @@
               <p class="title font-weight-bold textColor">
                 企業情報
               </p>
-              <div v-if="url" class="pb-2">
-                <v-card-actions class="pa-0">
-                  <v-icon style="font-size: 18px">link</v-icon>
-                  <a :href="url" class="pl-2">{{ url }}</a>
-                </v-card-actions>
+              <div v-if="url || foundedDate || location || employeesCount">
+                <div v-if="url" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">link</v-icon>
+                    <a :href="url" class="pl-2">{{ url }}</a>
+                  </v-card-actions>
+                </div>
+                <div v-if="foundedDate" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">flag</v-icon>
+                    <span class="pl-2">{{ foundedDate }}に設立</span>
+                  </v-card-actions>
+                </div>
+                <div v-if="location" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">place</v-icon>
+                    <span class="pl-2">{{ location }}</span>
+                  </v-card-actions>
+                </div>
+                <div v-if="employeesCount" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">group</v-icon>
+                    <span class="pl-2">{{ employeesCount }}人のメンバー</span>
+                  </v-card-actions>
+                </div>
               </div>
-              <div v-if="foundedDate" class="pb-2">
-                <v-card-actions class="pa-0">
-                  <v-icon style="font-size: 18px">flag</v-icon>
-                  <span class="pl-2">{{ foundedDate }}に設立</span>
-                </v-card-actions>
-              </div>
-              <div v-if="location" class="pb-2">
-                <v-card-actions class="pa-0">
-                  <v-icon style="font-size: 18px">place</v-icon>
-                  <span class="pl-2">{{ location }}</span>
-                </v-card-actions>
-              </div>
-              <div v-if="employeesCount" class="pb-2">
-                <v-card-actions class="pa-0">
-                  <v-icon style="font-size: 18px">group</v-icon>
-                  <span class="pl-2">{{ employeesCount }}人のメンバー</span>
-                </v-card-actions>
+              <div v-else>
+                企業情報がありません
               </div>
             </div>
             <!-- review -->
