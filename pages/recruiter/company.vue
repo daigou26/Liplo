@@ -361,10 +361,10 @@
             <v-divider></v-divider>
           </v-flex>
           <v-flex xs12 sm10 class="break">
-            <v-card-text v-if="!isEditingMission">
+            <v-card-text v-show="!isEditingMission">
               <p class="return">{{ mission }}</p>
             </v-card-text>
-            <div v-else>
+            <div v-show="isEditingMission">
               <v-form v-model="editMissionValid">
                 <v-textarea
                   solo
@@ -420,10 +420,10 @@
             <v-divider></v-divider>
           </v-flex>
           <v-flex xs12 sm10 class="break">
-            <v-card-text v-if="!isEditingVision">
+            <v-card-text v-show="!isEditingVision">
               <p class="return">{{ vision }}</p>
             </v-card-text>
-            <div v-else>
+            <div v-show="isEditingVision">
               <v-form v-model="editVisionValid">
                 <v-textarea
                   solo
@@ -479,10 +479,10 @@
             <v-divider></v-divider>
           </v-flex>
           <v-flex xs12 sm10 class="break">
-            <v-card-text v-if="!isEditingValue">
+            <v-card-text v-show="!isEditingValue">
               <p class="return">{{ value }}</p>
             </v-card-text>
-            <div v-else>
+            <div v-show="isEditingValue">
               <v-form v-model="editValueValid">
                 <v-textarea
                   solo
@@ -538,10 +538,10 @@
             <v-divider></v-divider>
           </v-flex>
           <v-flex xs12 sm10 class="break">
-            <v-card-text v-if="!isEditingCulture">
+            <v-card-text v-show="!isEditingCulture">
               <p class="return">{{ culture }}</p>
             </v-card-text>
-            <div v-else>
+            <div v-show="isEditingCulture">
               <v-form v-model="editCultureValid">
                 <v-textarea
                   solo
@@ -597,10 +597,10 @@
             <v-divider></v-divider>
           </v-flex>
           <v-flex xs12 sm10 class="break">
-            <v-card-text v-if="!isEditingSystem">
+            <v-card-text v-show="!isEditingSystem">
               <p class="return">{{ system }}</p>
             </v-card-text>
-            <div v-else>
+            <div v-show="isEditingSystem">
               <v-form v-model="editSystemValid">
                 <v-textarea
                   solo
@@ -655,10 +655,10 @@
             <v-divider></v-divider>
           </v-flex>
           <v-flex xs12 sm10 class="break">
-            <v-card-text v-if="!isEditingWhy">
+            <v-card-text v-show="!isEditingWhy">
               <p class="return">{{ why }}</p>
             </v-card-text>
-            <div v-else>
+            <div v-show="isEditingWhy">
               <v-form v-model="editWhyValid">
                 <v-textarea
                   solo
@@ -714,10 +714,10 @@
             <v-divider></v-divider>
           </v-flex>
           <v-flex xs12 sm10 class="break">
-            <v-card-text v-if="!isEditingWhat">
+            <v-card-text v-show="!isEditingWhat">
               <p class="return">{{ what }}</p>
             </v-card-text>
-            <div v-else>
+            <div v-show="isEditingWhat">
               <v-form v-model="editWhatValid">
                 <v-textarea
                   solo
@@ -829,7 +829,7 @@
               </template>
             </v-list>
             <!-- サービス編集画面 -->
-            <div v-if="isEditingServices">
+            <div v-show="isEditingServices">
               <v-form v-model="editServicesValid">
                 <div class="d-flex pb-3">
                   <v-flex xs12 sm10 class="px-4 break">
@@ -932,10 +932,10 @@
             <v-divider></v-divider>
           </v-flex>
           <v-flex xs12 sm10 class="break">
-            <v-card-text v-if="!isEditingWelfare">
+            <v-card-text v-show="!isEditingWelfare">
               <p class="return">{{ welfare }}</p>
             </v-card-text>
-            <div v-else>
+            <div v-show="isEditingWelfare">
               <v-form v-model="editWelfareValid">
                 <v-textarea
                   solo
@@ -991,7 +991,7 @@
           </v-flex>
           <v-flex xs12 sm10 class="break">
             <!-- 企業情報の表示 -->
-            <v-list v-if="!isEditingCompanyInfo" class="pl-4">
+            <v-list v-show="!isEditingCompanyInfo" class="pl-4">
               <div class="pb-2">
                 <span>設立日:</span>
                 <span class="pl-2">{{ founded }}</span>
@@ -1014,7 +1014,7 @@
               </div>
             </v-list>
             <!-- 企業情報の編集画面 -->
-            <div v-else>
+            <div v-show="isEditingCompanyInfo">
               <v-form v-model="editCompanyInfoValid">
                 <!-- 設立日 -->
                 <v-menu
