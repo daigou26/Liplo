@@ -466,6 +466,7 @@ export const actions = {
                   acceptScout: true,
                   isDeleted: false,
                 })
+                // 生年月日
                 if (typeof birthDate == 'string') {
                   var arr = birthDate.split('-')
                   birthDate = new Date(arr[0], arr[1] - 1, arr[2]);

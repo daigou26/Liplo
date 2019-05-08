@@ -409,7 +409,7 @@ export default {
   },
   watch: {
     companyId(companyId) {
-      if (companyId != null) {
+      if (companyId != null && companyId != '') {
         this.isQueried = true
         this.resetState()
         this.queryUser({nuxt: this.$nuxt, uid: this.params.id, companyId: companyId})

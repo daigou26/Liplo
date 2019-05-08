@@ -159,7 +159,7 @@ export default {
   },
   watch: {
     companyId(companyId) {
-      if (companyId) {
+      if (companyId != null && companyId != '') {
         this.queryCompanyInvoiceEmail(companyId)
       }
     },

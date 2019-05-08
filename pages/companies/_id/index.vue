@@ -179,7 +179,6 @@
                       </div>
                   </template>
                 </v-list>
-
               </div>
             </div>
             <!-- why -->

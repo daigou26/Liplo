@@ -99,7 +99,7 @@ export default {
   },
   watch: {
     companyId(companyId) {
-      if (companyId != null) {
+      if (companyId != null && companyId != '') {
         this.resetState()
         this.isQueried = true
         this.queryFeedback({nuxt: this.$nuxt, params: this.params, companyId: companyId})

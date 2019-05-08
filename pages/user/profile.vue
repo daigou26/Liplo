@@ -397,35 +397,58 @@
                     <!-- ポートフォリオ表示 -->
                     <v-list v-show="!isEditingPortfolio && this.portfolio != null" class="pl-4">
                       <template v-for="(item, index) in this.portfolio">
-                          <div class="d-flex pb-3">
-                            <v-flex xs4 sm3 lg2>
-                              <v-img :src="item.imageUrl" height="100"></v-img>
-                            </v-flex>
-                            <v-flex xs8 sm9 lg10 class="px-4 break">
-                              <div>
-                                <span class="font-weight-bold subheading textColor">{{ item.title }}</span>
-                                <v-btn
-                                  class="pa-0 ma-0"
-                                  flat
-                                  @click="portfolioEditButtonClicked(index)"
-                                >
-                                  <v-icon :size="14">edit</v-icon>
-                                  <span class="caption edit-text-color">編集する</span>
-                                </v-btn>
-                              </div>
-                              <p　class="textColor return">{{ item.content }}</p>
-                              <p class="textColor">
-                                {{ item.url }}
-                              </p>
-                            </v-flex>
+                        <v-layout v-if="!xsWidth" layout class="pt-4 pb-3">
+                          <v-flex xs4 sm3 lg2>
+                            <v-img :src="item.imageUrl" aspect-ratio="1.5" max-height="100" max-width="160"></v-img>
+                          </v-flex>
+                          <v-flex
+                            xs8
+                            sm9
+                            lg10
+                            class="break"
+                            :class="{
+                              'px-4': $vuetify.breakpoint.smAndUp,
+                              'pl-4': $vuetify.breakpoint.xsOnly,
+                            }"
+                          >
+                            <div>
+                              <span class="font-weight-bold subheading textColor">{{ item.title }}</span>
+                              <v-btn
+                                class="pa-0 ma-0"
+                                flat
+                                @click="portfolioEditButtonClicked(index)"
+                              >
+                                <v-icon :size="14">edit</v-icon>
+                                <span class="caption edit-text-color">編集する</span>
+                              </v-btn>
+                            </div>
+                            <p　class="textColor return">{{ item.content }}</p>
+                            <a :href="item.url">{{ item.url }}</a>
+                          </v-flex>
+                        </v-layout>
+                        <div v-else class="pt-4 pb-3">
+                          <v-img :src="item.imageUrl" aspect-ratio="1.5" max-height="100" max-width="160"></v-img>
+                          <div>
+                            <span class="font-weight-bold subheading textColor">{{ item.title }}</span>
+                            <v-btn
+                              class="pa-0 ma-0"
+                              flat
+                              @click="portfolioEditButtonClicked(index)"
+                            >
+                              <v-icon :size="14">edit</v-icon>
+                              <span class="caption edit-text-color">編集する</span>
+                            </v-btn>
                           </div>
+                          <p　class="textColor return">{{ item.content }}</p>
+                          <a :href="item.url">{{ item.url }}</a>
+                        </div>
                       </template>
                     </v-list>
                     <!-- ポートフォリオ編集画面 -->
                     <div v-show="isEditingPortfolio">
                       <v-form v-model="editPortfolioValid">
                         <div class="d-flex pb-3">
-                          <v-flex xs8 sm9 lg10 class="px-4 break">
+                          <v-flex xs12 sm10 class="px-4 break">
                             <div class="py-3">
                               <v-img :src="tempPortfolioItemImageUrl" width="200" height="100" class="grey lighten-3"/>
                               <input type="file" v-on:change="onFileChange">
@@ -621,7 +644,7 @@
                     <div v-show="isEditingLinks">
                       <v-form v-model="editLinksValid">
                         <div class="d-flex pb-3">
-                          <v-flex xs8 sm9 lg10 class="px-4 break">
+                          <v-flex xs12 sm10 class="px-4 break">
                             <v-text-field
                               solo
                               label="タイトル"
@@ -800,6 +823,8 @@ export default {
   data: () => ({
     isQueried: false,
     windowHeight: 0,
+    windowWidth: 0,
+    xsWidth: false,
     imageFileSizeWarning: '5MB以下の画像を選択してください',
     selectedImageSize: 200,
     selectedImage: null,
@@ -974,6 +999,7 @@ export default {
       toolbarHeight = 64
     }
     this.windowHeight = window.innerHeight - toolbarHeight - 30
+    this.windowWidth = window.innerWidth
 
     if (this.uid != null && this.uid != '' && !this.isQueried) {
       this.resetState()
@@ -988,6 +1014,11 @@ export default {
         this.resetState()
         this.updateIsLoading(true)
         this.queryProfile(uid)
+      }
+    },
+    windowWidth(width) {
+      if (width < 450) {
+        this.xsWidth = true
       }
     }
   },

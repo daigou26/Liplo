@@ -117,7 +117,7 @@ export default {
   },
   watch: {
     companyId(companyId) {
-      if (companyId != null) {
+      if (companyId != null && companyId != '') {
         this.resetState()
         this.isQueried = true
         this.updateIsLoading(true)

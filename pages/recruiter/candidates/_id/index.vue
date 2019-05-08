@@ -840,7 +840,7 @@ export default {
   },
   watch: {
     companyId(companyId) {
-      if (companyId) {
+      if (companyId != null && companyId != '') {
         this.resetState()
         this.queryCandidate({nuxt: this.$nuxt, params: this.$route.params, companyId: companyId})
       }

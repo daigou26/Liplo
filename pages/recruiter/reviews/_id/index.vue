@@ -75,7 +75,7 @@ export default {
   },
   watch: {
     companyId(companyId) {
-      if (companyId != null) {
+      if (companyId != null && companyId != '') {
         this.resetState()
         this.isQueried = true
         this.queryReview({nuxt: this.$nuxt, params: this.$route.params, companyId: companyId})
