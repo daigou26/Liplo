@@ -25,7 +25,7 @@
               募集一覧
             </div>
             <!-- job lists -->
-            <v-list v-if="jobs" class="pt-0">
+            <v-list v-if="jobs && jobs.length > 0" class="pt-0">
               <template v-for="(job, index) in jobs">
                 <!-- job image & title -->
                 <v-hover>
@@ -77,6 +77,31 @@
                 </v-hover>
               </template>
             </v-list>
+            <v-card
+              v-else
+              class="px-3 py-4"
+              :class="{
+                'mx-3': $vuetify.breakpoint.xsOnly,
+                'mt-4': $vuetify.breakpoint.mdAndUp,
+                'mt-3': $vuetify.breakpoint.smAndDown,
+              }"
+            >
+              <div class="text-xs-center">
+                <div
+                  class="textColor"
+                  :class="{
+                    'title': $vuetify.breakpoint.xsOnly,
+                    'headline': $vuetify.breakpoint.smAndUp,
+                  }"
+                >
+                  まだ募集がありません
+                </div>
+                <div class="pt-3 light-text-color">
+                  企業が募集を投稿した場合はこちらに表示されます
+                </div>
+                <v-btn class="mt-3 font-weight-bold" color="warning" to="/">他の企業の募集を探す</v-btn>
+              </div>
+            </v-card>
             <infinite-loading
               v-if="showInfiniteLoading && jobs && jobs.length >= 1 && !isLoading"
               :distance="50"
