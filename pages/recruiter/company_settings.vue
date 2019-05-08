@@ -7,10 +7,11 @@
     <v-snackbar
       v-model="snackbar"
       class="px-5"
-      color="orange lighten-1"
+      color="teal lighten-1"
       :multi-line="true"
       :timeout="6000"
-      :top="true"
+      :left="true"
+      :bottom="true"
     >
       {{ snackbarText }}
       <v-btn
@@ -41,9 +42,10 @@
             'px-3': $vuetify.breakpoint.mdOnly,
           }"
         >
-          <v-flex md10 sm6 xs8 offset-md1 offset-sm3 offset-xs2>
+          <v-flex md10 sm8 xs10 offset-md1 offset-sm2 offset-xs1>
             <!-- 請求書を送るメアド変更 -->
-            <div class="title textColor pt-5">
+            <div
+              class="title textColor pt-5">
               請求書を送るメールアドレスを変更する
             </div>
             <div class="pt-3">
