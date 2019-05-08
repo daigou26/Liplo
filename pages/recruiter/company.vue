@@ -243,6 +243,7 @@
                 <v-layout class="horiz-scroll">
                   <div
                     v-for="member in members"
+                    :key="member.uid"
                     class="pr-4"
                   >
                     <div class="text-xs-center" style="max-width: 150px;">
