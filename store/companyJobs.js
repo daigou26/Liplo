@@ -3,6 +3,7 @@ import { firestore } from '@/plugins/firebase'
 
 export const state = () => ({
   jobs: [],
+  isInitialLoading: false,
   isLoading: false,
   allJobsQueried: false,
 })
@@ -13,6 +14,9 @@ export const mutations = {
   },
   resetJobs(state) {
     state.jobs = []
+  },
+  updateIsInitialLoading(state, isLoading) {
+    state.isInitialLoading = isLoading
   },
   updateIsLoading(state, isLoading) {
     state.isLoading = isLoading
@@ -60,9 +64,12 @@ export const actions = {
           if (docCount == 0) {
             commit('setAllJobsQueried')
           }
+          commit('updateIsInitialLoading', false)
           commit('updateIsLoading', false)
         })
         .catch(function(error) {
+          commit('updateIsInitialLoading', false)
+          commit('updateIsLoading', false)
           console.log("Error getting document:", error);
         })
     } else if (jobs.length != 0) {
@@ -103,15 +110,20 @@ export const actions = {
           commit('updateIsLoading', false)
         })
         .catch(function(error) {
+          commit('updateIsLoading', false)
           console.log("Error getting document:", error);
         })
     }
+  },
+  updateIsInitialLoading({commit}, isLoading) {
+    commit('updateIsInitialLoading', isLoading)
   },
   updateIsLoading({commit}, isLoading) {
     commit('updateIsLoading', isLoading)
   },
   resetState({commit}) {
     commit('resetJobs')
+    commit('updateIsInitialLoading', false)
     commit('updateIsLoading', false)
     commit('resetAllJobsQueried')
   },

@@ -4,13 +4,21 @@
     white
     wrap
   >
-    <v-flex xs12 sm8 offset-sm2>
-      <div class="title font-weight-bold py-3">
+    <v-flex xs12 sm10 offset-sm1 pb-3>
+      <div class="title textColor font-weight-bold py-3">
         求人を投稿
+      </div>
+      <div class="textColor">
+        <div>
+          このページで入力した情報に加えて、企業情報が募集ページに表示されます。
+        </div>
+        <div>
+          企業情報をまだ入力していない場合は、左のタブの企業・社員から入力をお願いします。
+        </div>
       </div>
     </v-flex>
     <!-- Top Image -->
-    <v-flex xs12 sm8 offset-sm2 class="py-3">
+    <v-flex xs12 sm10 offset-sm1 class="py-3">
       <v-img
         v-if="selectedImage"
         :src="selectedImage"
@@ -22,7 +30,7 @@
         {{ imageFileSizeWarning }}
       </p>
     </v-flex>
-    <v-flex xs12 sm8 offset-sm2 class="py-4 px-4 break">
+    <v-flex xs12 sm10 offset-sm1 class="py-4 px-4 break">
       <v-form v-model="valid" class="pb-5">
         <!-- Title -->
         <v-text-field
@@ -35,7 +43,7 @@
           required
         ></v-text-field>
         <v-textarea
-          class="pt-4"
+          class="pt-5"
           v-model="content"
           :rules="contentRules"
           counter="100"
@@ -45,7 +53,7 @@
           required
         ></v-textarea>
         <v-textarea
-          class="pt-4"
+          class="pt-5"
           v-model="description"
           :rules="descriptionRules"
           label="仕事内容（必須）"
@@ -53,7 +61,7 @@
           required
         ></v-textarea>
         <v-textarea
-          class="pt-4"
+          class="pt-5"
           v-model="wage"
           :rules="wageRules"
           label="給料（必須）"
@@ -61,7 +69,7 @@
           required
         ></v-textarea>
         <v-textarea
-          class="pt-4"
+          class="pt-5"
           v-model="requiredSkills"
           :rules="requiredSkillsRules"
           label="必要なスキル（必須）"
@@ -69,7 +77,7 @@
           required
         ></v-textarea>
         <v-textarea
-          class="pt-4"
+          class="pt-5"
           v-model="idealSkills"
           :rules="idealSkillsRules"
           label="あると好ましいスキル"
@@ -77,14 +85,14 @@
           required
         ></v-textarea>
         <v-textarea
-          class="pt-4"
+          class="pt-5"
           v-model="idealCandidate"
           :rules="idealCandidateRules"
           label="望ましい人物像"
           placeholder="望ましい人物像について"
           required
         ></v-textarea>
-        <v-flex sm6 pt-4>
+        <v-flex sm6 pt-5>
           <v-text-field
             v-model="workweek.days"
             :rules="workweekDaysRules"
@@ -118,20 +126,20 @@
           </p>
         </v-flex>
         <v-select
-          class="pt-4"
+          class="pt-5"
           v-model="workday"
           :items="workdayItems"
           label="勤務可能曜日（必須）"
         ></v-select>
         <v-select
-          class="pt-4"
+          class="pt-5"
           v-model="occupation"
           :items="occupationItems"
           label="募集職種（必須）"
         ></v-select>
         <v-textarea
           v-if="occupation == 'エンジニア'"
-          class="pt-4"
+          class="pt-5"
           v-model="environment"
           :rules="environmentRules"
           label="開発環境"
@@ -139,7 +147,7 @@
           required
         ></v-textarea>
         <v-select
-          class="pt-4"
+          class="pt-5"
           v-model="features"
           :items="featureItems"
           label="特徴"
@@ -147,7 +155,7 @@
           multiple
         ></v-select>
         <v-select
-          class="pt-4"
+          class="pt-5"
           v-model="industry"
           :items="industryItems"
           label="業界（必須）"
@@ -175,13 +183,12 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex'
-import { firestore, auth, storage, storageRef } from '@/plugins/firebase'
 
 export default {
   data: () => ({
     valid: true,
     imageFileSizeValid: true,
-    imageFileSizeWarning: '2MB以下の画像を選択してください',
+    imageFileSizeWarning: '5MB以下の画像を選択してください',
     selectedImageSize: 200,
     selectedImage: null,
     imageFile: null,
@@ -233,7 +240,7 @@ export default {
     period: null,
     periodRules: [
       v => !!v || '数字を入力してください',
-      v => (v <= 100) || '100時間以内で指定してください'
+      v => (v <= 48) || '48までで指定してください'
     ],
     workday: null,
     workdayItems: [
@@ -314,8 +321,8 @@ export default {
   methods: {
     onFileChange(e) {
       let files = e.target.files || e.dataTransfer.files
-      // 画像サイズは2MB以下のみ
-      if (files[0] != null && files[0].size/1024/1024 <= 2) {
+      // 画像サイズは5MB以下のみ
+      if (files[0] != null && files[0].size/1024/1024 <= 5) {
         this.imageFile = files[0]
         this.createImage(files[0])
       } else {
