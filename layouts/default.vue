@@ -271,6 +271,10 @@ export default {
   overflow-y: hidden;
   overflow-x: auto;
 }
+.message-right {
+  margin-right: 0px;
+  margin-left: auto;
+}
 div.v-toolbar__content {
   border-bottom: 0.1px solid;
   border-color: #E0E0E0;
