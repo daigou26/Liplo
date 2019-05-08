@@ -187,7 +187,6 @@ export const actions = {
         .where('picUnreadCount', '>', 0)
         .where('companyId', '==', companyId)
         .onSnapshot(function(snapshot) {
-          console.log('CompanyMessagesListener', snapshot);
           if (!snapshot.empty) {
             commit('updateHasNewMessage', true)
           } else {

@@ -191,14 +191,14 @@ export const actions = {
                 ],
                 datasets: [{
                     data: [feedbackRate, (100 - feedbackRate)],
-                    backgroundColor: ['teal','burlywood']
+                    backgroundColor: ['#26A69A','#EEEEEE']
                 }],
               }
               const feedbackChartOptions = {
                 elements: {
                   center: {
                     text: String(feedbackRate) + '%',
-                    color: '#36A2EB',
+                    color: 'teal',
                     fontStyle: 'Helvetica',
                     sidePadding: 50
                   }
@@ -212,19 +212,23 @@ export const actions = {
               commit('setFeedbackChartData', feedbackChartData)
               commit('setFeedbackChartOptions', feedbackChartOptions)
             }
+            commit('updateIsLoading', false)
           } else {
             // 404
             console.log('404')
+            commit('updateIsLoading', false)
             nuxt.error({ statusCode: 404, message: 'not found' })
           }
         })
         .catch(function(error) {
           console.log("Error getting document:", error)
+          commit('updateIsLoading', false)
           nuxt.error({ statusCode: 404, message: 'not found' })
 
         })
       } else {
         console.log('404')
+        commit('updateIsLoading', false)
         nuxt.error({ statusCode: 404, message: 'not found' })
       }
   },
