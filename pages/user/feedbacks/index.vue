@@ -145,7 +145,7 @@ export default {
     if (this.uid != null && this.uid != '' && !this.isQueried) {
       this.resetState()
       this.updateIsInitialLoading(true)
-      this.queryFeedbacks({uid: this.uid, feedbacks: this.feedbacks})
+      this.queryFeedbacks({uid: this.uid, companyId: null})
     }
   },
   watch: {
@@ -154,7 +154,7 @@ export default {
         this.isQueried = true
         this.resetState()
         this.updateIsInitialLoading(true)
-        this.queryFeedbacks({uid: uid, feedbacks: this.feedbacks})
+        this.queryFeedbacks({uid: uid, companyId: null})
       }
     }
   },
@@ -164,7 +164,7 @@ export default {
         if (!this.isFeedbacksLoading && this.uid != null) {
           this.count += 1
           this.updateIsLoading(true)
-          this.queryFeedbacks({uid: this.uid, feedbacks: this.feedbacks})
+          this.queryFeedbacks({uid: this.uid, companyId: null})
         }
         if (this.count > 30) {
           $state.complete()

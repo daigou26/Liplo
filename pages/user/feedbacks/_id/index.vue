@@ -126,7 +126,7 @@ export default {
     if (this.uid != null && this.uid != '' && !this.isQueried) {
       this.resetState()
       this.updateIsLoading(true)
-      this.queryFeedback({nuxt: this.$nuxt, params: this.$route.params})
+      this.queryFeedback({nuxt: this.$nuxt, params: this.$route.params, uid: this.uid})
     }
   },
   watch: {
@@ -135,7 +135,7 @@ export default {
         this.isQueried = true
         this.resetState()
         this.updateIsLoading(true)
-        this.queryFeedback({nuxt: this.$nuxt, params: this.$route.params})
+        this.queryFeedback({nuxt: this.$nuxt, params: this.$route.params, uid: uid})
       }
     }
   },

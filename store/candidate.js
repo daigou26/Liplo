@@ -202,6 +202,7 @@ export const actions = {
       candidateData.career = {
         internOccupation: occupation,
       }
+      candidateData.internOccupation = occupation
     }
     if (newStatus.pass) {
       candidateData.pass = pass

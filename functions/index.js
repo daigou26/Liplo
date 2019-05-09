@@ -223,6 +223,7 @@ exports.sendFeedback = functions.region('asia-northeast1')
     }
 
     const companyId = context.params.companyId
+    const internOccupation = newValue.internOccupation
     const feedback = newValue.feedback
     const updatedAt = newValue.updatedAt
     const user = newValue.user
@@ -241,6 +242,7 @@ exports.sendFeedback = functions.region('asia-northeast1')
             userName: user.name,
             companyId: companyId,
             companyName: companyName,
+            occupation: internOccupation,
             createdAt: updatedAt,
           }
           if (user.imageUrl) {

@@ -4,7 +4,19 @@
     row
     wrap
   >
+    <!-- loading -->
+    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
+      <v-layout justify-center>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex v-else-if="isLoading" xs12 :style="{ height: windowHeight + 'px' }">
+      <v-layout align-center justify-center column fill-height>
+        Now Loading...
+      </v-layout>
+    </v-flex>
     <v-flex
+      v-else
       xs12
       md10
       offset-md1
@@ -25,17 +37,20 @@
           </v-list-tile>
         </v-list>
       </v-card>
-      <div style="padding-left: 72px">
+      <div class="textColor px-3 pt-4">
+        職種：　{{ occupation }}
+      </div>
+      <div class="pt-2 textColor px-3">
         インターン終了時期：　{{ timestamp }}
       </div>
-      <div class="pt-4 px-3">
+      <div class="pt-5 px-3">
         <div class="pt-3 subheading font-weight-bold">
           フィードバック
         </div>
         <v-form v-model="feedbackValid">
-          <!-- 良い点 -->
+          <!-- 良かった点 -->
           <v-textarea
-            label="良い点"
+            label="良かった点"
             v-model="goodPoint"
             :rules="feedbackRules"
             required
@@ -68,6 +83,7 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data: () => ({
     isQueried: false,
+    windowHeight: 0,
     feedbackValid: true,
     goodPoint: '',
     advice: '',
@@ -84,24 +100,37 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
+      isRefreshing: state => state.isRefreshing,
       companyId: state => state.profile.companyId,
       userName: state => state.feedback.userName,
       profileImageUrl: state => state.feedback.profileImageUrl,
+      occupation: state => state.feedback.occupation,
       createdAt: state => state.feedback.createdAt,
       timestamp: state => state.feedback.timestamp,
+      isLoading: state => state.feedback.isLoading,
     }),
   },
   mounted() {
+    let toolbarHeight
+    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+      toolbarHeight = 48
+    } else {
+      toolbarHeight = 64
+    }
+    this.windowHeight = window.innerHeight - toolbarHeight - 30
+
     if (this.companyId != null && !this.isQueried) {
       this.resetState()
+      this.updateIsLoading(true)
       this.queryFeedback({nuxt: this.$nuxt, params: this.params, companyId: this.companyId})
     }
   },
   watch: {
     companyId(companyId) {
       if (companyId != null && companyId != '') {
-        this.resetState()
         this.isQueried = true
+        this.resetState()
+        this.updateIsLoading(true)
         this.queryFeedback({nuxt: this.$nuxt, params: this.params, companyId: companyId})
       }
     }
@@ -118,6 +147,7 @@ export default {
     ...mapActions({
       queryFeedback: 'feedback/queryFeedback',
       sendFeedback: 'feedback/sendFeedback',
+      updateIsLoading: 'feedback/updateIsLoading',
       resetState: 'feedback/resetState',
     }),
   }
