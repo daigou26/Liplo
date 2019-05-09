@@ -50,7 +50,7 @@ export const actions = {
   queryCompanyReviews({commit, state}, companyId) {
     const reviews = state.companyReviews
     if (reviews.length == 0) {
-      return firestore.collection('reviews')
+      firestore.collection('reviews')
         .where('companyId', '==', companyId)
         .orderBy('createdAt', 'desc')
         .limit(20)
@@ -101,7 +101,7 @@ export const actions = {
     } else if (reviews.length != 0) {
       const lastIndex = reviews.length - 1
       const lastDate = reviews[lastIndex].createdAt
-      return firestore.collection('reviews')
+      firestore.collection('reviews')
         .where('companyId', '==', companyId)
         .orderBy('createdAt', 'desc')
         .startAfter(lastDate)

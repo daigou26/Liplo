@@ -40,7 +40,7 @@
         </template>
       </v-data-table>
       <infinite-loading
-        v-if="showInfiniteLoading && reviews && reviews.length >= 10 && !isLoading"
+        v-if="showInfiniteLoading && reviews && reviews.length >= 20 && !isLoading"
         :distance="50"
         spinner="waveDots"
         @infinite="infiniteHandler">
