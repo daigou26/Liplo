@@ -12,7 +12,7 @@ export const state = () => ({
   chatId: null,
   isEditingTags: false,
   isEditingPass: false,
-  isLoading: true,
+  isLoading: false,
   messages: [],
   isInitialQuery: true,
   isMessagesLoading: false,
@@ -108,6 +108,7 @@ export const actions = {
           commit('setType', doc.data()['type'])
           commit('setJobId', doc.data()['jobId'])
           commit('setChatId', doc.data()['chatId'])
+
           commit('updateIsLoading', false)
 
           if (doc.data()['status'].rejected || doc.data()['status'].hired) {
@@ -151,7 +152,9 @@ export const actions = {
   updatePass({commit, state}, {params, companyId, expirationDate, occupation}) {
     const candidateId = params.id
     var pass = state.pass
-    pass.expirationDate = expirationDate
+
+    var expirationDateArr = expirationDate.split('-')
+    pass.expirationDate = new Date(expirationDateArr[0], expirationDateArr[1] - 1, expirationDateArr[2]),
     pass.occupation = occupation
 
     const batch = firestore.batch()
@@ -301,6 +304,7 @@ export const actions = {
     if (reviews) {
       // 新規レビュー or 編集
       if (type == 'new') {
+        console.log('new');
         reviews.count += 1
         reviews.comments.push(comment)
       } else if (type == 'edit') {
@@ -360,9 +364,21 @@ export const actions = {
             var docCount = 0
             snapshot.forEach(function(doc) {
               docCount += 1
+
+              var timestamp = doc.data()['createdAt']
+              if (timestamp) {
+                let date = new Date( timestamp.seconds * 1000 )
+                let year  = date.getFullYear()
+                let month = date.getMonth() + 1
+                let day  = date.getDate()
+                let hours = date.getHours()
+                let minutes = date.getMinutes()
+                timestamp = `${year}/${month}/${day} ${hours}:${minutes}`
+              }
               const message = {
                 message: doc.data()['message'],
                 createdAt: doc.data()['createdAt'],
+                timestamp: timestamp,
                 pic: doc.data()['pic'],
                 user: doc.data()['user'],
               }
@@ -407,9 +423,21 @@ export const actions = {
 
                 snapshot.docChanges().forEach(function(change) {
                   if (change.type === "added") {
+                    var timestamp = change.doc.data()['createdAt']
+                    if (timestamp) {
+                      let date = new Date( timestamp.seconds * 1000 )
+                      let year  = date.getFullYear()
+                      let month = date.getMonth() + 1
+                      let day  = date.getDate()
+                      let hours = date.getHours()
+                      let minutes = date.getMinutes()
+                      timestamp = `${year}/${month}/${day} ${hours}:${minutes}`
+                    }
+
                     const message = {
                       message: change.doc.data()['message'],
                       createdAt: change.doc.data()['createdAt'],
+                      timestamp: timestamp,
                       pic: change.doc.data()['pic'],
                       user: change.doc.data()['user'],
                     }
@@ -435,9 +463,21 @@ export const actions = {
             var docCount = 0
             snapshot.forEach(function(doc) {
               docCount += 1
+
+              var timestamp = doc.data()['createdAt']
+              if (timestamp) {
+                let date = new Date( timestamp.seconds * 1000 )
+                let year  = date.getFullYear()
+                let month = date.getMonth() + 1
+                let day  = date.getDate()
+                let hours = date.getHours()
+                let minutes = date.getMinutes()
+                timestamp = `${year}/${month}/${day} ${hours}:${minutes}`
+              }
               const message = {
                 message: doc.data()['message'],
                 createdAt: doc.data()['createdAt'],
+                timestamp: timestamp,
                 pic: doc.data()['pic'],
                 user: doc.data()['user'],
               }
@@ -458,6 +498,9 @@ export const actions = {
       }
     }
   },
+  updateIsLoading({commit}, isLoading) {
+    commit('updateIsLoading', isLoading)
+  },
   resetUnsubscribe({commit}) {
     commit('updateUnsubscribe', null)
   },
@@ -468,12 +511,15 @@ export const actions = {
     commit('setTags', null)
     commit('setType', null)
     commit('setJobId', null)
+    commit('setChatId', null)
     commit('updateIsEditingTags', false)
+    commit('updateIsEditingPass', false)
     commit('updateIsLoading', true)
     commit('resetMessages')
     commit('updateIsInitialQuery', true)
     commit('updateIsMessagesLoading', false)
     commit('resetAllMessagesQueried')
     commit('updateUnsubscribe', null)
+    commit('updateIsNewMessage', false)
   }
 }

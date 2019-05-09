@@ -587,8 +587,8 @@ export const actions = {
   },
   updateCompanyInfo({commit}, {companyId, email, location, foundedDate, url, employeesCount}) {
     if (foundedDate) {
-      var arr = foundedDate.split('-')
-      foundedDate = new Date(arr[0], arr[1] - 1, arr[2])
+      var foundedDateArr = foundedDate.split('-')
+      foundedDate = new Date(foundedDateArr[0], foundedDateArr[1] - 1, foundedDateArr[2])
     }
     if (email) {
       const batch = firestore.batch()

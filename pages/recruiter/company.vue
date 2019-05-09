@@ -1018,11 +1018,9 @@
               <v-form v-model="editCompanyInfoValid">
                 <!-- 設立日 -->
                 <v-menu
-                  ref="foundedDateMenu"
                   v-model="foundedDateMenu"
                   :close-on-content-click="false"
                   :nudge-right="40"
-                  :return-value.sync="tempFoundedDate"
                   lazy
                   transition="scale-transition"
                   offset-y
@@ -1036,14 +1034,11 @@
                       append-icon="event"
                       solo
                       readonly
+                      required
                       v-on="on"
                     ></v-text-field>
                   </template>
-                  <v-date-picker v-model="tempFoundedDate" color="teal" locale="ja">
-                    <v-spacer></v-spacer>
-                    <v-btn flat color="teal" @click="foundedDateMenu = false">Cancel</v-btn>
-                    <v-btn flat color="teal" @click="$refs.foundedDateMenu.save(tempFoundedDate)">OK</v-btn>
-                  </v-date-picker>
+                  <v-date-picker v-model="tempFoundedDate" @input="foundedDateMenu = false"></v-date-picker>
                 </v-menu>
                 <v-text-field
                   solo
@@ -1434,7 +1429,7 @@ export default {
         this.tempFoundedDate =
           String(this.foundedDate.getFullYear()) + '-' +
           String(this.foundedDate.getMonth() + 1) + '-' +
-          String(this.foundedDate.getDay())
+          String(this.foundedDate.getDate())
       }
 
       this.tempLocation = this.location

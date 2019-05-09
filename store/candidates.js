@@ -3,6 +3,7 @@ import { firestore } from '@/plugins/firebase'
 
 export const state = () => ({
   candidates: [],
+  isInitialLoading: false,
   isLoading: false,
   allCandidatesQueried: false,
 })
@@ -13,6 +14,9 @@ export const mutations = {
   },
   resetCandidates(state) {
     state.candidates = []
+  },
+  updateIsInitialLoading(state, isLoading) {
+    state.isInitialLoading = isLoading
   },
   updateIsLoading(state, isLoading) {
     state.isLoading = isLoading
@@ -35,7 +39,7 @@ export const actions = {
         .where('status.rejected', '==', false)
         .where('status.hired', '==', false)
         .orderBy('createdAt', 'desc')
-        .limit(10)
+        .limit(20)
         .get()
         .then(function(snapshot) {
           var docCount = 0
@@ -68,9 +72,12 @@ export const actions = {
           if (docCount == 0) {
             commit('setAllCandidatesQueried')
           }
+          commit('updateIsInitialLoading', false)
           commit('updateIsLoading', false)
         })
         .catch(function(error) {
+          commit('updateIsInitialLoading', false)
+          commit('updateIsLoading', false)
           console.log("Error getting document:", error);
         })
     } else if (candidates.length != 0) {
@@ -83,7 +90,7 @@ export const actions = {
         .where('status.hired', '==', false)
         .orderBy('createdAt', 'desc')
         .startAfter(lastDate)
-        .limit(10)
+        .limit(20)
         .get()
         .then(function(snapshot) {
           var docCount = 0
@@ -119,15 +126,20 @@ export const actions = {
           commit('updateIsLoading', false)
         })
         .catch(function(error) {
+          commit('updateIsLoading', false)
           console.log("Error getting document:", error);
         })
     }
+  },
+  updateIsInitialLoading({commit}, isLoading) {
+    commit('updateIsInitialLoading', isLoading)
   },
   updateIsLoading({commit}, isLoading) {
     commit('updateIsLoading', isLoading)
   },
   resetState({commit}) {
     commit('resetCandidates')
+    commit('updateIsInitialLoading', false)
     commit('updateIsLoading', false)
     commit('resetAllCandidatesQueried')
   },
