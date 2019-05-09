@@ -52,7 +52,7 @@ export const actions = {
 
     if (feedbacks.length == 0) {
       feedbacksRef
-        .limit(10)
+        .limit(20)
         .get()
         .then(function(snapshot) {
           var docCount = 0
@@ -97,7 +97,7 @@ export const actions = {
       const lastDate = feedbacks[lastIndex].createdAt
       feedbacksRef
         .startAfter(lastDate)
-        .limit(10)
+        .limit(20)
         .get()
         .then(function(snapshot) {
           var docCount = 0

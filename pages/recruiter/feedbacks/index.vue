@@ -93,7 +93,7 @@
           まだフィードバックを書いていません。
         </div>
         <infinite-loading
-          v-if="showInfiniteLoading && feedbacks && feedbacks.length >= 10 && !isLoading"
+          v-if="showInfiniteLoading && feedbacks && feedbacks.length >= 20 && !isLoading"
           :distance="50"
           spinner="waveDots"
           @infinite="infiniteHandler">
@@ -189,7 +189,7 @@ export default {
           this.updateIsLoading(true)
           this.queryFeedbacks({uid: null, companyId: this.companyId})
         }
-        if (this.count > 30) {
+        if (this.count > 50) {
           $state.complete()
         } else {
           $state.loaded()
