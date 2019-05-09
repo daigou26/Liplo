@@ -190,5 +190,7 @@ export const actions = {
     commit('setBirthTimestamp', '')
     commit('setDesiredOccupatins', null)
     commit('setInterstingFields', null)
+    commit('updateIsCandidate', false)
+    commit('updateIsLoading', false)
   },
 }

@@ -10,7 +10,6 @@ export const state = () => ({
   sales: false,
   others: false,
   toolbarExtension: false,
-  loading: false,
 })
 
 export const mutations = {
@@ -68,10 +67,6 @@ export const mutations = {
   resetToolbarExtension(state) {
     state.toolbarExtension = false
   },
-  // loading
-  updateLoading(state, isLoading) {
-    state.loading = isLoading
-  }
 }
 
 export const actions = {
@@ -197,6 +192,10 @@ export const actions = {
   },
   resetState({commit}) {
     commit('resetUsers')
+    commit('updateEngineer', false)
+    commit('updateDesigner', false)
+    commit('updateSales', false)
+    commit('updateOthers', false)
     commit('updateIsLoading', false)
     commit('resetAllUsersQueried')
   },

@@ -208,6 +208,7 @@ export const actions = {
   },
   resetState({commit}) {
     commit('resetChats')
+    commit('updateIsInitialLoading', false)
     commit('updateIsLoading', false)
     commit('setAllChatsQueried', false)
   },

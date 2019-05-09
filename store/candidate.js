@@ -519,7 +519,5 @@ export const actions = {
     commit('updateIsInitialQuery', true)
     commit('updateIsMessagesLoading', false)
     commit('resetAllMessagesQueried')
-    commit('updateUnsubscribe', null)
-    commit('updateIsNewMessage', false)
   }
 }

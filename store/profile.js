@@ -686,6 +686,7 @@ export const actions = {
     commit('setBirthTimestamp', '')
     commit('updateIsEditingUserInfo', null)
     commit('setAcceptedOffers', [])
+    commit('updateIsLoading', false)
   },
   resetState({commit}) {
     commit('setImageUrl', '')
