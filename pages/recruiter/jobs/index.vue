@@ -34,7 +34,7 @@
               width="100"
             />
           </td>
-          <td style="min-width: 250 px">{{ props.item.title }}</td>
+          <td style="min-width: 250px">{{ props.item.title }}</td>
           <td class="text-xs-left">
             <span v-if="props.item.status == 'published'" class="font-weight-bold teal--text text--lighten-2">公開中</span>
             <span v-else-if="props.item.status == 'draft'" class="font-weight-bold grey--text">下書き</span>
