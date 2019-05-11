@@ -187,10 +187,10 @@
                 <v-icon v-else>person</v-icon>
               </v-avatar>
               <v-list>
-                <v-list-tile to="/users">
-                  <v-list-tile-title>スカウト</v-list-tile-title>
+                <v-list-tile to="/users" class="hidden-sm-and-up">
+                  <v-list-tile-title>ユーザー検索</v-list-tile-title>
                 </v-list-tile>
-                <v-divider></v-divider>
+                <v-divider class="hidden-sm-and-up"></v-divider>
                 <v-list-tile to="/recruiter/profile">
                   <v-list-tile-title>プロフィール</v-list-tile-title>
                 </v-list-tile>
