@@ -127,8 +127,8 @@
             class="border-side"
           >
             <!-- companyName -->
-            <div>
-              <v-btn flat :to="'/companies/' + companyId">{{ companyName }}</v-btn>
+            <div class="break pa-3 teal--text">
+              <nuxt-link :to="'/companies/' + companyId" class="link-text">{{ companyName }}</nuxt-link>
             </div>
             <!-- message -->
             <v-flex
@@ -466,7 +466,7 @@ export default {
     }
     this.windowHeight = window.innerHeight - toolbarHeight - 4
     // companyName section = 48  userInput section = 63
-    this.messagesHeight = this.windowHeight - 48 - 63
+    this.messagesHeight = this.windowHeight - 48 - 63 - 3
 
     this.showInfiniteLoading = true
 

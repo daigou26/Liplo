@@ -35,7 +35,13 @@
                 readonly
               />
             </td>
-            <td style="min-width: 250px">{{ props.item.content.substr(0, 30) }}{{ props.item.content.length > 30 ? '...' : '' }}</td>
+            <td
+              class="break"
+              style="min-width: 250px"
+            >
+              {{ props.item.content.substr(0, 30) }}
+              {{ props.item.content.length > 30 ? '...' : '' }}
+            </td>
           </n-link>
         </template>
       </v-data-table>

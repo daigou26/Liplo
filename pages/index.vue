@@ -70,8 +70,12 @@
                 <v-hover>
                   <v-card
                     slot-scope="{ hover }"
-                    class="mb-5"
-                    :class="`elevation-${hover ? 12 : 2}`"
+                    :class="{
+                      'mb-5': $vuetify.breakpoint.smAndUp,
+                      'mb-4': $vuetify.breakpoint.xsOnly,
+                      'elevation-12': hover && !$vuetify.breakpoint.xsOnly,
+                      'elevation-2': !hover,
+                    }"
                   >
                     <v-card flat :to='"jobs/" + job.jobId' class="clickable">
                       <v-img
@@ -80,10 +84,9 @@
                       ></v-img>
                       <div
                         class="pt-3 px-4 text-xs-left caption textColor font-weight-bold"
-                        id="job-tags"
                       >
-                        <span class="px-2 py-1">{{ occupation(job.occupation) }}</span>
-                        <span class="ml-2 px-2 py-1">{{ job.period }}ヶ月</span>
+                        <v-chip outline small color="teal">{{ occupation(job.occupation) }}</v-chip>
+                        <v-chip outline small color="blue-grey ">{{ job.period }}ヶ月</v-chip>
                       </div>
                       <v-card-title primary-title class="px-4 pt-3">
                         <div class="text-xs-left">
@@ -92,11 +95,11 @@
                               'headline': $vuetify.breakpoint.smAndUp,
                               'title': $vuetify.breakpoint.xsOnly,
                             }"
-                            class="textColor font-weight-bold mb-0"
+                            class="textColor font-weight-bold break mb-0"
                           >
                             {{ job.title }}
                           </h3>
-                          <div class="textColor pt-3">{{ job.content }}</div>
+                          <div class="textColor break pt-3">{{ job.content }}</div>
                         </div>
                       </v-card-title>
                     </v-card>
@@ -117,11 +120,11 @@
                               class="textColor font-weight-bold"
                             >
                               {{ job.companyName }}
-                              <span v-show="hover" class="pl-2 caption green--text">企業情報を見る</span>
                             </v-list-tile-title>
-                            <v-list-tile-sub-title v-if="job.rating">
+                            <v-list-tile-sub-title>
                               <v-card-actions class="pa-0">
                                 <v-rating
+                                  v-if="job.rating"
                                   v-model="job.rating.all"
                                   background-color="teal"
                                   color="teal darken-1"
@@ -129,7 +132,8 @@
                                   half-increments
                                   readonly
                                 />
-                                <span class="pl-1 textColor">{{ job.rating.count }}</span>
+                                <span v-if="job.rating" class="pl-1 pr-3 textColor">{{ job.rating.count }}</span>
+                                <span v-show="hover" class="caption green--text">企業情報を見る</span>
                               </v-card-actions>
                             </v-list-tile-sub-title>
                           </v-list-tile-content>
@@ -217,7 +221,7 @@
                   <nuxt-link to="/" class="font-weight-bold textColor">利用規約</nuxt-link>
                 </div>
                 <div class="pb-2">
-                  <nuxt-link to="/" class="font-weight-bold textColor">プライバシ</nuxt-link>
+                  <nuxt-link to="/" class="font-weight-bold textColor">プライバシー</nuxt-link>
                 </div>
               </v-flex>
             </v-layout>

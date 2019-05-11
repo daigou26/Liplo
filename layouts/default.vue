@@ -158,13 +158,6 @@ export default {
 </script>
 
 <style>
-#job-tags span {
-  border: 1px solid;
-  border-color: #777777;
-  border-radius: 15px;
-  -webkit-border-radius: 15px;
-  -moz-border-radius: 15px;
-}
 #footer a{
   text-decoration: none;
 }

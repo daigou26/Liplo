@@ -63,7 +63,7 @@
                 </template>
                 <v-card class="py-3 textColor">
                   <div class="mb-1 light-text-color">{{ item.startedAt }}</div>
-                  <div class="title font-weight-bold mb-3 return">{{ item.companyName }}</div>
+                  <div class="title font-weight-bold mb-3">{{ item.companyName }}</div>
                   <div class="pb-1">職種:　{{ item.occupation }}</div>
                   <div v-if="!item.end">
                     勤務中
