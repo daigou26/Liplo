@@ -43,11 +43,10 @@
         <!-- タグ -->
         <div
           class="pt-3 text-xs-left caption textColor font-weight-bold"
-          id="job-tags"
         >
-          <span class="px-2 py-1">{{ occupationText(occupation) }}</span>
+          <v-chip outline small color="teal">{{ occupationText(occupation) }}</v-chip>
           <template v-if="value" v-for="(value, feature, index) in features">
-            <span class="ml-2 px-2 py-1">{{ featuresText(feature) }}</span>
+            <v-chip outline small>{{ featuresText(feature) }}</v-chip>
           </template>
         </div>
       </v-flex>

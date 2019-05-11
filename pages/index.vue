@@ -80,10 +80,9 @@
                       ></v-img>
                       <div
                         class="pt-3 px-4 text-xs-left caption textColor font-weight-bold"
-                        id="job-tags"
                       >
-                        <span class="px-2 py-1">{{ occupation(job.occupation) }}</span>
-                        <span class="ml-2 px-2 py-1">{{ job.period }}ヶ月</span>
+                        <v-chip outline small color="teal">{{ occupation(job.occupation) }}</v-chip>
+                        <v-chip outline small color="blue-grey ">{{ job.period }}ヶ月</v-chip>
                       </div>
                       <v-card-title primary-title class="px-4 pt-3">
                         <div class="text-xs-left">
