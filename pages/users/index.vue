@@ -117,6 +117,30 @@
           </v-hover>
         </template>
       </v-list>
+      <v-card
+        v-if="users == null || users.length == 0"
+        class="px-3 py-4"
+        :class="{
+          'mx-3': $vuetify.breakpoint.xsOnly,
+          'mt-4': $vuetify.breakpoint.mdAndUp,
+          'mt-3': $vuetify.breakpoint.smAndDown,
+        }"
+      >
+        <div class="text-xs-center">
+          <div
+            class="textColor"
+            :class="{
+              'title': $vuetify.breakpoint.xsOnly,
+              'headline': $vuetify.breakpoint.smAndUp,
+            }"
+          >
+            ユーザーが見つかりません
+          </div>
+          <div class="pt-3 light-text-color">
+            絞り込みをしている場合は、条件を変えて検索してください
+          </div>
+        </div>
+      </v-card>
       <infinite-loading
         v-if="showInfiniteLoading && users && users.length >= 10 && !isLoading"
         spinner="waveDots"

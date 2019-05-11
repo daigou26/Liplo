@@ -87,20 +87,6 @@ export const actions = {
     if (Array.isArray(occupationParams) && occupationParams.length == 1) {
       usersRef = usersRef.where(`desiredOccupations.${occupationParams[0]}`, '==', true)
     }
-    // if (Array.isArray(occupationParams) && occupationParams.length > 1) {
-    //   if (!occupationParams.includes('engineer')) {
-    //     usersRef = usersRef.where('desiredOccupations.engineer', '==', false)
-    //   }
-    //   if (!occupationParams.includes('designer')) {
-    //     usersRef = usersRef.where('desiredOccupations.designer', '==', false)
-    //   }
-    //   if (!occupationParams.includes('sales')) {
-    //     usersRef = usersRef.where('desiredOccupations.sales', '==', false)
-    //   }
-    //   if (!occupationParams.includes('others')) {
-    //     usersRef = usersRef.where('desiredOccupations.others', '==', false)
-    //   }
-    // }
 
     if (users.length == 0) {
       return usersRef
