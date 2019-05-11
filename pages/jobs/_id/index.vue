@@ -521,7 +521,7 @@
                   </v-flex>
                   <!-- chart -->
                   <v-flex md4 hidden-sm-and-down>
-                    <radar-chart v-if="showChart && reviewChartData" :data="reviewChartData" :options="reviewChartOptions" />
+                    <radar-chart v-if="showChart && reviewsChartData" :data="reviewsChartData" :options="reviewsChartOptions" />
                   </v-flex>
                 </div>
               </div>
@@ -684,9 +684,9 @@
                   </v-card>
                 </v-hover>
                 <radar-chart
-                  v-if="showChart && reviewChartData"
-                  :data="reviewChartData"
-                  :options="reviewChartOptions"
+                  v-if="showChart && reviewsChartData"
+                  :data="reviewsChartData"
+                  :options="reviewsChartOptions"
                 />
                 <v-list class="pl-3">
                   <template v-for="(item, index) in reviews.comments">
@@ -999,7 +999,7 @@ export default {
     showInfiniteLoading: false,
     reviewsDialog: false,
     otherReviewsDialog: false,
-    reviewChartOptions: {
+    reviewsChartOptions: {
       responsive: true,
       maintainAspectRatio: false,
       legend: {
@@ -1146,7 +1146,7 @@ export default {
       feedback: state => state.job.feedback,
       applicants: state => state.job.applicants,
       reviews: state => state.job.reviews,
-      reviewChartData: state => state.job.reviewChartData,
+      reviewsChartData: state => state.job.reviewsChartData,
       isLoading: state => state.job.isLoading,
       isCandidate: state => state.job.isCandidate,
       allReviews: state => state.reviews.companyReviews,

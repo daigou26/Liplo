@@ -1,5 +1,21 @@
 import Vue from 'vue'
-import { Radar, Doughnut } from 'vue-chartjs'
+import { HorizontalBar, Bar, Radar, Doughnut } from 'vue-chartjs'
+
+Vue.component('horizontal-bar-chart', {
+  extends: HorizontalBar,
+  props: ['data', 'options'],
+  mounted () {
+    this.renderChart(this.data, this.options)
+  }
+})
+
+Vue.component('bar-chart', {
+  extends: Bar,
+  props: ['data', 'options'],
+  mounted () {
+    this.renderChart(this.data, this.options)
+  }
+})
 
 Vue.component('radar-chart', {
   extends: Radar,

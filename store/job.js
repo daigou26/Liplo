@@ -35,7 +35,7 @@ export const state = () => ({
   employeesCount: null,
   feedback: null,
   reviews: null,
-  reviewChartData: null,
+  reviewsChartData: null,
   isCandidate: false,
   isLoading: false,
 })
@@ -140,8 +140,8 @@ export const mutations = {
   setReviews(state, reviews) {
     state.reviews = reviews
   },
-  setReviewChartData(state, data) {
-    state.reviewChartData = data
+  setReviewsChartData(state, data) {
+    state.reviewsChartData = data
   },
   updateIsCandidate(state, isCandidate) {
     state.isCandidate = isCandidate
@@ -234,7 +234,7 @@ export const actions = {
                       // chart Data
                       const reviews = companyDoc.data()['reviews']
                       if (reviews) {
-                        const reviewChartData = {
+                        const reviewsChartData = {
                           labels: [
                             '成長できるか',
                             '仕事内容',
@@ -260,7 +260,7 @@ export const actions = {
                             }
                           ]
                         }
-                        commit('setReviewChartData', reviewChartData)
+                        commit('setReviewsChartData', reviewsChartData)
                       }
 
                       isCompanyDetailQueried = true
@@ -399,7 +399,7 @@ export const actions = {
     commit('setCreatedAt', '')
     commit('setFeedback', null)
     commit('setReviews', null)
-    commit('setReviewChartData', null)
+    commit('setReviewsChartData', null)
     commit('updateIsCandidate', false)
     commit('updateIsLoading', false)
   }

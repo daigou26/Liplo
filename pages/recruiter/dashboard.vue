@@ -21,36 +21,39 @@
         white
         wrap
       >
-        <template v-for="(item, index) in items">
-          <v-flex
-            sm3
-            xs6
-            :class="{
-              'pa-3': $vuetify.breakpoint.mdAndUp,
-            }"
-          >
-            <v-card
-              :flat="flat"
-            >
-              <v-container>
-                <v-card-text
-                  class="text-xs-center break"
-                  :class="{
-                    'pa-0': $vuetify.breakpoint.mdAndDown,
-                  }"
-                >
-                  <div class="headline font-weight-bold">
-                    <span v-if="currentCandidates">{{ currentCandidates[item.prop] }}</span>
-                    <span v-else>0</span>
-                  </div>
-                  <div class="pt-2">
-                    {{ item.title }}
-                  </div>
-                </v-card-text>
-              </v-container>
-            </v-card>
-          </v-flex>
-        </template>
+        <v-flex
+          xs12
+          :class="{
+            'pa-4': $vuetify.breakpoint.mdAndUp,
+          }"
+        >
+          <v-card :flat="flat">
+            <div class="title textColor font-weight-bold pa-4">
+              候補者
+            </div>
+            <div v-if="!isCurrentCandidatesExist" class="textColor text-xs-center pb-4">
+              現在、候補者がいません
+            </div>
+            <bar-chart
+              v-else-if="showChart && candidatesChartData && !(breakpoint == 'xs' || breakpoint == 'sm')"
+              :class="{
+                'pa-4': $vuetify.breakpoint.smAndUp,
+                'pa-3': $vuetify.breakpoint.xsOnly,
+              }"
+              :data="candidatesChartData"
+              :options="candidatesBarChartOptions"
+            />
+            <horizontal-bar-chart
+              v-else-if="showChart && candidatesChartData && (breakpoint == 'xs' || breakpoint == 'sm')"
+              :class="{
+                'pa-4': $vuetify.breakpoint.smAndUp,
+                'pa-3': $vuetify.breakpoint.xsOnly,
+              }"
+              :data="candidatesChartData"
+              :options="candidatesHorizontalBarChartOptions"
+            />
+          </v-card>
+        </v-flex>
         <v-flex xs12 hidden-md-and-up>
           <v-divider></v-divider>
         </v-flex>
@@ -58,7 +61,7 @@
           sm6
           xs12
           :class="{
-            'pa-3': $vuetify.breakpoint.mdAndUp,
+            'pa-4': $vuetify.breakpoint.mdAndUp,
           }"
         >
           <v-card
@@ -84,8 +87,12 @@
                   'pa-2': $vuetify.breakpoint.xsOnly,
                 }"
               >
-                <radar-chart v-if="showChart && reviewChartData" :data="reviewChartData" :options="reviewChartOptions" />
-                <div v-else>
+                <radar-chart
+                  v-if="showChart && reviewsChartData"
+                  :data="reviewsChartData"
+                  :options="reviewsChartOptions"
+                />
+                <div v-else class="textColor">
                   まだデータがありません
                 </div>
               </div>
@@ -98,7 +105,7 @@
           sm6
           xs12
           :class="{
-            'pa-3': $vuetify.breakpoint.mdAndUp,
+            'pa-4': $vuetify.breakpoint.mdAndUp,
           }"
         >
           <v-card
@@ -119,8 +126,12 @@
               <div
                 class="text-xs-center pa-5"
               >
-                <doughnut-chart v-if="showChart && feedbackChartData && feedbackChartOptions" :data="feedbackChartData" :options="feedbackChartOptions" />
-                <div v-else>
+                <doughnut-chart
+                  v-if="showChart && feedbacksChartData && feedbacksChartOptions"
+                  :data="feedbacksChartData"
+                  :options="feedbacksChartOptions"
+                />
+                <div v-else class="textColor">
                   まだデータがありません
                 </div>
               </div>
@@ -141,26 +152,41 @@ export default {
     return {
       isQueried: false,
       windowHeight: 0,
-      items: [
-        {
-          title: '応募者',
-          prop: 'inbox'
-        },
-        {
-          title: '選考中',
-          prop: 'inProcess'
-        },
-        {
-          title: 'インターン',
-          prop: 'intern'
-        },
-        {
-          title: '採用済み',
-          prop: 'hired'
-        },
-      ],
       showChart: false,
-      reviewChartOptions: {
+      candidatesBarChartOptions: {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {
+          display: false
+        },
+        scales: {
+          xAxes: [{
+            barPercentage: 0.5,
+          }],
+          yAxes: [{
+            ticks: {
+              min: 0,
+              precision: 0
+            }
+          }]
+        }
+      },
+      candidatesHorizontalBarChartOptions: {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {
+          display: false
+        },
+        scales: {
+          xAxes: [{
+            ticks: {
+              min: 0,
+              precision: 0
+            }
+          }]
+        }
+      },
+      reviewsChartOptions: {
         responsive: true,
         maintainAspectRatio: true,
         legend: {
@@ -176,6 +202,17 @@ export default {
     }
   },
   computed: {
+    isCurrentCandidatesExist() {
+      return !(
+        this.currentCandidates.inbox == 0 &&
+        this.currentCandidates.inProcess == 0 &&
+        this.currentCandidates.intern == 0 &&
+        this.currentCandidates.extendedIntern == 0 &&
+        this.currentCandidates.pass == 0 &&
+        this.currentCandidates.contracted == 0 &&
+        this.currentCandidates.hired == 0
+      )
+    },
     flat() {
       return (this.breakpoint == 'sm' || this.breakpoint == 'xs') ? true : false
     },
@@ -188,11 +225,12 @@ export default {
       companyId: state => state.profile.companyId,
       rating: state => state.company.rating,
       currentCandidates: state => state.company.currentCandidates,
+      candidatesChartData: state => state.company.candidatesChartData,
       allCandidates: state => state.company.allCandidates,
       feedback: state => state.company.feedback,
-      reviewChartData: state => state.company.reviewChartData,
-      feedbackChartData: state => state.company.feedbackChartData,
-      feedbackChartOptions: state => state.company.feedbackChartOptions,
+      reviewsChartData: state => state.company.reviewsChartData,
+      feedbacksChartData: state => state.company.feedbacksChartData,
+      feedbacksChartOptions: state => state.company.feedbacksChartOptions,
       isLoading: state => state.company.isLoading,
     }),
   },

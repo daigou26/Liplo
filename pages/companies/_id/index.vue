@@ -434,7 +434,7 @@
                   </v-flex>
                   <!-- chart -->
                   <v-flex md4 hidden-sm-and-down>
-                    <radar-chart v-if="showChart && reviewChartData" :data="reviewChartData" :options="reviewChartOptions" />
+                    <radar-chart v-if="showChart && reviewsChartData" :data="reviewsChartData" :options="reviewsChartOptions" />
                   </v-flex>
                 </div>
               </div>
@@ -618,7 +618,7 @@ export default {
     xsWidth: false,
     showInfiniteLoading: false,
     reviewsDialog: false,
-    reviewChartOptions: {
+    reviewsChartOptions: {
       responsive: true,
       maintainAspectRatio: false,
       legend: {
@@ -691,7 +691,7 @@ export default {
       services: state => state.company.services,
       welfare: state => state.company.welfare,
       reviews: state => state.company.reviews,
-      reviewChartData: state => state.company.reviewChartData,
+      reviewsChartData: state => state.company.reviewsChartData,
       jobs: state => state.company.jobs,
       isLoading: state => state.company.isLoading,
       allReviews: state => state.reviews.companyReviews,
