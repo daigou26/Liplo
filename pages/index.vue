@@ -221,7 +221,7 @@
                   <nuxt-link to="/" class="font-weight-bold textColor">利用規約</nuxt-link>
                 </div>
                 <div class="pb-2">
-                  <nuxt-link to="/" class="font-weight-bold textColor">プライバシ</nuxt-link>
+                  <nuxt-link to="/" class="font-weight-bold textColor">プライバシー</nuxt-link>
                 </div>
               </v-flex>
             </v-layout>

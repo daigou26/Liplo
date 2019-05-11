@@ -22,7 +22,10 @@
             <v-card flat>
               <!-- Profile画像 & UserName -->
               <div>
-                <v-card-actions :class="{'px-5 py-3': $vuetify.breakpoint.smAndUp}">
+                <v-card-actions
+                  class="break"
+                  :class="{'px-5 py-3': $vuetify.breakpoint.smAndUp}"
+                >
                   <v-avatar
                     :size="avatarSize"
                     class="grey lighten-3 clickable"
@@ -156,7 +159,10 @@
                   </v-dialog>
                 </v-form>
               </div>
-              <div :class="{'px-5': $vuetify.breakpoint.smAndUp}">
+              <div
+                class="break"
+                :class="{'px-5': $vuetify.breakpoint.smAndUp}"
+              >
                 <!-- プロフィール完成度 -->
                 <v-card flat class="pa-3 subheading">
                   <span class="light-text-color">プロフィール完成度: </span>
