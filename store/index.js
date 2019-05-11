@@ -181,6 +181,7 @@ export const actions = {
   async signOut({dispatch, commit}) {
     auth.signOut()
     dispatch('jobs/resetState')
+    dispatch('jobs/resetFilterState')
     dispatch('job/resetState')
     dispatch('company/resetState')
     dispatch('chats/resetMessagesListener')
@@ -205,6 +206,7 @@ export const actions = {
     dispatch('companyProfile/resetState')
     dispatch('settings/resetState')
     dispatch('users/resetState')
+    dispatch('users/resetFilterState')
     dispatch('user/resetState')
   },
   async changeEmail({dispatch, commit}, {type, newEmail, password}) {

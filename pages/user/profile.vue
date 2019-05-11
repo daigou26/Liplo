@@ -289,12 +289,16 @@
                     <!-- 自己紹介の表示 -->
                     <v-card-text v-show="!isEditingSelfIntro">
                       <p class="return">{{ selfIntro }}</p>
+                      <div v-show="!isEditingSelfIntro" class="caption light-text-color">
+                        ※ 自己紹介の最初の100字は、採用担当者がユーザー検索した際の一覧に表示されます
+                      </div>
                     </v-card-text>
                     <!-- 自己紹介の編集画面 -->
                     <div v-show="isEditingSelfIntro">
                       <v-form v-model="editSelfIntroValid">
                         <v-textarea
                           solo
+                          counter
                           label="自己紹介"
                           v-model="tempSelfIntro"
                           :rules="selfIntroRules"
@@ -549,8 +553,11 @@
                         </v-chip>
                       </template>
                     </v-list>
+                    <div v-show="!isEditingSkills" class="pl-4 caption light-text-color">
+                      ※ 最大５つのスキルがユーザー検索の一覧に表示されます
+                    </div>
                     <!-- スキルの編集画面 -->
-                    <div v-show="isEditingSkills">
+                    <div v-if="isEditingSkills">
                       <v-form v-model="editSkillsValid">
                         <div class="d-flex pb-3">
                           <v-flex xs12 class="px-4 break">
@@ -732,9 +739,9 @@
                         <span>学科:</span>
                         <span class="pl-2">{{ department }}</span>
                       </div>
-                      <div class="pb-2">
+                      <div v-if="birthDateText" class="pb-2">
                         <span>生年月日:</span>
-                        <span class="pl-2">{{ birthDate }}</span>
+                        <span class="pl-2">{{ birthDateText }}</span>
                       </div>
                     </v-list>
                     <!-- 基本情報の編集画面 -->
@@ -948,13 +955,15 @@ export default {
     name: function() {
       return this.lastName + ' ' + this.firstName
     },
-    birthDate: function() {
-      const date = new Date( this.birthTimestamp.seconds * 1000 )
-      const year  = date.getFullYear()
-      const month = date.getMonth() + 1
-      const day  = date.getDate()
-      if (year != null && month != null && day!= null) {
-        return `${year}/${month}/${day}`
+    birthDateText: function() {
+      if (this.birthDate) {
+        const date = new Date( this.birthDate.seconds * 1000 )
+        const year  = date.getFullYear()
+        const month = date.getMonth() + 1
+        const day  = date.getDate()
+        if (year != null && month != null && day!= null) {
+          return `${year}/${month}/${day}`
+        }
       }
     },
     ...mapState({
@@ -987,7 +996,7 @@ export default {
       university: state => state.profile.university,
       faculty: state => state.profile.faculty,
       department: state => state.profile.department,
-      birthTimestamp: state => state.profile.birthTimestamp,
+      birthDate: state => state.profile.birthDate,
       isEditingUserInfo: state => state.profile.isEditingUserInfo,
     }),
   },

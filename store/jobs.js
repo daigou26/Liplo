@@ -473,11 +473,7 @@ export const actions = {
   updateIsLoading({commit}, isLoading) {
     commit('updateIsLoading', isLoading)
   },
-  resetState({commit}) {
-    commit('resetJobs')
-    commit('updateIsInitialLoading', false)
-    commit('updateIsLoading', false)
-    commit('setAllJobsQueried', false)
+  resetFilterState({commit}) {
     commit('updateEngineer', false)
     commit('updateDesigner', false)
     commit('updateSales', false)
@@ -491,5 +487,11 @@ export const actions = {
     commit('updateWeekend', false)
     commit('setWorkweek', null)
     commit('setOrder', null)
+  },
+  resetState({commit}) {
+    commit('resetJobs')
+    commit('updateIsInitialLoading', false)
+    commit('updateIsLoading', false)
+    commit('setAllJobsQueried', false)
   },
 }

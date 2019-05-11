@@ -8,7 +8,12 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex v-else-if="!isInitialLoading">
+    <v-flex v-else-if="isInitialLoading" xs12 :style="{ height: windowHeight + 'px' }">
+      <v-layout align-center justify-center column fill-height>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex v-else>
       <!-- footer 表示ボタン -->
       <div class="hidden-xs-only" id="footer-button">
         <v-btn
@@ -207,11 +212,6 @@
           </v-flex>
         </v-layout>
       </v-footer>
-    </v-flex>
-    <v-flex v-else xs12 :style="{ height: windowHeight + 'px' }">
-      <v-layout align-center justify-center column fill-height>
-        Now Loading...
-      </v-layout>
     </v-flex>
   </v-layout>
 </template>

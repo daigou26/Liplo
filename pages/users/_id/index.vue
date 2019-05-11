@@ -4,7 +4,17 @@
     white
     wrap
   >
-    <v-flex xs12 v-if="!isLoading">
+    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 pt-5>
+      <v-layout justify-center>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex v-else-if="isLoading" xs12 :style="{ height: windowHeight + 'px' }">
+      <v-layout align-center justify-center column fill-height>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex xs12 v-else>
       <v-flex xs12 class="break">
         <!-- Profile画像 & UserName -->
         <div class="py-4 align-center">
@@ -69,11 +79,11 @@
             <div class="hidden-sm-and-up pl-4">
               <div class="textColor font-weight-bold">志望する職種</div>
               <div>
-                <v-chip>
-                  <span v-if="desiredOccupations.engineer">エンジニア</span>
+                <v-chip v-if="desiredOccupations.engineer">
+                  <span>エンジニア</span>
                 </v-chip>
-                <v-chip>
-                  <span v-if="desiredOccupations.designer">デザイナー</span>
+                <v-chip v-if="desiredOccupations.designer">
+                  <span>デザイナー</span>
                 </v-chip>
                 <v-chip v-if="desiredOccupations.sales">
                   <span>営業</span>
@@ -146,20 +156,24 @@
             </v-flex>
             <v-flex xs12 sm10>
               <!-- ポートフォリオ表示 -->
-              <v-list class="pl-4">
+              <v-list v-if="portfolio" class="pl-4">
                 <template v-for="(item, index) in portfolio">
-                    <div class="d-flex pb-3">
-                      <v-flex xs4 sm3 lg2>
-                        <v-img :src="item.imageUrl" height="100"></v-img>
-                      </v-flex>
-                      <v-flex xs8 sm9 lg10 class="px-4 break">
-                        <div>
-                          <span class="font-weight-bold subheading textColor">{{ item.title }}</span>
-                        </div>
-                        <p　class="textColor return">{{ item.content }}</p>
-                        <a :href="item.url">{{ item.url }}</a>
-                      </v-flex>
-                    </div>
+                  <div v-if="!xsWidth" class="d-flex pt-4">
+                    <v-flex xs4 sm3 lg2>
+                      <v-img :src="item.imageUrl" aspect-ratio="1.5" max-height="100" max-width="160"></v-img>
+                    </v-flex>
+                    <v-flex xs8 sm9 lg10 class="pl-4 break">
+                      <div class="font-weight-bold body-text">{{ item.title }}</div>
+                      <p　class="textColor return">{{ item.content }}</p>
+                      <a :href="item.url">{{ item.url }}</a>
+                    </v-flex>
+                  </div>
+                  <div v-else class="pt-4">
+                    <v-img :src="item.imageUrl" aspect-ratio="1.5" max-height="100" max-width="160"></v-img>
+                    <div class="font-weight-bold body-text">{{ item.title }}</div>
+                    <div　class="textColor return pb-2">{{ item.content }}</div>
+                    <a :href="item.url">{{ item.url }}</a>
+                  </div>
                 </template>
               </v-list>
             </v-flex>
@@ -249,15 +263,15 @@
                   <span>学科:</span>
                   <span class="pl-2">{{ department }}</span>
                 </div>
-                <div class="pb-2">
+                <div v-if="birthDateText" class="pb-2">
                   <span>生年月日:</span>
-                  <span class="pl-2">{{ birthDate }}</span>
+                  <span class="pl-2">{{ birthDateText }}</span>
                 </div>
               </v-list>
             </v-flex>
           </div>
         </div>
-        <v-card v-if="type == 'recruiter'" class="text-xs-right py-2 pr-2">
+        <v-card v-if="type == 'recruiter'" flat class="shadow-top text-xs-right py-2 pr-2">
           <v-btn
             large
             :disabled="companyId == null || isCandidate"
@@ -328,15 +342,6 @@
         </div>
       </v-flex>
     </v-flex>
-    <v-flex v-else>
-      <div class="text-xs-center">
-        <v-progress-circular
-         :size="50"
-         color="primary"
-         indeterminate
-       ></v-progress-circular>
-      </div>
-    </v-flex>
   </v-layout>
 </template>
 
@@ -346,6 +351,9 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data: () => ({
     isQueried: false,
+    windowHeight: 0,
+    windowWidth: 0,
+    xsWidth: false,
     avatarSize: 50,
     scoutDialog: false,
     valid: true,
@@ -361,9 +369,9 @@ export default {
         return this.userLastName + ' ' + this.userFirstName
       }
     },
-    birthDate: function() {
-      if (this.birthTimestamp) {
-        const date = new Date( this.birthTimestamp * 1000 )
+    birthDateText: function() {
+      if (this.birthDate) {
+        const date = new Date( this.birthDate.seconds * 1000 )
         const year  = date.getFullYear()
         const month = date.getMonth() + 1
         const day  = date.getDate()
@@ -371,12 +379,12 @@ export default {
           return `${year}/${month}/${day}`
         }
       }
-
     },
     params() {
       return this.$route.params
     },
     ...mapState({
+      isRefreshing: state => state.isRefreshing,
       type: state => state.profile.type,
       companyId: state => state.profile.companyId,
       picUid: state => state.uid,
@@ -395,15 +403,25 @@ export default {
       university: state => state.user.university,
       faculty: state => state.user.faculty,
       department: state => state.user.department,
-      birthTimestamp: state => state.user.birthTimestamp,
+      birthDate: state => state.user.birthDate,
       desiredOccupations: state => state.user.desiredOccupations,
       isCandidate: state => state.user.isCandidate,
       isLoading: state => state.user.isLoading,
     }),
   },
   mounted() {
+    let toolbarHeight
+    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+      toolbarHeight = 48
+    } else {
+      toolbarHeight = 64
+    }
+    this.windowHeight = window.innerHeight - toolbarHeight - 48 - 30
+    this.windowWidth = window.innerWidth
+
     if (this.companyId != null && !this.isQueried) {
       this.resetState()
+      this.updateIsLoading(true)
       this.queryUser({nuxt: this.$nuxt, uid: this.params.id, companyId: this.companyId})
     }
   },
@@ -412,7 +430,13 @@ export default {
       if (companyId != null && companyId != '') {
         this.isQueried = true
         this.resetState()
+        this.updateIsLoading(true)
         this.queryUser({nuxt: this.$nuxt, uid: this.params.id, companyId: companyId})
+      }
+    },
+    windowWidth(width) {
+      if (width < 450) {
+        this.xsWidth = true
       }
     }
   },
@@ -445,6 +469,7 @@ export default {
     },
     ...mapActions({
       queryUser: 'user/queryUser',
+      updateIsLoading: 'user/updateIsLoading',
       resetState: 'user/resetState',
       scout: 'user/scout',
     }),

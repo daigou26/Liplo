@@ -14,11 +14,11 @@ export const state = () => ({
   university: '',
   faculty: '',
   department: '',
-  birthTimestamp: '',
+  birthDate: '',
   desiredOccupations: null,
   interestingFields: null,
   isCandidate: false,
-  isLoading: true,
+  isLoading: false,
 })
 
 export const mutations = {
@@ -58,8 +58,8 @@ export const mutations = {
   setDepartment(state, department) {
     state.department = department
   },
-  setBirthTimestamp(state, birthTimestamp) {
-    state.birthTimestamp = birthTimestamp
+  setBirthDate(state, birthDate) {
+    state.birthDate = birthDate
   },
   setDesiredOccupatins(state, occupations) {
     state.desiredOccupations = occupations
@@ -96,9 +96,8 @@ export const actions = {
           commit('setUniversity', doc.data()['university'])
           commit('setFaculty', doc.data()['faculty'])
           commit('setDepartment', doc.data()['department'])
-          commit('setBirthTimestamp', doc.data()['birthTimestamp'])
+          commit('setBirthDate', doc.data()['birthDate'])
           commit('setDesiredOccupatins', doc.data()['desiredOccupations'])
-          commit('setInterstingFields', doc.data()['interestingFields'])
 
           // スカウトを許可しているか、アカウントが削除されているか
           if (!doc.data()['acceptScout'] || doc.data()['isDeleted']) {
@@ -135,6 +134,7 @@ export const actions = {
         }
       })
       .catch(function(error) {
+        commit('updateIsLoading', false)
         console.log("Error getting document:", error)
       })
   },
@@ -174,6 +174,9 @@ export const actions = {
         console.error("Error adding document: ", error)
       })
   },
+  updateIsLoading({commit}, isLoading) {
+    commit('updateIsLoading', isLoading)
+  },
   resetState({commit}) {
     commit('setImageUrl', '')
     commit('setFirstName', '')
@@ -187,7 +190,7 @@ export const actions = {
     commit('setUniversity', '')
     commit('setFaculty', '')
     commit('setDepartment', '')
-    commit('setBirthTimestamp', '')
+    commit('setBirthDate', '')
     commit('setDesiredOccupatins', null)
     commit('setInterstingFields', null)
     commit('updateIsCandidate', false)
