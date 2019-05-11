@@ -37,14 +37,16 @@
           >
             <!-- companyImage & Name -->
             <div class="mb-5">
-              <v-avatar
-                class="grey lighten-3"
-              >
-                <v-img :src="companyImageUrl" :size="40"></v-img>
-              </v-avatar>
-              <span class="title textColor font-weight-bold align-center px-3">
-                {{ companyName }}
-              </span>
+              <v-card-actions>
+                <v-avatar
+                  class="grey lighten-3"
+                >
+                  <v-img :src="companyImageUrl" :size="40"></v-img>
+                </v-avatar>
+                <span class="title textColor font-weight-bold align-center px-3">
+                  {{ companyName }}
+                </span>
+              </v-card-actions>
             </div>
             <!-- members -->
             <div v-if="members" class="py-4">
