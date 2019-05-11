@@ -203,15 +203,19 @@ export default {
   },
   computed: {
     isCurrentCandidatesExist() {
-      return !(
-        this.currentCandidates.inbox == 0 &&
-        this.currentCandidates.inProcess == 0 &&
-        this.currentCandidates.intern == 0 &&
-        this.currentCandidates.extendedIntern == 0 &&
-        this.currentCandidates.pass == 0 &&
-        this.currentCandidates.contracted == 0 &&
-        this.currentCandidates.hired == 0
-      )
+      if (this.currentCandidates) {
+        return !(
+          this.currentCandidates.inbox == 0 &&
+          this.currentCandidates.inProcess == 0 &&
+          this.currentCandidates.intern == 0 &&
+          this.currentCandidates.extendedIntern == 0 &&
+          this.currentCandidates.pass == 0 &&
+          this.currentCandidates.contracted == 0 &&
+          this.currentCandidates.hired == 0
+        )
+      } else {
+        return false
+      }
     },
     flat() {
       return (this.breakpoint == 'sm' || this.breakpoint == 'xs') ? true : false

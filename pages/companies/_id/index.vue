@@ -227,201 +227,114 @@
                 レビューを見るには、ログインする必要があります。
               </div>
               <div v-if="uid && reviews" class="pt-3">
-                <v-hover>
-                  <v-card slot-scope="{ hover }" flat class="pb-3">
-                    <v-card-actions>
-                      <v-icon style="font-size: 18px">info</v-icon>
-                      <span class="light-text-color caption">ヒント（レビューの項目について）</span>
-                    </v-card-actions>
-                    <v-card v-show="hover" flat class="caption pa-2">
+                <!-- chart (xs) -->
+                <v-flex xs12 hidden-sm-and-up>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <div v-on="on" ontouchstart="">
+                        <radar-chart
+                          v-if="showChart && reviewsChartData"
+                          :data="reviewsChartData"
+                          :options="reviewsChartOptions"
+                        />
+                      </div>
+                    </template>
                       <div>
-                        <div class="textColor">
+                        <div>
                           成長できるか：
                         </div>
-                        <div class="textColor">
+                        <div>
                           インターンに行って成長できたかどうか
                         </div>
                       </div>
                       <div class="pt-3">
-                        <div class="textColor">
+                        <div>
                           仕事内容：
                         </div>
-                        <div class="textColor">
+                        <div>
                           募集に書かれていた内容と合っていたかどうか
                         </div>
                       </div>
                       <div class="pt-3">
-                        <div class="textColor">
+                        <div>
                           裁量度：
                         </div>
-                        <div class="textColor">
+                        <div>
                           インターン生にも裁量が与えられていたかどうか
                         </div>
                       </div>
                       <div class="pt-3">
-                        <div class="textColor">
+                        <div>
                           勤務中の自由度：
                         </div>
-                        <div class="textColor">
+                        <div>
                           休憩などが自由にできるかどうか
                         </div>
                       </div>
                       <div class="pt-3">
-                        <div class="textColor">
+                        <div>
                           勤務時間の柔軟性：
                         </div>
-                        <div class="textColor">
+                        <div>
                           勤務時間、日程を自由に決められるかどうか
                         </div>
                       </div>
                       <div class="pt-3">
-                        <div class="textColor">
+                        <div>
                           メンター：
                         </div>
-                        <div class="textColor">
+                        <div>
                           メンター（インターン生の担当者）の評価
                         </div>
                       </div>
                       <div class="pt-3">
-                        <div class="textColor">
+                        <div>
                           雰囲気：
                         </div>
-                        <div class="textColor">
+                        <div>
                           社内の雰囲気、人間関係などが良好かどうか
                         </div>
                       </div>
-                    </v-card>
-                  </v-card>
-                </v-hover>
-                <!-- sm以下の場合は、チャートを使わない -->
-                <div class="hidden-md-and-up pb-5">
-                  <div class="d-flex">
-                    <v-flex xs7 sm6>
-                      <span class="font-weight-bold textColor pr-2">成長できるか</span>
-                    </v-flex>
-                    <v-flex xs5 sm6 text-sm-left text-xs-right>
-                      <v-rating
-                        v-model="reviews.rating.growth"
-                        background-color="teal"
-                        color="teal darken-1"
-                        small
-                        half-increments
-                        readonly
-                      />
-                    </v-flex>
-                  </div>
-                  <div class="d-flex">
-                    <v-flex xs7 sm6>
-                      <span class="font-weight-bold textColor pr-2">仕事内容</span>
-                    </v-flex>
-                    <v-flex xs5 sm6 text-sm-left text-xs-right>
-                      <v-rating
-                        v-model="reviews.rating.job"
-                        background-color="teal"
-                        color="teal darken-1"
-                        small
-                        half-increments
-                        readonly
-                      />
-                    </v-flex>
-                  </div>
-                  <div class="d-flex">
-                    <v-flex xs7 sm6>
-                      <span class="font-weight-bold textColor pr-2">裁量度</span>
-                    </v-flex>
-                    <v-flex xs5 sm6 text-sm-left text-xs-right>
-                      <v-rating
-                        v-model="reviews.rating.discretion"
-                        background-color="teal"
-                        color="teal darken-1"
-                        small
-                        half-increments
-                        readonly
-                      />
-                    </v-flex>
-                  </div>
-                  <div class="d-flex">
-                    <v-flex xs7 sm6>
-                      <span class="font-weight-bold textColor pr-2">出勤時間の柔軟性</span>
-                    </v-flex>
-                    <v-flex xs5 sm6 text-sm-left text-xs-right>
-                      <v-rating
-                        v-model="reviews.rating.flexibleSchedule"
-                        background-color="teal"
-                        color="teal darken-1"
-                        small
-                        half-increments
-                        readonly
-                      />
-                    </v-flex>
-                  </div>
-                  <div class="d-flex">
-                    <v-flex xs7 sm6>
-                      <span class="font-weight-bold textColor pr-2">勤務中の自由度</span>
-                    </v-flex>
-                    <v-flex xs5 sm6 text-sm-left text-xs-right>
-                      <v-rating
-                        v-model="reviews.rating.flexibility"
-                        background-color="teal"
-                        color="teal darken-1"
-                        small
-                        half-increments
-                        readonly
-                      />
-                    </v-flex>
-                  </div>
-                  <div class="d-flex">
-                    <v-flex xs7 sm6>
-                      <span class="font-weight-bold textColor pr-2">メンター</span>
-                    </v-flex>
-                    <v-flex xs5 sm6 text-sm-left text-xs-right>
-                      <v-rating
-                        v-model="reviews.rating.mentor"
-                        background-color="teal"
-                        color="teal darken-1"
-                        small
-                        half-increments
-                        readonly
-                      />
-                    </v-flex>
-                  </div>
-                  <div class="d-flex">
-                    <v-flex xs7 sm6>
-                      <span class="font-weight-bold textColor pr-2">雰囲気</span>
-                    </v-flex>
-                    <v-flex xs5 sm6 text-sm-left text-xs-right>
-                      <v-rating
-                        v-model="reviews.rating.atmosphere"
-                        background-color="teal"
-                        color="teal darken-1"
-                        small
-                        half-increments
-                        readonly
-                      />
-                    </v-flex>
-                  </div>
-                </div>
-                <div class="d-flex pt-3">
+                  </v-tooltip>
+                </v-flex>
+                <div class="d-flex">
                   <!-- comments -->
                   <v-flex
                     md8
+                    sm6
                     xs12
-                    :class="{'pr-4': $vuetify.breakpoint.mdOnly}"
+                    :class="{
+                      'pr-4': $vuetify.breakpoint.mdOnly,
+                      'pt-4': $vuetify.breakpoint.xsOnly,
+                    }"
                   >
                     <v-list>
                       <template v-for="(item, index) in reviews.comments">
-                        <div class="py-2">
-                          <div class="font-weight-bold body-text">
-                            <v-avatar
-                              class="grey lighten-3"
-                              :size="25"
-                            >
-                              <v-icon style="font-size: 18px">person</v-icon>
-                            </v-avatar>
-                            {{ item.occupation }}
+                        <v-hover>
+                          <div slot-scope="{ hover }" ontouchstart="" class="pt-2">
+                            <div class="font-weight-bold body-text">
+                              <v-avatar
+                                class="grey lighten-3"
+                                :size="25"
+                              >
+                                <v-icon style="font-size: 18px">person</v-icon>
+                              </v-avatar>
+                              {{ item.occupation }}
+                            </div>
+                            <div class="pt-3 body-text return">{{ item.content }}</div>
+                            <div :style="{ visibility: hover ? 'visible' : 'hidden' }">
+                              <v-btn
+                                small
+                                flat
+                                class="caption teal--text text--lighten-1 mx-0"
+                                style="text-decoration: none"
+                                @click="otherReviewsButtonClicked(item.uid)"
+                              >
+                                この人が書いた他のレビューを見る
+                              </v-btn>
+                            </div>
                           </div>
-                          <p class="py-3 body-text return">{{ item.content }}</p>
-                        </div>
+                        </v-hover>
                       </template>
                     </v-list>
                     <div
@@ -432,9 +345,75 @@
                       レビューをすべて見る
                     </div>
                   </v-flex>
-                  <!-- chart -->
-                  <v-flex md4 hidden-sm-and-down>
-                    <radar-chart v-if="showChart && reviewsChartData" :data="reviewsChartData" :options="reviewsChartOptions" />
+                  <!-- chart (xl, lg, md, sm) -->
+                  <v-flex md4 sm6 pl-3 hidden-xs-only>
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on }">
+                        <div v-on="on" ontouchstart="">
+                          <radar-chart
+                            v-if="showChart && reviewsChartData"
+                            :data="reviewsChartData"
+                            :options="reviewsChartOptions"
+                          />
+                        </div>
+                      </template>
+                        <div>
+                          <div>
+                            成長できるか：
+                          </div>
+                          <div>
+                            インターンに行って成長できたかどうか
+                          </div>
+                        </div>
+                        <div class="pt-3">
+                          <div>
+                            仕事内容：
+                          </div>
+                          <div>
+                            募集に書かれていた内容と合っていたかどうか
+                          </div>
+                        </div>
+                        <div class="pt-3">
+                          <div>
+                            裁量度：
+                          </div>
+                          <div>
+                            インターン生にも裁量が与えられていたかどうか
+                          </div>
+                        </div>
+                        <div class="pt-3">
+                          <div>
+                            勤務中の自由度：
+                          </div>
+                          <div>
+                            休憩などが自由にできるかどうか
+                          </div>
+                        </div>
+                        <div class="pt-3">
+                          <div>
+                            勤務時間の柔軟性：
+                          </div>
+                          <div>
+                            勤務時間、日程を自由に決められるかどうか
+                          </div>
+                        </div>
+                        <div class="pt-3">
+                          <div>
+                            メンター：
+                          </div>
+                          <div>
+                            メンター（インターン生の担当者）の評価
+                          </div>
+                        </div>
+                        <div class="pt-3">
+                          <div>
+                            雰囲気：
+                          </div>
+                          <div>
+                            社内の雰囲気、人間関係などが良好かどうか
+                          </div>
+                        </div>
+                    </v-tooltip>
                   </v-flex>
                 </div>
               </div>

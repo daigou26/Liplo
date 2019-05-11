@@ -180,7 +180,6 @@ export const actions = {
   },
   async signOut({dispatch, commit}) {
     auth.signOut()
-    dispatch('jobs/resetState')
     dispatch('jobs/resetFilterState')
     dispatch('job/resetState')
     dispatch('company/resetState')

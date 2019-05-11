@@ -44,7 +44,7 @@
             <div class="my-3">
               <div class="font-weight-bold textColor subheading">
                 記入待ちのレビュー
-                <div class="pt-2 body-2 textColor">
+                <div class="pt-2 body-2 light-text-color">
                   レビューを書くことでスコアが上がり、スカウトされやすくなります。
                 </div>
               </div>
