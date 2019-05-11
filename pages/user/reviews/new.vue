@@ -171,17 +171,27 @@
                 <v-form v-model="reviewValid">
                   <v-textarea
                     solo
-                    placeholder="コメントや感想を入力してください。"
+                    placeholder="インターンで感じた企業の良いところ、悪いところなどを自由にお書きください。"
                     v-model="content"
                     :rules="contentRules"
                     required
                   ></v-textarea>
-                  <v-btn
-                    :disabled="!reviewValid || notReviewedCompany.isWritten"
-                    color="warning"
-                    @click="reviewButtonClicked">
-                    レビューを送信
-                  </v-btn>
+                  <div class="caption light-text-color py-3">
+                    このコメントは、企業の募集ページなどで<span class="font-weight-bold">匿名</span>で公開されます。
+                    また、企業の方にもレビューの記入者の名前は公開されません。
+
+                    <div class="pt-2">
+                      ※ 誹謗中傷や他のユーザーの方が不快に感じるコメントはお控えください。また、人物が特定できる形でのコメントもお控えください。
+                    </div>
+                  </div>
+                  <div class="text-xs-right">
+                    <v-btn
+                      :disabled="!reviewValid || notReviewedCompany.isWritten"
+                      color="warning"
+                      @click="reviewButtonClicked">
+                      レビューを送信
+                    </v-btn>
+                  </div>
                 </v-form>
               </div>
             </div>
