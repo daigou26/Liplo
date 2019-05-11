@@ -72,10 +72,19 @@
     </v-flex>
     <v-toolbar-title class="font-weight-bold">
       <no-ssr>
-        <nuxt-link v-if="breakpoint != 'xs' && !path.includes('/recruiter')" to="/" class="toolbar-title">Home</nuxt-link>
-        <span v-else-if="path == '/'"　class="toolbar-title">募集</span>
-        <span v-else-if="path == '/user/settings/account'" class="toolbar-title">アカウント設定</span>
-        <span v-else-if="path == '/user/settings/notifications'" class="toolbar-title">通知設定</span>
+        <nuxt-link
+          v-if="breakpoint != 'xs' && !path.includes('/recruiter')　&& !path.includes('/users')"
+          to="/"
+          class="toolbar-title"
+        >
+          Home
+        </nuxt-link>
+        <span v-else-if="breakpoint == 'xs' && path == '/'"　class="toolbar-title">募集</span>
+        <span v-else-if="breakpoint == 'xs' && path == '/user/settings/account'" class="toolbar-title">アカウント設定</span>
+        <span v-else-if="breakpoint == 'xs' && path == '/user/settings/notifications'" class="toolbar-title">通知設定</span>
+        <span v-else-if="breakpoint == 'xs' && path == '/users'" class="toolbar-title">ユーザー検索</span>
+        <span v-else-if="breakpoint == 'xs' && path == '/recruiter/profile'" class="toolbar-title">プロフィール</span>
+        <span v-else-if="breakpoint == 'xs' && path == '/recruiter/notifications'" class="toolbar-title">通知</span>
       </no-ssr>
     </v-toolbar-title>
     <v-spacer></v-spacer>
