@@ -70,6 +70,23 @@
     <v-flex xs12 slot="extension" v-if="(usersToolbarExtension || jobsToolbarExtension) && !isJobsLoading">
       <filter-extension></filter-extension>
     </v-flex>
+    <v-toolbar-title class="font-weight-bold">
+      <no-ssr>
+        <nuxt-link
+          v-if="breakpoint != 'xs' && !path.includes('/recruiter')　&& !path.includes('/users')"
+          to="/"
+          class="toolbar-title"
+        >
+          Home
+        </nuxt-link>
+        <span v-else-if="breakpoint == 'xs' && path == '/'"　class="toolbar-title">募集</span>
+        <span v-else-if="breakpoint == 'xs' && path == '/user/settings/account'" class="toolbar-title">アカウント設定</span>
+        <span v-else-if="breakpoint == 'xs' && path == '/user/settings/notifications'" class="toolbar-title">通知設定</span>
+        <span v-else-if="breakpoint == 'xs' && path == '/users'" class="toolbar-title">ユーザー検索</span>
+        <span v-else-if="breakpoint == 'xs' && path == '/recruiter/profile'" class="toolbar-title">プロフィール</span>
+        <span v-else-if="breakpoint == 'xs' && path == '/recruiter/notifications'" class="toolbar-title">通知</span>
+      </no-ssr>
+    </v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items>
       <v-btn flat active-class to="/users" class="hidden-xs-only">
@@ -186,10 +203,18 @@
                   <v-list-tile-title>通知</v-list-tile-title>
                 </v-list-tile>
                 <v-divider class="hidden-sm-and-up"></v-divider>
-                <v-list-tile to="/user/settings/notifications">
+                <v-list-tile to="/user/settings/notifications" class="hidden-xs-only">
                   <v-list-tile-title>設定</v-list-tile-title>
                 </v-list-tile>
-                <v-divider></v-divider>
+                <v-divider class="hidden-xs-only"></v-divider>
+                <v-list-tile to="/user/settings/account" class="hidden-sm-and-up">
+                  <v-list-tile-title>アカウント設定</v-list-tile-title>
+                </v-list-tile>
+                <v-divider class="hidden-sm-and-up"></v-divider>
+                <v-list-tile to="/user/settings/notifications" class="hidden-sm-and-up">
+                  <v-list-tile-title>通知設定</v-list-tile-title>
+                </v-list-tile>
+                <v-divider class="hidden-sm-and-up"></v-divider>
                 <v-list-tile @click="signOut">
                   <v-list-tile-title>ログアウト</v-list-tile-title>
                 </v-list-tile>
@@ -294,7 +319,6 @@
         <span v-else-if="path == '/user/settings/notifications'" class="toolbar-title">通知設定</span>
         <span v-else class="toolbar-title">Home</span>
       </no-ssr>
-
     </v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items>

@@ -20,6 +20,7 @@ export const state = () => ({
   field: '',
   createdAt: '',
   status: '',
+  isLoading: false,
 })
 
 export const mutations = {
@@ -74,6 +75,9 @@ export const mutations = {
   setStatus(state, status) {
     state.status = status
   },
+  updateIsLoading(state, isLoading) {
+    state.isLoading = isLoading
+  },
 }
 
 export const actions = {
@@ -105,8 +109,10 @@ export const actions = {
           commit('setStatus', doc.data()['status'])
           commit('setCreatedAt', doc.data()['createdAt'])
         }
+        commit('updateIsLoading', false)
       })
       .catch((error) => {
+        commit('updateIsLoading', false)
         console.log("Error getting document:", error)
       })
   },
@@ -304,6 +310,9 @@ export const actions = {
       })
     })
   },
+  updateIsLoading({commit}, isLoading) {
+    commit('updateIsLoading', isLoading)
+  },
   resetState({commit}) {
     commit('setImageUrl', '')
     commit('setTitle', '')
@@ -321,5 +330,6 @@ export const actions = {
     commit('setFeatures', '')
     commit('setIndustry', '')
     commit('setStatus', '')
+    commit('updateIsLoading', false)
   },
 }

@@ -289,12 +289,16 @@
                     <!-- 自己紹介の表示 -->
                     <v-card-text v-show="!isEditingSelfIntro">
                       <p class="return">{{ selfIntro }}</p>
+                      <div v-show="!isEditingSelfIntro" class="caption light-text-color">
+                        ※ 自己紹介の最初の100字は、採用担当者がユーザー検索した際の一覧に表示されます
+                      </div>
                     </v-card-text>
                     <!-- 自己紹介の編集画面 -->
                     <div v-show="isEditingSelfIntro">
                       <v-form v-model="editSelfIntroValid">
                         <v-textarea
                           solo
+                          counter
                           label="自己紹介"
                           v-model="tempSelfIntro"
                           :rules="selfIntroRules"
@@ -397,35 +401,58 @@
                     <!-- ポートフォリオ表示 -->
                     <v-list v-show="!isEditingPortfolio && this.portfolio != null" class="pl-4">
                       <template v-for="(item, index) in this.portfolio">
-                          <div class="d-flex pb-3">
-                            <v-flex xs4 sm3 lg2>
-                              <v-img :src="item.imageUrl" height="100"></v-img>
-                            </v-flex>
-                            <v-flex xs8 sm9 lg10 class="px-4 break">
-                              <div>
-                                <span class="font-weight-bold subheading textColor">{{ item.title }}</span>
-                                <v-btn
-                                  class="pa-0 ma-0"
-                                  flat
-                                  @click="portfolioEditButtonClicked(index)"
-                                >
-                                  <v-icon :size="14">edit</v-icon>
-                                  <span class="caption edit-text-color">編集する</span>
-                                </v-btn>
-                              </div>
-                              <p　class="textColor return">{{ item.content }}</p>
-                              <p class="textColor">
-                                {{ item.url }}
-                              </p>
-                            </v-flex>
+                        <v-layout v-if="!xsWidth" layout class="pt-4 pb-3">
+                          <v-flex xs4 sm3 lg2>
+                            <v-img :src="item.imageUrl" aspect-ratio="1.5" max-height="100" max-width="160"></v-img>
+                          </v-flex>
+                          <v-flex
+                            xs8
+                            sm9
+                            lg10
+                            class="break"
+                            :class="{
+                              'px-4': $vuetify.breakpoint.smAndUp,
+                              'pl-4': $vuetify.breakpoint.xsOnly,
+                            }"
+                          >
+                            <div>
+                              <span class="font-weight-bold subheading textColor">{{ item.title }}</span>
+                              <v-btn
+                                class="pa-0 ma-0"
+                                flat
+                                @click="portfolioEditButtonClicked(index)"
+                              >
+                                <v-icon :size="14">edit</v-icon>
+                                <span class="caption edit-text-color">編集する</span>
+                              </v-btn>
+                            </div>
+                            <p　class="textColor return">{{ item.content }}</p>
+                            <a :href="item.url">{{ item.url }}</a>
+                          </v-flex>
+                        </v-layout>
+                        <div v-else class="pt-4 pb-3">
+                          <v-img :src="item.imageUrl" aspect-ratio="1.5" max-height="100" max-width="160"></v-img>
+                          <div>
+                            <span class="font-weight-bold subheading textColor">{{ item.title }}</span>
+                            <v-btn
+                              class="pa-0 ma-0"
+                              flat
+                              @click="portfolioEditButtonClicked(index)"
+                            >
+                              <v-icon :size="14">edit</v-icon>
+                              <span class="caption edit-text-color">編集する</span>
+                            </v-btn>
                           </div>
+                          <p　class="textColor return">{{ item.content }}</p>
+                          <a :href="item.url">{{ item.url }}</a>
+                        </div>
                       </template>
                     </v-list>
                     <!-- ポートフォリオ編集画面 -->
                     <div v-show="isEditingPortfolio">
                       <v-form v-model="editPortfolioValid">
                         <div class="d-flex pb-3">
-                          <v-flex xs8 sm9 lg10 class="px-4 break">
+                          <v-flex xs12 sm10 class="px-4 break">
                             <div class="py-3">
                               <v-img :src="tempPortfolioItemImageUrl" width="200" height="100" class="grey lighten-3"/>
                               <input type="file" v-on:change="onFileChange">
@@ -526,8 +553,11 @@
                         </v-chip>
                       </template>
                     </v-list>
+                    <div v-show="!isEditingSkills" class="pl-4 caption light-text-color">
+                      ※ 最大５つのスキルがユーザー検索の一覧に表示されます
+                    </div>
                     <!-- スキルの編集画面 -->
-                    <div v-show="isEditingSkills">
+                    <div v-if="isEditingSkills">
                       <v-form v-model="editSkillsValid">
                         <div class="d-flex pb-3">
                           <v-flex xs12 class="px-4 break">
@@ -621,7 +651,7 @@
                     <div v-show="isEditingLinks">
                       <v-form v-model="editLinksValid">
                         <div class="d-flex pb-3">
-                          <v-flex xs8 sm9 lg10 class="px-4 break">
+                          <v-flex xs12 sm10 class="px-4 break">
                             <v-text-field
                               solo
                               label="タイトル"
@@ -709,9 +739,9 @@
                         <span>学科:</span>
                         <span class="pl-2">{{ department }}</span>
                       </div>
-                      <div class="pb-2">
+                      <div v-if="birthDateText" class="pb-2">
                         <span>生年月日:</span>
-                        <span class="pl-2">{{ birthDate }}</span>
+                        <span class="pl-2">{{ birthDateText }}</span>
                       </div>
                     </v-list>
                     <!-- 基本情報の編集画面 -->
@@ -800,7 +830,9 @@ export default {
   data: () => ({
     isQueried: false,
     windowHeight: 0,
-    imageFileSizeWarning: '2MB以下の画像を選択してください',
+    windowWidth: 0,
+    xsWidth: false,
+    imageFileSizeWarning: '5MB以下の画像を選択してください',
     selectedImageSize: 200,
     selectedImage: null,
     imageFile: null,
@@ -923,13 +955,15 @@ export default {
     name: function() {
       return this.lastName + ' ' + this.firstName
     },
-    birthDate: function() {
-      const date = new Date( this.birthTimestamp.seconds * 1000 )
-      const year  = date.getFullYear()
-      const month = date.getMonth() + 1
-      const day  = date.getDate()
-      if (year != null && month != null && day!= null) {
-        return `${year}/${month}/${day}`
+    birthDateText: function() {
+      if (this.birthDate) {
+        const date = new Date( this.birthDate.seconds * 1000 )
+        const year  = date.getFullYear()
+        const month = date.getMonth() + 1
+        const day  = date.getDate()
+        if (year != null && month != null && day!= null) {
+          return `${year}/${month}/${day}`
+        }
       }
     },
     ...mapState({
@@ -962,7 +996,7 @@ export default {
       university: state => state.profile.university,
       faculty: state => state.profile.faculty,
       department: state => state.profile.department,
-      birthTimestamp: state => state.profile.birthTimestamp,
+      birthDate: state => state.profile.birthDate,
       isEditingUserInfo: state => state.profile.isEditingUserInfo,
     }),
   },
@@ -974,6 +1008,7 @@ export default {
       toolbarHeight = 64
     }
     this.windowHeight = window.innerHeight - toolbarHeight - 30
+    this.windowWidth = window.innerWidth
 
     if (this.uid != null && this.uid != '' && !this.isQueried) {
       this.resetState()
@@ -989,6 +1024,11 @@ export default {
         this.updateIsLoading(true)
         this.queryProfile(uid)
       }
+    },
+    windowWidth(width) {
+      if (width < 450) {
+        this.xsWidth = true
+      }
     }
   },
   methods: {
@@ -1001,8 +1041,8 @@ export default {
     onFileChange(e) {
       this.updateImageFileSizeValid(true)
       let files = e.target.files || e.dataTransfer.files
-      // 画像サイズは2MB以下のみ
-      if (files[0] != null && files[0].size/1024/1024 <= 2) {
+      // 画像サイズは5MB以下のみ
+      if (files[0] != null && files[0].size/1024/1024 <= 5) {
         if (this.isEditingProfileImage) {
           this.imageFile = files[0]
         } else if (this.isEditingPortfolio) {

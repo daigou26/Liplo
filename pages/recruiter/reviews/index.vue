@@ -3,44 +3,50 @@
     white
     column
   >
-    <v-data-table
-      :headers="headers"
-      :items="reviews"
-      class="elevation-1"
-      hide-actions
-      no-data-text="レビューがありません。"
-    >
-      <template v-slot:items="props">
-        <n-link class="clickable" tag="tr" :to="'/recruiter/reviews/' + props.item.reviewId">
-          <td class="text-xs-left">{{ props.item.timestamp }}</td>
-          <td class="text-xs-left">
-            <v-rating
-              small
-              half-increments
-              readonly
-              class="hidden-xs-only"
-              :value="props.item.all == null ? 0 : props.item.all"
-            />
-            <div class="hidden-sm-and-up">
-              <div v-if="props.item.all">
-                {{ props.item.all }}/5
-              </div>
-              <div v-else>
-                なし
-              </div>
-            </div>
-          </td>
-          <td>{{ props.item.content.substr(0, 30) }}{{ props.item.content.length > 30 ? '...' : '' }}</td>
-        </n-link>
-      </template>
-    </v-data-table>
-    <infinite-loading
-      v-if="showInfiniteLoading && reviews && reviews.length >= 10 && !isLoading"
-      :distance="50"
-      spinner="waveDots"
-      @infinite="infiniteHandler">
-      <div slot="no-results"></div>
-    </infinite-loading>
+    <!-- loading -->
+    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
+      <v-layout justify-center>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex v-else-if="isInitialLoading" xs12 :style="{ height: windowHeight + 'px' }">
+      <v-layout align-center justify-center column fill-height>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex v-else xs12>
+      <v-data-table
+        :headers="headers"
+        :items="reviews"
+        class="elevation-1"
+        hide-actions
+        no-data-text="レビューがありません。"
+      >
+        <template v-slot:items="props">
+          <n-link class="clickable" tag="tr" :to="'/recruiter/reviews/' + props.item.reviewId">
+            <td class="text-xs-left">{{ props.item.timestamp }}</td>
+            <td style="min-width: 150px" class="text-xs-left">
+              <v-rating
+                :value="props.item.all == null ? 0 : props.item.all"
+                background-color="teal"
+                color="teal darken-1"
+                small
+                half-increments
+                readonly
+              />
+            </td>
+            <td style="min-width: 250px">{{ props.item.content.substr(0, 30) }}{{ props.item.content.length > 30 ? '...' : '' }}</td>
+          </n-link>
+        </template>
+      </v-data-table>
+      <infinite-loading
+        v-if="showInfiniteLoading && reviews && reviews.length >= 20 && !isLoading"
+        :distance="50"
+        spinner="waveDots"
+        @infinite="infiniteHandler">
+        <div slot="no-results"></div>
+      </infinite-loading>
+    </v-flex>
   </v-layout>
 </template>
 
@@ -50,12 +56,13 @@ export default {
   data() {
     return {
       count: 0,
+      windowHeight: 0,
       showInfiniteLoading: false,
       isQueried: false,
       headers: [
-        { text: '投稿日', value: 'createdAt', width: '200' },
-        { text: '評価', value: 'all', width: '150' },
-        { text: 'コメント', value: 'content', sortable: false,},
+        { text: '記入日', value: 'createdAt' },
+        { text: '評価', value: 'all' },
+        { text: 'コメント', value: 'content', sortable: false },
       ],
     }
   },
@@ -64,26 +71,37 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
+      isRefreshing: state => state.isRefreshing,
       companyId: state => state.profile.companyId,
       reviews: state => state.reviews.companyReviews,
+      isInitialLoading: state => state.reviews.isInitialCompanyReviewsLoading,
       isLoading: state => state.reviews.isCompanyReviewsLoading,
       allCompanyReviewsQueried: state => state.reviews.allCompanyReviewsQueried,
     }),
   },
   mounted() {
+    let toolbarHeight
+    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+      toolbarHeight = 48
+    } else {
+      toolbarHeight = 64
+    }
+    this.windowHeight = window.innerHeight - toolbarHeight - 30
     this.showInfiniteLoading = true
 
     if (this.companyId != null && !this.isQueried) {
       this.resetState()
+      this.updateIsInitialLoading(true)
       this.updateIsLoading(true)
       this.queryCompanyReviews(this.companyId)
     }
   },
   watch: {
     companyId(companyId) {
-      if (companyId != null) {
+      if (companyId != null && companyId != '') {
         this.resetState()
         this.isQueried = true
+        this.updateIsInitialLoading(true)
         this.updateIsLoading(true)
         this.queryCompanyReviews(companyId)
       }
@@ -96,7 +114,7 @@ export default {
           this.count += 1
           this.updateIsLoading(true)
           this.queryCompanyReviews(this.companyId)
-          if (this.count > 20) {
+          if (this.count > 50) {
             $state.complete()
           } else {
             $state.loaded()
@@ -108,6 +126,7 @@ export default {
     },
     ...mapActions({
       queryCompanyReviews: 'reviews/queryCompanyReviews',
+      updateIsInitialLoading: 'reviews/updateIsInitialCompanyReviewsLoading',
       updateIsLoading: 'reviews/updateIsCompanyReviewsLoading',
       resetState: 'reviews/resetCompanyReviewsState',
     }),

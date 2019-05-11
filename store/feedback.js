@@ -5,6 +5,7 @@ export const state = () => ({
   uid: null,
   profileImageUrl: null,
   userName: null,
+  occupation: '',
   companyId: null,
   companyImageUrl: null,
   companyName: null,
@@ -24,6 +25,9 @@ export const mutations = {
   },
   setUserName(state, userName) {
     state.userName = userName
+  },
+  setOccupation(state, occupation) {
+    state.occupation = occupation
   },
   setCompanyId(state, companyId) {
     state.companyId = companyId
@@ -52,10 +56,10 @@ export const mutations = {
 }
 
 export const actions = {
-  queryFeedback({commit}, {nuxt, params, companyId}) {
+  queryFeedback({commit}, {nuxt, params, uid, companyId}) {
     const feedbackId = params.id
 
-    return firestore.collection('feedbacks')
+    firestore.collection('feedbacks')
       .doc(feedbackId)
       .get()
       .then(function(doc) {
@@ -63,6 +67,7 @@ export const actions = {
           commit('setUid', doc.data()['uid'])
           commit('setProfileImageUrl', doc.data()['profileImageUrl'])
           commit('setUserName', doc.data()['userName'])
+          commit('setOccupation', doc.data()['occupation'])
           commit('setCompanyId', doc.data()['companyId'])
           commit('setCompanyImageUrl', doc.data()['companyImageUrl'])
           commit('setCompanyName', doc.data()['companyName'])
@@ -81,6 +86,14 @@ export const actions = {
           commit('setTimestamp', timestamp)
           commit('updateIsLoading', false)
 
+          // feedbackをもらったユーザーかどうか
+          if (uid) {
+            if (uid != doc.data()['uid']) {
+              console.log('404')
+              nuxt.error({ statusCode: 404, message: 'not found' })
+            }
+          }
+          // feedbackを書いた企業かどうか
           if (companyId) {
             if (companyId != doc.data()['companyId']) {
               console.log('404')
@@ -139,6 +152,7 @@ export const actions = {
     commit('setUid', null)
     commit('setProfileImageUrl', null)
     commit('setUserName', null)
+    commit('setOccupation', '')
     commit('setCompanyId', null)
     commit('setCompanyImageUrl', null)
     commit('setCompanyName', null)

@@ -31,7 +31,7 @@
         </div>
         <!-- title -->
         <div
-          class="pt-1 font-weight-bold"
+          class="pt-1 font-weight-bold textColor"
           :class="{
             'job-title': $vuetify.breakpoint.mdAndUp,
             'headline': $vuetify.breakpoint.smOnly,
@@ -521,7 +521,7 @@
                   </v-flex>
                   <!-- chart -->
                   <v-flex md4 hidden-sm-and-down>
-                    <radar-chart v-if="showChart && reviewChartData" :data="reviewChartData" :options="reviewChartOptions" />
+                    <radar-chart v-if="showChart && reviewsChartData" :data="reviewsChartData" :options="reviewsChartOptions" />
                   </v-flex>
                 </div>
               </div>
@@ -540,29 +540,34 @@
               >
                 企業情報
               </p>
-              <div v-if="url" class="pb-2">
-                <v-card-actions class="pa-0">
-                  <v-icon style="font-size: 18px">link</v-icon>
-                  <a :href="url" class="pl-2">{{ url }}</a>
-                </v-card-actions>
+              <div v-if="url || foundedDate || location || employeesCount">
+                <div v-if="url" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">link</v-icon>
+                    <a :href="url" class="pl-2">{{ url }}</a>
+                  </v-card-actions>
+                </div>
+                <div v-if="foundedDate" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">flag</v-icon>
+                    <span class="pl-2">{{ foundedDate }}に設立</span>
+                  </v-card-actions>
+                </div>
+                <div v-if="location" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">place</v-icon>
+                    <span class="pl-2">{{ location }}</span>
+                  </v-card-actions>
+                </div>
+                <div v-if="employeesCount" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">group</v-icon>
+                    <span class="pl-2">{{ employeesCount }}人のメンバー</span>
+                  </v-card-actions>
+                </div>
               </div>
-              <div v-if="foundedDate" class="pb-2">
-                <v-card-actions class="pa-0">
-                  <v-icon style="font-size: 18px">flag</v-icon>
-                  <span class="pl-2">{{ foundedDate }}に設立</span>
-                </v-card-actions>
-              </div>
-              <div v-if="location" class="pb-2">
-                <v-card-actions class="pa-0">
-                  <v-icon style="font-size: 18px">place</v-icon>
-                  <span class="pl-2">{{ location }}</span>
-                </v-card-actions>
-              </div>
-              <div v-if="employeesCount" class="pb-2">
-                <v-card-actions class="pa-0">
-                  <v-icon style="font-size: 18px">group</v-icon>
-                  <span class="pl-2">{{ employeesCount }}人のメンバー</span>
-                </v-card-actions>
+              <div v-else>
+                企業情報がありません
               </div>
             </div>
           </v-flex>
@@ -573,29 +578,34 @@
               <p class="title font-weight-bold textColor">
                 企業情報
               </p>
-              <div v-if="url" class="pb-2">
-                <v-card-actions class="pa-0">
-                  <v-icon style="font-size: 18px">link</v-icon>
-                  <a :href="url" class="pl-2">{{ url }}</a>
-                </v-card-actions>
+              <div v-if="url || foundedDate || location || employeesCount">
+                <div v-if="url" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">link</v-icon>
+                    <a :href="url" class="pl-2">{{ url }}</a>
+                  </v-card-actions>
+                </div>
+                <div v-if="foundedDate" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">flag</v-icon>
+                    <span class="pl-2">{{ foundedDate }}に設立</span>
+                  </v-card-actions>
+                </div>
+                <div v-if="location" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">place</v-icon>
+                    <span class="pl-2">{{ location }}</span>
+                  </v-card-actions>
+                </div>
+                <div v-if="employeesCount" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">group</v-icon>
+                    <span class="pl-2">{{ employeesCount }}人のメンバー</span>
+                  </v-card-actions>
+                </div>
               </div>
-              <div v-if="foundedDate" class="pb-2">
-                <v-card-actions class="pa-0">
-                  <v-icon style="font-size: 18px">flag</v-icon>
-                  <span class="pl-2">{{ foundedDate }}に設立</span>
-                </v-card-actions>
-              </div>
-              <div v-if="location" class="pb-2">
-                <v-card-actions class="pa-0">
-                  <v-icon style="font-size: 18px">place</v-icon>
-                  <span class="pl-2">{{ location }}</span>
-                </v-card-actions>
-              </div>
-              <div v-if="employeesCount" class="pb-2">
-                <v-card-actions class="pa-0">
-                  <v-icon style="font-size: 18px">group</v-icon>
-                  <span class="pl-2">{{ employeesCount }}人のメンバー</span>
-                </v-card-actions>
+              <div v-else>
+                企業情報がありません
               </div>
             </div>
             <!-- review -->
@@ -674,9 +684,9 @@
                   </v-card>
                 </v-hover>
                 <radar-chart
-                  v-if="showChart && reviewChartData"
-                  :data="reviewChartData"
-                  :options="reviewChartOptions"
+                  v-if="showChart && reviewsChartData"
+                  :data="reviewsChartData"
+                  :options="reviewsChartOptions"
                 />
                 <v-list class="pl-3">
                   <template v-for="(item, index) in reviews.comments">
@@ -989,7 +999,7 @@ export default {
     showInfiniteLoading: false,
     reviewsDialog: false,
     otherReviewsDialog: false,
-    reviewChartOptions: {
+    reviewsChartOptions: {
       responsive: true,
       maintainAspectRatio: false,
       legend: {
@@ -1136,7 +1146,7 @@ export default {
       feedback: state => state.job.feedback,
       applicants: state => state.job.applicants,
       reviews: state => state.job.reviews,
-      reviewChartData: state => state.job.reviewChartData,
+      reviewsChartData: state => state.job.reviewsChartData,
       isLoading: state => state.job.isLoading,
       isCandidate: state => state.job.isCandidate,
       allReviews: state => state.reviews.companyReviews,

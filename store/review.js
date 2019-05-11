@@ -88,6 +88,7 @@ export const actions = {
         if (doc.exists) {
           if (companyId != doc.data()['companyId'] && uid != doc.data()['uid']) {
             console.log('404')
+            commit('updateIsLoading', false)
             nuxt.error({ statusCode: 404, message: 'not found' })
           }
 

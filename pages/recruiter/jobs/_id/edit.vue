@@ -4,191 +4,205 @@
     white
     wrap
   >
-    <v-flex xs12 sm8 offset-sm2>
-      <div class="title font-weight-bold py-3">
-        求人を更新
-      </div>
+    <!-- loading -->
+    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
+      <v-layout justify-center>
+        Now Loading...
+      </v-layout>
     </v-flex>
-    <!-- Top Image -->
-    <v-flex xs12 sm8 offset-sm2 class="py-3">
-      <v-img
-        v-if="selectedImage"
-        :src="selectedImage"
-        :aspect-ratio="imageRatio"
-      ></v-img>
-      <v-img
-        v-else-if="imageUrl"
-        :src="imageUrl"
-        :aspect-ratio="imageRatio"
-      ></v-img>
-      <input type="file" v-on:change="onFileChange">
-      <p v-if="!imageFileSizeValid" class="warning-text-color">
-        {{ imageFileSizeWarning }}
-      </p>
+    <v-flex v-else-if="isLoading" xs12 :style="{ height: windowHeight + 'px' }">
+      <v-layout align-center justify-center column fill-height>
+        Now Loading...
+      </v-layout>
     </v-flex>
-    <v-flex xs12 sm8 offset-sm2 class="py-4 px-4 break">
-      <v-form v-model="valid" class="pb-5">
-        <!-- Title -->
-        <v-text-field
-          class="pt-4"
-          v-model="tempTitle"
-          :rules="titleRules"
-          counter="50"
-          label="Title"
-          placeholder="タイトルを入力してください。"
-          required
-        ></v-text-field>
-        <v-textarea
-          class="pt-4"
-          v-model="tempContent"
-          :rules="contentRules"
-          counter="100"
-          rows="3"
-          label="概要"
-          placeholder="概要を100字以内で入力してください。これは検索画面で表示されます。"
-          required
-        ></v-textarea>
-        <v-textarea
-          class="pt-4"
-          v-model="tempDescription"
-          :rules="descriptionRules"
-          label="仕事内容"
-          placeholder="仕事内容について"
-          required
-        ></v-textarea>
-        <v-textarea
-          class="pt-4"
-          v-model="tempWage"
-          :rules="wageRules"
-          label="給料"
-          placeholder="給料について"
-          required
-        ></v-textarea>
-        <v-textarea
-          class="pt-4"
-          v-model="tempRequiredSkills"
-          :rules="requiredSkillsRules"
-          label="必要なスキル"
-          placeholder="必要なスキルについて"
-          required
-        ></v-textarea>
-        <v-textarea
-          class="pt-4"
-          v-model="tempIdealSkills"
-          :rules="idealSkillsRules"
-          label="あると好ましいスキル"
-          placeholder="あると好ましいスキルについて"
-          required
-        ></v-textarea>
-        <v-textarea
-          class="pt-4"
-          v-model="tempIdealCandidate"
-          :rules="idealCandidateRules"
-          label="望ましい人物像"
-          placeholder="望ましい人物像について"
-          required
-        ></v-textarea>
-        <v-flex sm6 pt-4>
-          <v-text-field
-            v-if="tempWorkweek"
-            v-model="tempWorkweek.days"
-            :rules="workweekDaysRules"
-            label="最低勤務日数（週）"
-            suffix="日"
-            type="number"
-            required
-          ></v-text-field>
-        </v-flex>
-        <v-flex sm6 pt-4>
-          <v-text-field
-            v-if="tempWorkweek"
-            v-model="tempWorkweek.hours"
-            :rules="workweekHoursRules"
-            label="最低勤務時間（週合計）"
-            suffix="時間"
-            type="number"
-            required
-          ></v-text-field>
-        </v-flex>
-        <v-flex sm6 pt-4>
-          <v-text-field
-            v-model="tempPeriod"
-            label="勤務期間（月）"
-            suffix="ヶ月"
-            type="number"
-            required
-          ></v-text-field>
-          <p class="textColor" style="font-size: 12px;">
-            パスを出すまでの試用期間。期間は1ヶ月程度を推奨しています。試用期間が終わった後にインターンを延長することができます。
-          </p>
-        </v-flex>
-        <v-select
-          class="pt-4"
-          v-model="tempWorkday"
-          :items="workdayItems"
-          label="勤務可能曜日"
-        ></v-select>
-        <v-select
-          class="pt-4"
-          v-model="tempOccupation"
-          :items="occupationItems"
-          label="募集職種"
-        ></v-select>
-        <v-textarea
-          v-if="tempOccupation == 'エンジニア'"
-          class="pt-4"
-          v-model="tempEnvironment"
-          :rules="environmentRules"
-          label="開発環境"
-          placeholder="開発環境について"
-          required
-        ></v-textarea>
-        <v-select
-          class="pt-4"
-          v-model="tempFeatures"
-          :items="featureItems"
-          label="特徴"
-          chips
-          multiple
-        ></v-select>
-        <v-select
-          class="pt-4"
-          v-model="tempIndustry"
-          :items="industryItems"
-          label="業界（必須）"
-        ></v-select>
-        <div class="text-xs-right py-3">
-          <v-flex xs6 sm4 offset-xs6 offset-sm8>
-            <v-select
-              v-if="tempStatus != 'creating'"
-              class="pt-4"
-              v-model="tempStatus"
-              :items="statusItems"
-              label="status"
-            ></v-select>
-          </v-flex>
-          <v-btn
-            :disabled="!valid || !imageFileSizeValid"
-            @click="updateButtonClicked"
-          >
-            更新
-          </v-btn>
+    <v-flex v-else xs12>
+      <v-flex xs12 sm10 offset-sm1>
+        <div class="title textColor font-weight-bold py-3">
+          求人を更新
         </div>
-      </v-form>
+      </v-flex>
+      <!-- Top Image -->
+      <v-flex xs12 sm10 offset-sm1 class="py-3">
+        <v-img
+          v-if="selectedImage"
+          :src="selectedImage"
+          :aspect-ratio="imageRatio"
+        ></v-img>
+        <v-img
+          v-else-if="imageUrl"
+          :src="imageUrl"
+          :aspect-ratio="imageRatio"
+        ></v-img>
+        <input type="file" v-on:change="onFileChange">
+        <p v-if="!imageFileSizeValid" class="warning-text-color">
+          {{ imageFileSizeWarning }}
+        </p>
+      </v-flex>
+      <v-flex xs12 sm10 offset-sm1 class="py-4 px-4 break">
+        <v-form v-model="valid" class="pb-5">
+          <!-- Title -->
+          <v-text-field
+            class="pt-4"
+            v-model="tempTitle"
+            :rules="titleRules"
+            counter="50"
+            label="タイトル（必須）"
+            placeholder="タイトルを入力してください。"
+            required
+          ></v-text-field>
+          <v-textarea
+            class="pt-5"
+            v-model="tempContent"
+            :rules="contentRules"
+            counter="100"
+            rows="3"
+            label="概要（必須）"
+            placeholder="概要を100字以内で入力してください。これは検索画面で表示されます。"
+            required
+          ></v-textarea>
+          <v-textarea
+            class="pt-5"
+            v-model="tempDescription"
+            :rules="descriptionRules"
+            label="仕事内容（必須）"
+            placeholder="仕事内容について"
+            required
+          ></v-textarea>
+          <v-textarea
+            class="pt-5"
+            v-model="tempWage"
+            :rules="wageRules"
+            label="給料（必須）"
+            placeholder="給料について"
+            required
+          ></v-textarea>
+          <v-textarea
+            class="pt-5"
+            v-model="tempRequiredSkills"
+            :rules="requiredSkillsRules"
+            label="必要なスキル（必須）"
+            placeholder="必要なスキルについて"
+            required
+          ></v-textarea>
+          <v-textarea
+            class="pt-5"
+            v-model="tempIdealSkills"
+            :rules="idealSkillsRules"
+            label="あると好ましいスキル"
+            placeholder="あると好ましいスキルについて"
+            required
+          ></v-textarea>
+          <v-textarea
+            class="pt-5"
+            v-model="tempIdealCandidate"
+            :rules="idealCandidateRules"
+            label="望ましい人物像"
+            placeholder="望ましい人物像について"
+            required
+          ></v-textarea>
+          <v-flex sm6 pt-5>
+            <v-text-field
+              v-if="tempWorkweek"
+              v-model="tempWorkweek.days"
+              :rules="workweekDaysRules"
+              label="週の最低勤務日数（必須）"
+              suffix="日"
+              type="number"
+              required
+            ></v-text-field>
+          </v-flex>
+          <v-flex sm6 pt-5>
+            <v-text-field
+              v-if="tempWorkweek"
+              v-model="tempWorkweek.hours"
+              :rules="workweekHoursRules"
+              label="週の最低勤務時間（必須）"
+              suffix="時間"
+              type="number"
+              required
+            ></v-text-field>
+          </v-flex>
+          <v-flex sm6 pt-5>
+            <v-text-field
+              v-model="tempPeriod"
+              :rules="periodRules"
+              label="勤務期間（必須）"
+              suffix="ヶ月"
+              type="number"
+              required
+            ></v-text-field>
+            <p class="textColor" style="font-size: 12px;">
+              パスを出すまでの試用期間。期間は1ヶ月程度を推奨しています。試用期間が終わった後にインターンを延長することができます。
+            </p>
+          </v-flex>
+          <v-select
+            class="pt-5"
+            v-model="tempWorkday"
+            :items="workdayItems"
+            label="勤務可能曜日（必須）"
+          ></v-select>
+          <v-select
+            class="pt-5"
+            v-model="tempOccupation"
+            :items="occupationItems"
+            label="募集職種（必須）"
+          ></v-select>
+          <v-textarea
+            v-if="tempOccupation == 'エンジニア'"
+            class="pt-5"
+            v-model="tempEnvironment"
+            :rules="environmentRules"
+            label="開発環境"
+            placeholder="開発環境について"
+            required
+          ></v-textarea>
+          <v-select
+            class="pt-5"
+            v-model="tempFeatures"
+            :items="featureItems"
+            label="特徴"
+            chips
+            multiple
+          ></v-select>
+          <v-select
+            class="pt-5"
+            v-model="tempIndustry"
+            :items="industryItems"
+            label="業界（必須）"
+          ></v-select>
+          <div class="text-xs-right py-3">
+            <v-flex xs6 sm4 offset-xs6 offset-sm8>
+              <v-select
+                v-if="tempStatus != 'creating'"
+                class="pt-4"
+                v-model="tempStatus"
+                :items="statusItems"
+                label="status"
+              ></v-select>
+            </v-flex>
+            <v-btn
+              :disabled="!valid || !imageFileSizeValid"
+              @click="updateButtonClicked"
+            >
+              更新
+            </v-btn>
+          </div>
+        </v-form>
+      </v-flex>
     </v-flex>
   </v-layout>
 </template>
 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex'
-import { firestore, auth, storage, storageRef } from '@/plugins/firebase'
 
 export default {
   data: () => ({
     isQueried: false,
+    windowHeight: 0,
     valid: true,
     imageFileSizeValid: true,
-    imageFileSizeWarning: '2MB以下の画像を選択してください',
+    imageFileSizeWarning: '5MB以下の画像を選択してください',
     selectedImageSize: 200,
     selectedImage: null,
     imageFile: null,
@@ -236,6 +250,10 @@ export default {
       v => (v <= 100) || '100時間以内で指定してください'
     ],
     tempPeriod: null,
+    periodRules: [
+      v => !!v || '数字を入力してください',
+      v => (v <= 48) || '48までで指定してください'
+    ],
     tempWorkday: '',
     workdayItems: [
       '平日のみ',
@@ -308,6 +326,7 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
+      isRefreshing: state => state.isRefreshing,
       companyId: state => state.profile.companyId,
       imageUrl: state => state.companyJob.imageUrl,
       title: state => state.companyJob.title,
@@ -324,11 +343,21 @@ export default {
       occupation: state => state.companyJob.occupation,
       features: state => state.companyJob.features,
       industry: state => state.companyJob.industry,
-      status: state => state.companyJob.status
+      status: state => state.companyJob.status,
+      isLoading: state => state.companyJob.isLoading,
     }),
   },
   mounted() {
+    let toolbarHeight
+    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+      toolbarHeight = 48
+    } else {
+      toolbarHeight = 64
+    }
+    this.windowHeight = window.innerHeight - toolbarHeight - 30
+
     this.resetState()
+    this.updateIsLoading(true)
     this.queryJob(this.$route.params)
   },
   watch: {
@@ -470,8 +499,8 @@ export default {
     onFileChange(e) {
       this.imageFileSizeValid = true
       let files = e.target.files || e.dataTransfer.files
-      // 画像サイズは2MB以下のみ
-      if (files[0] != null && files[0].size/1024/1024 <= 2) {
+      // 画像サイズは5MB以下のみ
+      if (files[0] != null && files[0].size/1024/1024 <= 5) {
         this.imageFile = files[0]
         this.createImage(files[0])
       } else {
@@ -584,8 +613,6 @@ export default {
         case 4: workweekDays.four = true; break
         case 5: workweekDays.five = true; break
       }
-      console.log('edit temp work week', this.tempWorkweek.days);
-      console.log('edit temp work week', workweekDays);
 
       const workweek = {
         days: workweekDays,
@@ -620,6 +647,7 @@ export default {
     },
     ...mapActions({
       queryJob: 'companyJob/queryJob',
+      updateIsLoading: 'companyJob/updateIsLoading',
       updateJob: 'companyJob/updateJob',
       resetState: 'companyJob/resetState',
     }),

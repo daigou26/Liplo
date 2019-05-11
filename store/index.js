@@ -181,6 +181,7 @@ export const actions = {
   async signOut({dispatch, commit}) {
     auth.signOut()
     dispatch('jobs/resetState')
+    dispatch('jobs/resetFilterState')
     dispatch('job/resetState')
     dispatch('company/resetState')
     dispatch('chats/resetMessagesListener')
@@ -205,6 +206,7 @@ export const actions = {
     dispatch('companyProfile/resetState')
     dispatch('settings/resetState')
     dispatch('users/resetState')
+    dispatch('users/resetFilterState')
     dispatch('user/resetState')
   },
   async changeEmail({dispatch, commit}, {type, newEmail, password}) {
@@ -466,6 +468,7 @@ export const actions = {
                   acceptScout: true,
                   isDeleted: false,
                 })
+                // 生年月日
                 if (typeof birthDate == 'string') {
                   var arr = birthDate.split('-')
                   birthDate = new Date(arr[0], arr[1] - 1, arr[2]);

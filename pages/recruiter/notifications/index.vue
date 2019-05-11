@@ -3,14 +3,40 @@
     row
     wrap
   >
+    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
+      <v-layout justify-center>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex v-else-if="isInitialLoading" xs12 :style="{ height: windowHeight + 'px' }">
+      <v-layout align-center justify-center column fill-height>
+        Now Loading...
+      </v-layout>
+    </v-flex>
     <v-flex
+      v-else
       xs12
       sm10
       offset-sm1
       class="py-3"
     >
-      <v-card>
-        <v-list v-if="notifications" three-line class="border py-0">
+      <v-card flat>
+        <div v-if="notifications && notifications.length > 0">
+          <div class="text-xs-right">
+            <v-btn small flat color="teal" @click="updateAllIsUnread(uid)">すべて既読にする</v-btn>
+          </div>
+          <v-divider
+            v-if="breakpoint == 'xs'"
+          ></v-divider>
+        </div>
+        <v-list
+          v-if="notifications && notifications.length > 0"
+          three-line
+          class="py-0"
+          :class="{
+            'border': $vuetify.breakpoint.smAndUp,
+          }"
+        >
           <template v-for="(notification, index) in notifications">
             <v-card
               flat
@@ -30,6 +56,21 @@
             ></v-divider>
           </template>
         </v-list>
+        <v-card
+          v-else
+          class="px-3 py-4"
+          :class="{
+            'mx-3 my-5': $vuetify.breakpoint.xsOnly,
+            'mt-4': $vuetify.breakpoint.mdAndUp,
+          }"
+        >
+          <div class="text-xs-center">
+            <div class="headline textColor">通知がありません</div>
+            <div class="pt-3 light-text-color">
+              通知がある場合はこちらに表示されます
+            </div>
+          </div>
+        </v-card>
         <infinite-loading
           v-if="showInfiniteLoading && notifications && notifications.length >= 10 && !isLoading"
           :distance="50"
@@ -50,6 +91,7 @@ export default {
     isQueried: false,
     count: 0,
     showInfiniteLoading: false,
+    windowHeight: 0,
   }),
   computed: {
     params() {
@@ -63,7 +105,9 @@ export default {
     },
     ...mapState({
       uid: state => state.uid,
+      isRefreshing: state => state.isRefreshing,
       notifications: state => state.notifications.notifications,
+      isInitialLoading: state => state.notifications.isInitialLoading,
       isLoading: state => state.notifications.isLoading,
       allNotificationsQueried: state => state.notifications.allNotificationsQueried,
     }),
@@ -71,8 +115,17 @@ export default {
   mounted() {
     this.showInfiniteLoading = true
 
+    let toolbarHeight
+    if (this.breakpoint == 'xs' || this.breakpoint == 'sm') {
+      toolbarHeight = 48
+    } else {
+      toolbarHeight = 64
+    }
+    this.windowHeight = window.innerHeight - toolbarHeight
+
     if (this.uid != null && this.uid != '' && !this.isQueried) {
       this.resetState()
+      this.updateIsInitialLoading(true)
       this.updateIsLoading(true)
       this.queryNotifications(this.uid)
     }
@@ -82,6 +135,7 @@ export default {
       if (uid != null && uid != '') {
         this.isQueried = true
         this.resetState()
+        this.updateIsInitialLoading(true)
         this.updateIsLoading(true)
         this.queryNotifications(uid)
       }
@@ -105,8 +159,10 @@ export default {
       }
     },
     ...mapActions({
+      updateAllIsUnread: 'notifications/updateAllIsUnread',
       updateIsUnread: 'notifications/updateIsUnread',
       queryNotifications: 'notifications/queryNotifications',
+      updateIsInitialLoading: 'notifications/updateIsInitialLoading',
       updateIsLoading: 'notifications/updateIsLoading',
       resetState: 'notifications/resetState',
     }),

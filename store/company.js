@@ -7,6 +7,7 @@ export const state = () => ({
   companyName: '',
   companyImageUrl: '',
   currentCandidates: null,
+  candidatesChartData: null,
   allCandidates: null,
   feedback: null,
   email: '',
@@ -26,9 +27,9 @@ export const state = () => ({
   welfare: null,
   workday: 0,
   reviews: null,
-  reviewChartData: null,
-  feedbackChartData: null,
-  feedbackChartOptions: null,
+  reviewsChartData: null,
+  feedbacksChartData: null,
+  feedbacksChartOptions: null,
   invoiceEmail: null,
   jobs: [],
   isLoading: false,
@@ -49,6 +50,9 @@ export const mutations = {
   },
   setCurrentCandidates(state, candidates) {
     state.currentCandidates = candidates
+  },
+  setCandidatesChartData(state, data) {
+    state.candidatesChartData = data
   },
   setAllCandidates(state, candidates) {
     state.allCandidates = candidates
@@ -113,14 +117,14 @@ export const mutations = {
   setReviews(state, reviews) {
     state.reviews = reviews
   },
-  setReviewChartData(state, data) {
-    state.reviewChartData = data
+  setReviewsChartData(state, data) {
+    state.reviewsChartData = data
   },
-  setFeedbackChartData(state, data) {
-    state.feedbackChartData = data
+  setFeedbacksChartData(state, data) {
+    state.feedbacksChartData = data
   },
-  setFeedbackChartOptions(state, options) {
-    state.feedbackChartOptions = options
+  setFeedbacksChartOptions(state, options) {
+    state.feedbacksChartOptions = options
   },
   setInvoiceEmail(state, email) {
     state.invoiceEmail = email
@@ -150,9 +154,54 @@ export const actions = {
             commit('setFeedback', doc.data()['feedback'])
 
             // chart Data
+            // 候補者の数
+            if (doc.data()['currentCandidates']) {
+              const currentCandidates = doc.data()['currentCandidates']
+              const candidatesChartData = {
+                labels: [
+                  '応募',
+                  '選考中',
+                  'インターン',
+                  '内定パス',
+                  '入社予定',
+                  '入社',
+                ],
+                datasets: [
+                  {
+                    borderWidth: 1,
+                    backgroundColor: [
+                      'rgba(25, 118, 210, 0.2)',
+                      'rgba(38, 198, 218, 0.2)',
+                      'rgba(251, 140, 0, 0.2)',
+                      'rgba(38, 166, 154, 0.2)',
+                      'rgba(102, 187, 106, 0.2)',
+                      'rgba(236, 64, 122, 0.2)',
+                    ],
+                    borderColor: [
+                      'rgba(25, 118, 210, 1)',
+                      'rgba(38, 198, 218, 1)',
+                      'rgba(251, 140, 0, 1)',
+                      'rgba(38, 166, 154, 1)',
+                      'rgba(102, 187, 106, 1)',
+                      'rgba(236, 64, 122, 1)',
+                    ],
+                    data: [
+                      currentCandidates.inbox,
+                      currentCandidates.inProcess,
+                      currentCandidates.intern + currentCandidates.extendedIntern,
+                      currentCandidates.pass,
+                      currentCandidates.contracted,
+                      currentCandidates.hired,
+                    ]
+                  }
+                ]
+              }
+              commit('setCandidatesChartData', candidatesChartData)
+            }
+            // 評価
             if (doc.data()['rating']) {
               const rating = doc.data()['rating']
-              const reviewChartData = {
+              const reviewsChartData = {
                 labels: [
                   '成長できるか',
                   '仕事内容',
@@ -178,27 +227,27 @@ export const actions = {
                   }
                 ]
               }
-              commit('setReviewChartData', reviewChartData)
+              commit('setReviewsChartData', reviewsChartData)
             }
-
+            // フィードバック記入率
             if (doc.data()['feedback'] && doc.data()['feedback'].all != 0) {
               const feedback = doc.data()['feedback']
               const feedbackRate = Math.round(feedback.writtenCount / feedback.all * 100)
-              const feedbackChartData = {
+              const feedbacksChartData = {
                 labels: [
                   '記入済',
                   '未記入',
                 ],
                 datasets: [{
                     data: [feedbackRate, (100 - feedbackRate)],
-                    backgroundColor: ['teal','burlywood']
+                    backgroundColor: ['#26A69A','#EEEEEE']
                 }],
               }
-              const feedbackChartOptions = {
+              const feedbacksChartOptions = {
                 elements: {
                   center: {
                     text: String(feedbackRate) + '%',
-                    color: '#36A2EB',
+                    color: 'teal',
                     fontStyle: 'Helvetica',
                     sidePadding: 50
                   }
@@ -209,22 +258,26 @@ export const actions = {
                   display: false
                 },
               }
-              commit('setFeedbackChartData', feedbackChartData)
-              commit('setFeedbackChartOptions', feedbackChartOptions)
+              commit('setFeedbacksChartData', feedbacksChartData)
+              commit('setFeedbacksChartOptions', feedbacksChartOptions)
             }
+            commit('updateIsLoading', false)
           } else {
             // 404
             console.log('404')
+            commit('updateIsLoading', false)
             nuxt.error({ statusCode: 404, message: 'not found' })
           }
         })
         .catch(function(error) {
           console.log("Error getting document:", error)
+          commit('updateIsLoading', false)
           nuxt.error({ statusCode: 404, message: 'not found' })
 
         })
       } else {
         console.log('404')
+        commit('updateIsLoading', false)
         nuxt.error({ statusCode: 404, message: 'not found' })
       }
   },
@@ -272,7 +325,7 @@ export const actions = {
               // chart Data
               if (doc.data()['reviews']) {
                 const reviews = doc.data()['reviews']
-                const reviewChartData = {
+                const reviewsChartData = {
                   labels: [
                     '成長できるか',
                     '仕事内容',
@@ -298,7 +351,7 @@ export const actions = {
                     }
                   ]
                 }
-                commit('setReviewChartData', reviewChartData)
+                commit('setReviewsChartData', reviewsChartData)
               }
 
               // 募集をクエリ
@@ -458,6 +511,7 @@ export const actions = {
   },
   resetState({commit}) {
     commit('setCurrentCandidates', null)
+    commit('setCandidatesChartData', null)
     commit('setAllCandidates', null)
     commit('setFeedback', null)
     commit('setImageUrl', '')
@@ -480,9 +534,9 @@ export const actions = {
     commit('setServices', null)
     commit('setWelfare', null)
     commit('setReviews', null)
-    commit('setFeedbackChartData', null)
-    commit('setFeedbackChartOptions', null)
-    commit('setReviewChartData', null)
+    commit('setFeedbacksChartData', null)
+    commit('setFeedbacksChartOptions', null)
+    commit('setReviewsChartData', null)
     commit('setInvoiceEmail', null)
     commit('resetJobs')
     commit('updateIsLoading', false)

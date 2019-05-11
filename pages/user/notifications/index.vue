@@ -9,8 +9,13 @@
         Now Loading...
       </v-layout>
     </v-flex>
+    <v-flex v-else-if="isInitialLoading" xs12 :style="{ height: windowHeight + 'px' }">
+      <v-layout align-center justify-center column fill-height>
+        Now Loading...
+      </v-layout>
+    </v-flex>
     <v-flex
-      v-else-if="!isInitialLoading"
+      v-else
       xs12
       md10
       offset-md1
@@ -93,11 +98,6 @@
             <div slot="no-results"></div>
           </infinite-loading>
         </v-flex>
-      </v-layout>
-    </v-flex>
-    <v-flex v-else xs12 :style="{ height: windowHeight + 'px' }">
-      <v-layout align-center justify-center column fill-height>
-        Now Loading...
       </v-layout>
     </v-flex>
   </v-layout>

@@ -4,7 +4,23 @@
     row
     wrap
   >
+    <!-- loading -->
+    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
+      <v-layout justify-center>
+        Now Loading...
+      </v-layout>
+    </v-flex>
     <v-flex
+      v-else-if="isInitialLoading"
+      xs12
+      :style="{ height: windowHeight + 'px' }"
+    >
+      <v-layout align-center justify-center column fill-height>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex
+      v-else
       xs12
       md10
       offset-md1
@@ -30,7 +46,7 @@
           >
             <!-- userName -->
             <div>
-              <v-btn flat>{{ userName }}</v-btn>
+              <v-btn flat :to="'/users/' + chatUserId">{{ userName }}</v-btn>
             </div>
             <!-- message -->
             <v-flex
@@ -52,47 +68,51 @@
                   <v-flex
                     xs10
                     class="py-3"
-                    :class="{ 'offset-xs2 text-xs-right': message.pic != null }"
+                    :class="{ 'offset-xs2 text-xs-right pr-2': message.pic != null }"
                   >
-                    <div class="d-inline-flex">
-                      <!-- ユーザーのプロフィール画像は左に -->
-                      <v-avatar
-                        v-if="message.user != null"
-                        class="grey lighten-3 mx-2"
-                        :size="40"
+                    <v-card-actions class="pa-0" style="align-items: start">
+                      <!-- ユーザーのプロフィール画像 -->
+                      <div>
+                        <v-avatar
+                          v-if="message.user != null"
+                          class="grey lighten-3 mx-2"
+                          :size="40"
+                        >
+                          <img v-if="message.user.imageUrl" :src="message.user.imageUrl">
+                        </v-avatar>
+                      </div>
+                      <!-- message -->
+                      <div
+                        :class="{ 'message-right': message.pic != null }"
                       >
-                        <img v-if="message.user.imageUrl" :src="message.user.imageUrl">
-                      </v-avatar>
-                      <div class="px-3 py-2 white message-border-radius return">{{ message.message }}</div>
-                      <!-- 担当者のプロフィール画像は右に -->
-                      <v-avatar
-                        v-if="message.pic != null"
-                        class="grey lighten-3 mx-2"
-                        :size="40"
-                      >
-                        <img v-if="message.pic.imageUrl" :src="message.pic.imageUrl">
-                      </v-avatar>
-                    </div>
+                        <div v-if="message.user != null" class="light-text-color">
+                          {{ message.user.name }}
+                        </div>
+                        <div
+                          class="px-3 py-2 white message-border-radius return text-xs-left"
+                          style="display: inline-block;"
+                        >{{ message.message }}</div>
+                        <div class="text-xs-right pt-1 pr-2 caption light-text-color return">{{ message.timestamp }}</div>
+                      </div>
+                    </v-card-actions>
                   </v-flex>
                 </v-layout>
               </template>
             </v-flex>
             <!-- userInput -->
-            <v-flex xs12 px-2>
-              <v-card class="pr-2" flat>
-                <v-textarea
-                  v-model="message"
-                  flat
-                  row-height="20"
-                  rows="2"
-                  no-resize
-                  solo
-                  label="message"
-                  hide-details
-                  append-outer-icon="send"
-                  @click:append-outer="sendButtonClicked"
-                ></v-textarea>
-              </v-card>
+            <v-flex xs12 pl-2 pr-3 class="border-top">
+              <v-textarea
+                v-model="message"
+                flat
+                row-height="20"
+                rows="2"
+                no-resize
+                solo
+                label="message"
+                hide-details
+                append-outer-icon="send"
+                @click:append-outer="sendButtonClicked"
+              ></v-textarea>
             </v-flex>
           </v-layout>
         </v-flex>
@@ -107,6 +127,7 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data: () => ({
     isQueried: false,
+    windowHeight: 0,
     message: '',
     showInfiniteLoading: false,
     messagesHeight: 0,
@@ -121,13 +142,16 @@ export default {
     },
     ...mapState({
       uid: state => state.uid,
+      isRefreshing: state => state.isRefreshing,
       recruiterImageUrl: state => state.profile.imageUrl,
       firstName: state => state.profile.firstName,
       lastName: state => state.profile.lastName,
       profileImageUrl: state => state.chat.profileImageUrl,
       userName: state => state.chat.userName,
+      chatUserId: state => state.chat.uid,
       companyId: state => state.companyProfile.companyId,
       messages: state => state.messages.messages,
+      isInitialLoading: state => state.messages.isInitialLoading,
       isLoading: state => state.messages.isLoading,
       allMessagesQueried: state => state.messages.allMessagesQueried,
       unsubscribe: state => state.messages.unsubscribe,
@@ -141,13 +165,15 @@ export default {
     } else {
       toolbarHeight = 64
     }
+    this.windowHeight = window.innerHeight - toolbarHeight - 30
     // companyName section = 48  userInput section = 63
-    this.messagesHeight = window.innerHeight - toolbarHeight - 48 - 63 -10
+    this.messagesHeight = window.innerHeight - toolbarHeight - 48 - 63 - 3
 
     this.showInfiniteLoading = true
 
     if (this.companyId != null && !this.isQueried) {
       this.resetState()
+      this.updateIsInitialLoading(true)
       this.updateIsLoading(true)
       this.queryChat({nuxt: this.$nuxt, params: this.$route.params})
       this.queryMessages({params: this.params, type: 'recruiter'})
@@ -162,9 +188,10 @@ export default {
   },
   watch: {
     companyId(companyId) {
-      if (companyId != null) {
+      if (companyId != null && companyId != '') {
         this.resetState()
         this.isQueried = true
+        this.updateIsInitialLoading(true)
         this.updateIsLoading(true)
         this.queryChat({nuxt: this.$nuxt, params: this.$route.params})
         this.queryMessages({params: this.params, type: 'recruiter'})
@@ -174,7 +201,9 @@ export default {
       // 最下部へスクロール
       if (messages.length <= 10 || this.isNewMessage) {
         this.$nextTick(() => {
-          this.$refs.messagesScroll.scrollTop = this.$refs.messagesScroll.scrollHeight
+          if (this.$refs.messagesScroll) {
+            this.$refs.messagesScroll.scrollTop = this.$refs.messagesScroll.scrollHeight
+          }
           this.updateIsNewMessage(false)
         })
       }
@@ -212,6 +241,7 @@ export default {
       queryChat: 'chat/queryChat',
       queryMessages: 'messages/queryMessages',
       resetUnsubscribe: 'messages/resetUnsubscribe',
+      updateIsInitialLoading: 'messages/updateIsInitialLoading',
       updateIsLoading: 'messages/updateIsLoading',
       updateIsNewMessage: 'messages/updateIsNewMessage',
       postMessageFromPic: 'message/postMessageFromPic',

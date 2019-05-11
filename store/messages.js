@@ -3,7 +3,6 @@ import { firestore } from '@/plugins/firebase'
 
 export const state = () => ({
   messages: [],
-  isInitialQuery: true,
   isInitialLoading: false,
   isLoading: false,
   allMessagesQueried: false,
@@ -12,13 +11,6 @@ export const state = () => ({
 })
 
 export const mutations = {
-  addMessage(state, message) {
-    if (state.isInitialQuery) {
-      state.messages.unshift(message)
-    } else {
-      state.messages.push(message)
-    }
-  },
   pushMessage(state, message) {
     state.messages.push(message)
   },
@@ -27,9 +19,6 @@ export const mutations = {
   },
   resetMessages(state) {
     state.messages = []
-  },
-  updateIsInitialQuery(state, isInitialQuery) {
-    state.isInitialQuery = isInitialQuery
   },
   updateIsInitialLoading(state, isLoading) {
     state.isInitialLoading = isLoading
@@ -227,7 +216,7 @@ export const actions = {
   },
   resetState({commit}) {
     commit('resetMessages')
-    commit('updateIsInitialQuery', true)
+    commit('updateIsNewMessage', false)
     commit('updateIsLoading', false)
     commit('resetAllMessagesQueried')
   },

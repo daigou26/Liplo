@@ -619,9 +619,3 @@ export default {
   }
 }
 </script>
-<style>
-.message-right {
-  margin-right: 0px;
-  margin-left: auto;
-}
-</style>

@@ -8,7 +8,12 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex v-else-if="!isInitialLoading">
+    <v-flex v-else-if="isInitialLoading" xs12 :style="{ height: windowHeight + 'px' }">
+      <v-layout align-center justify-center column fill-height>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex v-else>
       <!-- footer 表示ボタン -->
       <div class="hidden-xs-only" id="footer-button">
         <v-btn
@@ -142,6 +147,30 @@
                 </v-hover>
               </template>
             </v-list>
+            <v-card
+              v-if="jobs == null || jobs.length == 0"
+              class="px-3 py-4"
+              :class="{
+                'mx-3': $vuetify.breakpoint.xsOnly,
+                'mt-4': $vuetify.breakpoint.mdAndUp,
+                'mt-3': $vuetify.breakpoint.smAndDown,
+              }"
+            >
+              <div class="text-xs-center">
+                <div
+                  class="textColor"
+                  :class="{
+                    'title': $vuetify.breakpoint.xsOnly,
+                    'headline': $vuetify.breakpoint.smAndUp,
+                  }"
+                >
+                  募集が見つかりません
+                </div>
+                <div class="pt-3 light-text-color">
+                  絞り込みをしている場合は、条件を変えて検索してください
+                </div>
+              </div>
+            </v-card>
             <infinite-loading
               v-if="showInfiniteLoading && jobs && jobs.length >= 10 && !isLoading"
               :distance="50"
@@ -207,11 +236,6 @@
           </v-flex>
         </v-layout>
       </v-footer>
-    </v-flex>
-    <v-flex v-else xs12 :style="{ height: windowHeight + 'px' }">
-      <v-layout align-center justify-center column fill-height>
-        Now Loading...
-      </v-layout>
     </v-flex>
   </v-layout>
 </template>

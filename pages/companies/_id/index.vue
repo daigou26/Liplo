@@ -63,6 +63,7 @@
                     <v-layout class="horiz-scroll">
                       <div
                         v-for="member in members"
+                        :key="member.uid"
                         class="pr-4"
                       >
                         <div class="text-xs-center" style="max-width: 150px;">
@@ -86,7 +87,7 @@
               </div>
             </div>
             <!-- mission -->
-            <div v-if="mission" class="py-4">
+            <div v-if="mission" class="py-5">
               <p
                 class="font-weight-bold textColor"
                 :class="{
@@ -101,7 +102,7 @@
               </div>
             </div>
             <!-- vision -->
-            <div v-if="vision" class="py-4">
+            <div v-if="vision" class="py-5">
               <p
                 class="font-weight-bold textColor"
                 :class="{
@@ -116,7 +117,7 @@
               </div>
             </div>
             <!-- value -->
-            <div v-if="value" class="py-4">
+            <div v-if="value" class="py-5">
               <p
                 class="font-weight-bold textColor"
                 :class="{
@@ -131,7 +132,7 @@
               </div>
             </div>
             <!-- culture -->
-            <div v-if="culture" class="py-4">
+            <div v-if="culture" class="py-5">
               <p
                 class="font-weight-bold textColor"
                 :class="{
@@ -146,7 +147,7 @@
               </div>
             </div>
             <!-- what -->
-            <div class="py-4">
+            <div v-if="what" class="py-5">
               <p
                 class="font-weight-bold textColor"
                 :class="{
@@ -179,11 +180,10 @@
                       </div>
                   </template>
                 </v-list>
-
               </div>
             </div>
             <!-- why -->
-            <div class="py-4">
+            <div v-if="why" class="py-5">
               <p
                 class="font-weight-bold textColor"
                 :class="{
@@ -198,7 +198,7 @@
               </div>
             </div>
             <!-- 福利厚生 -->
-            <div v-if="welfare" class="py-4">
+            <div v-if="welfare" class="py-5">
               <p
                 class="font-weight-bold textColor"
                 :class="{
@@ -213,7 +213,7 @@
               </div>
             </div>
             <!-- review -->
-            <div class="py-4">
+            <div class="py-5">
               <p
                 class="font-weight-bold textColor"
                 :class="{
@@ -434,7 +434,7 @@
                   </v-flex>
                   <!-- chart -->
                   <v-flex md4 hidden-sm-and-down>
-                    <radar-chart v-if="showChart && reviewChartData" :data="reviewChartData" :options="reviewChartOptions" />
+                    <radar-chart v-if="showChart && reviewsChartData" :data="reviewsChartData" :options="reviewsChartOptions" />
                   </v-flex>
                 </div>
               </div>
@@ -443,7 +443,7 @@
               </div>
             </div>
             <!-- 募集 -->
-            <div v-if="jobs && jobs.length > 0" class="py-4 mb-5">
+            <div class="py-5">
               <p
                 class="font-weight-bold textColor"
                 :class="{
@@ -453,7 +453,7 @@
               >
                 募集
               </p>
-              <v-card flat class="pb-3">
+              <v-card v-if="jobs && jobs.length > 0" flat class="pb-3">
                 <v-card-text class="overflow-hidden pa-0">
                   <v-layout class="horiz-scroll">
                     <template v-for="job in jobs">
@@ -482,6 +482,9 @@
                   </v-layout>
                 </v-card-text>
               </v-card>
+              <div v-else>
+                まだ募集がありません
+              </div>
               <nuxt-link
                 v-if="jobs && jobs.length > 1"
                 class="pl-2 teal--text font-weight-bold link-text"
@@ -491,7 +494,7 @@
               </nuxt-link>
             </div>
             <!-- 企業情報 -->
-            <div class="py-4">
+            <div class="py-5">
               <p
                 class="font-weight-bold textColor"
                 :class="{
@@ -501,29 +504,34 @@
               >
                 企業情報
               </p>
-              <div v-if="url" class="pb-2">
-                <v-card-actions class="pa-0">
-                  <v-icon style="font-size: 18px">link</v-icon>
-                  <a :href="url" class="pl-2">{{ url }}</a>
-                </v-card-actions>
+              <div v-if="url || foundedDate || location || employeesCount">
+                <div v-if="url" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">link</v-icon>
+                    <a :href="url" class="pl-2">{{ url }}</a>
+                  </v-card-actions>
+                </div>
+                <div v-if="foundedDate" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">flag</v-icon>
+                    <span class="pl-2">{{ foundedDate }}に設立</span>
+                  </v-card-actions>
+                </div>
+                <div v-if="location" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">place</v-icon>
+                    <span class="pl-2">{{ location }}</span>
+                  </v-card-actions>
+                </div>
+                <div v-if="employeesCount" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">group</v-icon>
+                    <span class="pl-2">{{ employeesCount }}人のメンバー</span>
+                  </v-card-actions>
+                </div>
               </div>
-              <div v-if="foundedDate" class="pb-2">
-                <v-card-actions class="pa-0">
-                  <v-icon style="font-size: 18px">flag</v-icon>
-                  <span class="pl-2">{{ foundedDate }}に設立</span>
-                </v-card-actions>
-              </div>
-              <div v-if="location" class="pb-2">
-                <v-card-actions class="pa-0">
-                  <v-icon style="font-size: 18px">place</v-icon>
-                  <span class="pl-2">{{ location }}</span>
-                </v-card-actions>
-              </div>
-              <div v-if="employeesCount" class="pb-2">
-                <v-card-actions class="pa-0">
-                  <v-icon style="font-size: 18px">group</v-icon>
-                  <span class="pl-2">{{ employeesCount }}人のメンバー</span>
-                </v-card-actions>
+              <div v-else>
+                まだ企業情報がありません
               </div>
             </div>
           </v-flex>
@@ -610,7 +618,7 @@ export default {
     xsWidth: false,
     showInfiniteLoading: false,
     reviewsDialog: false,
-    reviewChartOptions: {
+    reviewsChartOptions: {
       responsive: true,
       maintainAspectRatio: false,
       legend: {
@@ -683,7 +691,7 @@ export default {
       services: state => state.company.services,
       welfare: state => state.company.welfare,
       reviews: state => state.company.reviews,
-      reviewChartData: state => state.company.reviewChartData,
+      reviewsChartData: state => state.company.reviewsChartData,
       jobs: state => state.company.jobs,
       isLoading: state => state.company.isLoading,
       allReviews: state => state.reviews.companyReviews,

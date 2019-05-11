@@ -3,6 +3,7 @@ import { firestore } from '@/plugins/firebase'
 
 export const state = () => ({
   companyReviews: [],
+  isInitialCompanyReviewsLoading: false,
   isCompanyReviewsLoading: false,
   allCompanyReviewsQueried: false,
   // ユーザーが記入したレビュー
@@ -18,6 +19,9 @@ export const mutations = {
   },
   resetCompanyReviews(state) {
     state.companyReviews = []
+  },
+  updateIsInitialCompanyReviewsLoading(state, isLoading) {
+    state.isInitialCompanyReviewsLoading = isLoading
   },
   updateIsCompanyReviewsLoading(state, isLoading) {
     state.isCompanyReviewsLoading = isLoading
@@ -46,10 +50,10 @@ export const actions = {
   queryCompanyReviews({commit, state}, companyId) {
     const reviews = state.companyReviews
     if (reviews.length == 0) {
-      return firestore.collection('reviews')
+      firestore.collection('reviews')
         .where('companyId', '==', companyId)
         .orderBy('createdAt', 'desc')
-        .limit(10)
+        .limit(20)
         .get()
         .then(function(snapshot) {
           var docCount = 0
@@ -86,19 +90,22 @@ export const actions = {
           if (docCount == 0) {
             commit('setAllCompanyReviewsQueried', true)
           }
+          commit('updateIsInitialCompanyReviewsLoading', false)
           commit('updateIsCompanyReviewsLoading', false)
         })
         .catch(function(error) {
+          commit('updateIsInitialCompanyReviewsLoading', false)
+          commit('updateIsCompanyReviewsLoading', false)
           console.log("Error getting document:", error);
         })
     } else if (reviews.length != 0) {
       const lastIndex = reviews.length - 1
       const lastDate = reviews[lastIndex].createdAt
-      return firestore.collection('reviews')
+      firestore.collection('reviews')
         .where('companyId', '==', companyId)
         .orderBy('createdAt', 'desc')
         .startAfter(lastDate)
-        .limit(10)
+        .limit(20)
         .get()
         .then(function(snapshot) {
           var docCount = 0
@@ -138,9 +145,13 @@ export const actions = {
           commit('updateIsCompanyReviewsLoading', false)
         })
         .catch(function(error) {
+          commit('updateIsCompanyReviewsLoading', false)
           console.log("Error getting document:", error);
         })
     }
+  },
+  updateIsInitialCompanyReviewsLoading({commit}, isLoading) {
+    commit('updateIsInitialCompanyReviewsLoading', isLoading)
   },
   updateIsCompanyReviewsLoading({commit}, isLoading) {
     commit('updateIsCompanyReviewsLoading', isLoading)
@@ -245,6 +256,7 @@ export const actions = {
   },
   resetCompanyReviewsState({commit}) {
     commit('resetCompanyReviews')
+    commit('updateIsInitialCompanyReviewsLoading', false)
     commit('updateIsCompanyReviewsLoading', false)
     commit('setAllCompanyReviewsQueried', false)
   },

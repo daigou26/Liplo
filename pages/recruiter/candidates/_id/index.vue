@@ -1,6 +1,17 @@
 <template>
   <v-layout>
-    <v-flex xs12 v-if="!isLoading">
+    <!-- loading -->
+    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
+      <v-layout justify-center>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex v-else-if="isLoading" xs12 :style="{ height: windowHeight + 'px' }">
+      <v-layout align-center justify-center column fill-height>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex xs12 v-else>
       <v-layout
         row
         white
@@ -9,7 +20,7 @@
       >
         <!-- user image & name (sm, xs) -->
         <v-flex xs12 hidden-md-and-up>
-          <v-card flat>
+          <v-card v-if="user" flat>
             <v-list two-line>
               <v-list-tile>
                 <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
@@ -24,10 +35,12 @@
                   </v-list-tile-title>
                   <v-list-tile-sub-title>
                     <v-rating
+                      :value="reviews == null ? 0 : reviews.rating"
+                      background-color="teal"
+                      color="teal darken-1"
                       small
                       half-increments
                       readonly
-                      :value="reviews == null ? 0 : reviews.rating"
                     />
                   </v-list-tile-sub-title>
                 </v-list-tile-content>
@@ -35,10 +48,10 @@
             </v-list>
           </v-card>
         </v-flex>
-        <!-- candidate summary (sm, xs) -->
+        <!-- candidate summary (md, lg, xl) -->
         <v-flex md6 hidden-sm-and-down>
           <!-- user image & name (md, lg, xl) -->
-          <v-card flat>
+          <v-card v-if="user" flat>
             <v-list two-line>
               <v-list-tile>
                 <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
@@ -53,10 +66,12 @@
                   </v-list-tile-title>
                   <v-list-tile-sub-title>
                     <v-rating
+                      :value="reviews == null ? 0 : reviews.rating"
+                      background-color="teal"
+                      color="teal darken-1"
                       small
                       half-increments
                       readonly
-                      :value="reviews == null ? 0 : reviews.rating"
                     />
                   </v-list-tile-sub-title>
                 </v-list-tile-content>
@@ -70,7 +85,7 @@
                 タグ
               </span>
               <v-btn
-                v-if="!isEditingTags"
+                v-show="!isEditingTags"
                 flat
                 small
                 @click="tagsEditButtonClicked"
@@ -79,7 +94,7 @@
                 <span class="caption edit-text-color">編集する</span>
               </v-btn>
             </v-flex>
-            <v-flex v-if="!isEditingTags" class="px-3 break text-xs-left">
+            <v-flex v-show="!isEditingTags" class="px-3 break text-xs-left">
               <v-chip v-if="tags" v-for="tag in tags" :key="tag">{{ tag }}</v-chip>
               <div v-if="tags == null || tags.length == 0">
                 タグは設定されていません
@@ -119,6 +134,21 @@
                 更新
               </v-btn>
             </v-form>
+            <v-hover>
+              <v-card slot-scope="{ hover }" flat class="pt-3">
+                <v-card-actions>
+                  <v-icon style="font-size: 18px">info</v-icon>
+                  <span class="light-text-color caption">ヒント（タグの使い方）</span>
+                </v-card-actions>
+                <v-card v-show="hover" flat class="caption pa-2">
+                  <div>
+                    <div class="textColor">
+                      タグには候補者の職種や役職などを自由に設定できます
+                    </div>
+                  </div>
+                </v-card>
+              </v-card>
+            </v-hover>
           </div>
           <!-- pass -->
           <div v-if="pass && status.pass">
@@ -127,7 +157,7 @@
                 内定パス
               </span>
               <v-btn
-                v-if="!isEditingPass"
+                v-show="!isEditingPass"
                 flat
                 small
                 @click="passEditButtonClicked"
@@ -136,7 +166,7 @@
                 <span class="caption edit-text-color">編集する</span>
               </v-btn>
             </v-flex>
-            <v-flex v-if="!isEditingPass" class="px-3 break text-xs-left">
+            <v-flex v-show="!isEditingPass" class="px-3 break text-xs-left">
               <div class="pb-2">
                 <span>有効期限:　</span>{{ passExpirationDate }}
               </div>
@@ -146,26 +176,37 @@
 
             </v-flex>
             <!-- pass編集 -->
-            <v-form v-if="isEditingPass" v-model="editPassValid" class="pa-3">
+            <v-form v-show="isEditingPass" v-model="editPassValid" class="pa-3">
               <!-- 有効期限 -->
-              <v-card class="mb-4" style="padding-left: 12px; padding-right: 12px;">
-                <v-layout class="py-1" justify-space-between>
-                  <v-flex xs11>
-                    <datepicker
-                      v-model="tempExpirationDate"
-                      class="py-2"
-                      style="font-size: 16px;"
-                      placeholder="有効期限"
-                    ></datepicker>
-                  </v-flex>
-                </v-layout>
-              </v-card>
+              <v-menu
+                v-model="expirationDateMenu"
+                :close-on-content-click="false"
+                :nudge-right="40"
+                lazy
+                transition="scale-transition"
+                offset-y
+                full-width
+                min-width="290px"
+              >
+                <template v-slot:activator="{ on }">
+                  <v-text-field
+                    v-model="tempExpirationDate"
+                    label="有効期限"
+                    append-icon="event"
+                    solo
+                    readonly
+                    required
+                    v-on="on"
+                  ></v-text-field>
+                </template>
+                <v-date-picker v-model="tempExpirationDate" @input="expirationDateMenu = false"></v-date-picker>
+              </v-menu>
               <!-- 職種 -->
               <v-text-field
                 label="職種"
-                v-model="tempPasspassOccupation"
+                v-model="tempPassOccupation"
                 solo
-                :rules="passOccupationRules"
+                :rules="occupationRules"
                 required
               ></v-text-field>
               <v-btn
@@ -179,7 +220,7 @@
                   params: params,
                   companyId: companyId,
                   expirationDate: tempExpirationDate,
-                  occupation: tempPasspassOccupation
+                  occupation: tempPassOccupation
                 })"
               >
                 更新
@@ -215,7 +256,7 @@
                       タグ
                     </span>
                     <v-btn
-                      v-if="!isEditingTags"
+                      v-show="!isEditingTags"
                       flat
                       small
                       @click="tagsEditButtonClicked"
@@ -224,10 +265,10 @@
                       <span class="caption edit-text-color">編集する</span>
                     </v-btn>
                   </v-flex>
-                  <v-flex v-if="!isEditingTags" class="px-3 break text-xs-left">
+                  <v-flex v-show="!isEditingTags" class="px-3 break text-xs-left">
                     <v-chip v-if="tags && tags.length > 0" v-for="tag in tags" :key="tag">{{ tag }}</v-chip>
                     <div v-if="tags == null || tags.length == 0">
-                      タグは設定されていません。タグには、候補者の職種や役職を指定してください。(複数可)
+                      タグは設定されていません。
                     </div>
                   </v-flex>
                   <!-- タグ編集 -->
@@ -264,6 +305,21 @@
                       更新
                     </v-btn>
                   </v-form>
+                  <v-hover>
+                    <v-card slot-scope="{ hover }" flat class="pt-3">
+                      <v-card-actions>
+                        <v-icon style="font-size: 18px">info</v-icon>
+                        <span class="light-text-color caption">ヒント（タグの使い方）</span>
+                      </v-card-actions>
+                      <v-card v-show="hover" flat class="caption pa-2">
+                        <div>
+                          <div class="textColor">
+                            タグには候補者の職種や役職などを自由に設定できます
+                          </div>
+                        </div>
+                      </v-card>
+                    </v-card>
+                  </v-hover>
                 </div>
                 <!-- pass -->
                 <div v-if="pass && status.pass">
@@ -272,7 +328,7 @@
                       内定パス
                     </span>
                     <v-btn
-                      v-if="!isEditingPass"
+                      v-show="!isEditingPass"
                       flat
                       small
                       @click="passEditButtonClicked"
@@ -281,7 +337,7 @@
                       <span class="caption edit-text-color">編集する</span>
                     </v-btn>
                   </v-flex>
-                  <v-flex v-if="!isEditingPass" class="px-3 break text-xs-left">
+                  <v-flex v-show="!isEditingPass" class="px-3 break text-xs-left">
                     <div class="pb-2">
                       <span>有効期限:　</span>{{ passExpirationDate }}
                     </div>
@@ -291,20 +347,31 @@
 
                   </v-flex>
                   <!-- pass編集 -->
-                  <v-form v-if="isEditingPass" v-model="editPassValid" class="pa-3">
+                  <v-form v-show="isEditingPass" v-model="editPassValid" class="pa-3">
                     <!-- 有効期限 -->
-                    <v-card class="mb-4" style="padding-left: 12px; padding-right: 12px;">
-                      <v-layout class="py-1" justify-space-between>
-                        <v-flex xs11>
-                          <datepicker
-                            v-model="tempExpirationDate"
-                            class="py-2"
-                            style="font-size: 16px;"
-                            placeholder="有効期限"
-                          ></datepicker>
-                        </v-flex>
-                      </v-layout>
-                    </v-card>
+                    <v-menu
+                      v-model="expirationDateMenu"
+                      :close-on-content-click="false"
+                      :nudge-right="40"
+                      lazy
+                      transition="scale-transition"
+                      offset-y
+                      full-width
+                      min-width="290px"
+                    >
+                      <template v-slot:activator="{ on }">
+                        <v-text-field
+                          v-model="tempExpirationDate"
+                          label="有効期限"
+                          append-icon="event"
+                          solo
+                          readonly
+                          required
+                          v-on="on"
+                        ></v-text-field>
+                      </template>
+                      <v-date-picker v-model="tempExpirationDate" @input="expirationDateMenu = false"></v-date-picker>
+                    </v-menu>
                     <!-- 職種 -->
                     <v-text-field
                       label="職種"
@@ -324,7 +391,7 @@
                         params: params,
                         companyId: companyId,
                         expirationDate: tempExpirationDate,
-                        passOccupation: tempPasspassOccupation
+                        passOccupation: tempPassOccupation
                       })"
                     >
                       更新
@@ -340,14 +407,23 @@
                   solo
                 ></v-select>
                 <div v-if="status.scouted">
-                  メッセージのやりとりが始まり次第、ステータスを<span class="font-weight-bold cyan--text text--lighten-1">選考中</span>に更新してください。
+                  メッセージのやりとりが始まり次第、ステータスを
+                  <span class="font-weight-bold cyan--text text--lighten-1">選考中</span>
+                  に更新してください。
                 </div>
                 <div v-if="status.inbox">
-                  この応募者を選考する場合は、ステータスを<span class="font-weight-bold cyan--text text--lighten-1">選考中</span>に変え、メッセージを送りましょう。
+                  この応募者を選考する場合は、ステータスを
+                  <span class="font-weight-bold cyan--text text--lighten-1">選考中</span>
+                  に変えた後、メッセージを送信してください。
                 </div>
                 <div v-if="status.inProcess">
-                  ステータスを<span class="font-weight-bold orange--text text--darken-1">インターン</span>に変更する場合は、インターンが確定してからお願いします。
-                  ステータスを切り替えた翌月に請求書をお送り致します。
+                  この候補者を採用する際は、まずメッセージにてやり取りをして頂き、
+                  候補者と労働契約を結んだ時点で、ステータスを
+                  <span class="font-weight-bold orange--text text--darken-1">インターン</span>
+                  に変更してください。
+                  <div class="pt-3">
+                    ステータスを切り替えた翌月に請求書をお送り致します。（無料枠を使い切っている場合）
+                  </div>
                   <div v-if="tempStatus == 'インターン'" class="py-3">
                     <v-form v-model="internValid">
                       <!-- 職種 -->
@@ -368,7 +444,7 @@
                 </div>
                 <!-- feedback -->
                 <div v-if="status.intern" class="py-3">
-                  <div class="pt-3 subheading font-weight-bold">
+                  <div class="pt-3 textColor subheading font-weight-bold">
                     フィードバック
                   </div>
                   <v-form v-model="feedbackValid">
@@ -395,23 +471,34 @@
                 <!-- pass -->
                 <div v-if="status.intern == true || status.extendedIntern == true">
                   <div v-if="tempStatus == '内定パス'" class="py-3">
-                    <div class="pt-3 pb-2 subheading font-weight-bold">
+                    <div class="pt-3 pb-2 textColor subheading font-weight-bold">
                       内定パス
                     </div>
                     <v-form v-model="passValid">
                       <!-- 有効期限 -->
-                      <v-card class="mb-4" style="padding-left: 12px; padding-right: 12px;">
-                        <v-layout class="py-1" justify-space-between>
-                          <v-flex xs11>
-                            <datepicker
-                              v-model="expirationDate"
-                              class="py-2"
-                              style="font-size: 16px;"
-                              placeholder="有効期限"
-                            ></datepicker>
-                          </v-flex>
-                        </v-layout>
-                      </v-card>
+                      <v-menu
+                        v-model="expirationDateMenu"
+                        :close-on-content-click="false"
+                        :nudge-right="40"
+                        lazy
+                        transition="scale-transition"
+                        offset-y
+                        full-width
+                        min-width="290px"
+                      >
+                        <template v-slot:activator="{ on }">
+                          <v-text-field
+                            v-model="tempExpirationDate"
+                            label="有効期限"
+                            append-icon="event"
+                            solo
+                            readonly
+                            required
+                            v-on="on"
+                          ></v-text-field>
+                        </template>
+                        <v-date-picker v-model="tempExpirationDate" @input="expirationDateMenu = false"></v-date-picker>
+                      </v-menu>
                       <!-- 職種 -->
                       <v-text-field
                         label="職種"
@@ -432,16 +519,22 @@
                 </div>
                 <div v-if="status.pass == true">
                   <div>
-                    ステータスを<span class="font-weight-bold green--text text--lighten-1">入社予定</span>に変更する場合は、内定契約が完了してからお願いします。
-                    ステータスを切り替えた翌月に請求書をお送り致します。
+                    内定契約が完了しましたら、ステータスを
+                    <span class="font-weight-bold green--text text--lighten-1">入社予定</span>に変更してください。
+                    ステータスを切り替えた翌月に請求書をお送り致します。（無料枠を使い切っている場合）
                   </div>
-                  <div class="pt-2">
-                    内定パスの有効期限が切れた場合は、ステータスを
-                    <span class="font-weight-bold grey--text">不採用</span>にすることで内定パスが無効になります。
+                  <div class="pt-3 light-text-color">
+                    <div>
+                      ※ 内定パスの有効期限が切れた場合でも、自動的に無効にならないため、有効期限を編集することで延長が可能です。
+                    </div>
+                    <div>
+                      有効期限が切れた後、内定パスを無効にする場合は、ステータスを
+                      <span class="font-weight-bold grey--text">不採用</span>にしてください。
+                    </div>
                   </div>
                 </div>
                 <div v-if="status.contracted == true">
-                  候補者が入社したらステータスを<span class="font-weight-bold green--text text--lighten-1">入社</span>に変更してください。
+                  候補者と雇用契約を結び次第、ステータスを<span class="font-weight-bold green--text text--lighten-1">入社</span>に変更してください。
                   ステータスを変更すると、候補者一覧に表示されなくなります。
                 </div>
                 <div class="text-xs-right">
@@ -458,13 +551,12 @@
                 <v-form v-model="reviewValid" class="pa-3">
                   <v-rating
                     v-model="rating"
-                    hover
+                    background-color="teal"
+                    color="teal darken-1"
                     half-increments
-                    background-color="orange lighten-3"
-                    color="orange"
                   />
                   <v-textarea
-                    label="レビュー"
+                    label="コメント"
                     v-model="review"
                     rows="3"
                     :rules="messageRules"
@@ -496,16 +588,18 @@
                             </v-list-tile-title>
                             <v-list-tile-sub-title>
                               <v-rating
+                                :value="comment.rating == null ? 0 : comment.rating"
+                                background-color="teal"
+                                color="teal darken-1"
                                 small
                                 half-increments
                                 readonly
-                                :value="comment.rating == null ? 0 : comment.rating"
                               />
                             </v-list-tile-sub-title>
                           </v-list-tile-content>
                         </v-list-tile>
                       </v-list>
-                      <div class="pb-3" style="padding-left: 72px">
+                      <div class="pb-3 textColor" style="padding-left: 72px">
                         {{ comment.content }}
                       </div>
                     </v-card>
@@ -517,9 +611,8 @@
               </div>
               <!-- messages -->
               <v-card v-if="item.value == 'messages' && isShowMessage" flat>
-                <div v-if="isMessagesLoading">
-                  Now Loading...(ローディングが終わらない場合はリロードしてください。)
-
+                <div v-if="isMessagesLoading" class="pt-5 text-xs-center">
+                  Now Loading...
                 </div>
                 <div v-else>
                   <v-layout
@@ -547,47 +640,51 @@
                           <v-flex
                             xs10
                             class="py-3"
-                            :class="{ 'offset-xs2 text-xs-right': message.pic != null }"
+                            :class="{ 'offset-xs2 text-xs-right pr-2': message.pic != null }"
                           >
-                            <div class="d-inline-flex">
-                              <!-- ユーザーのプロフィール画像は左に -->
-                              <v-avatar
-                                v-if="message.user != null"
-                                class="grey lighten-3 mx-2"
-                                :size="40"
+                            <v-card-actions class="pa-0" style="align-items: start">
+                              <!-- ユーザーのプロフィール画像 -->
+                              <div>
+                                <v-avatar
+                                  v-if="message.user != null"
+                                  class="grey lighten-3 mx-2"
+                                  :size="40"
+                                >
+                                  <img v-if="message.user.imageUrl" :src="message.user.imageUrl">
+                                </v-avatar>
+                              </div>
+                              <!-- message -->
+                              <div
+                                :class="{ 'message-right': message.pic != null }"
                               >
-                                <img v-if="message.user.imageUrl" :src="message.user.imageUrl">
-                              </v-avatar>
-                              <div class="px-3 py-2 white message-border-radius return">{{ message.message }}</div>
-                              <!-- 担当者のプロフィール画像は右に -->
-                              <v-avatar
-                                v-if="message.pic != null"
-                                class="grey lighten-3 mx-2"
-                                :size="40"
-                              >
-                                <img v-if="message.pic.imageUrl" :src="message.pic.imageUrl">
-                              </v-avatar>
-                            </div>
+                                <div v-if="message.user != null" class="light-text-color">
+                                  {{ message.user.name }}
+                                </div>
+                                <div
+                                  class="px-3 py-2 white message-border-radius return text-xs-left"
+                                  style="display: inline-block;"
+                                >{{ message.message }}</div>
+                                <div class="text-xs-right pt-1 pr-2 caption light-text-color return">{{ message.timestamp }}</div>
+                              </div>
+                            </v-card-actions>
                           </v-flex>
                         </v-layout>
                       </template>
                     </v-flex>
                     <!-- userInput -->
-                    <v-flex xs12 px-2>
-                      <v-card class="pr-2" flat>
-                        <v-textarea
-                          v-model="message"
-                          flat
-                          row-height="20"
-                          rows="2"
-                          no-resize
-                          solo
-                          label="message"
-                          hide-details
-                          append-outer-icon="send"
-                          @click:append-outer="sendButtonClicked"
-                        ></v-textarea>
-                      </v-card>
+                    <v-flex xs12 pl-2 pr-3 class="border-top">
+                      <v-textarea
+                        v-model="message"
+                        flat
+                        row-height="20"
+                        rows="2"
+                        no-resize
+                        solo
+                        label="message"
+                        hide-details
+                        append-outer-icon="send"
+                        @click:append-outer="sendButtonClicked"
+                      ></v-textarea>
                     </v-flex>
                   </v-layout>
                 </div>
@@ -606,14 +703,11 @@
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex'
 import { firestore, auth, storage, storageRef } from '@/plugins/firebase'
-import Datepicker from 'vuejs-datepicker'
 
 export default {
-  components: {
-    Datepicker
-  },
   data: () => ({
     isQueried: false,
+    windowHeight: 0,
     isMessagesQueried: false,
     showInfiniteLoading: false,
     count: 0,
@@ -627,9 +721,10 @@ export default {
     passMessage: '',
     messageRules: [
       v => !!v || '入力されていません',
-      v => (v && v.length <= 200) || '200字以内で入力してください'
+      v => (v && v.length <= 2000) || '2000字以内で入力してください'
     ],
     expirationDate: null,
+    expirationDateMenu: false,
     passOccupation: '',
     occupationRules: [
       v => !!v || '職種を入力してください',
@@ -638,7 +733,7 @@ export default {
     goodPoint: '',
     advice: '',
     feedbackRules: [
-      v => (v.length <= 200) || '200字以内で入力してください'
+      v => (v.length <= 2000) || '2000字以内で入力してください'
     ],
     tempTags: [],
     tagRules: [
@@ -667,12 +762,16 @@ export default {
       }
     },
     isReviewed() {
-      for (const comment of this.reviews.comments) {
-        if (comment.pic.uid == this.uid) {
-          return true
+      if (this.reviews) {
+        for (const comment of this.reviews.comments) {
+          if (comment.pic.uid == this.uid) {
+            return true
+          }
         }
+        return false
+      } else {
+        return false
       }
-      return false
     },
     updateStatusButtonDisabled() {
       var disabled = false
@@ -699,11 +798,11 @@ export default {
       if (this.status.inProcess && this.tempStatus == 'インターン') {
         return !this.internValid
       } else if (this.status.intern && this.tempStatus == '内定パス') {
-        return !this.feedbackValid || !this.passValid || this.expirationDate == null
+        return !this.feedbackValid || !this.passValid || this.tempExpirationDate == null
       } else if (this.status.intern && this.tempStatus != '内定パス') {
         return !this.feedbackValid
       } else if (!this.status.intern && this.tempStatus == '内定パス') {
-        return !this.passValid || this.expirationDate == null
+        return !this.passValid || this.tempExpirationDate == null
       } else {
         return false
       }
@@ -788,6 +887,7 @@ export default {
     },
     ...mapState({
       uid: state => state.uid,
+      isRefreshing: state => state.isRefreshing,
       companyId: state => state.profile.companyId,
       firstName: state => state.profile.firstName,
       lastName: state => state.profile.lastName,
@@ -815,6 +915,7 @@ export default {
     } else {
       toolbarHeight = 64
     }
+    this.windowHeight = window.innerHeight - toolbarHeight - 30
     // tab menu = 48  margin = 16
     this.tabItemHeight = window.innerHeight - toolbarHeight - 48 - 16
     this.messagesHeight = window.innerHeight - toolbarHeight - 48 - 63 - 18
@@ -828,6 +929,7 @@ export default {
 
     if (this.companyId != null && !this.isQueried) {
       this.resetState()
+      this.updateIsLoading(true)
       this.queryCandidate({nuxt: this.$nuxt, params: this.$route.params, companyId: this.companyId})
     }
   },
@@ -840,8 +942,9 @@ export default {
   },
   watch: {
     companyId(companyId) {
-      if (companyId) {
+      if (companyId != null && companyId != '') {
         this.resetState()
+        this.updateIsLoading(true)
         this.queryCandidate({nuxt: this.$nuxt, params: this.$route.params, companyId: companyId})
       }
     },
@@ -910,7 +1013,10 @@ export default {
       this.updateIsEditingTags(true)
     },
     passEditButtonClicked() {
-      this.tempExpirationDate = this.expirationDate
+      this.tempExpirationDate =
+        String(this.expirationDate.getFullYear()) + '-' +
+        String(this.expirationDate.getMonth() + 1) + '-' +
+        String(this.expirationDate.getDate())
       this.tempPassOccupation = this.passOccupation
       this.updateIsEditingPass(true)
     },
@@ -954,8 +1060,10 @@ export default {
       }
 
       if (this.tempStatus == '内定パス') {
+        var expirationDateArr = this.tempExpirationDate.split('-')
+
         const pass = {
-          expirationDate: this.expirationDate,
+          expirationDate: new Date(expirationDateArr[0], expirationDateArr[1] - 1, expirationDateArr[2]),
           message: this.passMessage,
           occupation: this.passOccupation,
           pic: {
@@ -1048,6 +1156,7 @@ export default {
     },
     ...mapActions({
       queryCandidate: 'candidate/queryCandidate',
+      updateIsLoading: 'candidate/updateIsLoading',
       updateIsEditingTags: 'candidate/updateIsEditingTags',
       updateTags: 'candidate/updateTags',
       updateIsEditingPass: 'candidate/updateIsEditingPass',

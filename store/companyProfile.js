@@ -42,6 +42,7 @@ export const state = () => ({
   field: '',
   addMemberError: '',
   addMemberLoading: false,
+  isLoading: false,
 })
 
 export const mutations = {
@@ -161,6 +162,9 @@ export const mutations = {
   },
   updateAddMemberLoading(state, loading) {
     state.addMemberLoading = loading
+  },
+  updateIsLoading(state, isLoading) {
+    state.isLoading = isLoading
   }
 }
 
@@ -198,10 +202,12 @@ export const actions = {
           commit('setServices', doc.data()['services'])
           commit('setWelfare', doc.data()['welfare'] ? doc.data()['welfare'] : '')
           commit('setWorkday', doc.data()['workday'])
-          // commit('setFeatures', doc.data()['features'])
+
+          commit('updateIsLoading', false)
         }
       })
       .catch(function(error) {
+        commit('updateIsLoading', false)
         console.log("Error getting document:", error)
       })
   },
@@ -580,6 +586,10 @@ export const actions = {
     commit('updateIsEditingCompanyInfo', isEditing)
   },
   updateCompanyInfo({commit}, {companyId, email, location, foundedDate, url, employeesCount}) {
+    if (foundedDate) {
+      var foundedDateArr = foundedDate.split('-')
+      foundedDate = new Date(foundedDateArr[0], foundedDateArr[1] - 1, foundedDateArr[2])
+    }
     if (email) {
       const batch = firestore.batch()
       const companyRef = firestore.collection('companies').doc(companyId)
@@ -631,6 +641,9 @@ export const actions = {
         })
     }
   },
+  updateIsLoading({commit}, isLoading) {
+    commit('updateIsLoading', isLoading)
+  },
   resetState({commit}) {
     commit('updateImageFileSizeValid', false)
     commit('setTopImageUrl', '')
@@ -670,5 +683,6 @@ export const actions = {
     commit('setFeatures', '')
     commit('setAddMemberError', '')
     commit('updateAddMemberLoading', false)
+    commit('updateIsLoading', false)
   },
 }

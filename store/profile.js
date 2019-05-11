@@ -3,6 +3,7 @@ import { firestore, storageRef } from '@/plugins/firebase'
 
 
 export const state = () => ({
+  lastSignInDate: null,
   type: null,
   points: 0,
   position: null,
@@ -33,13 +34,16 @@ export const state = () => ({
   university: '',
   faculty: '',
   department: '',
-  birthTimestamp: '',
+  birthDate: '',
   isEditingUserInfo: false,
   acceptedOffers: [],
   isLoading: false,
 })
 
 export const mutations = {
+  setLastSignInDate(state, date) {
+    state.lastSignInDate = date
+  },
   setType(state, type) {
     state.type = type
   },
@@ -130,8 +134,8 @@ export const mutations = {
   setDepartment(state, department) {
     state.department = department
   },
-  setBirthTimestamp(state, birthTimestamp) {
-    state.birthTimestamp = birthTimestamp
+  setBirthDate(state, birthDate) {
+    state.birthDate = birthDate
   },
   updateIsEditingUserInfo(state, isEditing) {
     state.isEditingUserInfo = isEditing
@@ -164,7 +168,7 @@ export const actions = {
           commit('setUniversity', doc.data()['university'] != null ? doc.data()['university'] : '')
           commit('setFaculty', doc.data()['faculty'] != null ? doc.data()['faculty'] : '')
           commit('setDepartment', doc.data()['department'] != null ? doc.data()['department'] : '')
-          commit('setBirthTimestamp', doc.data()['birthDate'])
+          commit('setBirthDate', doc.data()['birthDate'])
           commit('setAcceptedOffers', doc.data()['acceptedOffers'])
         }
         commit('updateIsLoading', false)
@@ -176,6 +180,9 @@ export const actions = {
   },
   updateIsLoading({commit}, isLoading) {
     commit('updateIsLoading', isLoading)
+  },
+  setLastSignInDate({commit}, date) {
+    commit('setLastSignInDate', date)
   },
   setType({commit}, type) {
     commit('setType', type)
@@ -348,6 +355,10 @@ export const actions = {
   },
   updateSelfIntro({commit, state}, {uid, selfIntro}) {
     const batch = firestore.batch()
+    const userRef = firestore.collection('users').doc(uid)
+    batch.update(userRef, {
+      selfIntro: selfIntro
+    })
     const profileRef = firestore.collection('users')
       .doc(uid).collection('profile').doc(uid)
     batch.update(profileRef, {
@@ -683,12 +694,14 @@ export const actions = {
     commit('setUniversity', '')
     commit('setFaculty', '')
     commit('setDepartment', '')
-    commit('setBirthTimestamp', '')
+    commit('setBirthDate', '')
     commit('updateIsEditingUserInfo', null)
     commit('setAcceptedOffers', [])
+    commit('updateIsLoading', false)
   },
   resetState({commit}) {
     commit('setImageUrl', '')
+    commit('setLastSignInDate', null)
     commit('setType', null)
     commit('setCompanyId', '')
     commit('setEmail', '')

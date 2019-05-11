@@ -3,6 +3,7 @@ import { firestore } from '@/plugins/firebase'
 
 export const state = () => ({
   users: [],
+  isInitialLoading: false,
   isLoading: false,
   allUsersQueried: false,
   engineer: false,
@@ -10,7 +11,6 @@ export const state = () => ({
   sales: false,
   others: false,
   toolbarExtension: false,
-  loading: false,
 })
 
 export const mutations = {
@@ -19,6 +19,9 @@ export const mutations = {
   },
   resetUsers(state) {
     state.users = []
+  },
+  updateIsInitialLoading(state, isLoading) {
+    state.isInitialLoading = isLoading
   },
   updateIsLoading(state, isLoading) {
     state.isLoading = isLoading
@@ -68,10 +71,6 @@ export const mutations = {
   resetToolbarExtension(state) {
     state.toolbarExtension = false
   },
-  // loading
-  updateLoading(state, isLoading) {
-    state.loading = isLoading
-  }
 }
 
 export const actions = {
@@ -88,20 +87,6 @@ export const actions = {
     if (Array.isArray(occupationParams) && occupationParams.length == 1) {
       usersRef = usersRef.where(`desiredOccupations.${occupationParams[0]}`, '==', true)
     }
-    // if (Array.isArray(occupationParams) && occupationParams.length > 1) {
-    //   if (!occupationParams.includes('engineer')) {
-    //     usersRef = usersRef.where('desiredOccupations.engineer', '==', false)
-    //   }
-    //   if (!occupationParams.includes('designer')) {
-    //     usersRef = usersRef.where('desiredOccupations.designer', '==', false)
-    //   }
-    //   if (!occupationParams.includes('sales')) {
-    //     usersRef = usersRef.where('desiredOccupations.sales', '==', false)
-    //   }
-    //   if (!occupationParams.includes('others')) {
-    //     usersRef = usersRef.where('desiredOccupations.others', '==', false)
-    //   }
-    // }
 
     if (users.length == 0) {
       return usersRef
@@ -109,7 +94,7 @@ export const actions = {
         .where('type', '==', 'user')
         .where('isDeleted', '==', false)
         .orderBy('points', 'desc')
-        .limit(10)
+        .limit(20)
         .get()
         .then(function(snapshot) {
           var docCount = 0
@@ -120,8 +105,8 @@ export const actions = {
               imageUrl: doc.data()['imageUrl'],
               firstName: doc.data()['firstName'],
               lastName: doc.data()['lastName'],
+              selfIntro: doc.data()['selfIntro'],
               hasPortfolio: doc.data()['hasPortfolio'],
-              interestingFields: doc.data()['interestingFields'],
               desiredOccupations: doc.data()['desiredOccupations'],
               skills: doc.data()['skills'],
               points: doc.data()['points'],
@@ -131,9 +116,12 @@ export const actions = {
           if (docCount == 0) {
             commit('setAllUsersQueried')
           }
+          commit('updateIsInitialLoading', false)
           commit('updateIsLoading', false)
         })
         .catch(function(error) {
+          commit('updateIsInitialLoading', false)
+          commit('updateIsLoading', false)
           console.log("Error getting document:", error);
         })
     } else {
@@ -145,7 +133,7 @@ export const actions = {
         .where('isDeleted', '==', false)
         .orderBy('points', 'desc')
         .startAfter(points)
-        .limit(10)
+        .limit(20)
         .get()
         .then(function(snapshot) {
           var docCount = 0
@@ -156,8 +144,8 @@ export const actions = {
               imageUrl: doc.data()['imageUrl'],
               firstName: doc.data()['firstName'],
               lastName: doc.data()['lastName'],
+              selfIntro: doc.data()['selfIntro'],
               hasPortfolio: doc.data()['hasPortfolio'],
-              interestingFields: doc.data()['interestingFields'],
               desiredOccupations: doc.data()['desiredOccupations'],
               skills: doc.data()['skills'],
               points: doc.data()['points'],
@@ -170,9 +158,13 @@ export const actions = {
           commit('updateIsLoading', false)
         })
         .catch(function(error) {
+          commit('updateIsLoading', false)
           console.log("Error getting document:", error);
         })
     }
+  },
+  updateIsInitialLoading({commit}, isLoading) {
+    commit('updateIsInitialLoading', isLoading)
   },
   updateIsLoading({commit}, isLoading) {
     commit('updateIsLoading', isLoading)
@@ -182,6 +174,7 @@ export const actions = {
   },
   setFilter({commit}, queryParams) {
     const occupationParams = queryParams.occupation
+
     if (occupationParams != null) {
       commit('updateEngineer', occupationParams.includes('engineer'))
       commit('updateDesigner', occupationParams.includes('designer'))
@@ -195,8 +188,15 @@ export const actions = {
   resetToolbarExtension({commit}) {
     commit('resetToolbarExtension')
   },
+  resetFilterState({commit}) {
+    commit('updateEngineer', false)
+    commit('updateDesigner', false)
+    commit('updateSales', false)
+    commit('updateOthers', false)
+  },
   resetState({commit}) {
     commit('resetUsers')
+    commit('updateIsInitialLoading', false)
     commit('updateIsLoading', false)
     commit('resetAllUsersQueried')
   },
