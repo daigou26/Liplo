@@ -52,8 +52,12 @@
                   </v-list-tile-avatar>
                   <v-list-tile-content>
                     <v-list-tile-title class="textColor font-weight-bold">{{ feedback.companyName }}</v-list-tile-title>
-                    <v-list-tile-sub-title class="text-xs-right light-text-color">{{ feedback.timestamp }}</v-list-tile-sub-title>
                   </v-list-tile-content>
+                  <v-list-tile-action class="caption font-weight-bold light-text-color ml-2">
+                    <v-card-actions class="pa-0">
+                      {{ feedback.timestamp }}
+                    </v-card-actions>
+                  </v-list-tile-action>
                 </v-list-tile>
                 <v-divider
                   :inset="true"
