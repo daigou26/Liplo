@@ -45,8 +45,8 @@
             class="border"
           >
             <!-- userName -->
-            <div>
-              <v-btn flat :to="'/users/' + chatUserId">{{ userName }}</v-btn>
+            <div class="break pa-3 teal--text">
+              <nuxt-link :to="'/users/' + chatUserId" class="link-text">{{ userName }}</nuxt-link>
             </div>
             <!-- message -->
             <v-flex
@@ -167,7 +167,7 @@ export default {
     }
     this.windowHeight = window.innerHeight - toolbarHeight - 30
     // companyName section = 48  userInput section = 63
-    this.messagesHeight = window.innerHeight - toolbarHeight - 48 - 63 - 3
+    this.messagesHeight = window.innerHeight - toolbarHeight - 48 - 63 - 8
 
     this.showInfiniteLoading = true
 
