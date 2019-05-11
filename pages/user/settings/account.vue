@@ -300,7 +300,7 @@ export default {
   },
   watch: {
     uid(uid) {
-      if (uid != null) {
+      if (uid != null && uid != '') {
         this.isQueried = true
         this.resetState()
         this.updateIsLoading(true)
