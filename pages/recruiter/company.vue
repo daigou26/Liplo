@@ -1038,7 +1038,12 @@
                       v-on="on"
                     ></v-text-field>
                   </template>
-                  <v-date-picker v-model="tempFoundedDate" @input="foundedDateMenu = false"></v-date-picker>
+                  <v-date-picker
+                    v-model="tempFoundedDate"
+                    color="teal"
+                    locale="ja"
+                    @input="foundedDateMenu = false"
+                  ></v-date-picker>
                 </v-menu>
                 <v-text-field
                   solo

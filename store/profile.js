@@ -34,6 +34,7 @@ export const state = () => ({
   university: '',
   faculty: '',
   department: '',
+  graduationDate: '',
   birthDate: '',
   isEditingUserInfo: false,
   acceptedOffers: [],
@@ -134,6 +135,9 @@ export const mutations = {
   setDepartment(state, department) {
     state.department = department
   },
+  setGraduationDate(state, graduationDate) {
+    state.graduationDate = graduationDate
+  },
   setBirthDate(state, birthDate) {
     state.birthDate = birthDate
   },
@@ -155,6 +159,12 @@ export const actions = {
       .get()
       .then(function(doc) {
         if (doc.exists) {
+          let graduationDate = doc.data()['graduationDate']
+          if (graduationDate) {
+            let date = new Date( graduationDate.seconds * 1000 )
+            graduationDate = date
+          }
+
           commit('setPosition', doc.data()['position'])
           commit('setFirstName', doc.data()['firstName'])
           commit('setLastName', doc.data()['lastName'])
@@ -168,6 +178,7 @@ export const actions = {
           commit('setUniversity', doc.data()['university'] != null ? doc.data()['university'] : '')
           commit('setFaculty', doc.data()['faculty'] != null ? doc.data()['faculty'] : '')
           commit('setDepartment', doc.data()['department'] != null ? doc.data()['department'] : '')
+          commit('setGraduationDate', graduationDate)
           commit('setBirthDate', doc.data()['birthDate'])
           commit('setAcceptedOffers', doc.data()['acceptedOffers'])
         }
@@ -643,7 +654,10 @@ export const actions = {
   updateIsEditingUserInfo({commit}, isEditing) {
     commit('updateIsEditingUserInfo', isEditing)
   },
-  updateUserInfo({commit}, {uid, university, faculty, department}) {
+  updateUserInfo({commit}, {uid, university, faculty, department, graduationDate}) {
+    var graduationDateArr = graduationDate.split('-')
+    graduationDate = new Date(graduationDateArr[0], graduationDateArr[1] - 1, graduationDateArr[2])
+
     const batch = firestore.batch()
     const profileRef = firestore.collection('users')
       .doc(uid).collection('profile').doc(uid)
@@ -651,6 +665,7 @@ export const actions = {
       university: university,
       faculty: faculty,
       department: department,
+      graduationDate: graduationDate
     })
     const detailRef = firestore.collection('users')
       .doc(uid).collection('detail').doc(uid)
@@ -658,12 +673,14 @@ export const actions = {
       university: university,
       faculty: faculty,
       department: department,
+      graduationDate: graduationDate
     })
     batch.commit()
       .then(() => {
         commit('setUniversity', university)
         commit('setFaculty', faculty)
         commit('setDepartment', department)
+        commit('setGraduationDate', graduationDate)
         commit('updateIsEditingUserInfo', false)
       })
       .catch((error) => {
@@ -694,6 +711,7 @@ export const actions = {
     commit('setUniversity', '')
     commit('setFaculty', '')
     commit('setDepartment', '')
+    commit('setGraduationDate', '')
     commit('setBirthDate', '')
     commit('updateIsEditingUserInfo', null)
     commit('setAcceptedOffers', [])

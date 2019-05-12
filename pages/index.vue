@@ -133,7 +133,7 @@
                                   readonly
                                 />
                                 <span v-if="job.rating" class="pl-1 pr-3 textColor">{{ job.rating.count }}</span>
-                                <span v-show="hover" class="caption green--text">企業情報を見る</span>
+                                <span v-show="hover" class="caption green--text">企業情報を確認する</span>
                               </v-card-actions>
                             </v-list-tile-sub-title>
                           </v-list-tile-content>
