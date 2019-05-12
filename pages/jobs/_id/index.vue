@@ -10,6 +10,25 @@
       </v-layout>
     </v-flex>
     <v-flex xs12 v-else-if="!isLoading">
+      <!-- snackbar -->
+      <v-snackbar
+        v-model="snackbar"
+        class="px-5"
+        color="teal lighten-1"
+        :multi-line="true"
+        :timeout="6000"
+        :left="true"
+        :bottom="true"
+      >
+        {{ snackbarText }}
+        <v-btn
+          color="white"
+          flat
+          @click="snackbar = false"
+        >
+          Close
+        </v-btn>
+      </v-snackbar>
       <v-flex>
         <v-img
           :src="imageUrl"
@@ -957,6 +976,8 @@ export default {
     count: 0,
     userReviewsQueryCount: 0,
     isQueried: false,
+    snackbar: false,
+    snackbarText: '',
     showInfiniteLoading: false,
     reviewsDialog: false,
     otherReviewsDialog: false,
@@ -1216,6 +1237,9 @@ export default {
         user: user,
         companyId: this.companyId
       })
+
+      this.snackbarText = '応募しました！'
+      this.snackbar = true
     },
     ...mapActions({
       queryJobDetail: 'job/queryJobDetail',

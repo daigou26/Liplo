@@ -18,6 +18,25 @@
         wrap
         :class="{'fill-height': $vuetify.breakpoint.mdAndUp}"
       >
+        <!-- snackbar -->
+        <v-snackbar
+          v-model="snackbar"
+          class="px-5"
+          color="teal lighten-1"
+          :multi-line="true"
+          :timeout="6000"
+          :left="true"
+          :bottom="true"
+        >
+          {{ snackbarText }}
+          <v-btn
+            color="white"
+            flat
+            @click="snackbar = false"
+          >
+            Close
+          </v-btn>
+        </v-snackbar>
         <!-- user image & name (sm, xs) -->
         <v-flex xs12 hidden-md-and-up>
           <v-card v-if="user" flat>
@@ -738,6 +757,8 @@ export default {
   data: () => ({
     isQueried: false,
     windowHeight: 0,
+    snackbar: false,
+    snackbarText: '',
     isMessagesQueried: false,
     showInfiniteLoading: false,
     count: 0,
@@ -1116,6 +1137,9 @@ export default {
         candidateData.feedback = feedback
       }
 
+      this.snackbarText = '更新しました！'
+      this.snackbar = true
+
       this.updateStatus(candidateData)
     },
     sendReviewButtonClicked() {
@@ -1136,6 +1160,9 @@ export default {
       } else {
         reviewData.type = 'new'
       }
+
+      this.snackbarText = 'レビューを送信しました！'
+      this.snackbar = true
 
       this.sendReview(reviewData)
     },
