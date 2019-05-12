@@ -131,7 +131,7 @@ export const actions = {
     batch.set(notificationRef, {
       type: 'normal',
       isImportant: false,
-      content: state.companyName + 'にフィードバックをもらいました！ 確認してみましょう。',
+      content: state.companyName + 'からフィードバックが送られました！',
       createdAt: new Date(),
       url: url,
       isUnread: true,
