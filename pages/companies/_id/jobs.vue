@@ -21,7 +21,7 @@
             sm8
             text-xs-center
           >
-            <div class="text-xs-left headline textColor font-weight-bold pb-5">
+            <div class="text-xs-left headline textColor font-weight-bold pb-5 hidden-xs-only">
               募集一覧
             </div>
             <!-- job lists -->
@@ -34,19 +34,18 @@
                     class="mb-5"
                     :class="`elevation-${hover ? 12 : 2}`"
                   >
-                    <v-card flat :to='"jobs/" + job.jobId' class="clickable">
+                    <v-card flat :to='"/jobs/" + job.jobId' class="clickable">
                       <v-img
                         :src="job.imageUrl"
                         :aspect-ratio="imageRatio"
                       ></v-img>
                       <div
-                        class="pt-3 px-4 text-xs-left caption textColor font-weight-bold"
-                        id="job-tags"
+                        class="pt-2 px-3 text-xs-left caption textColor font-weight-bold"
                       >
-                        <span class="px-2 py-1">{{ occupation(job.occupation) }}</span>
-                        <span class="ml-2 px-2 py-1">{{ job.period }}ヶ月</span>
+                        <v-chip outline small color="teal">{{ occupation(job.occupation) }}</v-chip>
+                        <v-chip outline small color="grey-blue">{{ job.period }}ヶ月</v-chip>
                       </div>
-                      <v-card-title primary-title class="px-4 pt-3">
+                      <v-card-title primary-title class="px-4 pt-3 pb-0">
                         <div class="text-xs-left">
                           <h3
                             :class="{
@@ -62,7 +61,7 @@
                       </v-card-title>
                     </v-card>
                     <!-- 投稿日 -->
-                    <v-card flat class="pb-3">
+                    <v-card flat>
                       <v-list-tile>
                         <v-spacer></v-spacer>
                         <v-list-tile-action class="caption font-weight-bold light-text-color">

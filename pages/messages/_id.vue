@@ -127,8 +127,8 @@
             class="border-side"
           >
             <!-- companyName -->
-            <div class="break pa-3 teal--text">
-              <nuxt-link :to="'/companies/' + companyId" class="link-text">{{ companyName }}</nuxt-link>
+            <div class="break pa-3 font-weight-bold">
+              <nuxt-link :to="'/companies/' + companyId" class="link-text teal--text">{{ companyName }}</nuxt-link>
             </div>
             <!-- message -->
             <v-flex
@@ -303,8 +303,8 @@
             }"
           >
             <!-- companyName -->
-            <div>
-              <v-btn flat :to="'/companies/' + companyId">{{ companyName }}</v-btn>
+            <div class="break pa-3 font-weight-bold">
+              <nuxt-link :to="'/companies/' + companyId" class="link-text teal--text">{{ companyName }}</nuxt-link>
             </div>
             <!-- message -->
             <v-flex

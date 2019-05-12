@@ -33,7 +33,7 @@
       width="500"
     >
       <v-card v-if="!recruiterSignUpDialog">
-        <v-toolbar flat color="orange lighten-2">
+        <v-toolbar flat>
           <span class="textColor font-weight-bold subheading">メールアドレスの確認をお願いします</span>
         </v-toolbar>
         <div class="pa-4">
@@ -80,6 +80,14 @@
           Home
         </nuxt-link>
         <span v-else-if="breakpoint == 'xs' && path == '/'"　class="toolbar-title">募集</span>
+        <span v-else-if="breakpoint == 'xs' && path == '/recruiter/dashboard'"　class="toolbar-title">ダッシュボード</span>
+        <span v-else-if="breakpoint == 'xs' && path == '/recruiter/company'"　class="toolbar-title">企業情報</span>
+        <span v-else-if="breakpoint == 'xs' && path.includes('/recruiter/jobs')"　class="toolbar-title">募集管理</span>
+        <span v-else-if="breakpoint == 'xs' && path.includes('/recruiter/candidates')"　class="toolbar-title">候補者管理</span>
+        <span v-else-if="breakpoint == 'xs' && path.includes('/recruiter/messages')"　class="toolbar-title">メッセージ</span>
+        <span v-else-if="breakpoint == 'xs' && path.includes('/recruiter/feedbacks')"　class="toolbar-title">フィードバック</span>
+        <span v-else-if="breakpoint == 'xs' && path.includes('/recruiter/reviews')"　class="toolbar-title">レビュー</span>
+        <span v-else-if="breakpoint == 'xs' && path == '/recruiter/company_settings'" class="toolbar-title">設定</span>
         <span v-else-if="breakpoint == 'xs' && path == '/user/settings/account'" class="toolbar-title">アカウント設定</span>
         <span v-else-if="breakpoint == 'xs' && path == '/user/settings/notifications'" class="toolbar-title">通知設定</span>
         <span v-else-if="breakpoint == 'xs' && path == '/users'" class="toolbar-title">ユーザー検索</span>
@@ -90,12 +98,14 @@
     <v-spacer></v-spacer>
     <v-toolbar-items>
       <v-btn flat active-class to="/users" class="hidden-xs-only">
-        <span class="font-weight-bold textColor">検索</span>
+        <span class="font-weight-bold textColor">ユーザー検索</span>
       </v-btn>
       <!-- notifications -->
       <v-menu
         offset-y
         min-width="350"
+        max-width="350"
+        style="right: 3px;"
         :fullscreen="$vuetify.breakpoint.xsOnly"
       >
         <v-btn
@@ -227,9 +237,9 @@
   </v-toolbar>
   <!-- user & 未ログイン -->
   <v-toolbar v-else-if="path != '/user/menu'" flat color="white" class="toolbar-fixed border-bottom" id="toolbar">
-    <v-toolbar-side-icon v-if="!uid" @click="iconClicked" class="hidden-sm-and-up"></v-toolbar-side-icon>
-    <!-- menu (xs & 未ログイン時のみ) -->
-    <div v-if="!uid" class="text-xs-center hidden-sm-and-up">
+    <v-toolbar-side-icon @click="iconClicked" class="hidden-sm-and-up"></v-toolbar-side-icon>
+    <!-- menu (xs) -->
+    <div class="text-xs-center hidden-sm-and-up">
       <v-dialog
         v-model="dropdownMenu"
         fullscreen
@@ -247,6 +257,7 @@
               <v-list>
                 <!-- 登録 -->
                 <v-list-tile
+                  v-if="!uid"
                   class="px-3"
                   @click="signUpButtonClicked"
                 >
@@ -256,6 +267,7 @@
                 </v-list-tile>
                 <!-- ログイン -->
                 <v-list-tile
+                  v-if="!uid"
                   class="px-3"
                   @click="signInButtonClicked"
                 >
@@ -305,10 +317,12 @@
     <v-flex xs12 slot="extension" v-if="jobsToolbarExtension && !isJobsLoading">
       <filter-extension></filter-extension>
     </v-flex>
-    <v-toolbar-title class="font-weight-bold">
+    <v-toolbar-title class="font-weight-bold ml-0">
       <no-ssr>
         <nuxt-link v-if="breakpoint != 'xs'" to="/" class="toolbar-title">Home</nuxt-link>
         <span v-else-if="path == '/'"　class="toolbar-title">募集</span>
+        <span v-else-if="routeName == 'jobs-id' || routeName == 'companies-id'"　class="toolbar-title"></span>
+        <span v-else-if="routeName == 'companies-id-jobs'"　class="toolbar-title">募集一覧</span>
         <span v-else-if="path.includes('/user/notifications')"　class="toolbar-title">通知</span>
         <span v-else-if="path.includes('/messages')"　class="toolbar-title">メッセージ</span>
         <span v-else-if="path.includes('/passes')" class="toolbar-title">内定パス</span>
@@ -339,7 +353,15 @@
         </v-badge>
       </v-btn>
       <!-- notifications -->
-      <v-menu v-if="uid" offset-y offset-x min-width="400" class="hidden-xs-only">
+      <v-menu
+        v-if="uid"
+        offset-y
+        offset-x
+        min-width="400"
+        max-width="400"
+        style="right: 3px;"
+        class="hidden-xs-only"
+      >
         <v-btn flat slot="activator" @click="notificationsButtonClicked">
           <span v-if="!hasNewNotification" class="font-weight-bold textColor">通知</span>
           <v-badge v-else overlap color="red">
@@ -845,6 +867,9 @@ export default {
     path() {
       return this.$route.path
     },
+    routeName() {
+      return this.$route.name
+    },
     breakpoint() {
       return this.$vuetify.breakpoint.name
     },
@@ -918,6 +943,7 @@ export default {
       this.$store.dispatch('setLoading')
       this.$store.dispatch('resetAuthError')
       this.$store.dispatch('signUp', {email: this.email, password: this.password})
+      this.dropdownMenu = false
     },
     recruiterSignUpClicked() {
       this.setLoading()
@@ -939,6 +965,7 @@ export default {
       this.$store.dispatch('setLoading')
       this.$store.dispatch('resetAuthError')
       this.$store.dispatch('signIn', {email: this.email, password: this.password})
+      this.dropdownMenu = false
     },
     signOut() {
       this.$store.dispatch('signOut')

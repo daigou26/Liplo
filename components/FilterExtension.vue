@@ -30,22 +30,22 @@
           <v-list>
             <!-- エンジニア -->
             <v-list-tile @click="tempJobsEngineerFilter=!tempJobsEngineerFilter">
-              <v-checkbox v-model="tempJobsEngineerFilter" readonly></v-checkbox>
+              <v-checkbox v-model="tempJobsEngineerFilter" readonly color="teal"></v-checkbox>
               <v-list-tile-title class="pl-3">エンジニア</v-list-tile-title>
             </v-list-tile>
             <!-- デザイナー -->
             <v-list-tile @click="tempJobsDesignerFilter=!tempJobsDesignerFilter">
-              <v-checkbox v-model="tempJobsDesignerFilter" readonly></v-checkbox>
+              <v-checkbox v-model="tempJobsDesignerFilter" readonly color="teal"></v-checkbox>
               <v-list-tile-title class="pl-3">デザイナー</v-list-tile-title>
             </v-list-tile>
             <!-- 営業 -->
             <v-list-tile @click="tempJobsSalesFilter=!tempJobsSalesFilter">
-              <v-checkbox v-model="tempJobsSalesFilter" readonly></v-checkbox>
+              <v-checkbox v-model="tempJobsSalesFilter" readonly color="teal"></v-checkbox>
               <v-list-tile-title class="pl-3">営業</v-list-tile-title>
             </v-list-tile>
             <!-- その他 -->
             <v-list-tile @click="tempJobsOthersFilter=!tempJobsOthersFilter">
-              <v-checkbox v-model="tempJobsOthersFilter" readonly></v-checkbox>
+              <v-checkbox v-model="tempJobsOthersFilter" readonly color="teal"></v-checkbox>
               <v-list-tile-title class="pl-3">その他</v-list-tile-title>
             </v-list-tile>
           </v-list>
@@ -81,37 +81,37 @@
           <v-list>
             <!-- 未経験ok -->
             <v-list-tile @click="tempExperience=!tempExperience">
-              <v-checkbox v-model="tempExperience" readonly></v-checkbox>
+              <v-checkbox v-model="tempExperience" readonly color="teal"></v-checkbox>
               <v-list-tile-title class="pl-3">未経験歓迎</v-list-tile-title>
             </v-list-tile>
             <!-- 資金調達あり -->
             <v-list-tile @click="tempFunding=!tempFunding">
-              <v-checkbox v-model="tempFunding" readonly></v-checkbox>
+              <v-checkbox v-model="tempFunding" readonly color="teal"></v-checkbox>
               <v-list-tile-title class="pl-3">資金調達をしている</v-list-tile-title>
             </v-list-tile>
             <!-- 創業者20代 -->
             <v-list-tile @click="tempFounder20s=!tempFounder20s">
-              <v-checkbox v-model="tempFounder20s" readonly></v-checkbox>
+              <v-checkbox v-model="tempFounder20s" readonly color="teal"></v-checkbox>
               <v-list-tile-title class="pl-3">創業者が20代</v-list-tile-title>
             </v-list-tile>
             <!-- メディア掲載 -->
             <v-list-tile @click="tempMedia=!tempMedia">
-              <v-checkbox v-model="tempMedia" readonly></v-checkbox>
+              <v-checkbox v-model="tempMedia" readonly color="teal"></v-checkbox>
               <v-list-tile-title class="pl-3">メディアに掲載されたことがある</v-list-tile-title>
             </v-list-tile>
             <!-- 海外進出 -->
             <v-list-tile @click="tempOverseas=!tempOverseas">
-              <v-checkbox v-model="tempOverseas" readonly></v-checkbox>
+              <v-checkbox v-model="tempOverseas" readonly color="teal"></v-checkbox>
               <v-list-tile-title class="pl-3">海外進出している</v-list-tile-title>
             </v-list-tile>
             <!-- 友人と応募ok -->
             <v-list-tile @click="tempFriend=!tempFriend">
-              <v-checkbox v-model="tempFriend" readonly></v-checkbox>
+              <v-checkbox v-model="tempFriend" readonly color="teal"></v-checkbox>
               <v-list-tile-title class="pl-3">友人と応募OK</v-list-tile-title>
             </v-list-tile>
             <!-- 土日ok -->
             <v-list-tile @click="tempWeekend=!tempWeekend">
-              <v-checkbox v-model="tempWeekend" readonly></v-checkbox>
+              <v-checkbox v-model="tempWeekend" readonly color="teal"></v-checkbox>
               <v-list-tile-title class="pl-3">土日OK</v-list-tile-title>
             </v-list-tile>
           </v-list>
@@ -144,12 +144,13 @@
         </v-btn>
         <v-card>
           <v-radio-group class="pl-3 pt-3 mt-0" v-model="tempWorkweek">
-            <v-radio label="指定なし" value="指定なし"></v-radio>
+            <v-radio label="指定なし" value="指定なし" color="teal"></v-radio>
             <v-radio
               v-for="n in 5"
               :key="n"
               :label="`週${n}日`"
               :value="n"
+              color="teal"
             ></v-radio>
           </v-radio-group>
 
@@ -183,22 +184,22 @@
           <v-list>
             <!-- エンジニア -->
             <v-list-tile @click="engineerButtonClicked">
-              <v-checkbox v-model="tempUsersEngineerFilter" readonly></v-checkbox>
+              <v-checkbox v-model="tempUsersEngineerFilter" readonly color="teal"></v-checkbox>
               <v-list-tile-title class="pl-3">エンジニア</v-list-tile-title>
             </v-list-tile>
             <!-- デザイナー -->
             <v-list-tile @click="designerButtonClicked">
-              <v-checkbox v-model="tempUsersDesignerFilter" readonly></v-checkbox>
+              <v-checkbox v-model="tempUsersDesignerFilter" readonly color="teal"></v-checkbox>
               <v-list-tile-title class="pl-3">デザイナー</v-list-tile-title>
             </v-list-tile>
             <!-- 営業 -->
             <v-list-tile @click="salesButtonClicked">
-              <v-checkbox v-model="tempUsersSalesFilter" readonly></v-checkbox>
+              <v-checkbox v-model="tempUsersSalesFilter" readonly color="teal"></v-checkbox>
               <v-list-tile-title class="pl-3">営業</v-list-tile-title>
             </v-list-tile>
             <!-- その他 -->
             <v-list-tile @click="othersButtonClicked">
-              <v-checkbox v-model="tempUsersOthersFilter" readonly></v-checkbox>
+              <v-checkbox v-model="tempUsersOthersFilter" readonly color="teal"></v-checkbox>
               <v-list-tile-title class="pl-3">その他</v-list-tile-title>
             </v-list-tile>
           </v-list>

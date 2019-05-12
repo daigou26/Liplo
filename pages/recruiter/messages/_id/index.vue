@@ -45,8 +45,8 @@
             class="border"
           >
             <!-- userName -->
-            <div class="break pa-3 teal--text">
-              <nuxt-link :to="'/users/' + chatUserId" class="link-text">{{ userName }}</nuxt-link>
+            <div class="break pa-3 font-weight-bold">
+              <nuxt-link :to="'/users/' + chatUserId" class="teal--text link-text">{{ userName }}</nuxt-link>
             </div>
             <!-- message -->
             <v-flex
