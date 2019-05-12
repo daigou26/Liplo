@@ -263,6 +263,10 @@
                   <span>学科:</span>
                   <span class="pl-2">{{ department }}</span>
                 </div>
+                <div v-if="graduationDateText" class="pb-2">
+                  <span>卒業予定日:</span>
+                  <span class="pl-2">{{ graduationDateText }}</span>
+                </div>
                 <div v-if="birthDateText" class="pb-2">
                   <span>生年月日:</span>
                   <span class="pl-2">{{ birthDateText }}</span>
@@ -369,6 +373,17 @@ export default {
         return this.userLastName + ' ' + this.userFirstName
       }
     },
+    graduationDateText: function() {
+      if (this.graduationDate) {
+        const date = new Date( this.graduationDate.seconds * 1000 )
+        const year  = date.getFullYear()
+        const month = date.getMonth() + 1
+        const day  = date.getDate()
+        if (year != null && month != null && day!= null) {
+          return `${year}/${month}/${day}`
+        }
+      }
+    },
     birthDateText: function() {
       if (this.birthDate) {
         const date = new Date( this.birthDate.seconds * 1000 )
@@ -403,6 +418,7 @@ export default {
       university: state => state.user.university,
       faculty: state => state.user.faculty,
       department: state => state.user.department,
+      graduationDate: state => state.user.graduationDate,
       birthDate: state => state.user.birthDate,
       desiredOccupations: state => state.user.desiredOccupations,
       isCandidate: state => state.user.isCandidate,

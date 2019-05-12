@@ -745,11 +745,21 @@
                         <span>学科:</span>
                         <span class="pl-2">{{ department }}</span>
                       </div>
-                      <div v-if="birthDateText" class="pb-2">
+                      <div class="pb-2">
+                        <span>卒業予定日:</span>
+                        <span class="pl-2">{{ graduationDateText }}</span>
+                      </div>
+                      <div class="pb-2">
                         <span>生年月日:</span>
                         <span class="pl-2">{{ birthDateText }}</span>
                       </div>
                     </v-list>
+                    <div
+                      v-show="!isEditingUserInfo"
+                      class="pl-4 caption light-text-color"
+                    >
+                      ※ 卒業予定日は、採用担当者が内定パスの有効期間を決める際に参考にするため、入力をお願いします。
+                    </div>
                     <!-- 基本情報の編集画面 -->
                     <div v-show="isEditingUserInfo">
                       <v-form v-model="editUserInfoValid">
@@ -774,18 +784,48 @@
                           :rules="userInfoRules"
                           required
                         ></v-text-field>
+                        <!-- 卒業予定日 -->
+                        <v-menu
+                          v-model="graduationDateMenu"
+                          :close-on-content-click="false"
+                          :nudge-right="40"
+                          lazy
+                          transition="scale-transition"
+                          offset-y
+                          full-width
+                          min-width="290px"
+                        >
+                          <template v-slot:activator="{ on }">
+                            <v-text-field
+                              v-model="tempGraduationDate"
+                              label="卒業予定日"
+                              append-icon="event"
+                              solo
+                              readonly
+                              required
+                              v-on="on"
+                            ></v-text-field>
+                          </template>
+                          <v-date-picker
+                            v-model="tempGraduationDate"
+                            color="teal"
+                            locale="ja"
+                            @input="graduationDateMenu = false"
+                          ></v-date-picker>
+                        </v-menu>
                         <v-btn
                           @click="updateIsEditingUserInfo(false)"
                         >
                           キャンセル
                         </v-btn>
                         <v-btn
-                          :disabled="!editUserInfoValid"
+                          :disabled="!editUserInfoValid || tempGraduationDate == ''"
                           @click="updateUserInfo({
                             uid: uid,
                             university: tempUniversity,
                             faculty: tempFaculty,
-                            department: tempDepartment
+                            department: tempDepartment,
+                            graduationDate: tempGraduationDate,
                           })"
                         >
                           更新
@@ -912,6 +952,8 @@ export default {
     tempUniversity: '',
     tempFaculty: '',
     tempDepartment: '',
+    graduationDateMenu: false,
+    tempGraduationDate: '',
     userInfoRules: [
       v => (v.length <= 50) || '50字以内で記入してください'
     ],
@@ -961,6 +1003,16 @@ export default {
     name: function() {
       return this.lastName + ' ' + this.firstName
     },
+    graduationDateText: function() {
+      let date = this.graduationDate
+      if (date) {
+        let year  = date.getFullYear()
+        let month = date.getMonth() + 1
+        let day  = date.getDate()
+        date = `${year}/${month}/${day}`
+        return date
+      }
+    },
     birthDateText: function() {
       if (this.birthDate) {
         const date = new Date( this.birthDate.seconds * 1000 )
@@ -1002,6 +1054,7 @@ export default {
       university: state => state.profile.university,
       faculty: state => state.profile.faculty,
       department: state => state.profile.department,
+      graduationDate: state => state.profile.graduationDate,
       birthDate: state => state.profile.birthDate,
       isEditingUserInfo: state => state.profile.isEditingUserInfo,
     }),
@@ -1152,6 +1205,15 @@ export default {
       this.tempUniversity = this.university
       this.tempFaculty = this.faculty
       this.tempDepartment = this.department
+
+      if (this.graduationDate) {
+        let date = this.graduationDate
+        this.tempGraduationDate =
+          String(date.getFullYear()) + '-' +
+          String(date.getMonth() + 1) + '-' +
+          String(date.getDate())
+      }
+
       this.updateIsEditingUserInfo(true)
     },
     ...mapActions({

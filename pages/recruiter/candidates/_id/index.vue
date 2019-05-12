@@ -22,7 +22,7 @@
         <v-flex xs12 hidden-md-and-up>
           <v-card v-if="user" flat>
             <v-list two-line>
-              <v-list-tile>
+              <v-list-tile :to="'/users/' + user.uid">
                 <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
                   <v-img
                     v-if="user"
@@ -34,14 +34,17 @@
                     {{ user.name }}
                   </v-list-tile-title>
                   <v-list-tile-sub-title>
-                    <v-rating
-                      :value="reviews == null ? 0 : reviews.rating"
-                      background-color="teal"
-                      color="teal darken-1"
-                      small
-                      half-increments
-                      readonly
-                    />
+                    <v-card-actions class="pa-0">
+                      <v-rating
+                        :value="reviews == null ? 0 : reviews.rating"
+                        background-color="teal"
+                        color="teal darken-1"
+                        small
+                        half-increments
+                        readonly
+                      />
+                      <span class="pl-3 caption green--text">プロフィールを確認する</span>
+                    </v-card-actions>
                   </v-list-tile-sub-title>
                 </v-list-tile-content>
               </v-list-tile>
@@ -53,7 +56,7 @@
           <!-- user image & name (md, lg, xl) -->
           <v-card v-if="user" flat>
             <v-list two-line>
-              <v-list-tile>
+              <v-list-tile :to="'/users/' + user.uid">
                 <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
                   <v-img
                     v-if="user"
@@ -65,14 +68,17 @@
                     {{ user.name }}
                   </v-list-tile-title>
                   <v-list-tile-sub-title>
-                    <v-rating
-                      :value="reviews == null ? 0 : reviews.rating"
-                      background-color="teal"
-                      color="teal darken-1"
-                      small
-                      half-increments
-                      readonly
-                    />
+                    <v-card-actions class="pa-0">
+                      <v-rating
+                        :value="reviews == null ? 0 : reviews.rating"
+                        background-color="teal"
+                        color="teal darken-1"
+                        small
+                        half-increments
+                        readonly
+                      />
+                      <span class="pl-3 caption green--text">プロフィールを確認する</span>
+                    </v-card-actions>
                   </v-list-tile-sub-title>
                 </v-list-tile-content>
               </v-list-tile>
@@ -199,7 +205,12 @@
                     v-on="on"
                   ></v-text-field>
                 </template>
-                <v-date-picker v-model="tempExpirationDate" @input="expirationDateMenu = false"></v-date-picker>
+                <v-date-picker
+                  v-model="tempExpirationDate"
+                  @input="expirationDateMenu = false"
+                  color="teal"
+                  locale="ja"
+                ></v-date-picker>
               </v-menu>
               <!-- 職種 -->
               <v-text-field
@@ -370,7 +381,12 @@
                           v-on="on"
                         ></v-text-field>
                       </template>
-                      <v-date-picker v-model="tempExpirationDate" @input="expirationDateMenu = false"></v-date-picker>
+                      <v-date-picker
+                        v-model="tempExpirationDate"
+                        @input="expirationDateMenu = false"
+                        color="teal"
+                        locale="ja"
+                      ></v-date-picker>
                     </v-menu>
                     <!-- 職種 -->
                     <v-text-field
@@ -441,6 +457,9 @@
                 </div>
                 <div v-if="status.intern || status.extendedIntern">
                   内定パスを送る場合は<span class="font-weight-bold teal--text text--lighten-1">内定パス</span>に変更してください。
+                  <div>
+
+                  </div>
                 </div>
                 <!-- feedback -->
                 <div v-if="status.intern" class="py-3">
@@ -474,6 +493,12 @@
                     <div class="pt-3 pb-2 textColor subheading font-weight-bold">
                       内定パス
                     </div>
+                    <div class="caption light-text-color pb-3">
+                      内定パスの有効期限は、学生の卒業予定日付近を推奨しています。
+                      <div>
+                        卒業予定日は、学生のプロフィールから確認できます。プロフィールに卒業予定日が設定されていない場合は、学生とのメッセージにてご確認ください。
+                      </div>
+                    </div>
                     <v-form v-model="passValid">
                       <!-- 有効期限 -->
                       <v-menu
@@ -497,7 +522,12 @@
                             v-on="on"
                           ></v-text-field>
                         </template>
-                        <v-date-picker v-model="tempExpirationDate" @input="expirationDateMenu = false"></v-date-picker>
+                        <v-date-picker
+                          v-model="tempExpirationDate"
+                          @input="expirationDateMenu = false"
+                          color="teal"
+                          locale="ja"
+                        ></v-date-picker>
                       </v-menu>
                       <!-- 職種 -->
                       <v-text-field
