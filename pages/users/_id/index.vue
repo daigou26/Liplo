@@ -16,6 +16,25 @@
     </v-flex>
     <v-flex xs12 v-else>
       <v-flex xs12 class="break">
+        <!-- snackbar -->
+        <v-snackbar
+          v-model="snackbar"
+          class="px-5"
+          color="teal lighten-1"
+          :multi-line="true"
+          :timeout="6000"
+          :left="true"
+          :bottom="true"
+        >
+          {{ snackbarText }}
+          <v-btn
+            color="white"
+            flat
+            @click="snackbar = false"
+          >
+            Close
+          </v-btn>
+        </v-snackbar>
         <!-- Profile画像 & UserName -->
         <div class="py-4 align-center">
           <v-card flat>
@@ -234,7 +253,7 @@
             </v-flex>
           </div>
           <!-- 基本情報 -->
-          <div>
+          <div v-if="university || faculty || department || graduationDateText">
             <v-layout
               align-center
               justify-space-between
@@ -357,6 +376,8 @@ export default {
     isQueried: false,
     windowHeight: 0,
     windowWidth: 0,
+    snackbar: false,
+    snackbarText: '',
     xsWidth: false,
     avatarSize: 50,
     scoutDialog: false,
@@ -480,6 +501,9 @@ export default {
         companyId: this.companyId,
         message: this.message,
       })
+
+      this.snackbarText = 'スカウトしました！'
+      this.snackbar = true
 
       this.scoutDialog = false
     },

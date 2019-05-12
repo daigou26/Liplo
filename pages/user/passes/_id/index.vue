@@ -29,6 +29,25 @@
         row
         wrap
       >
+        <!-- snackbar -->
+        <v-snackbar
+          v-model="snackbar"
+          class="px-5"
+          color="teal lighten-1"
+          :multi-line="true"
+          :timeout="6000"
+          :left="true"
+          :bottom="true"
+        >
+          {{ snackbarText }}
+          <v-btn
+            color="white"
+            flat
+            @click="snackbar = false"
+          >
+            Close
+          </v-btn>
+        </v-snackbar>
         <!-- menu (lg, md, sm)-->
         <my-page-menu/>
         <!-- pass -->
@@ -161,6 +180,8 @@ export default {
   },
   data: () => ({
     isQueried: false,
+    snackbar: false,
+    snackbarText: '',
     windowHeight: 0,
     acceptOfferValid: true,
     userMessage: '',
@@ -226,6 +247,9 @@ export default {
   methods: {
     acceptButtonClicked() {
       this.acceptOffer({params: this.params, message: this.userMessage})
+
+      this.snackbarText = '受諾しました！'
+      this.snackbar = true
     },
     ...mapActions({
       updateIsLoading: 'pass/updateIsLoading',
