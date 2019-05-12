@@ -175,7 +175,7 @@ exports.updateCareer = functions.region('asia-northeast1')
               content:
                 'インターンが終了しました。お疲れ様でした！ ' +
                 companyName +
-                'のレビューをしましょう！　（レビューをすることで企業がスカウトする際のユーザー検索で上位に表示されやすくなります）',
+                'のレビューをしましょう！',
               createdAt: new Date(),
               url: url,
               isUnread: true,
@@ -287,7 +287,7 @@ exports.sendFeedback = functions.region('asia-northeast1')
             batch.set(notificationRef, {
               type: 'normal',
               isImportant: false,
-              content: companyName + 'にフィードバックをもらいました！ 確認してみましょう。',
+              content: companyName + 'からフィードバックが送られました！ ',
               createdAt: new Date(),
               url: url,
               isUnread: true,
@@ -433,7 +433,7 @@ exports.sendPass = functions.region('asia-northeast1')
           batch.set(notificationRef, {
             type: 'normal',
             isImportant: true,
-            content: companyName + 'に内定パスをもらいました！ 内定を受諾する場合は、受諾ボタンを押して企業と連絡を取り、内定承諾証などで契約をしましょう。',
+            content: companyName + 'から内定パスが送られました！ 内定を受諾する場合は、受諾ボタンを押して企業と連絡を取り、内定承諾証などで契約をしましょう。',
             createdAt: new Date(),
             url: url,
             isUnread: true,
@@ -964,7 +964,7 @@ exports.applyForJob = functions.region('asia-northeast1')
             batch.set(notificationRef, {
               type: 'normal',
               isImportant: true,
-              content: user.name + 'さんが応募しました。',
+              content: user.name + 'さんから応募が届きました。',
               createdAt: new Date(),
               url: url,
               isUnread: true,
