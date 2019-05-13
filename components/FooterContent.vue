@@ -1,7 +1,7 @@
 <template>
   <v-flex
     xs12
-    pt-3
+    pt-5
   >
     <v-divider></v-divider>
     <v-flex xs8 offset-xs2 py-5 id="footer">
