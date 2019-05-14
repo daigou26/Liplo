@@ -9,9 +9,31 @@ const mailTransport = nodemailer.createTransport({
         pass: gmailPassword
     }
 })
+const rp = require('request-promise')
+const slack_url = functions.config().slack.webhook_url
 const admin = require('firebase-admin')
 admin.initializeApp()
 
+
+// サービスのフィードバックが送信された時の処理
+// exports.sendFeedbacksOfApp = functions.region('asia-northeast1')
+//   .firestore
+//   .document('appFeedbacks/{feedbackId}')
+//   .onCreate((snap, context) => {
+//     const feedbackId = context.params.feedbackId
+//     const createdAt = snap.data().createdAt
+//     const content = snap.data().content
+//     const type = snap.data().type
+//
+//     return rp({
+//       method: 'POST',
+//       uri: slack_url,
+//       body: {
+//         text: `${type}: ${content}`,
+//       },
+//       json: true,
+//     });
+//   })
 
 // 企業メンバーが招待された時の処理
 exports.sendMailToInvitedMember = functions.region('asia-northeast1')

@@ -6,10 +6,12 @@
   >
     <v-snackbar
       v-model="snackbar"
-      color="orange lighten-2"
+      class="px-5"
+      color="teal lighten-1"
       :multi-line="true"
       :timeout="6000"
-      :top="true"
+      :left="true"
+      :bottom="true"
     >
       {{ snackbarText }}
       <v-btn

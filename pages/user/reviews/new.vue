@@ -171,7 +171,7 @@
                 <v-form v-model="reviewValid">
                   <v-textarea
                     solo
-                    placeholder="インターンで感じた企業の良いところ、悪いところなどを自由にお書きください。"
+                    placeholder="インターンで感じた企業の良い点、改善すべき点などを自由にお書きください。"
                     v-model="content"
                     :rules="contentRules"
                     required

@@ -109,7 +109,7 @@ export default {
     ],
     content: '',
     contentRules: [
-      v => !!v || '名前を入力してください',
+      v => !!v || '内容を入力してください',
       v => (v && v.length <= 1000) || '1000文字を超えています'
     ],
   }),
