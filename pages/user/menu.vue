@@ -105,7 +105,7 @@ export default {
         { title: 'フィードバック', icon: 'chat_bubble_outline', url: '/user/feedbacks' },
         { title: 'アカウント設定', icon: 'settings', url: '/user/settings/account' },
         { title: '通知設定', icon: 'settings', url: '/user/settings/notifications' },
-        { title: 'フィードバックを送る', icon: 'send', url: '/' },
+        { title: 'フィードバックを送る', icon: 'send', url: '/feedback' },
         { title: 'ログアウト', icon: 'person_outline', url: null },
       ],
     }
