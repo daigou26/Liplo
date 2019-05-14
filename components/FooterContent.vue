@@ -4,9 +4,18 @@
     pt-5
   >
     <v-divider></v-divider>
-    <v-flex xs8 offset-xs2 py-5 id="footer">
+    <v-flex
+      xs10
+      offset-xs1
+      id="footer"
+      class="py-4"
+      :class="{
+        'pa-5': $vuetify.breakpoint.mdAndUp,
+        'pa-3': $vuetify.breakpoint.smOnly,
+      }"
+    >
       <v-layout row wrap pb-4>
-        <v-flex xs6>
+        <v-flex md5 sm6>
           <div class="pb-2">
             <nuxt-link to="/company_registration" class="font-weight-bold textColor">採用担当者様はこちら</nuxt-link>
           </div>
@@ -14,10 +23,13 @@
             <nuxt-link to="/contact" class="font-weight-bold textColor">お問い合わせ</nuxt-link>
           </div>
           <div class="pb-2">
+            <nuxt-link to="/feedback" class="font-weight-bold textColor">フィードバックを送る</nuxt-link>
+          </div>
+          <div class="pb-2">
             <nuxt-link to="/" class="font-weight-bold textColor">運営会社</nuxt-link>
           </div>
         </v-flex>
-        <v-flex xs6>
+        <v-flex md5 sm6>
           <div class="pb-3 textColor">
             <v-btn flat small icon color="grey" class="ma-0 mr-3">
               <v-icon>fab fa-facebook</v-icon>
@@ -34,7 +46,7 @@
           </div>
         </v-flex>
       </v-layout>
-      <v-divider class="py-3"></v-divider>
+      <v-divider class="py-2"></v-divider>
       <span >&copy; 2019 All rights reserved.</span>
     </v-flex>
   </v-flex>
