@@ -302,6 +302,7 @@
                 <!-- フィードバック -->
                 <v-list-tile
                   class="px-3"
+                  to="/feedback"
                 >
                   <v-list-tile-content>
                     <v-list-tile-title class="textColor">フィードバックを送る</v-list-tile-title>
