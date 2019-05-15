@@ -1779,50 +1779,107 @@ exports.editProfile = functions.region('asia-northeast1')
     const lastName = newValue.lastName
     const imageUrl = newValue.imageUrl
     const selfIntro = newValue.selfIntro
+    const whatWantToDo = newValue.whatWantToDo
+    const portfolio = newValue.portfolio
+    const skills = newValue.skills
+    const links = newValue.links
+    const graduationDate = newValue.graduationDate
+    const university = newValue.university
+    const faculty = newValue.faculty
+    const department = newValue.department
+    const desiredOccupations = newValue.desiredOccupations
 
     if (companyId == null) {
-      // user
-      // name, imageUrl どれも変わっていない場合はreturn
-      if (
-        firstName == previousValue.firstName &&
-        lastName == previousValue.lastName &&
-        imageUrl == previousValue.imageUrl
-      ) {
-        return 0
-      }
-
-      var userData = {
-        userName: lastName + ' ' + firstName,
-      }
-      if (imageUrl) {
-        userData.profileImageUrl = imageUrl
-      }
-
       // user が profile を編集した時
-      // chats のみ
-      return admin.firestore()
-        .collection('chats')
-        .where('uid', '==', uid)
-        .get()
-        .then(function(snapshot) {
-          const batch = admin.firestore().batch()
+      // プロフィール完成度などを更新
+      var percentage = 0
+      var canSearch = false
 
-          snapshot.forEach(function(doc) {
-            const chatRef = admin.firestore().collection('chats').doc(doc.id)
-            batch.update(chatRef, userData)
-          })
+      percentage += (imageUrl && imageUrl != '') ? 12 : 0
+      if (desiredOccupations) {
+        var isSelected = false
+        if (desiredOccupations.engineer == true) {
+          isSelected = true
+        }
+        if (desiredOccupations.designer == true) {
+          isSelected = true
+        }
+        if (desiredOccupations.sales == true) {
+          isSelected = true
+        }
+        if (desiredOccupations.others == true) {
+          isSelected = true
+        }
+        percentage += isSelected ? 12 : 0
+      }
+      percentage += (selfIntro && selfIntro != '') ? 12 : 0
+      percentage += (whatWantToDo && whatWantToDo != '') ? 12 : 0
+      percentage += (portfolio && portfolio.length > 0) ? 12 : 0
+      percentage += (skills && skills.length > 0) ? 12 : 0
+      percentage += (links && links.length > 0) ? 12 : 0
+      percentage += (university && university != '') ? 4 : 0
+      percentage += (faculty && faculty != '') ? 4 : 0
+      percentage += (department && department != '') ? 4 : 0
+      percentage += (graduationDate && graduationDate != '') ? 4 : 0
 
-          batch.commit()
-            .then(() => {
-              console.log('user editProfile completed.')
-            })
-            .catch((error) => {
-              console.error("Error adding document: ", error)
-            })
+      // プロフィール完成度が 50% を超えていたら検索に表示される
+      if (percentage > 50) {
+        canSearch = true
+      }
+
+      admin.firestore()
+        .collection('users')
+        .doc(uid)
+        .update({
+          completionPercentage: percentage,
+          canSearch: canSearch
+        })
+        .then(() => {
+          console.log('user editProfile: update completionPercentage completed.')
         })
         .catch((error) => {
           console.error("Error adding document: ", error)
         })
+
+      if (
+        firstName != previousValue.firstName ||
+        lastName != previousValue.lastName ||
+        imageUrl != previousValue.imageUrl
+      ) {
+        var userData = {
+          userName: lastName + ' ' + firstName,
+        }
+        if (imageUrl) {
+          userData.profileImageUrl = imageUrl
+        }
+
+        // chats 更新
+        return admin.firestore()
+          .collection('chats')
+          .where('uid', '==', uid)
+          .get()
+          .then(function(snapshot) {
+            const batch = admin.firestore().batch()
+
+            snapshot.forEach(function(doc) {
+              const chatRef = admin.firestore().collection('chats').doc(doc.id)
+              batch.update(chatRef, userData)
+            })
+
+            batch.commit()
+              .then(() => {
+                console.log('user editProfile completed.')
+              })
+              .catch((error) => {
+                console.error("Error adding document: ", error)
+              })
+          })
+          .catch((error) => {
+            console.error("Error adding document: ", error)
+          })
+      } else {
+        return 0
+      }
     } else {
       // recruiter
       // name, imageUrl, position, selfIntro どれも変わっていない場合はreturn

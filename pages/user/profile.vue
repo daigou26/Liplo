@@ -175,7 +175,13 @@
                       :value="completionPercentage"
                     ></v-progress-linear>
                     <div class="light-text-color caption">
-                      プロフィール完成度が高い程、スカウトされやすくなります。
+                      <div v-show="completionPercentage <= 50">
+                        プロフィール完成度が 50% を超えていないとスカウトされません。
+                        出来るだけ入力するようにしましょう。
+                      </div>
+                      <div v-show="completionPercentage > 50">
+                        プロフィール完成度が高いほど、スカウトされやすくなります。
+                      </div>
                     </div>
                   </div>
                 </v-card>
@@ -966,7 +972,7 @@ export default {
     completionPercentage() {
       var percentage = 0
 
-      percentage += (this.imageUrl && this.imageUrl != '') ? 10 : 0
+      percentage += (this.imageUrl && this.imageUrl != '') ? 12 : 0
       if (this.desiredOccupations) {
         var isSelected = false
         if (this.desiredOccupations.engineer == true) {
@@ -981,16 +987,17 @@ export default {
         if (this.desiredOccupations.others == true) {
           isSelected = true
         }
-        percentage += isSelected ? 10 : 0
+        percentage += isSelected ? 12 : 0
       }
-      percentage += (this.selfIntro && this.selfIntro != '') ? 10 : 0
-      percentage += (this.whatWantToDo && this.whatWantToDo != '') ? 10 : 0
-      percentage += (this.portfolio && this.portfolio.length > 0) ? 10 : 0
-      percentage += (this.skills && this.skills.length > 0) ? 10 : 0
-      percentage += (this.links && this.links.length > 0) ? 10 : 0
-      percentage += (this.university && this.university != '') ? 10 : 0
-      percentage += (this.faculty && this.faculty != '') ? 10 : 0
-      percentage += (this.department && this.department != '') ? 10 : 0
+      percentage += (this.selfIntro && this.selfIntro != '') ? 12 : 0
+      percentage += (this.whatWantToDo && this.whatWantToDo != '') ? 12 : 0
+      percentage += (this.portfolio && this.portfolio.length > 0) ? 12 : 0
+      percentage += (this.skills && this.skills.length > 0) ? 12 : 0
+      percentage += (this.links && this.links.length > 0) ? 12 : 0
+      percentage += (this.university && this.university != '') ? 4 : 0
+      percentage += (this.faculty && this.faculty != '') ? 4 : 0
+      percentage += (this.department && this.department != '') ? 4 : 0
+      percentage += (this.graduationDate && this.graduationDate != '') ? 4 : 0
       return percentage
     },
     avatarSize() {
