@@ -152,8 +152,23 @@ export default {
   methods: {
     sendButtonClicked() {
       this.updateIsLoading(true)
+      var type
+      'バグの報告',
+      'ご要望',
+      '感想',
+      'その他'
+      if (this.type == 'バグの報告') {
+        type = 'bugs'
+      } else if (this.type == 'ご要望') {
+        type = 'requests'
+      } else if (this.type == '感想') {
+        type = 'comments'
+      } else {
+        type = 'other'
+      }
+
       this.sendFeedback({
-        type: this.type,
+        type: type,
         content: this.content,
       })
       this.valid = false
