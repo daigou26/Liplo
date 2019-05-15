@@ -453,6 +453,17 @@ export const actions = {
                       console.error("Error adding document: ", error)
                     })
                 }
+                // 管理者かどうか
+                firestore.collection('adminUsers')
+                  .doc(user.uid)
+                  .get()
+                  .then(doc => {
+                    if (doc.exists) {
+                      dispatch('profile/updateIsAdmin', true)
+                    } else {
+                      dispatch('profile/updateIsAdmin', false)
+                    }
+                  })
 
                 const batch = firestore.batch()
                 const userRef = firestore.collection('users').doc(user.uid)
@@ -509,6 +520,20 @@ export const actions = {
               }
             }
           } else {
+            // 管理者かどうか
+            if (doc.data()['type'] == 'user') {
+              firestore.collection('adminUsers')
+                .doc(user.uid)
+                .get()
+                .then(doc => {
+                  if (doc.exists) {
+                    dispatch('profile/updateIsAdmin', true)
+                  } else {
+                    dispatch('profile/updateIsAdmin', false)
+                  }
+                })
+            }
+
             dispatch('profile/setFirstName', doc.data()['firstName'])
             dispatch('profile/setLastName', doc.data()['lastName'])
             dispatch('profile/setType', doc.data()['type'])

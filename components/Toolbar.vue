@@ -447,6 +447,10 @@
                   <v-icon v-else>person</v-icon>
                 </v-avatar>
                 <v-list>
+                  <v-list-tile v-if="isAdmin" to="/admin/feedbacks">
+                    <v-list-tile-title>Admin</v-list-tile-title>
+                  </v-list-tile>
+                  <v-divider v-if="isAdmin"></v-divider>
                   <v-list-tile to="/user/profile" class="hidden-xs-only">
                     <v-list-tile-title>プロフィール</v-list-tile-title>
                   </v-list-tile>
@@ -889,6 +893,7 @@ export default {
       isRecruiterSignedIn: state => state.isRecruiterSignedIn,
       isVerified: state => state.isVerified,
       userEmail: state => state.profile.email,
+      isAdmin: state => state.profile.isAdmin,
       type: state => state.profile.type,
       authError: state => state.authError,
       loading: state => state.loading,

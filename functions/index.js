@@ -15,45 +15,64 @@ const admin = require('firebase-admin')
 admin.initializeApp()
 
 // フィードバックをローカルにdownload
-// exports.downloadFeedbacks = functions.https.onRequest((request, response) => {
+// exports.downloadFeedbacks = functions.https..onCall((data, context) => {
 //   const json2csv = require("json2csv").parse
+// 
+//   if (data.uid == null) {
+//     return 0
+//   }
+//
 //   return admin.firestore()
-//     .collection('appFeedbacks')
+//     .collection('adminUsers')
+//     .doc(data.uid)
 //     .get()
-//     .then(snapshot => {
-//       const feedbacks = []
-//       if (!snapshot.empty) {
-//         snapshot.forEach(doc => {
-//           var createdAt = doc.data().createdAt
-//           if (createdAt) {
-//             let date = new Date( createdAt.seconds * 1000 )
-//             let year  = date.getFullYear()
-//             let month = date.getMonth() + 1
-//             let day  = date.getDate()
-//             createdAt = `${year}/${month}/${day}`
-//           }
+//     .then(adminDoc => {
+//       if (adminDoc.exists) {
+//         admin.firestore()
+//           .collection('appFeedbacks')
+//           .get()
+//           .then(snapshot => {
+//             const feedbacks = []
+//             if (!snapshot.empty) {
 //
-//           const feedback = {
-//             createdAt: createdAt,
-//             type: doc.data().type,
-//             content: doc.data().content,
+//               snapshot.forEach(doc => {
+//                 var createdAt = doc.data().createdAt
+//                 if (createdAt) {
+//                   let date = new Date( createdAt.seconds * 1000 )
+//                   let year  = date.getFullYear()
+//                   let month = date.getMonth() + 1
+//                   let day  = date.getDate()
+//                   createdAt = `${year}/${month}/${day}`
+//                 }
 //
-//           }
-//           feedbacks.push(feedback)
-//         })
-//         const csv = json2csv(feedbacks)
-//         response.setHeader(
-//           "Content-disposition",
-//           "attachment; filename=lighthouse-feedbacks.csv"
-//         );
-//         response.set("Content-Type", "text/csv");
-//         response.status(200).send(csv);
-//       } else {
-//         console.log('no feedbacks');
+//                 const feedback = {
+//                   createdAt: createdAt,
+//                   type: doc.data().type,
+//                   content: doc.data().content,
+//
+//                 }
+//                 feedbacks.push(feedback)
+//               })
+//               console.log('feedback ok');
+//               const csv = json2csv(feedbacks)
+//               response.setHeader(
+//                 "Content-disposition",
+//                 "attachment; filename=lighthouse-feedbacks.csv"
+//               );
+//               response.set("Content-Type", "text/csv");
+//               response.status(200).send(csv);
+//               console.log('download ok');
+//             } else {
+//               console.log('no feedbacks');
+//             }
+//           })
+//           .catch(error => {
+//             response.status(200).send("エラー： " + error);
+//           })
 //       }
 //     })
 //     .catch(error => {
-//       response.status(200).send("エラー： " + error);
+//       console.error("Error: ", error)
 //     })
 // })
 

@@ -1,5 +1,6 @@
 <template>
   <v-app light>
+    <admin-drawer v-if="path.includes('/admin')"></admin-drawer>
     <drawer v-if="path.includes('/recruiter') || path.includes('/users')"></drawer>
     <toolbar></toolbar>
     <v-content class="white">
@@ -106,11 +107,13 @@
 import { mapActions, mapState } from 'vuex'
 import Toolbar from '~/components/Toolbar'
 import Drawer from '~/components/Drawer'
+import AdminDrawer from '~/components/AdminDrawer'
 import FooterContent from '~/components/FooterContent'
 
 export default {
   components: {
     Toolbar,
+    AdminDrawer,
     Drawer,
     FooterContent
   },

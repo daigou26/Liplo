@@ -4,6 +4,7 @@ import { firestore, storageRef } from '@/plugins/firebase'
 
 export const state = () => ({
   lastSignInDate: null,
+  isAdmin: false,
   type: null,
   points: 0,
   position: null,
@@ -44,6 +45,9 @@ export const state = () => ({
 export const mutations = {
   setLastSignInDate(state, date) {
     state.lastSignInDate = date
+  },
+  updateIsAdmin(state, isAdmin) {
+    state.isAdmin = isAdmin
   },
   setType(state, type) {
     state.type = type
@@ -194,6 +198,9 @@ export const actions = {
   },
   setLastSignInDate({commit}, date) {
     commit('setLastSignInDate', date)
+  },
+  updateIsAdmin({commit}, isAdmin) {
+    commit('updateIsAdmin', isAdmin)
   },
   setType({commit}, type) {
     commit('setType', type)
@@ -720,6 +727,7 @@ export const actions = {
   resetState({commit}) {
     commit('setImageUrl', '')
     commit('setLastSignInDate', null)
+    commit('updateIsAdmin', false)
     commit('setType', null)
     commit('setCompanyId', '')
     commit('setEmail', '')
