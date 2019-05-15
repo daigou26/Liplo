@@ -111,6 +111,7 @@ export const actions = {
               desiredOccupations: doc.data()['desiredOccupations'],
               skills: doc.data()['skills'],
               points: doc.data()['points'],
+              completionPercentage: doc.data()['completionPercentage']
             }
             commit('addUser', user)
           })
@@ -151,6 +152,7 @@ export const actions = {
               desiredOccupations: doc.data()['desiredOccupations'],
               skills: doc.data()['skills'],
               points: doc.data()['points'],
+              completionPercentage: doc.data()['completionPercentage']
             }
             commit('addUser', user)
           })
