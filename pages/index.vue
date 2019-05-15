@@ -197,7 +197,7 @@
         <v-layout row wrap>
           <v-flex xs8 offset-xs2 pb-3 pt-5>
             <v-layout row wrap>
-              <v-flex xs6>
+              <v-flex xs5>
                 <div class="pb-2">
                   <nuxt-link to="/company_registration" class="font-weight-bold textColor">採用担当者様はこちら</nuxt-link>
                 </div>
@@ -205,10 +205,13 @@
                   <nuxt-link to="/contact" class="font-weight-bold textColor">お問い合わせ</nuxt-link>
                 </div>
                 <div class="pb-2">
+                  <nuxt-link to="/feedback" class="font-weight-bold textColor">フィードバックを送る</nuxt-link>
+                </div>
+                <div class="pb-2">
                   <nuxt-link to="/" class="font-weight-bold textColor">運営会社</nuxt-link>
                 </div>
               </v-flex>
-              <v-flex xs6>
+              <v-flex xs5>
                 <div class="pb-3 textColor">
                   <v-btn flat small icon color="grey" class="ma-0 mr-3">
                     <v-icon>fab fa-facebook</v-icon>

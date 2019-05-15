@@ -8,10 +8,11 @@
       </v-container>
       <footer-content
         v-if="
-          routeName == 'jobs-id' ||
+          breakpoint != 'xs' &&
+          (routeName == 'jobs-id' ||
           routeName == 'companies-id' ||
           path == '/user/profile' ||
-          path.includes('/user/settings')
+          path.includes('/user/settings'))
         "
       ></footer-content>
       <v-footer

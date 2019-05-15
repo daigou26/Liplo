@@ -255,6 +255,16 @@
                 ></v-toolbar-side-icon>
               </v-toolbar>
               <v-list>
+                <!-- ホーム -->
+                <v-list-tile
+                  class="px-3"
+                  to="/"
+                  @click="dropdownMenu=false"
+                >
+                  <v-list-tile-content>
+                    <v-list-tile-title class="textColor">ホーム</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
                 <!-- 登録 -->
                 <v-list-tile
                   v-if="!uid"
@@ -278,6 +288,7 @@
                 <!-- 利用規約 -->
                 <v-list-tile
                   class="px-3"
+                  @click="dropdownMenu=false"
                 >
                   <v-list-tile-content>
                     <v-list-tile-title class="textColor">利用規約</v-list-tile-title>
@@ -286,6 +297,7 @@
                 <!-- プライバシー -->
                 <v-list-tile
                   class="px-3"
+                  @click="dropdownMenu=false"
                 >
                   <v-list-tile-content>
                     <v-list-tile-title class="textColor">プライバシー</v-list-tile-title>
@@ -294,6 +306,7 @@
                 <!-- 運営会社 -->
                 <v-list-tile
                   class="px-3"
+                  @click="dropdownMenu=false"
                 >
                   <v-list-tile-content>
                     <v-list-tile-title class="textColor">運営会社</v-list-tile-title>
@@ -302,6 +315,8 @@
                 <!-- フィードバック -->
                 <v-list-tile
                   class="px-3"
+                  to="/feedback"
+                  @click="dropdownMenu=false"
                 >
                   <v-list-tile-content>
                     <v-list-tile-title class="textColor">フィードバックを送る</v-list-tile-title>
@@ -432,10 +447,6 @@
                   <v-icon v-else>person</v-icon>
                 </v-avatar>
                 <v-list>
-                  <v-list-tile to="/" class="hidden-sm-and-up">
-                    <v-list-tile-title>ホーム</v-list-tile-title>
-                  </v-list-tile>
-                  <v-divider class="hidden-sm-and-up"></v-divider>
                   <v-list-tile to="/user/profile" class="hidden-xs-only">
                     <v-list-tile-title>プロフィール</v-list-tile-title>
                   </v-list-tile>

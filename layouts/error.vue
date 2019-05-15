@@ -42,7 +42,7 @@
       <div class="pt-4">
         <nuxt-link to="/contact" class="link-text textColor">お問い合わせ</nuxt-link>
         <span class="light-text-color">/</span>
-        <nuxt-link to="/" class="link-text textColor">フィードバック</nuxt-link>
+        <nuxt-link to="/feedback" class="link-text textColor">フィードバック</nuxt-link>
       </div>
     </div>
   </div>
