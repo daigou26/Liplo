@@ -91,6 +91,7 @@ export const actions = {
     if (users.length == 0) {
       return usersRef
         .where('acceptScout', '==', true)
+        .where('canSearch', '==', true)
         .where('type', '==', 'user')
         .where('isDeleted', '==', false)
         .orderBy('points', 'desc')
@@ -129,6 +130,7 @@ export const actions = {
       const points = users[lastIndex].points
       return usersRef
         .where('acceptScout', '==', true)
+        .where('canSearch', '==', true)
         .where('type', '==', 'user')
         .where('isDeleted', '==', false)
         .orderBy('points', 'desc')

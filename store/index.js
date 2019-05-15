@@ -466,6 +466,8 @@ export const actions = {
                   notificationsSetting: {scout: true, pass: true},
                   acceptScout: true,
                   isDeleted: false,
+                  completionPercentage: 0,
+                  canSearch: false,
                 })
                 // 生年月日
                 if (typeof birthDate == 'string') {
