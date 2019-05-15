@@ -14,6 +14,48 @@ const slack_url = functions.config().slack.webhook_url
 const admin = require('firebase-admin')
 admin.initializeApp()
 
+// フィードバックをローカルにdownload
+// exports.downloadFeedbacks = functions.https.onRequest((request, response) => {
+//   const json2csv = require("json2csv").parse
+//   return admin.firestore()
+//     .collection('appFeedbacks')
+//     .get()
+//     .then(snapshot => {
+//       const feedbacks = []
+//       if (!snapshot.empty) {
+//         snapshot.forEach(doc => {
+//           var createdAt = doc.data().createdAt
+//           if (createdAt) {
+//             let date = new Date( createdAt.seconds * 1000 )
+//             let year  = date.getFullYear()
+//             let month = date.getMonth() + 1
+//             let day  = date.getDate()
+//             createdAt = `${year}/${month}/${day}`
+//           }
+//
+//           const feedback = {
+//             createdAt: createdAt,
+//             type: doc.data().type,
+//             content: doc.data().content,
+//
+//           }
+//           feedbacks.push(feedback)
+//         })
+//         const csv = json2csv(feedbacks)
+//         response.setHeader(
+//           "Content-disposition",
+//           "attachment; filename=lighthouse-feedbacks.csv"
+//         );
+//         response.set("Content-Type", "text/csv");
+//         response.status(200).send(csv);
+//       } else {
+//         console.log('no feedbacks');
+//       }
+//     })
+//     .catch(error => {
+//       response.status(200).send("エラー： " + error);
+//     })
+// })
 
 // サービスのフィードバックが送信された時の処理
 // exports.sendFeedbacksOfApp = functions.region('asia-northeast1')
