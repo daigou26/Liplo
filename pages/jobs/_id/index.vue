@@ -331,62 +331,62 @@
                         />
                       </div>
                     </template>
+                    <div>
                       <div>
-                        <div>
-                          成長できるか：
-                        </div>
-                        <div>
-                          インターンに行って成長できたかどうか
-                        </div>
+                        成長できるか：
                       </div>
-                      <div class="pt-3">
-                        <div>
-                          仕事内容：
-                        </div>
-                        <div>
-                          募集に書かれていた内容と合っていたかどうか
-                        </div>
+                      <div>
+                        インターンに行って成長できたかどうか
                       </div>
-                      <div class="pt-3">
-                        <div>
-                          裁量度：
-                        </div>
-                        <div>
-                          インターン生にも裁量が与えられていたかどうか
-                        </div>
+                    </div>
+                    <div class="pt-3">
+                      <div>
+                        仕事内容：
                       </div>
-                      <div class="pt-3">
-                        <div>
-                          勤務中の自由度：
-                        </div>
-                        <div>
-                          休憩などが自由にできるかどうか
-                        </div>
+                      <div>
+                        募集に書かれていた内容と合っていたかどうか
                       </div>
-                      <div class="pt-3">
-                        <div>
-                          勤務時間の柔軟性：
-                        </div>
-                        <div>
-                          勤務時間、日程を自由に決められるかどうか
-                        </div>
+                    </div>
+                    <div class="pt-3">
+                      <div>
+                        裁量度：
                       </div>
-                      <div class="pt-3">
-                        <div>
-                          メンター：
-                        </div>
-                        <div>
-                          メンター（インターン生の担当者）の評価
-                        </div>
+                      <div>
+                        インターン生にも裁量が与えられていたかどうか
                       </div>
-                      <div class="pt-3">
-                        <div>
-                          雰囲気：
-                        </div>
-                        <div>
-                          社内の雰囲気、人間関係などが良好かどうか
-                        </div>
+                    </div>
+                    <div class="pt-3">
+                      <div>
+                        勤務中の自由度：
                       </div>
+                      <div>
+                        休憩などが自由にできるかどうか
+                      </div>
+                    </div>
+                    <div class="pt-3">
+                      <div>
+                        勤務時間の柔軟性：
+                      </div>
+                      <div>
+                        勤務時間、日程を自由に決められるかどうか
+                      </div>
+                    </div>
+                    <div class="pt-3">
+                      <div>
+                        メンター：
+                      </div>
+                      <div>
+                        メンター（インターン生の担当者）の評価
+                      </div>
+                    </div>
+                    <div class="pt-3">
+                      <div>
+                        雰囲気：
+                      </div>
+                      <div>
+                        社内の雰囲気、人間関係などが良好かどうか
+                      </div>
+                    </div>
                   </v-tooltip>
                 </v-flex>
                 <div class="d-flex">
@@ -449,62 +449,62 @@
                           />
                         </div>
                       </template>
+                      <div>
                         <div>
-                          <div>
-                            成長できるか：
-                          </div>
-                          <div>
-                            インターンに行って成長できたかどうか
-                          </div>
+                          成長できるか：
                         </div>
-                        <div class="pt-3">
-                          <div>
-                            仕事内容：
-                          </div>
-                          <div>
-                            募集に書かれていた内容と合っていたかどうか
-                          </div>
+                        <div>
+                          インターンに行って成長できたかどうか
                         </div>
-                        <div class="pt-3">
-                          <div>
-                            裁量度：
-                          </div>
-                          <div>
-                            インターン生にも裁量が与えられていたかどうか
-                          </div>
+                      </div>
+                      <div class="pt-3">
+                        <div>
+                          仕事内容：
                         </div>
-                        <div class="pt-3">
-                          <div>
-                            勤務中の自由度：
-                          </div>
-                          <div>
-                            休憩などが自由にできるかどうか
-                          </div>
+                        <div>
+                          募集に書かれていた内容と合っていたかどうか
                         </div>
-                        <div class="pt-3">
-                          <div>
-                            勤務時間の柔軟性：
-                          </div>
-                          <div>
-                            勤務時間、日程を自由に決められるかどうか
-                          </div>
+                      </div>
+                      <div class="pt-3">
+                        <div>
+                          裁量度：
                         </div>
-                        <div class="pt-3">
-                          <div>
-                            メンター：
-                          </div>
-                          <div>
-                            メンター（インターン生の担当者）の評価
-                          </div>
+                        <div>
+                          インターン生にも裁量が与えられていたかどうか
                         </div>
-                        <div class="pt-3">
-                          <div>
-                            雰囲気：
-                          </div>
-                          <div>
-                            社内の雰囲気、人間関係などが良好かどうか
-                          </div>
+                      </div>
+                      <div class="pt-3">
+                        <div>
+                          勤務中の自由度：
                         </div>
+                        <div>
+                          休憩などが自由にできるかどうか
+                        </div>
+                      </div>
+                      <div class="pt-3">
+                        <div>
+                          勤務時間の柔軟性：
+                        </div>
+                        <div>
+                          勤務時間、日程を自由に決められるかどうか
+                        </div>
+                      </div>
+                      <div class="pt-3">
+                        <div>
+                          メンター：
+                        </div>
+                        <div>
+                          メンター（インターン生の担当者）の評価
+                        </div>
+                      </div>
+                      <div class="pt-3">
+                        <div>
+                          雰囲気：
+                        </div>
+                        <div>
+                          社内の雰囲気、人間関係などが良好かどうか
+                        </div>
+                      </div>
                     </v-tooltip>
                   </v-flex>
                 </div>
@@ -611,62 +611,62 @@
                       />
                     </div>
                   </template>
+                  <div>
                     <div>
-                      <div>
-                        成長できるか：
-                      </div>
-                      <div>
-                        インターンに行って成長できたかどうか
-                      </div>
+                      成長できるか：
                     </div>
-                    <div class="pt-3">
-                      <div>
-                        仕事内容：
-                      </div>
-                      <div>
-                        募集に書かれていた内容と合っていたかどうか
-                      </div>
+                    <div>
+                      インターンに行って成長できたかどうか
                     </div>
-                    <div class="pt-3">
-                      <div>
-                        裁量度：
-                      </div>
-                      <div>
-                        インターン生にも裁量が与えられていたかどうか
-                      </div>
+                  </div>
+                  <div class="pt-3">
+                    <div>
+                      仕事内容：
                     </div>
-                    <div class="pt-3">
-                      <div>
-                        勤務中の自由度：
-                      </div>
-                      <div>
-                        休憩などが自由にできるかどうか
-                      </div>
+                    <div>
+                      募集に書かれていた内容と合っていたかどうか
                     </div>
-                    <div class="pt-3">
-                      <div>
-                        勤務時間の柔軟性：
-                      </div>
-                      <div>
-                        勤務時間、日程を自由に決められるかどうか
-                      </div>
+                  </div>
+                  <div class="pt-3">
+                    <div>
+                      裁量度：
                     </div>
-                    <div class="pt-3">
-                      <div>
-                        メンター：
-                      </div>
-                      <div>
-                        メンター（インターン生の担当者）の評価
-                      </div>
+                    <div>
+                      インターン生にも裁量が与えられていたかどうか
                     </div>
-                    <div class="pt-3">
-                      <div>
-                        雰囲気：
-                      </div>
-                      <div>
-                        社内の雰囲気、人間関係などが良好かどうか
-                      </div>
+                  </div>
+                  <div class="pt-3">
+                    <div>
+                      勤務中の自由度：
                     </div>
+                    <div>
+                      休憩などが自由にできるかどうか
+                    </div>
+                  </div>
+                  <div class="pt-3">
+                    <div>
+                      勤務時間の柔軟性：
+                    </div>
+                    <div>
+                      勤務時間、日程を自由に決められるかどうか
+                    </div>
+                  </div>
+                  <div class="pt-3">
+                    <div>
+                      メンター：
+                    </div>
+                    <div>
+                      メンター（インターン生の担当者）の評価
+                    </div>
+                  </div>
+                  <div class="pt-3">
+                    <div>
+                      雰囲気：
+                    </div>
+                    <div>
+                      社内の雰囲気、人間関係などが良好かどうか
+                    </div>
+                  </div>
                 </v-tooltip>
                 <v-list class="pl-3 pt-4">
                   <template v-for="(item, index) in reviews.comments">

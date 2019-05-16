@@ -23,8 +23,11 @@
               <!-- Profile画像 & UserName -->
               <div>
                 <v-card-actions
-                  class="break"
-                  :class="{'px-5 py-3': $vuetify.breakpoint.smAndUp}"
+                  class="break py-4"
+                  :class="{
+                    'px-5': $vuetify.breakpoint.smAndUp,
+                    'px-3': $vuetify.breakpoint.xsOnly,
+                  }"
                 >
                   <v-avatar
                     :size="avatarSize"
@@ -163,59 +166,106 @@
                 class="break"
                 :class="{'px-5': $vuetify.breakpoint.smAndUp}"
               >
-                <!-- プロフィール完成度 -->
-                <v-card flat class="pa-3 subheading">
-                  <span class="light-text-color">プロフィール完成度: </span>
-                  <span class="font-weight-bold textColor">{{ completionPercentage }}%</span>
-                  <div v-if="completionPercentage != 100" class="pr-5">
-                    <v-progress-linear
-                      background-color="grey lighten-3"
-                      color="teal lighten-3"
-                      height="15"
-                      :value="completionPercentage"
-                    ></v-progress-linear>
-                    <div class="light-text-color caption">
-                      <div v-show="completionPercentage <= 50">
-                        プロフィール完成度が 50% を超えていないとスカウトされません。
-                        出来るだけ入力するようにしましょう。
-                      </div>
-                      <div v-show="completionPercentage > 50">
-                        プロフィール完成度が高いほど、スカウトされやすくなります。
-                      </div>
-                    </div>
-                  </div>
-                </v-card>
                 <!-- スコア -->
-                <v-flex v-if="false" xs8 sm6>
-                  <div class="pt-3 px-3 hidden-md-and-up">
-                    <v-avatar
-                      size="100"
-                      color="orange lighten-3"
+                <v-tooltip right max-width="300">
+                  <template v-slot:activator="{ on }">
+                    <v-card
+                      v-on="on"
+                      ontouchstart=""
+                      color="orange lighten-2 hidden-sm-and-up"
+                      class="mx-3 mt-3 pa-3"
+                      style="border-radius: 10px"
                     >
-                      <div class="white--text" style="display: block">
-                        <div style="font-size: 10px">
-                          スコア
-                        </div>
-                        <span class="headline">{{ points }}</span>
+                      <div class="white--text caption">
+                        スコア
                       </div>
-                    </v-avatar>
-                    <div class="pt-2 light-text-color caption">
-                      <div>
-                        スコアが高い程、スカウトされやすくなります。
+                      <div class="pt-2 white--text font-weight-bold headline">
+                        {{ points }}
                       </div>
-                      <div>
-                        スコアは、インターンに採用されたり、企業のレビューを書くことで上げることができます。
-                      </div>
+                    </v-card>
+                  </template>
+                  <div class="pa-2 caption">
+                    <div>
+                      スコアが高い程、スカウトされやすくなります。
+                    </div>
+                    <div>
+                      スコアは、インターンに採用されたり、企業のレビューを書くことで上げることができます。
                     </div>
                   </div>
-                </v-flex>
+                </v-tooltip>
+                <v-layout row wrap>
+                  <!-- プロフィール完成度 -->
+                  <v-flex xs12 sm8 md12>
+                    <v-card
+                      :flat="$vuetify.breakpoint.mdAndUp"
+                      class="pa-3 subheading"
+                      :class="{'ma-3 mt-4': $vuetify.breakpoint.xsOnly}"
+                      style="border-radius: 10px"
+                    >
+                      <span class="light-text-color">プロフィール完成度: </span>
+                      <span class="font-weight-bold textColor">{{ completionPercentage }}%</span>
+                      <div
+                        v-if="completionPercentage != 100"
+                        :class="{'mr-5': $vuetify.breakpoint.mdAndUp}"
+                      >
+                        <v-progress-linear
+                          background-color="grey lighten-3"
+                          color="teal lighten-3"
+                          height="15"
+                          :value="completionPercentage"
+                        ></v-progress-linear>
+                        <div class="light-text-color caption">
+                          <div v-show="completionPercentage <= 50">
+                            プロフィール完成度が 50% を超えていないとスカウトされません。
+                            出来るだけ入力するようにしましょう。
+                          </div>
+                          <div v-show="completionPercentage > 50">
+                            プロフィール完成度が高いほど、スカウトされやすくなります。
+                          </div>
+                        </div>
+                      </div>
+                    </v-card>
+                  </v-flex>
+                  <v-flex sm4 hidden-md-and-up hidden-xs-only>
+                    <!-- スコア -->
+                    <v-tooltip bottom max-width="300">
+                      <template v-slot:activator="{ on }">
+                        <v-card
+                          v-on="on"
+                          ontouchstart=""
+                          color="orange lighten-2"
+                          class="mx-3 pa-3"
+                          style="border-radius: 10px"
+                        >
+                          <div class="white--text caption">
+                            スコア
+                          </div>
+                          <div class="pt-2 white--text font-weight-bold headline">
+                            {{ points }}
+                          </div>
+                        </v-card>
+                      </template>
+                      <div class="pa-2 caption">
+                        <div>
+                          スコアが高い程、スカウトされやすくなります。
+                        </div>
+                        <div>
+                          スコアは、インターンに採用されたり、企業のレビューを書くことで上げることができます。
+                        </div>
+                      </div>
+                    </v-tooltip>
+                  </v-flex>
+                </v-layout>
                 <!-- 志望する職種 -->
-                <div>
+                <div class="px-2">
                   <v-layout
                     align-center
                     justify-space-between
                     row
-                    class="pt-5"
+                    :class="{
+                      'pt-4': $vuetify.breakpoint.xsOnly,
+                      'pt-5': $vuetify.breakpoint.smAndUp,
+                    }"
                   >
                     <!-- タイトル&編集ボタン -->
                     <v-flex xs8 sm10>
@@ -273,7 +323,7 @@
                   </v-flex>
                 </div>
                 <!-- 紹介文 -->
-                <div>
+                <div class="px-2">
                   <v-layout
                     align-center
                     justify-space-between
@@ -332,7 +382,7 @@
                   </v-flex>
                 </div>
                 <!-- やりたいこと -->
-                <div>
+                <div class="px-2">
                   <v-layout
                     align-center
                     justify-space-between
@@ -386,7 +436,7 @@
                   </v-flex>
                 </div>
                 <!-- ポートフォリオ -->
-                <div>
+                <div class="px-2">
                   <v-layout
                     align-center
                     justify-space-between
@@ -533,7 +583,7 @@
                   </v-flex>
                 </div>
                 <!-- スキル -->
-                <div>
+                <div class="px-2">
                   <v-layout
                     align-center
                     justify-space-between
@@ -614,7 +664,7 @@
                   </v-flex>
                 </div>
                 <!-- 関連リンク -->
-                <div>
+                <div class="px-2">
                   <v-layout
                     align-center
                     justify-space-between
@@ -712,7 +762,7 @@
                   </v-flex>
                 </div>
                 <!-- 基本情報 -->
-                <div class="pb-5">
+                <div class="px-2 pb-5">
                   <v-layout
                     align-center
                     justify-space-between
