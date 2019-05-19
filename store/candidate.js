@@ -7,11 +7,15 @@ export const state = () => ({
   reviews: null,
   tags: null,
   pass: null,
+  isInternExtended: false,
+  extendedInternEnd: false,
   type: null,
   jobId: null,
   chatId: null,
+  careerId: null,
   isEditingTags: false,
   isEditingPass: false,
+  isEditingExtendedIntern: false,
   isLoading: false,
   messages: [],
   isInitialQuery: true,
@@ -37,6 +41,12 @@ export const mutations = {
   setPass(state, pass) {
     state.pass = pass
   },
+  updateIsInternExtended(state, isInternExtended) {
+    state.isInternExtended = isInternExtended
+  },
+  updateExtendedInternEnd(state, extendedInternEnd) {
+    state.extendedInternEnd = extendedInternEnd
+  },
   setType(state, type) {
     state.type = type
   },
@@ -46,11 +56,17 @@ export const mutations = {
   setChatId(state, chatId) {
     state.chatId = chatId
   },
+  setCareerId(state, careerId) {
+    state.careerId = careerId
+  },
   updateIsEditingTags(state, isEditing) {
     state.isEditingTags = isEditing
   },
   updateIsEditingPass(state, isEditing) {
     state.isEditingPass = isEditing
+  },
+  updateIsEditingExtendedIntern(state, isEditing) {
+    state.isEditingExtendedIntern = isEditing
   },
   updateIsLoading(state, isLoading) {
     state.isLoading = isLoading
@@ -105,9 +121,14 @@ export const actions = {
           commit('setReviews', doc.data()['reviews'])
           commit('setTags', doc.data()['tags'])
           commit('setPass', pass)
+          commit('updateIsInternExtended', doc.data()['isInternExtended'])
+          commit('updateExtendedInternEnd', doc.data()['extendedInternEnd'])
           commit('setType', doc.data()['type'])
           commit('setJobId', doc.data()['jobId'])
           commit('setChatId', doc.data()['chatId'])
+          if (doc.data()['career']) {
+            commit('setCareerId', doc.data()['career'].careerId)
+          }
 
           commit('updateIsLoading', false)
 
@@ -180,6 +201,63 @@ export const actions = {
         console.error("Error adding document: ", error)
       })
   },
+  updateIsEditingExtendedIntern({commit}, isEditing) {
+    commit('updateIsEditingExtendedIntern', isEditing)
+  },
+  updateExtendedIntern({commit, state}, {params, companyId, extendIntern}) {
+    const candidateId = params.id
+    const user = state.user
+    const careerId = state.careerId
+
+    const batch = firestore.batch()
+
+    const candidateRef = firestore.collection('companies').doc(companyId)
+      .collection('candidates').doc(candidateId)
+
+    var candidateData
+
+    if (extendIntern) {
+      // インターンを延長する場合
+      candidateData = {
+        isInternExtended: true,
+      }
+    } else {
+      // 延長したインターンを終了する場合
+      candidateData = {
+        extendedInternEnd: true,
+      }
+    }
+    batch.update(candidateRef, candidateData)
+
+    const careerRef = firestore.collection('users').doc(user.uid)
+      .collection('career').doc(careerId)
+
+    var careerData
+    if (extendIntern) {
+      careerData = {
+        isInternExtended: true,
+      }
+    } else {
+      careerData = {
+        endedAt: new Date(),
+        extendedInternEnd: true,
+      }
+    }
+    batch.update(careerRef, careerData)
+
+    batch.commit()
+      .then(() => {
+        commit('updateIsEditingExtendedIntern', false)
+        if (extendIntern) {
+          commit('updateIsInternExtended', true)
+        } else {
+          commit('updateExtendedInternEnd', true)
+        }
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error)
+      })
+  },
   updateStatus({commit, state}, {
     router,
     params,
@@ -193,7 +271,10 @@ export const actions = {
     const user = state.user
     const type = state.type
     const jobId = state.jobId
+    const careerId = state.careerId
     const candidateId = params.id
+    const isInternExtended = state.isInternExtended
+    const extendedInternEnd = state.extendedInternEnd
 
     // candidate 更新
     var candidateData = {
@@ -212,6 +293,10 @@ export const actions = {
     }
     if (currentStatus.intern && feedback) {
       candidateData.feedback = feedback
+    }
+    // ステータスが入社または不採用に変わるときに、延長しているインターンが終了になっていない場合は、終了にする
+    if ((newStatus.hired || newStatus.rejected) && isInternExtended && !extendedInternEnd) {
+      candidateData.extendedInternEnd = true
     }
 
     const batch = firestore.batch()
@@ -237,16 +322,25 @@ export const actions = {
       })
     }
 
+    // career更新 （ステータスが入社または不採用に変わるときに、延長しているインターンが終了になっていない場合は、終了にする）
+    if ((newStatus.hired || newStatus.rejected) && isInternExtended && !extendedInternEnd) {
+      const careerRef = firestore.collection('users').doc(user.uid)
+        .collection('career').doc(careerId)
+
+      var careerData = {
+        endedAt: new Date(),
+        extendedInternEnd: true,
+      }
+      batch.update(careerRef, careerData)
+    }
+
+    // 候補者のデータを保存
     var setData = false
     let ref
     if (newStatus.intern) {
       setData = true
       ref = firestore.collection('companies').doc(companyId)
         .collection('interns').doc()
-    } else if (newStatus.extendedIntern) {
-      setData = true
-      ref = firestore.collection('companies').doc(companyId)
-        .collection('extendedInterns').doc()
     } else if (newStatus.pass) {
       setData = true
       ref = firestore.collection('companies').doc(companyId)
@@ -509,11 +603,16 @@ export const actions = {
     commit('setStatus', null)
     commit('setReviews', null)
     commit('setTags', null)
+    commit('setPass', null)
+    commit('updateIsInternExtended', false)
+    commit('updateExtendedInternEnd', false)
     commit('setType', null)
     commit('setJobId', null)
     commit('setChatId', null)
+    commit('setCareerId', null)
     commit('updateIsEditingTags', false)
     commit('updateIsEditingPass', false)
+    commit('updateIsEditingExtendedIntern', false)
     commit('updateIsLoading', true)
     commit('resetMessages')
     commit('updateIsInitialQuery', true)

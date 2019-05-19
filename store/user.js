@@ -151,7 +151,6 @@ export const actions = {
       inbox: false,
       inProcess: false,
       intern: false,
-      extendedIntern: false,
       pass: false,
       contracted: false,
       hired: false,
@@ -171,6 +170,8 @@ export const actions = {
         status: status,
         createdAt: new Date(),
         type: 'scout',
+        isInternExtended: false,
+        extendedInternEnd: false,
       })
       .then(() => {
         commit('updateIsCandidate', true)

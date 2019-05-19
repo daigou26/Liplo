@@ -188,7 +188,7 @@ export const actions = {
                     data: [
                       currentCandidates.inbox,
                       currentCandidates.inProcess,
-                      currentCandidates.intern + currentCandidates.extendedIntern,
+                      currentCandidates.intern,
                       currentCandidates.pass,
                       currentCandidates.contracted,
                       currentCandidates.hired,

@@ -71,7 +71,7 @@
           </v-card>
         </v-flex>
         <!-- candidate summary (md, lg, xl) -->
-        <v-flex md6 hidden-sm-and-down>
+        <v-flex md6 hidden-sm-and-down pb-4>
           <!-- user image & name (md, lg, xl) -->
           <v-card v-if="user" flat>
             <v-list two-line>
@@ -109,11 +109,17 @@
               <span class="textColor font-weight-bold">
                 タグ
               </span>
+              <v-tooltip bottom max-width="180px">
+                <template v-slot:activator="{ on }">
+                  <v-icon v-on="on" style="font-size: 16px; color: #BDBDBD">info</v-icon>
+                </template>
+                <span>タグには候補者の職種や役職などを自由に設定できます</span>
+              </v-tooltip>
               <v-btn
                 v-show="!isEditingTags"
                 flat
                 small
-                @click="tagsEditButtonClicked"
+                @click="editTagsButtonClicked"
               >
                 <v-icon :size="14">edit</v-icon>
                 <span class="caption edit-text-color">編集する</span>
@@ -159,25 +165,10 @@
                 更新
               </v-btn>
             </v-form>
-            <v-hover>
-              <v-card slot-scope="{ hover }" flat class="pt-3">
-                <v-card-actions>
-                  <v-icon style="font-size: 18px">info</v-icon>
-                  <span class="light-text-color caption">ヒント（タグの使い方）</span>
-                </v-card-actions>
-                <v-card v-show="hover" flat class="caption pa-2">
-                  <div>
-                    <div class="textColor">
-                      タグには候補者の職種や役職などを自由に設定できます
-                    </div>
-                  </div>
-                </v-card>
-              </v-card>
-            </v-hover>
           </div>
           <!-- pass -->
-          <div v-if="pass && status.pass">
-            <v-flex class="px-3 pt-4 break text-xs-left">
+          <div v-if="pass && status && status.pass">
+            <v-flex class="px-3 pt-5 break text-xs-left">
               <span class="textColor font-weight-bold">
                 内定パス
               </span>
@@ -185,7 +176,7 @@
                 v-show="!isEditingPass"
                 flat
                 small
-                @click="passEditButtonClicked"
+                @click="editPassButtonClicked"
               >
                 <v-icon :size="14">edit</v-icon>
                 <span class="caption edit-text-color">編集する</span>
@@ -257,6 +248,77 @@
               </v-btn>
             </v-form>
           </div>
+          <!-- インターン延長 -->
+          <div v-if="status && (status.pass || status.contracted)">
+            <v-flex class="px-3 pt-5 break text-xs-left">
+              <span class="textColor font-weight-bold">
+                インターン延長
+              </span>
+              <v-tooltip bottom max-width="180px">
+                <template v-slot:activator="{ on }">
+                  <v-icon v-on="on" style="font-size: 16px; color: #BDBDBD">info</v-icon>
+                </template>
+                <span>インターン延長は料金がかかりません</span>
+              </v-tooltip>
+              <v-btn
+                v-if="!extendedInternEnd"
+                v-show="!isEditingExtendedIntern"
+                flat
+                small
+                @click="editExtendedInternButtonClicked"
+              >
+                <v-icon :size="14">edit</v-icon>
+                <span class="caption edit-text-color">編集する</span>
+              </v-btn>
+            </v-flex>
+            <v-flex v-show="!isEditingExtendedIntern" class="px-3 break text-xs-left">
+              <div v-if="isInternExtended">
+                <div v-if="extendedInternEnd" class="pt-2">
+                  終了しています
+                </div>
+                <div v-else>
+                  インターン延長中
+                  <div class="caption light-text-color pt-2">
+                    インターンが終了した場合は、更新してください。
+                  </div>
+                </div>
+              </div>
+              <div v-else>
+                延長していません
+                <div class="caption light-text-color pt-2">
+                  パスを発行した後もインターンを継続する場合は、インターンが終了した場合は、更新してください。
+                </div>
+              </div>
+            </v-flex>
+            <!-- 編集 -->
+            <v-form v-if="isEditingExtendedIntern" v-model="editExtendedInternValid" class="pa-3">
+              <v-text-field
+                v-if="!isInternExtended"
+                value="インターンを延長する"
+                solo
+                readonly
+                required
+              ></v-text-field>
+              <v-text-field
+                v-if="isInternExtended && !extendedInternEnd"
+                value="インターンを終了する"
+                solo
+                readonly
+                required
+              ></v-text-field>
+              <v-btn
+                @click="updateIsEditingExtendedIntern(false)"
+              >
+                キャンセル
+              </v-btn>
+              <v-btn
+                :disabled="!editExtendedInternValid"
+                @click="updateExtendedInternButtonClicked"
+              >
+                更新
+              </v-btn>
+            </v-form>
+          </div>
         </v-flex>
         <v-flex
           md6
@@ -285,11 +347,17 @@
                     <span class="textColor font-weight-bold">
                       タグ
                     </span>
+                    <v-tooltip bottom max-width="180px">
+                      <template v-slot:activator="{ on }">
+                        <v-icon v-on="on" style="font-size: 16px; color: #BDBDBD">info</v-icon>
+                      </template>
+                      <span>タグには候補者の職種や役職などを自由に設定できます</span>
+                    </v-tooltip>
                     <v-btn
                       v-show="!isEditingTags"
                       flat
                       small
-                      @click="tagsEditButtonClicked"
+                      @click="editTagsButtonClicked"
                     >
                       <v-icon :size="14">edit</v-icon>
                       <span class="caption edit-text-color">編集する</span>
@@ -335,25 +403,10 @@
                       更新
                     </v-btn>
                   </v-form>
-                  <v-hover>
-                    <v-card slot-scope="{ hover }" flat class="pt-3">
-                      <v-card-actions>
-                        <v-icon style="font-size: 18px">info</v-icon>
-                        <span class="light-text-color caption">ヒント（タグの使い方）</span>
-                      </v-card-actions>
-                      <v-card v-show="hover" flat class="caption pa-2">
-                        <div>
-                          <div class="textColor">
-                            タグには候補者の職種や役職などを自由に設定できます
-                          </div>
-                        </div>
-                      </v-card>
-                    </v-card>
-                  </v-hover>
                 </div>
                 <!-- pass -->
-                <div v-if="pass && status.pass">
-                  <v-flex class="px-3 pt-4 break text-xs-left">
+                <div v-if="pass && status && status.pass">
+                  <v-flex class="px-3 pt-5 break text-xs-left">
                     <span class="textColor font-weight-bold">
                       内定パス
                     </span>
@@ -361,7 +414,7 @@
                       v-show="!isEditingPass"
                       flat
                       small
-                      @click="passEditButtonClicked"
+                      @click="editPassButtonClicked"
                     >
                       <v-icon :size="14">edit</v-icon>
                       <span class="caption edit-text-color">編集する</span>
@@ -433,6 +486,77 @@
                     </v-btn>
                   </v-form>
                 </div>
+                <!-- インターン延長 -->
+                <div v-if="status && (status.pass || status.contracted)">
+                  <v-flex class="px-3 pt-5 break text-xs-left">
+                    <span class="textColor font-weight-bold">
+                      インターン延長
+                    </span>
+                    <v-tooltip bottom max-width="180px">
+                      <template v-slot:activator="{ on }">
+                        <v-icon v-on="on" style="font-size: 16px; color: #BDBDBD">info</v-icon>
+                      </template>
+                      <span>インターン延長は料金がかかりません</span>
+                    </v-tooltip>
+                    <v-btn
+                      v-if="!extendedInternEnd"
+                      v-show="!isEditingExtendedIntern"
+                      flat
+                      small
+                      @click="editExtendedInternButtonClicked"
+                    >
+                      <v-icon :size="14">edit</v-icon>
+                      <span class="caption edit-text-color">編集する</span>
+                    </v-btn>
+                  </v-flex>
+                  <v-flex v-show="!isEditingExtendedIntern" class="px-3 break text-xs-left">
+                    <div v-if="isInternExtended">
+                      <div v-if="extendedInternEnd" class="pt-2">
+                        終了しています
+                      </div>
+                      <div v-else>
+                        インターン延長中
+                        <div class="caption light-text-color pt-2">
+                          インターンが終了した場合は、更新してください。
+                        </div>
+                      </div>
+                    </div>
+                    <div v-else>
+                      延長していません
+                      <div class="caption light-text-color pt-2">
+                        パスを発行した後もインターンを継続する場合は、更新してください。
+                      </div>
+                    </div>
+                  </v-flex>
+                  <!-- 編集 -->
+                  <v-form v-if="isEditingExtendedIntern" v-model="editExtendedInternValid" class="pa-3">
+                    <v-text-field
+                      v-if="!isInternExtended"
+                      value="インターンを延長する"
+                      solo
+                      readonly
+                      required
+                    ></v-text-field>
+                    <v-text-field
+                      v-if="isInternExtended && !extendedInternEnd"
+                      value="インターンを終了する"
+                      solo
+                      readonly
+                      required
+                    ></v-text-field>
+                    <v-btn
+                      @click="updateIsEditingExtendedIntern(false)"
+                    >
+                      キャンセル
+                    </v-btn>
+                    <v-btn
+                      :disabled="!editExtendedInternValid"
+                      @click="updateExtendedInternButtonClicked"
+                    >
+                      更新
+                    </v-btn>
+                  </v-form>
+                </div>
               </div>
               <!-- status -->
               <div v-if="item.value == 'status' && status" class="pa-3">
@@ -472,12 +596,8 @@
                   </div>
                 </div>
                 <div v-if="status.intern">
-                  インターンを延長する場合は<span class="font-weight-bold orange--text text--darken-1">インターン延長</span>に、
-                </div>
-                <div v-if="status.intern || status.extendedIntern">
                   内定パスを送る場合は<span class="font-weight-bold teal--text text--lighten-1">内定パス</span>に変更してください。
                   <div>
-
                   </div>
                 </div>
                 <!-- feedback -->
@@ -507,7 +627,7 @@
                   </div>
                 </div>
                 <!-- pass -->
-                <div v-if="status.intern == true || status.extendedIntern == true">
+                <div v-if="status.intern == true">
                   <div v-if="tempStatus == '内定パス'" class="py-3">
                     <div class="pt-3 pb-2 textColor subheading font-weight-bold">
                       内定パス
@@ -795,6 +915,8 @@ export default {
     tempExpirationDate: null,
     tempPassOccupation: '',
     editPassValid: true,
+    tempIsInternExtended: false,
+    editExtendedInternValid: true,
     reviewValid: true,
     rating: 0,
     review: '',
@@ -835,8 +957,6 @@ export default {
         currentStatus = '選考中'
       } else if (this.status.intern == true) {
         currentStatus = 'インターン'
-      } else if (this.status.extendedIntern == true) {
-        currentStatus = 'インターン延長'
       } else if (this.status.pass == true) {
         currentStatus = '内定パス'
       } else if (this.status.contracted == true) {
@@ -881,13 +1001,6 @@ export default {
       } else if (this.status.intern == true) {
         items = [
           'インターン',
-          'インターン延長',
-          '内定パス',
-          '不採用'
-        ]
-      } else if (this.status.extendedIntern == true) {
-        items = [
-          'インターン延長',
           '内定パス',
           '不採用'
         ]
@@ -949,9 +1062,12 @@ export default {
       chatId: state => state.candidate.chatId,
       tags: state => state.candidate.tags,
       pass: state => state.candidate.pass,
+      isInternExtended: state => state.candidate.isInternExtended,
+      extendedInternEnd: state => state.candidate.extendedInternEnd,
       isLoading: state => state.candidate.isLoading,
       isEditingTags: state => state.candidate.isEditingTags,
       isEditingPass: state => state.candidate.isEditingPass,
+      isEditingExtendedIntern: state => state.candidate.isEditingExtendedIntern,
       messages: state => state.candidate.messages,
       isMessagesLoading: state => state.candidate.isMessagesLoading,
       allMessagesQueried: state => state.candidate.allMessagesQueried,
@@ -1009,8 +1125,6 @@ export default {
           this.tempStatus = '選考中'
         } else if (status.intern == true) {
           this.tempStatus = 'インターン'
-        } else if (status.extendedIntern == true) {
-          this.tempStatus = 'インターン延長'
         } else if (status.pass == true) {
           this.tempStatus = '内定パス'
         } else if (status.contracted == true) {
@@ -1059,17 +1173,28 @@ export default {
     }
   },
   methods: {
-    tagsEditButtonClicked() {
+    editTagsButtonClicked() {
       this.tempTags = this.tags
       this.updateIsEditingTags(true)
     },
-    passEditButtonClicked() {
+    editPassButtonClicked() {
       this.tempExpirationDate =
         String(this.expirationDate.getFullYear()) + '-' +
         String(this.expirationDate.getMonth() + 1) + '-' +
         String(this.expirationDate.getDate())
       this.tempPassOccupation = this.passOccupation
       this.updateIsEditingPass(true)
+    },
+    editExtendedInternButtonClicked() {
+      this.tempIsInternExtended = this.isInternExtended
+      this.updateIsEditingExtendedIntern(true)
+    },
+    updateExtendedInternButtonClicked() {
+      if (!this.isInternExtended) {
+        this.updateExtendedIntern({params: this.params, companyId: this.companyId, extendIntern: true})
+      } else {
+        this.updateExtendedIntern({params: this.params, companyId: this.companyId, extendIntern: false})
+      }
     },
     removeSkill(item) {
       this.tempTags.splice(this.tempTags.indexOf(item), 1)
@@ -1081,7 +1206,6 @@ export default {
         inbox: false,
         inProcess: false,
         intern: false,
-        extendedIntern: false,
         pass: false,
         contracted: false,
         hired: false,
@@ -1092,7 +1216,6 @@ export default {
         case '応募': newStatus.inbox = true; break
         case '選考中': newStatus.inProcess = true; break
         case 'インターン': newStatus.intern = true; break
-        case 'インターン延長': newStatus.extendedIntern = true; break
         case '内定パス': newStatus.pass = true; break
         case '入社予定': newStatus.contracted = true; break
         case '入社': newStatus.hired = true; break
@@ -1218,6 +1341,8 @@ export default {
       updateTags: 'candidate/updateTags',
       updateIsEditingPass: 'candidate/updateIsEditingPass',
       updatePass: 'candidate/updatePass',
+      updateIsEditingExtendedIntern: 'candidate/updateIsEditingExtendedIntern',
+      updateExtendedIntern: 'candidate/updateExtendedIntern',
       updateStatus: 'candidate/updateStatus',
       sendReview: 'candidate/sendReview',
       queryMessages: 'candidate/queryMessages',
