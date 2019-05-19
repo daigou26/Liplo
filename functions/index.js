@@ -17,7 +17,7 @@ admin.initializeApp()
 // フィードバックをローカルにdownload
 // exports.downloadFeedbacks = functions.https..onCall((data, context) => {
 //   const json2csv = require("json2csv").parse
-// 
+//
 //   if (data.uid == null) {
 //     return 0
 //   }
@@ -138,7 +138,6 @@ exports.updateCareer = functions.region('asia-northeast1')
       newStatus.inbox == beforeStatus.inbox &&
       newStatus.inProcess == beforeStatus.inProcess &&
       newStatus.intern == beforeStatus.intern &&
-      newStatus.extendedIntern == beforeStatus.extendedIntern &&
       newStatus.pass == beforeStatus.pass &&
       newStatus.contracted == beforeStatus.contracted &&
       newStatus.hired == beforeStatus.hired &&
@@ -146,8 +145,8 @@ exports.updateCareer = functions.region('asia-northeast1')
     ) {
       return 0
     }
-    // 前のステータスが選考中、インターン、インターン延長でなければ終了
-    if (!(beforeStatus.inProcess || beforeStatus.intern || beforeStatus.extendedIntern)) {
+    // 前のステータスが選考中、インターンでなければ終了
+    if (!(beforeStatus.inProcess || beforeStatus.intern)) {
       return 0
     }
 
@@ -230,17 +229,11 @@ exports.updateCareer = functions.region('asia-northeast1')
               .catch((error) => {
                 console.error("Error adding document: ", error)
               })
-          } else if (newStatus.extendedIntern || newStatus.pass || newStatus.rejected) {
+          } else if (newStatus.pass || newStatus.rejected) {
             // ステータスがインターン、インターン延長から変わった時
             var careerData = {
               end: true,
               endedAt: new Date()
-            }
-            if (newStatus.extendedIntern) {
-              careerData.isInternExtended = true
-            }
-            if (beforeStatus.extendedIntern) {
-              careerData.extendedInternEnd = true
             }
 
             const batch = admin.firestore().batch()
@@ -293,7 +286,6 @@ exports.sendFeedback = functions.region('asia-northeast1')
       newStatus.inbox == beforeStatus.inbox &&
       newStatus.inProcess == beforeStatus.inProcess &&
       newStatus.intern == beforeStatus.intern &&
-      newStatus.extendedIntern == beforeStatus.extendedIntern &&
       newStatus.pass == beforeStatus.pass &&
       newStatus.contracted == beforeStatus.contracted &&
       newStatus.hired == beforeStatus.hired &&
@@ -448,7 +440,6 @@ exports.sendPass = functions.region('asia-northeast1')
       newStatus.inbox == beforeStatus.inbox &&
       newStatus.inProcess == beforeStatus.inProcess &&
       newStatus.intern == beforeStatus.intern &&
-      newStatus.extendedIntern == beforeStatus.extendedIntern &&
       newStatus.pass == beforeStatus.pass &&
       newStatus.contracted == beforeStatus.contracted &&
       newStatus.hired == beforeStatus.hired &&
@@ -577,7 +568,6 @@ exports.updateCandidatesCount = functions.region('asia-northeast1')
       newStatus.inbox == beforeStatus.inbox &&
       newStatus.inProcess == beforeStatus.inProcess &&
       newStatus.intern == beforeStatus.intern &&
-      newStatus.extendedIntern == beforeStatus.extendedIntern &&
       newStatus.pass == beforeStatus.pass &&
       newStatus.contracted == beforeStatus.contracted &&
       newStatus.hired == beforeStatus.hired &&
@@ -612,8 +602,6 @@ exports.updateCandidatesCount = functions.region('asia-northeast1')
             currentCandidates.inProcess -= 1
           } else if (beforeStatus.intern) {
             currentCandidates.intern -= 1
-          } else if (beforeStatus.extendedIntern) {
-            currentCandidates.extendedIntern -= 1
           } else if (beforeStatus.pass) {
             currentCandidates.pass -= 1
           } else if (beforeStatus.contracted) {
@@ -635,14 +623,6 @@ exports.updateCandidatesCount = functions.region('asia-northeast1')
               allCandidates.intern.scout += 1
             } else {
               allCandidates.intern.application += 1
-            }
-          } else if (newStatus.extendedIntern) {
-            currentCandidates.extendedIntern += 1
-            allCandidates.extendedIntern.all += 1
-            if (type == 'scout') {
-              allCandidates.extendedIntern.scout += 1
-            } else {
-              allCandidates.extendedIntern.application += 1
             }
           } else if (newStatus.pass) {
             currentCandidates.pass += 1
@@ -734,7 +714,6 @@ exports.scoutUser = functions.region('asia-northeast1')
               inbox: 0,
               inProcess: 0,
               intern: 0,
-              extendedIntern: 0,
               pass: 0,
               contracted: 0,
               hired: 0
@@ -754,7 +733,6 @@ exports.scoutUser = functions.region('asia-northeast1')
               inbox: 0,
               inProcess: initialValue,
               intern: initialValue,
-              extendedIntern: initialValue,
               pass :initialValue,
               contracted: initialValue,
               hired: initialValue,
@@ -997,7 +975,6 @@ exports.applyForJob = functions.region('asia-northeast1')
               inbox: 1,
               inProcess: 0,
               intern: 0,
-              extendedIntern: 0,
               pass: 0,
               contracted: 0,
               hired: 0
@@ -1018,7 +995,6 @@ exports.applyForJob = functions.region('asia-northeast1')
               inbox: 1,
               inProcess: initialValue,
               intern: initialValue,
-              extendedIntern: initialValue,
               pass: initialValue,
               contracted: initialValue,
               hired: initialValue,
