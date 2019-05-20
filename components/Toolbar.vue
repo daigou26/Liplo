@@ -340,7 +340,7 @@
         <span v-else-if="routeName == 'companies-id-jobs'"　class="toolbar-title">募集一覧</span>
         <span v-else-if="path.includes('/user/notifications')"　class="toolbar-title">通知</span>
         <span v-else-if="path.includes('/messages')"　class="toolbar-title">メッセージ</span>
-        <span v-else-if="path.includes('/passes')" class="toolbar-title">内定パス</span>
+        <span v-else-if="path.includes('/passes')" class="toolbar-title">パス</span>
         <span v-else-if="path.includes('/career')" class="toolbar-title">キャリア</span>
         <span v-else-if="path.includes('/feedbacks')" class="toolbar-title">フィードバック</span>
         <span v-else-if="path.includes('/reviews')" class="toolbar-title">レビュー</span>

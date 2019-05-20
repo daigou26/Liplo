@@ -107,7 +107,7 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
     const userName = snap.data().userName
     const url = `http://localhost:3000/?type=invited&id=${companyId}`
 
-    // 内定パスが渡されたユーザーにメール送信
+    // 招待されたユーザーにメール送信
     const mailOptions = {
       from: `LightHouse <noreply@firebase.com>`,
       to: email,
@@ -425,7 +425,7 @@ exports.updateCompanyFeedbackCount = functions.region('asia-northeast1')
       })
   })
 
-// 候補者のステータスが pass になった時、内定パスを送る処理
+// 候補者のステータスが pass になった時、パスを送る処理
 exports.sendPass = functions.region('asia-northeast1')
   .firestore
   .document('companies/{companyId}/candidates/{candidateId}')
@@ -453,9 +453,18 @@ exports.sendPass = functions.region('asia-northeast1')
 
     const companyId = context.params.companyId
     const candidateId = context.params.candidateId
-    var pass = newValue.pass
     const updatedAt = newValue.updatedAt
     const user = newValue.user
+    var pass = newValue.pass
+    // パスの種類
+    var passType
+    if (pass.type == 0) {
+      passType = '入社パス'
+    } else if (pass.type == 1) {
+      passType = '内定パス'
+    } else if (pass.type == 0) {
+      passType = '先着パス'
+    }
 
     return admin.firestore()
       .collection('companies')
@@ -473,6 +482,7 @@ exports.sendPass = functions.region('asia-northeast1')
             companyId: companyId,
             companyName: companyName,
             createdAt: updatedAt,
+            type: pass.type,
             expirationDate: pass.expirationDate,
             occupation: pass.occupation,
             picMessage: pass.message,
@@ -488,12 +498,15 @@ exports.sendPass = functions.region('asia-northeast1')
           if (companyImageUrl) {
             passData.companyImageUrl = companyImageUrl
           }
+          if (pass.type != 0) {
+            passData.joiningYear = pass.joiningYear
+          }
 
           const batch = admin.firestore().batch()
-          // 内定パス
+          // パス
           const passRef = admin.firestore().collection('passes').doc(passId)
           batch.set(passRef, passData)
-          // 内定パスのデータをcandidateに
+          // パスのデータをcandidateに
           const candidateRef = admin.firestore().collection('companies')
             .doc(companyId).collection('candidates').doc(candidateId)
           pass.passId = passId
@@ -507,7 +520,7 @@ exports.sendPass = functions.region('asia-northeast1')
           batch.set(notificationRef, {
             type: 'normal',
             isImportant: true,
-            content: companyName + 'から内定パスが送られました！ 内定を受諾する場合は、受諾ボタンを押して企業と連絡を取り、内定承諾証などで契約をしましょう。',
+            content: `${companyName}から${passType}が送られました！ 内定を受諾する場合は、受諾ボタンを押して企業と連絡を取り、内定承諾証などで契約をしましょう。`,
             createdAt: new Date(),
             url: url,
             isUnread: true,
@@ -520,13 +533,13 @@ exports.sendPass = functions.region('asia-northeast1')
                 .then(userDoc => {
                   if (userDoc.exists) {
                     if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.pass) {
-                      // 内定パスが渡されたユーザーにメール送信
+                      // パスが渡されたユーザーにメール送信
                       const mailOptions = {
                         from: `LightHouse <noreply@firebase.com>`,
                         to: userDoc.data().email,
                       }
-                      mailOptions.subject = `${companyName}に内定パスをもらいました！`
-                      mailOptions.text = `${companyName}に内定パスをもらいました！　ご確認ください。`
+                      mailOptions.subject = `${companyName}に${passType}をもらいました！`
+                      mailOptions.text = `${companyName}に${passType}をもらいました！　ご確認ください。`
                       mailTransport.sendMail(mailOptions, (err, info) => {
                         if (err) {
                           console.log(err)
@@ -2138,7 +2151,7 @@ exports.sendReview = functions.region('asia-northeast1')
       })
   })
 
-// 内定パスを承諾した時の処理
+// パスを承諾した時の処理
 exports.acceptJobOffer = functions.region('asia-northeast1')
   .firestore
   .document('passes/{passId}')
@@ -2157,6 +2170,7 @@ exports.acceptJobOffer = functions.region('asia-northeast1')
     const companyId = newValue.companyId
     const companyName = newValue.companyName
     const companyImageUrl = newValue.companyImageUrl
+    const type = newValue.type
     const occupation = newValue.occupation
     const candidateId = newValue.candidateId
     const passId = context.params.passId
@@ -2169,6 +2183,15 @@ exports.acceptJobOffer = functions.region('asia-northeast1')
         name: userName,
         imageUrl: profileImageUrl
       }
+    }
+    // パスの種類
+    var typeText
+    if (type == 0) {
+      typeText = '入社パス'
+    } else if (type == 1) {
+      typeText = '内定パス'
+    } else if (type == 0) {
+      typeText = '先着パス'
     }
 
     // メッセージを messages に追加
@@ -2209,7 +2232,7 @@ exports.acceptJobOffer = functions.region('asia-northeast1')
                 batch.set(notificationRef, {
                   type: 'normal',
                   isImportant: true,
-                  content: userName + 'さんが内定を受諾しました！ 内定契約が済みましたら、ステータスを採用予定に変更してください。',
+                  content: `${userName}さんが${typeText}を使用しました！ 契約が済みましたら、ステータスを採用予定に変更してください。`,
                   createdAt: new Date(),
                   url: url,
                   isUnread: true,
@@ -2224,8 +2247,8 @@ exports.acceptJobOffer = functions.region('asia-northeast1')
                         from: `LightHouse <noreply@firebase.com>`,
                         to: member.email,
                       }
-                      mailOptions.subject = `${userName}さんが内定を承諾しました。`
-                      mailOptions.text = `${userName}さんが内定を承諾しました。　内定契約が済みましたら、ステータスを採用予定に変更してください。`
+                      mailOptions.subject = `${userName}さんが${typeText}を使用しました。`
+                      mailOptions.text = `${userName}さんが${typeText}を使用しました。　契約が済みましたら、ステータスを採用予定に変更してください。`
                       mailTransport.sendMail(mailOptions, (err, info) => {
                         if (err) {
                           console.log(err)

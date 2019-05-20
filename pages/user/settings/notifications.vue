@@ -66,7 +66,7 @@
               ></v-checkbox>
               <v-checkbox
                 v-model="tempPass"
-                label="企業からの内定パス"
+                label="企業からのパス"
                 color="info"
               ></v-checkbox>
             </div>
