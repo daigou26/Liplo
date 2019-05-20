@@ -127,7 +127,7 @@
             </v-flex>
             <v-flex v-show="!isEditingTags" class="px-3 break text-xs-left">
               <v-chip v-if="tags" v-for="tag in tags" :key="tag">{{ tag }}</v-chip>
-              <div v-if="tags == null || tags.length == 0">
+              <div v-if="tags == null || tags.length == 0" class="textColor">
                 タグは設定されていません
               </div>
             </v-flex>
@@ -153,24 +153,26 @@
                   </v-chip>
                 </template>
               </v-combobox>
-              <v-btn
-                @click="updateIsEditingTags(false)"
-              >
-                キャンセル
-              </v-btn>
-              <v-btn
-                :disabled="!editTagsValid"
-                @click="updateTags({params: params, companyId: companyId, tags: tempTags})"
-              >
-                更新
-              </v-btn>
+              <div class="text-xs-right">
+                <v-btn
+                  @click="updateIsEditingTags(false)"
+                >
+                  キャンセル
+                </v-btn>
+                <v-btn
+                  :disabled="!editTagsValid"
+                  @click="updateTags({params: params, companyId: companyId, tags: tempTags})"
+                >
+                  更新
+                </v-btn>
+              </div>
             </v-form>
           </div>
           <!-- pass -->
           <div v-if="pass && status && status.pass">
             <v-flex class="px-3 pt-5 break text-xs-left">
               <span class="textColor font-weight-bold">
-                内定パス
+                パス
               </span>
               <v-btn
                 v-show="!isEditingPass"
@@ -182,17 +184,51 @@
                 <span class="caption edit-text-color">編集する</span>
               </v-btn>
             </v-flex>
-            <v-flex v-show="!isEditingPass" class="px-3 break text-xs-left">
+            <v-flex v-show="!isEditingPass" class="px-3 break text-xs-left textColor">
+              <div class="pt-2 pb-3">
+                タイプ：　<span class="font-weight-bold light-text-color">{{ passTypeText }}</span>
+                <div>
+                  <v-btn
+                    small
+                    flat
+                    class="grey--text text--darken-2 px-0 mx-0"
+                    @click="passTypesDialog=true"
+                  >
+                    <v-icon class="mr-1" style="font-size: 16px; color: #BDBDBD">info</v-icon>
+                    <span class="caption">パスの種類について</span>
+                  </v-btn>
+                </div>
+              </div>
               <div class="pb-2">
-                <span>有効期限:　</span>{{ passExpirationDate }}
+                職種:　{{ passOccupation }}
+              </div>
+              <div v-if="passType != 0" class="pb-2">
+                入社年度:　{{ joiningYear }}年度
               </div>
               <div>
-                <span>職種:　</span>{{ passOccupation }}
+                有効期限:　{{ passExpirationDate }}
               </div>
-
             </v-flex>
             <!-- pass編集 -->
             <v-form v-show="isEditingPass" v-model="editPassValid" class="pa-3">
+              <!-- 職種 -->
+              <v-text-field
+                label="職種"
+                v-model="tempPassOccupation"
+                :rules="occupationRules"
+                required
+              ></v-text-field>
+              <!-- 入社年度 -->
+              <v-text-field
+                v-if="passType != '入社パス'"
+                v-model="tempJoiningYear"
+                class="pt-3"
+                label="入社年度"
+                type="number"
+                suffix="年度"
+                :rules="joiningYearRules"
+                required
+              ></v-text-field>
               <!-- 有効期限 -->
               <v-menu
                 v-model="expirationDateMenu"
@@ -207,9 +243,10 @@
                 <template v-slot:activator="{ on }">
                   <v-text-field
                     v-model="tempExpirationDate"
+                    class="py-3"
                     label="有効期限"
                     append-icon="event"
-                    solo
+                    hide-details
                     readonly
                     required
                     v-on="on"
@@ -222,30 +259,32 @@
                   locale="ja"
                 ></v-date-picker>
               </v-menu>
-              <!-- 職種 -->
-              <v-text-field
-                label="職種"
-                v-model="tempPassOccupation"
-                solo
-                :rules="occupationRules"
-                required
-              ></v-text-field>
-              <v-btn
-                @click="updateIsEditingPass(false)"
+              <div
+                v-show="passType == 1 || passType == 2"
+                class=" light-text-color pb-3"
+                style="font-size: 13px"
               >
-                キャンセル
-              </v-btn>
-              <v-btn
-                :disabled="!editPassValid"
-                @click="updatePass({
-                  params: params,
-                  companyId: companyId,
-                  expirationDate: tempExpirationDate,
-                  occupation: tempPassOccupation
-                })"
-              >
-                更新
-              </v-btn>
+                先着パスおよび内定パスの有効期限は、学生の卒業予定日付近を推奨しています。
+                <div class="pt-2">
+                  卒業予定日は、学生のプロフィールから確認できます。プロフィールに卒業予定日が設定されていない場合は、学生とのメッセージにてご確認ください。
+                </div>
+              </div>
+              <div v-show="passType == 0" class="caption light-text-color pb-3">
+                入社パスは、卒業後の一定期間の入社を保証するものであるため、有効期限は卒業予定日以降を指定してください。
+              </div>
+              <div class="text-xs-right">
+                <v-btn
+                  @click="updateIsEditingPass(false)"
+                >
+                  キャンセル
+                </v-btn>
+                <v-btn
+                  :disabled="!editPassValid"
+                  @click="updatePassButtonClicked"
+                >
+                  更新
+                </v-btn>
+              </div>
             </v-form>
           </div>
           <!-- インターン延長 -->
@@ -271,7 +310,7 @@
                 <span class="caption edit-text-color">編集する</span>
               </v-btn>
             </v-flex>
-            <v-flex v-show="!isEditingExtendedIntern" class="px-3 break text-xs-left">
+            <v-flex v-show="!isEditingExtendedIntern" class="px-3 break text-xs-left textColor">
               <div v-if="isInternExtended">
                 <div v-if="extendedInternEnd" class="pt-2">
                   終了しています
@@ -286,7 +325,7 @@
               <div v-else>
                 延長していません
                 <div class="caption light-text-color pt-2">
-                  パスを発行した後もインターンを継続する場合は、インターンが終了した場合は、更新してください。
+                  パスを発行した後もインターンを継続する場合は、更新してください。
                 </div>
               </div>
             </v-flex>
@@ -306,17 +345,19 @@
                 readonly
                 required
               ></v-text-field>
-              <v-btn
-                @click="updateIsEditingExtendedIntern(false)"
-              >
-                キャンセル
-              </v-btn>
-              <v-btn
-                :disabled="!editExtendedInternValid"
-                @click="updateExtendedInternButtonClicked"
-              >
-                更新
-              </v-btn>
+              <div class="text-xs-right">
+                <v-btn
+                  @click="updateIsEditingExtendedIntern(false)"
+                >
+                  キャンセル
+                </v-btn>
+                <v-btn
+                  :disabled="!editExtendedInternValid"
+                  @click="updateExtendedInternButtonClicked"
+                >
+                  更新
+                </v-btn>
+              </div>
             </v-form>
           </div>
         </v-flex>
@@ -365,7 +406,7 @@
                   </v-flex>
                   <v-flex v-show="!isEditingTags" class="px-3 break text-xs-left">
                     <v-chip v-if="tags && tags.length > 0" v-for="tag in tags" :key="tag">{{ tag }}</v-chip>
-                    <div v-if="tags == null || tags.length == 0">
+                    <div v-if="tags == null || tags.length == 0" class="textColor">
                       タグは設定されていません。
                     </div>
                   </v-flex>
@@ -391,24 +432,26 @@
                         </v-chip>
                       </template>
                     </v-combobox>
-                    <v-btn
-                      @click="updateIsEditingTags(false)"
-                    >
-                      キャンセル
-                    </v-btn>
-                    <v-btn
-                      :disabled="!editTagsValid"
-                      @click="updateTags({params: params, companyId: companyId, tags: tempTags})"
-                    >
-                      更新
-                    </v-btn>
+                    <div class="text-xs-right">
+                      <v-btn
+                        @click="updateIsEditingTags(false)"
+                      >
+                        キャンセル
+                      </v-btn>
+                      <v-btn
+                        :disabled="!editTagsValid"
+                        @click="updateTags({params: params, companyId: companyId, tags: tempTags})"
+                      >
+                        更新
+                      </v-btn>
+                    </div>
                   </v-form>
                 </div>
                 <!-- pass -->
                 <div v-if="pass && status && status.pass">
                   <v-flex class="px-3 pt-5 break text-xs-left">
                     <span class="textColor font-weight-bold">
-                      内定パス
+                      パス
                     </span>
                     <v-btn
                       v-show="!isEditingPass"
@@ -420,17 +463,51 @@
                       <span class="caption edit-text-color">編集する</span>
                     </v-btn>
                   </v-flex>
-                  <v-flex v-show="!isEditingPass" class="px-3 break text-xs-left">
+                  <v-flex v-show="!isEditingPass" class="px-3 break text-xs-left textColor">
+                    <div class="pt-2 pb-3">
+                      タイプ：　<span class="font-weight-bold light-text-color">{{ passTypeText }}</span>
+                      <div>
+                        <v-btn
+                          small
+                          flat
+                          class="grey--text text--darken-2 px-0 mx-0"
+                          @click="passTypesDialog=true"
+                        >
+                          <v-icon class="mr-1" style="font-size: 16px; color: #BDBDBD">info</v-icon>
+                          <span class="caption">パスの種類について</span>
+                        </v-btn>
+                      </div>
+                    </div>
                     <div class="pb-2">
-                      <span>有効期限:　</span>{{ passExpirationDate }}
+                      職種:　{{ passOccupation }}
+                    </div>
+                    <div v-if="passType != 0" class="pb-2">
+                      入社年度:　{{ joiningYear }}年度
                     </div>
                     <div>
-                      <span>職種:　</span>{{ passOccupation }}
+                      有効期限:　{{ passExpirationDate }}
                     </div>
-
                   </v-flex>
                   <!-- pass編集 -->
                   <v-form v-show="isEditingPass" v-model="editPassValid" class="pa-3">
+                    <!-- 職種 -->
+                    <v-text-field
+                      label="職種"
+                      v-model="tempPassOccupation"
+                      :rules="occupationRules"
+                      required
+                    ></v-text-field>
+                    <!-- 入社年度 -->
+                    <v-text-field
+                      v-if="passType != '入社パス'"
+                      v-model="tempJoiningYear"
+                      class="pt-3"
+                      label="入社年度"
+                      type="number"
+                      suffix="年度"
+                      :rules="joiningYearRules"
+                      required
+                    ></v-text-field>
                     <!-- 有効期限 -->
                     <v-menu
                       v-model="expirationDateMenu"
@@ -445,9 +522,10 @@
                       <template v-slot:activator="{ on }">
                         <v-text-field
                           v-model="tempExpirationDate"
+                          class="py-3"
                           label="有効期限"
                           append-icon="event"
-                          solo
+                          hide-details
                           readonly
                           required
                           v-on="on"
@@ -460,30 +538,32 @@
                         locale="ja"
                       ></v-date-picker>
                     </v-menu>
-                    <!-- 職種 -->
-                    <v-text-field
-                      label="職種"
-                      v-model="tempPassOccupation"
-                      solo
-                      :rules="occupationRules"
-                      required
-                    ></v-text-field>
-                    <v-btn
-                      @click="updateIsEditingPass(false)"
+                    <div
+                      v-show="passType == 1 || passType == 2"
+                      class=" light-text-color pb-3"
+                      style="font-size: 13px"
                     >
-                      キャンセル
-                    </v-btn>
-                    <v-btn
-                      :disabled="!editPassValid"
-                      @click="updatePass({
-                        params: params,
-                        companyId: companyId,
-                        expirationDate: tempExpirationDate,
-                        passOccupation: tempPassOccupation
-                      })"
-                    >
-                      更新
-                    </v-btn>
+                      先着パスおよび内定パスの有効期限は、学生の卒業予定日付近を推奨しています。
+                      <div class="pt-2">
+                        卒業予定日は、学生のプロフィールから確認できます。プロフィールに卒業予定日が設定されていない場合は、学生とのメッセージにてご確認ください。
+                      </div>
+                    </div>
+                    <div v-show="passType == 0" class="caption light-text-color pb-3">
+                      入社パスは、卒業後の一定期間の入社を保証するものであるため、有効期限は卒業予定日以降を指定してください。
+                    </div>
+                    <div class="text-xs-right">
+                      <v-btn
+                        @click="updateIsEditingPass(false)"
+                      >
+                        キャンセル
+                      </v-btn>
+                      <v-btn
+                        :disabled="!editPassValid"
+                        @click="updatePassButtonClicked"
+                      >
+                        更新
+                      </v-btn>
+                    </div>
                   </v-form>
                 </div>
                 <!-- インターン延長 -->
@@ -509,7 +589,7 @@
                       <span class="caption edit-text-color">編集する</span>
                     </v-btn>
                   </v-flex>
-                  <v-flex v-show="!isEditingExtendedIntern" class="px-3 break text-xs-left">
+                  <v-flex v-show="!isEditingExtendedIntern" class="px-3 break text-xs-left textColor">
                     <div v-if="isInternExtended">
                       <div v-if="extendedInternEnd" class="pt-2">
                         終了しています
@@ -544,17 +624,19 @@
                       readonly
                       required
                     ></v-text-field>
-                    <v-btn
-                      @click="updateIsEditingExtendedIntern(false)"
-                    >
-                      キャンセル
-                    </v-btn>
-                    <v-btn
-                      :disabled="!editExtendedInternValid"
-                      @click="updateExtendedInternButtonClicked"
-                    >
-                      更新
-                    </v-btn>
+                    <div class="text-xs-right">
+                      <v-btn
+                        @click="updateIsEditingExtendedIntern(false)"
+                      >
+                        キャンセル
+                      </v-btn>
+                      <v-btn
+                        :disabled="!editExtendedInternValid"
+                        @click="updateExtendedInternButtonClicked"
+                      >
+                        更新
+                      </v-btn>
+                    </div>
                   </v-form>
                 </div>
               </div>
@@ -565,16 +647,19 @@
                   :items="statusItems"
                   solo
                 ></v-select>
+                <!-- ステータスが scouted の時 -->
                 <div v-if="status.scouted">
                   メッセージのやりとりが始まり次第、ステータスを
                   <span class="font-weight-bold cyan--text text--lighten-1">選考中</span>
                   に更新してください。
                 </div>
+                <!-- ステータスが inbox の時 -->
                 <div v-if="status.inbox">
                   この応募者を選考する場合は、ステータスを
                   <span class="font-weight-bold cyan--text text--lighten-1">選考中</span>
                   に変えた後、メッセージを送信してください。
                 </div>
+                <!-- ステータスが inProcess の時 -->
                 <div v-if="status.inProcess">
                   この候補者を採用する際は、まずメッセージにてやり取りをして頂き、
                   候補者と労働契約を結んだ時点で、ステータスを
@@ -595,9 +680,105 @@
                     </v-form>
                   </div>
                 </div>
+                <!-- ステータスが intern の時 -->
                 <div v-if="status.intern">
-                  内定パスを送る場合は<span class="font-weight-bold teal--text text--lighten-1">内定パス</span>に変更してください。
+                  パスを送る場合は<span class="font-weight-bold teal--text text--lighten-1">パス</span>に変更してください。
                   <div>
+                  </div>
+                </div>
+                <!-- pass -->
+                <div v-if="status.intern == true">
+                  <div v-if="tempStatus == 'パス'" class="py-3">
+                    <div class="pt-3 pb-3 textColor subheading font-weight-bold">
+                      パス
+                    </div>
+                    <div class="pb-3 caption light-text-color">
+                      先着パスを発行する場合は、左のメニューからパスを選択し、採用予定人数などを設定してください。
+                    </div>
+                    <!-- パスの種類 -->
+                    <v-select
+                      v-model="tempPassType"
+                      :items="passTypes"
+                      hide-details
+                      solo
+                    ></v-select>
+                    <div class="text-xs-right pt-2 pb-2">
+                      <v-btn
+                        small
+                        flat
+                        class="grey--text text--darken-2"
+                        @click="passTypesDialog=true"
+                      >
+                        <v-icon class="mr-1" style="font-size: 18px; color: #BDBDBD">info</v-icon>
+                        パスの種類について
+                      </v-btn>
+                    </div>
+                    <v-form v-model="passValid" class="px-2">
+                      <!-- 職種 -->
+                      <v-text-field
+                        label="職種"
+                        v-model="passOccupation"
+                        :rules="occupationRules"
+                        required
+                      ></v-text-field>
+                      <!-- 入社年度 -->
+                      <v-text-field
+                        v-if="tempPassType != '入社パス'"
+                        v-model="tempJoiningYear"
+                        class="pt-3"
+                        label="入社年度"
+                        type="number"
+                        suffix="年度"
+                        :rules="joiningYearRules"
+                        required
+                      ></v-text-field>
+                      <!-- 有効期限 -->
+                      <v-menu
+                        v-model="expirationDateMenu"
+                        :close-on-content-click="false"
+                        :nudge-right="40"
+                        lazy
+                        transition="scale-transition"
+                        offset-y
+                        full-width
+                        min-width="290px"
+                      >
+                        <template v-slot:activator="{ on }">
+                          <v-text-field
+                            v-model="tempExpirationDate"
+                            class="py-3"
+                            label="有効期限"
+                            append-icon="event"
+                            hide-details
+                            readonly
+                            required
+                            v-on="on"
+                          ></v-text-field>
+                        </template>
+                        <v-date-picker
+                          v-model="tempExpirationDate"
+                          @input="expirationDateMenu = false"
+                          color="teal"
+                          locale="ja"
+                        ></v-date-picker>
+                      </v-menu>
+                      <div v-show="tempPassType == '内定パス' || tempPassType == '先着パス'" class=" light-text-color pb-3" style="font-size: 13px">
+                        先着パスおよび内定パスの有効期限は、学生の卒業予定日付近を推奨しています。
+                        <div class="pt-2">
+                          卒業予定日は、学生のプロフィールから確認できます。プロフィールに卒業予定日が設定されていない場合は、学生とのメッセージにてご確認ください。
+                        </div>
+                      </div>
+                      <div v-show="tempPassType == '入社パス'" class="caption light-text-color pb-3">
+                        入社パスは、卒業後の一定期間の入社を保証するものであるため、有効期限は卒業予定日以降を指定してください。
+                      </div>
+                      <!-- メッセージ -->
+                      <v-textarea
+                        label="メッセージ"
+                        v-model="passMessage"
+                        :rules="messageRules"
+                        required
+                      ></v-textarea>
+                    </v-form>
                   </div>
                 </div>
                 <!-- feedback -->
@@ -626,66 +807,7 @@
                     フィードバックは後からでも入力することが出来ます。
                   </div>
                 </div>
-                <!-- pass -->
-                <div v-if="status.intern == true">
-                  <div v-if="tempStatus == '内定パス'" class="py-3">
-                    <div class="pt-3 pb-2 textColor subheading font-weight-bold">
-                      内定パス
-                    </div>
-                    <div class="caption light-text-color pb-3">
-                      内定パスの有効期限は、学生の卒業予定日付近を推奨しています。
-                      <div>
-                        卒業予定日は、学生のプロフィールから確認できます。プロフィールに卒業予定日が設定されていない場合は、学生とのメッセージにてご確認ください。
-                      </div>
-                    </div>
-                    <v-form v-model="passValid">
-                      <!-- 有効期限 -->
-                      <v-menu
-                        v-model="expirationDateMenu"
-                        :close-on-content-click="false"
-                        :nudge-right="40"
-                        lazy
-                        transition="scale-transition"
-                        offset-y
-                        full-width
-                        min-width="290px"
-                      >
-                        <template v-slot:activator="{ on }">
-                          <v-text-field
-                            v-model="tempExpirationDate"
-                            label="有効期限"
-                            append-icon="event"
-                            solo
-                            readonly
-                            required
-                            v-on="on"
-                          ></v-text-field>
-                        </template>
-                        <v-date-picker
-                          v-model="tempExpirationDate"
-                          @input="expirationDateMenu = false"
-                          color="teal"
-                          locale="ja"
-                        ></v-date-picker>
-                      </v-menu>
-                      <!-- 職種 -->
-                      <v-text-field
-                        label="職種"
-                        v-model="passOccupation"
-                        solo
-                        :rules="occupationRules"
-                        required
-                      ></v-text-field>
-                      <!-- メッセージ -->
-                      <v-textarea
-                        label="メッセージ"
-                        v-model="passMessage"
-                        :rules="messageRules"
-                        required
-                      ></v-textarea>
-                    </v-form>
-                  </div>
-                </div>
+                <!-- ステータスが pass の時 -->
                 <div v-if="status.pass == true">
                   <div>
                     内定契約が完了しましたら、ステータスを
@@ -694,14 +816,15 @@
                   </div>
                   <div class="pt-3 light-text-color">
                     <div>
-                      ※ 内定パスの有効期限が切れた場合でも、自動的に無効にならないため、有効期限を編集することで延長が可能です。
+                      ※ パスの有効期限が切れた場合でも、自動的に無効にならないため、有効期限を編集することで延長が可能です。
                     </div>
                     <div>
-                      有効期限が切れた後、内定パスを無効にする場合は、ステータスを
+                      有効期限が切れた後、パスを無効にする場合は、ステータスを
                       <span class="font-weight-bold grey--text">不採用</span>にしてください。
                     </div>
                   </div>
                 </div>
+                <!-- ステータスが contracted の時 -->
                 <div v-if="status.contracted == true">
                   候補者と雇用契約を結び次第、ステータスを<span class="font-weight-bold green--text text--lighten-1">入社</span>に変更してください。
                   ステータスを変更すると、候補者一覧に表示されなくなります。
@@ -861,6 +984,64 @@
             </v-tab-item>
           </v-tabs>
         </v-flex>
+        <!-- パスの種類の説明 -->
+        <v-dialog
+          v-model="passTypesDialog"
+          :fullscreen="$vuetify.breakpoint.xsOnly"
+          width="600"
+        >
+          <v-card>
+            <v-toolbar flat color="white">
+              <v-btn class="hidden-sm-and-up" icon @click="passTypesDialog=false">
+                <v-icon>close</v-icon>
+              </v-btn>
+              <span
+                class="pl-3 textColor font-weight-bold"
+                :class="{
+                  'title': $vuetify.breakpoint.smAndUp,
+                  'subheading': $vuetify.breakpoint.xsOnly
+                }"
+              >
+                パスの種類
+              </span>
+            </v-toolbar>
+            <v-flex
+              xs12
+              py-3
+              class="light-text-color"
+              :class="{'px-4': $vuetify.breakpoint.smAndUp, 'px-4 mt-4': $vuetify.breakpoint.xsOnly}"
+            >
+              <!-- 入社パス -->
+              <div class="pb-3">
+                <div class="subheading font-weight-bold">
+                  1. 入社パス
+                </div>
+                <div class="pt-2">
+                  卒業後の一定期間、いつでも入社できる権利を与えるパスです。
+                  卒業後、どれくらい有効かは企業が決めることができます。
+                  このパスを多く発行すると、採用予定人数を上回ってしまう可能性があるため、対象者を厳選して発行することを推奨しています。
+                </div>
+                <div class="pt-3 subheading font-weight-bold">
+                  2. 内定パス
+                </div>
+                <div class="pt-2">
+                  企業が定めた期間内であれば、いつでも内定を取得できる権利を与えるパスです。
+                  有効期間や入社年度は企業が設定します。
+                  このパスも入社パス同様、多く発行すると採用予定人数を上回ってしまう可能性があるため、対象者を厳選して発行することを推奨しています。
+                </div>
+                <div class="pt-3 subheading font-weight-bold">
+                  3. 先着パス
+                </div>
+                <div class="pt-2">
+                  企業が定めた期間内であり、採用枠にあまりがある場合に限り、内定を取得できる権利を与えるパスです。
+                  有効期間、入社年度および採用予定人数は企業が設定することが出来ます。
+                  入社パスや内定パスは性質上、パスを使う人数が予想しにくいため、あまり発行することが出来ませんが、
+                  先着パスは上限を自由に設定することが出来るため、数を気にせず発行することができます。
+                </div>
+              </div>
+            </v-flex>
+          </v-card>
+        </v-dialog>
       </v-layout>
     </v-flex>
     <v-flex v-else>
@@ -894,6 +1075,8 @@ export default {
       v => !!v || '入力されていません',
       v => (v && v.length <= 2000) || '2000字以内で入力してください'
     ],
+    passType: null,
+    joiningYear: null,
     expirationDate: null,
     expirationDateMenu: false,
     passOccupation: '',
@@ -912,6 +1095,14 @@ export default {
       v => (v && v.length <= 10) || '10字以内で入力してください'
     ],
     editTagsValid: true,
+    passTypesDialog: false,
+    passTypes: [
+      '先着パス',
+      '内定パス',
+      '入社パス',
+    ],
+    tempPassType: '先着パス',
+    tempJoiningYear: null,
     tempExpirationDate: null,
     tempPassOccupation: '',
     editPassValid: true,
@@ -925,6 +1116,22 @@ export default {
     isShowMessage: false,
   }),
   computed: {
+    joiningYearRules() {
+      const year = new Date()
+      return [
+        v => (String(v).length == 4) || '4桁で指定してください',
+        v => (v >= year.getFullYear() - 1) || `${year.getFullYear() - 1}以上で指定してください`,
+      ]
+    },
+    passTypeText() {
+      if (this.passType == 0) {
+        return '入社パス'
+      } else if (this.passType == 1) {
+        return '内定パス'
+      } else if (this.passType == 2) {
+        return '先着パス'
+      }
+    },
     passExpirationDate() {
       if (this.expirationDate) {
         const date = this.expirationDate
@@ -958,7 +1165,7 @@ export default {
       } else if (this.status.intern == true) {
         currentStatus = 'インターン'
       } else if (this.status.pass == true) {
-        currentStatus = '内定パス'
+        currentStatus = 'パス'
       } else if (this.status.contracted == true) {
         currentStatus = '入社予定'
       }
@@ -968,11 +1175,11 @@ export default {
       }
       if (this.status.inProcess && this.tempStatus == 'インターン') {
         return !this.internValid
-      } else if (this.status.intern && this.tempStatus == '内定パス') {
+      } else if (this.status.intern && this.tempStatus == 'パス') {
         return !this.feedbackValid || !this.passValid || this.tempExpirationDate == null
-      } else if (this.status.intern && this.tempStatus != '内定パス') {
+      } else if (this.status.intern && this.tempStatus != 'パス') {
         return !this.feedbackValid
-      } else if (!this.status.intern && this.tempStatus == '内定パス') {
+      } else if (!this.status.intern && this.tempStatus == 'パス') {
         return !this.passValid || this.tempExpirationDate == null
       } else {
         return false
@@ -1001,12 +1208,12 @@ export default {
       } else if (this.status.intern == true) {
         items = [
           'インターン',
-          '内定パス',
+          'パス',
           '不採用'
         ]
       } else if (this.status.pass == true) {
         items = [
-          '内定パス',
+          'パス',
           '入社予定',
           '不採用'
         ]
@@ -1126,9 +1333,17 @@ export default {
         } else if (status.intern == true) {
           this.tempStatus = 'インターン'
         } else if (status.pass == true) {
-          this.tempStatus = '内定パス'
+          this.tempStatus = 'パス'
         } else if (status.contracted == true) {
           this.tempStatus = '入社予定'
+        }
+      }
+    },
+    // 入社年度に現在の年を設定
+    tempStatus(status) {
+      if (status) {
+        if (status == 'パス') {
+          this.tempJoiningYear = new Date().getFullYear()
         }
       }
     },
@@ -1156,8 +1371,13 @@ export default {
     },
     pass(pass) {
       if (pass) {
+        this.passType = pass.type
         this.expirationDate = pass.expirationDate
         this.passOccupation = pass.occupation
+
+        if (pass.type == 1 || pass.type == 2) {
+          this.joiningYear = pass.joiningYear
+        }
       }
     },
     messages(messages) {
@@ -1178,10 +1398,22 @@ export default {
       this.updateIsEditingTags(true)
     },
     editPassButtonClicked() {
+      // パスの種類
+      switch (this.passType) {
+        case 0: this.tempPassType = '入社パス'; break
+        case 1: this.tempPassType = '内定パス'; break
+        case 2: this.tempPassType = '先着パス'; break
+      }
+      // 入社年度（内定パス、先着パス）
+      if (this.passType != 0) {
+        this.tempJoiningYear = this.joiningYear
+      }
+      // 有効期間
       this.tempExpirationDate =
         String(this.expirationDate.getFullYear()) + '-' +
         String(this.expirationDate.getMonth() + 1) + '-' +
         String(this.expirationDate.getDate())
+      // 職種
       this.tempPassOccupation = this.passOccupation
       this.updateIsEditingPass(true)
     },
@@ -1216,7 +1448,7 @@ export default {
         case '応募': newStatus.inbox = true; break
         case '選考中': newStatus.inProcess = true; break
         case 'インターン': newStatus.intern = true; break
-        case '内定パス': newStatus.pass = true; break
+        case 'パス': newStatus.pass = true; break
         case '入社予定': newStatus.contracted = true; break
         case '入社': newStatus.hired = true; break
         case '不採用': newStatus.rejected = true; break
@@ -1233,10 +1465,18 @@ export default {
         candidateData.occupation = this.internOccupation
       }
 
-      if (this.tempStatus == '内定パス') {
+      if (this.tempStatus == 'パス') {
         var expirationDateArr = this.tempExpirationDate.split('-')
+        var passTypeNumber
+        switch (this.tempPassType) {
+          case '入社パス': passTypeNumber = 0; break
+          case '内定パス': passTypeNumber = 1; break
+          case '先着パス': passTypeNumber = 2; break
+        }
 
         const pass = {
+          type: passTypeNumber,
+          joiningYear: Number(this.tempJoiningYear),
           expirationDate: new Date(expirationDateArr[0], expirationDateArr[1] - 1, expirationDateArr[2]),
           message: this.passMessage,
           occupation: this.passOccupation,
@@ -1320,6 +1560,27 @@ export default {
         }
       } else {
         $state.complete()
+      }
+    },
+    // パスの更新
+    updatePassButtonClicked() {
+      if (this.passType == 0) {
+        this.updatePass({
+          params: this.params,
+          companyId: this.companyId,
+          joiningYear: null,
+          expirationDate: this.tempExpirationDate,
+          occupation: this.tempPassOccupation
+        })
+      } else {
+        const joiningYear = Number(this.tempJoiningYear)
+        this.updatePass({
+          params: this.params,
+          companyId: this.companyId,
+          joiningYear: joiningYear,
+          expirationDate: this.tempExpirationDate,
+          occupation: this.tempPassOccupation
+        })
       }
     },
     sendButtonClicked() {

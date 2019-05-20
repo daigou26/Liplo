@@ -549,7 +549,6 @@
                             </v-flex>
                             <!-- ログインボタン -->
                             <v-btn
-                              block
                               :disabled="!signInValid || loading"
                               class="orange darken-1"
                               @click="signIn"
@@ -653,7 +652,6 @@
                             </v-flex>
                             <!-- 登録ボタン -->
                             <v-btn
-                              block
                               :disabled="!signUpValid || loading || birthDate == null"
                               class="orange darken-1"
                               @click="signUp"
@@ -720,11 +718,21 @@
       v-model="recruiterSignUpDialog"
       :fullscreen="$vuetify.breakpoint.xsOnly"
       width="500"
-      persistent
     >
       <v-card>
         <v-toolbar flat color="white">
-          <span class="textColor font-weight-bold subheading">サインアップ</span>
+          <v-btn class="hidden-sm-and-up" icon @click="recruiterSignUpDialog=false">
+            <v-icon>close</v-icon>
+          </v-btn>
+          <span
+            class="pl-3 textColor font-weight-bold"
+            :class="{
+              'title': $vuetify.breakpoint.smAndUp,
+              'subheading': $vuetify.breakpoint.xsOnly
+            }"
+          >
+            サインアップ
+          </span>
         </v-toolbar>
         <v-flex
           xs12
@@ -791,7 +799,6 @@
                   </v-flex>
                   <!-- 登録ボタン -->
                   <v-btn
-                    block
                     :disabled="!recruiterSignUpValid || loading"
                     class="orange darken-1"
                     @click="recruiterSignUpClicked"
