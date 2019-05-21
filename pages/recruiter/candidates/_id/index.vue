@@ -202,7 +202,7 @@
               <div class="pb-2">
                 職種:　{{ passOccupation }}
               </div>
-              <div v-if="passType != 0" class="pb-2">
+              <div v-if="passType != 'hiring'" class="pb-2">
                 入社年度:　{{ joiningYear }}年度
               </div>
               <div>
@@ -220,7 +220,7 @@
               ></v-text-field>
               <!-- 入社年度 -->
               <v-text-field
-                v-if="passType != '入社パス'"
+                v-if="passType != 'hiring'"
                 v-model="tempJoiningYear"
                 class="pt-3"
                 label="入社年度"
@@ -260,7 +260,7 @@
                 ></v-date-picker>
               </v-menu>
               <div
-                v-show="passType == 1 || passType == 2"
+                v-show="passType == 'offer' || passType == 'limited'"
                 class=" light-text-color pb-3"
                 style="font-size: 13px"
               >
@@ -269,7 +269,7 @@
                   卒業予定日は、学生のプロフィールから確認できます。プロフィールに卒業予定日が設定されていない場合は、学生とのメッセージにてご確認ください。
                 </div>
               </div>
-              <div v-show="passType == 0" class="caption light-text-color pb-3">
+              <div v-show="passType == 'hiring'" class="caption light-text-color pb-3">
                 入社パスは、卒業後の一定期間の入社を保証するものであるため、有効期限は卒業予定日以降を指定してください。
               </div>
               <div class="text-xs-right">
@@ -481,7 +481,7 @@
                     <div class="pb-2">
                       職種:　{{ passOccupation }}
                     </div>
-                    <div v-if="passType != 0" class="pb-2">
+                    <div v-if="passType != 'hiring'" class="pb-2">
                       入社年度:　{{ joiningYear }}年度
                     </div>
                     <div>
@@ -499,7 +499,7 @@
                     ></v-text-field>
                     <!-- 入社年度 -->
                     <v-text-field
-                      v-if="passType != '入社パス'"
+                      v-if="passType != 'hiring'"
                       v-model="tempJoiningYear"
                       class="pt-3"
                       label="入社年度"
@@ -539,7 +539,7 @@
                       ></v-date-picker>
                     </v-menu>
                     <div
-                      v-show="passType == 1 || passType == 2"
+                      v-show="passType == 'offer' || passType == 'limited'"
                       class=" light-text-color pb-3"
                       style="font-size: 13px"
                     >
@@ -548,7 +548,7 @@
                         卒業予定日は、学生のプロフィールから確認できます。プロフィールに卒業予定日が設定されていない場合は、学生とのメッセージにてご確認ください。
                       </div>
                     </div>
-                    <div v-show="passType == 0" class="caption light-text-color pb-3">
+                    <div v-show="passType == 'hiring'" class="caption light-text-color pb-3">
                       入社パスは、卒業後の一定期間の入社を保証するものであるため、有効期限は卒業予定日以降を指定してください。
                     </div>
                     <div class="text-xs-right">
@@ -723,7 +723,7 @@
                       ></v-text-field>
                       <!-- 入社年度 -->
                       <v-text-field
-                        v-if="tempPassType != '入社パス'"
+                        v-if="tempPassType != 'hiring'"
                         v-model="tempJoiningYear"
                         class="pt-3"
                         label="入社年度"
@@ -810,7 +810,7 @@
                 <!-- ステータスが pass の時 -->
                 <div v-if="status.pass == true">
                   <div>
-                    内定契約が完了しましたら、ステータスを
+                    契約が完了しましたら、ステータスを
                     <span class="font-weight-bold green--text text--lighten-1">入社予定</span>に変更してください。
                     ステータスを切り替えた翌月に請求書をお送り致します。（無料枠を使い切っている場合）
                   </div>
@@ -1124,11 +1124,11 @@ export default {
       ]
     },
     passTypeText() {
-      if (this.passType == 0) {
+      if (this.passType == 'hiring') {
         return '入社パス'
-      } else if (this.passType == 1) {
+      } else if (this.passType == 'offer') {
         return '内定パス'
-      } else if (this.passType == 2) {
+      } else if (this.passType == 'limited') {
         return '先着パス'
       }
     },
@@ -1375,7 +1375,7 @@ export default {
         this.expirationDate = pass.expirationDate
         this.passOccupation = pass.occupation
 
-        if (pass.type == 1 || pass.type == 2) {
+        if (pass.type == 'offer' || pass.type == 'limited') {
           this.joiningYear = pass.joiningYear
         }
       }
@@ -1400,12 +1400,12 @@ export default {
     editPassButtonClicked() {
       // パスの種類
       switch (this.passType) {
-        case 0: this.tempPassType = '入社パス'; break
-        case 1: this.tempPassType = '内定パス'; break
-        case 2: this.tempPassType = '先着パス'; break
+        case 'hiring': this.tempPassType = '入社パス'; break
+        case 'offer': this.tempPassType = '内定パス'; break
+        case 'limited': this.tempPassType = '先着パス'; break
       }
       // 入社年度（内定パス、先着パス）
-      if (this.passType != 0) {
+      if (this.passType != 'hiring') {
         this.tempJoiningYear = this.joiningYear
       }
       // 有効期間
@@ -1467,15 +1467,15 @@ export default {
 
       if (this.tempStatus == 'パス') {
         var expirationDateArr = this.tempExpirationDate.split('-')
-        var passTypeNumber
+        var passType
         switch (this.tempPassType) {
-          case '入社パス': passTypeNumber = 0; break
-          case '内定パス': passTypeNumber = 1; break
-          case '先着パス': passTypeNumber = 2; break
+          case '入社パス': passType = 'hiring'; break
+          case '内定パス': passType = 'offer'; break
+          case '先着パス': passType = 'limited'; break
         }
 
         const pass = {
-          type: passTypeNumber,
+          type: passType,
           joiningYear: Number(this.tempJoiningYear),
           expirationDate: new Date(expirationDateArr[0], expirationDateArr[1] - 1, expirationDateArr[2]),
           message: this.passMessage,
@@ -1564,7 +1564,7 @@ export default {
     },
     // パスの更新
     updatePassButtonClicked() {
-      if (this.passType == 0) {
+      if (this.passType == 'hiring') {
         this.updatePass({
           params: this.params,
           companyId: this.companyId,

@@ -198,7 +198,7 @@ export const actions = {
     if (joiningYear) {
       passData.joiningYear = joiningYear
     }
-    
+
     batch.update(passRef, passData)
 
     batch.commit()

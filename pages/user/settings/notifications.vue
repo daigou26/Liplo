@@ -78,7 +78,7 @@
               ></v-checkbox>
               <v-checkbox
                 v-model="tempAcceptPass"
-                label="学生が内定を承諾した時"
+                label="学生がパスを使用した時"
                 color="info"
               ></v-checkbox>
             </div>
