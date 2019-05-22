@@ -174,8 +174,7 @@ export const actions = {
     const candidateId = params.id
     var pass = state.pass
 
-    var expirationDateArr = expirationDate.split('-')
-    pass.expirationDate = new Date(expirationDateArr[0], expirationDateArr[1] - 1, expirationDateArr[2]),
+    pass.expirationDate = expirationDate
     pass.occupation = occupation
 
     if (joiningYear) {

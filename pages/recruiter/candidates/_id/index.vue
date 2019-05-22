@@ -1564,12 +1564,15 @@ export default {
     },
     // パスの更新
     updatePassButtonClicked() {
+      var expirationDateArr = this.tempExpirationDate.split('-')
+      var expirationDate = new Date(expirationDateArr[0], expirationDateArr[1] - 1, expirationDateArr[2])
+      
       if (this.passType == 'hiring') {
         this.updatePass({
           params: this.params,
           companyId: this.companyId,
           joiningYear: null,
-          expirationDate: this.tempExpirationDate,
+          expirationDate: expirationDate,
           occupation: this.tempPassOccupation
         })
       } else {
@@ -1578,7 +1581,7 @@ export default {
           params: this.params,
           companyId: this.companyId,
           joiningYear: joiningYear,
-          expirationDate: this.tempExpirationDate,
+          expirationDate: expirationDate,
           occupation: this.tempPassOccupation
         })
       }

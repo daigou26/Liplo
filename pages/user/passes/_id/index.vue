@@ -60,7 +60,7 @@
           }"
         >
           <v-flex sm10 xs12 offset-sm1>
-            <!-- 未承諾 & 未契約 -->
+            <!-- 未使用 & 未契約 -->
             <v-alert
               v-if="!isContracted && !isAccepted && isValid && !isExpired"
               :value="true"
@@ -69,10 +69,15 @@
               icon="card_giftcard"
               class="text-xs-left"
             >
-              <div class="font-weight-bold ">おめでとうございます！　内定パスをもらいました！</div>
-              <div class="font-weight-bold ">この企業に入社することを決めたらメッセージを記入し、承諾ボタンを押してください！</div>
+              <div class="font-weight-bold">おめでとうございます！　{{ typeText }}をもらいました！</div>
+              <div v-if="type == 'limited'" class="font-weight-bold">
+                先着パスは、採用枠がなくなり次第無効になるため、入社しようと考えている場合は、早めに使用してください！
+              </div>
+              <div v-else class="font-weight-bold">
+                この企業に入社することを決めたらメッセージを記入し、使用ボタンを押してください！
+              </div>
             </v-alert>
-            <!-- 承諾済 & 未契約 -->
+            <!-- 使用済み & 未契約 -->
             <v-alert
               v-if="!isContracted && isAccepted && isValid"
               :value="true"
@@ -80,7 +85,7 @@
               icon="info"
               outline
             >
-              <span class="font-weight-bold">内定承諾済みです。採用担当者から内定契約に関するメッセージが届きます。
+              <span class="font-weight-bold">{{ typeText }}を使用しました。採用担当者から内定契約に関するメッセージが届きます。
                 届かない場合は、企業とのメッセージでご確認お願いします。
               </span>
             </v-alert>
@@ -92,7 +97,18 @@
               outline
               icon="card_giftcard"
             >
-              <span class="font-weight-bold ">内定契約が完了しました！　おめでとうございます！</span>
+              <span class="font-weight-bold ">契約が完了しました！　おめでとうございます！</span>
+            </v-alert>
+            <!-- 未使用 & 未契約 & 先着パスの上限 -->
+            <v-alert
+              v-if="!isContracted && !isAccepted && isValid && !isExpired && type == 'limited' && limit == usedCount"
+              :value="true"
+              color="blue-grey lighten-2"
+              outline
+              icon="warning"
+              class="text-xs-left"
+            >
+              <div class="font-weight-bold ">先着パスが上限に達したため、無効になりました。</div>
             </v-alert>
             <!-- 無効 -->
             <v-alert
@@ -133,22 +149,46 @@
                   </v-list-tile>
                 </v-card-actions>
               </v-card>
-              <div class="pb-3">
-                <span class="font-weight-bold textColor">期限：　{{ expirationDate }}</span>
+              <div v-if="joiningYear" class="pb-2">
+                <span class="font-weight-bold textColor">入社年度：　{{ joiningYear }}年度</span>
               </div>
-              <div class="pb-3">
+              <div class="pb-4">
                 <span class="font-weight-bold textColor">職種：</span>
-                <p v-if="occupation" class="pt-2 font-weight-medium body-text">{{ occupation }}</p>
+                <span v-if="occupation" class="pt-2 font-weight-medium body-text">{{ occupation }}</span>
               </div>
               <div class="pb-3">
                 <span class="font-weight-bold textColor">担当者からのメッセージ：</span>
                 <p v-if="message" class="pt-2 body-text light-text-color return">{{ message }}</p>
               </div>
-              <div v-if="!isContracted && !isAccepted && isValid && !isExpired" class="text-xs-right">
-                <v-form v-model="acceptOfferValid">
+              <div class="pb-3">
+                <span class="font-weight-bold textColor">期限：　{{ expirationDate }}</span>
+              </div>
+              <div
+                v-if="
+                  !isContracted &&
+                  !isAccepted &&
+                  isValid &&
+                  !isExpired &&
+                  !(type == 'limited' && allCount == usedCount)
+                "
+              >
+                <div v-if="type == 'limited'" class="pb-3">
+                  <span class="font-weight-bold textColor">採用枠：　残り{{ limit - usedCount }}人</span>
+                </div>
+                <v-form v-model="acceptOfferValid" class="text-xs-right">
+                  <!-- 入社年度 -->
+                  <v-text-field
+                    v-if="passType == 'hiring'"
+                    v-model="tempJoiningYear"
+                    class="pt-3"
+                    label="入社年度"
+                    type="number"
+                    suffix="年度"
+                    :rules="joiningYearRules"
+                    required
+                  ></v-text-field>
                   <v-textarea
                     v-if="!isAccepted"
-                    solo
                     label="メッセージ"
                     v-model="userMessage"
                     :rules="messageRules"
@@ -158,7 +198,7 @@
                     :disabled="!acceptOfferValid || isAccepted"
                     color="warning"
                     @click="acceptButtonClicked">
-                    <span class="font-weight-bold">受諾する</span>
+                    <span class="font-weight-bold">使用する</span>
                   </v-btn>
                 </v-form>
               </div>
@@ -184,6 +224,7 @@ export default {
     snackbarText: '',
     windowHeight: 0,
     acceptOfferValid: true,
+    tempJoiningYear: null,
     userMessage: '',
     messageRules: [
       v => !!v || 'メッセージを入力してください',
@@ -191,6 +232,22 @@ export default {
     count: 0,
   }),
   computed: {
+    typeText() {
+      if (this.type == 'hiring') {
+        return '入社パス'
+      } else if (this.type == 'offer') {
+        return '内定パス'
+      } else if (this.type == 'limited') {
+        return '先着パス'
+      }
+    },
+    joiningYearRules() {
+      const year = new Date()
+      return [
+        v => (String(v).length == 4) || '4桁で指定してください',
+        v => (v >= year.getFullYear() - 1) || `${year.getFullYear() - 1}以上で指定してください`,
+      ]
+    },
     params() {
       return this.$route.params
     },
@@ -206,6 +263,11 @@ export default {
       companyId: state => state.pass.companyId,
       companyName: state => state.pass.companyName,
       companyImageUrl: state => state.pass.companyImageUrl,
+      type: state => state.pass.type,
+      joiningYear: state => state.pass.joiningYear,
+      limit: state => state.pass.limit,
+      allCount: state => state.pass.allCount,
+      usedCount: state => state.pass.usedCount,
       message: state => state.pass.message,
       occupation: state => state.pass.occupation,
       expirationDate: state => state.pass.expirationDate,
@@ -246,9 +308,9 @@ export default {
   },
   methods: {
     acceptButtonClicked() {
-      this.acceptOffer({params: this.params, message: this.userMessage})
+      this.acceptOffer({params: this.params, message: this.userMessage, joiningYear: this.tempJoiningYear})
 
-      this.snackbarText = '受諾しました！'
+      this.snackbarText = '使用しました！'
       this.snackbar = true
     },
     ...mapActions({

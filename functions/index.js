@@ -2300,12 +2300,13 @@ exports.acceptJobOffer = functions.region('asia-northeast1')
     const companyName = newValue.companyName
     const companyImageUrl = newValue.companyImageUrl
     const type = newValue.type
+    const joiningYear = newValue.joiningYear
     const occupation = newValue.occupation
     const candidateId = newValue.candidateId
     const passId = context.params.passId
     const message = {
       message: userMessage,
-      createdAt: newValue.acceptedAt,
+      createdAt: newValue.acceptedDate,
       type: 'acceptOffer',
       user: {
         uid: uid,
@@ -2338,13 +2339,93 @@ exports.acceptJobOffer = functions.region('asia-northeast1')
               .collection('messages')
               .add(message)
               .then(() => {
-                console.log('acceptJobOffer complete.')
+                console.log('acceptJobOffer: add message complete.')
               })
               .catch((error) => {
                 console.error("Error adding document: ", error)
               })
           }
         })
+
+        // パス　カウント 更新
+        admin.firestore()
+          .collection('companies')
+          .doc(companyId)
+          .collection('yearPasses')
+          .doc(String(joiningYear))
+          .get()
+          .then(doc => {
+            const count = doc.data().count
+            var passData
+            if (type == 'hiring') {
+              passData = {
+                count: {
+                  hiring: {
+                    all: count.hiring.all,
+                    used: count.hiring.used + 1
+                  },
+                  offer: {
+                    all: count.offer.all,
+                    used: count.offer.used
+                  },
+                  limited: {
+                    all: count.limited.all,
+                    used: count.limited.used
+                  }
+                }
+              }
+            } else if (type == 'offer') {
+              passData = {
+                count: {
+                  hiring: {
+                    all: count.hiring.all,
+                    used: count.hiring.used
+                  },
+                  offer: {
+                    all: count.offer.all,
+                    used: count.offer.used + 1
+                  },
+                  limited: {
+                    all: count.limited.all,
+                    used: count.limited.used
+                  }
+                }
+              }
+            } else if (type == 'limited') {
+              passData = {
+                count: {
+                  hiring: {
+                    all: count.hiring.all,
+                    used: count.hiring.used
+                  },
+                  offer: {
+                    all: count.offer.all,
+                    used: count.offer.used
+                  },
+                  limited: {
+                    all: count.limited.all,
+                    used: count.limited.used + 1
+                  }
+                }
+              }
+            }
+            admin.firestore()
+              .collection('companies')
+              .doc(companyId)
+              .collection('yearPasses')
+              .doc(String(joiningYear))
+              .update(passData)
+              .then(() => {
+                console.log('acceptJobOffer: update pass count complete.')
+              })
+              .catch((error) => {
+                console.error("Error updating document: ", error)
+              })
+          })
+          .catch((error) => {
+            console.error("Error getting document: ", error)
+          })
+
         // 通知
         admin.firestore()
           .collection('companies')
@@ -2386,10 +2467,10 @@ exports.acceptJobOffer = functions.region('asia-northeast1')
                       })
                     }
                   })
-                  console.log('acceptJobOffer notification completed.')
+                  console.log('acceptJobOffer: notification complete.')
                 })
                 .catch((error) => {
-                  console.error("Error adding document: ", error)
+                  console.error("Error: ", error)
                 })
             }
           })
