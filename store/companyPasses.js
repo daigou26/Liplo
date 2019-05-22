@@ -3,10 +3,12 @@ import { firestore } from '@/plugins/firebase'
 
 export const state = () => ({
   hiringPassCount: null,
+  passes: [],
   yearPasses: [],
   isInitialLoading: false,
   isLoading: false,
   allPssesQueried: false,
+  allYearPssesQueried: false,
 })
 
 export const mutations = {
@@ -14,6 +16,18 @@ export const mutations = {
     state.hiringPassCount = count
   },
   addPass(state, pass) {
+    state.passes.push(pass)
+  },
+  resetPasses(state) {
+    state.passes = []
+  },
+  setAllPassesQueried(state) {
+    state.allPassesQueried = true
+  },
+  resetAllPassesQueried(state) {
+    state.allPassesQueried = false
+  },
+  addYearPass(state, pass) {
     state.yearPasses.push(pass)
   },
   setYearPasses(state, yearPasses) {
@@ -37,6 +51,125 @@ export const mutations = {
 }
 
 export const actions = {
+  queryPasses({commit, state}, {companyId, type, year}) {
+    const passes = state.passes
+
+    var passesRef = firestore.collection('passes')
+      .where('companyId', '==', companyId).where('type', '==', type)
+      .where('isAccepted', '==', false)
+    if (type != 'hiring') {
+      passesRef = passesRef.where('joiningYear', '==', year)
+    }
+
+    passesRef = passesRef.orderBy('createdAt', 'desc')
+
+    if (passes.length == 0) {
+      var usedPassesRef = firestore.collection('passes')
+        .where('companyId', '==', companyId).where('type', '==', type)
+        .where('isAccepted', '==', true).where('joiningYear', '==', year)
+
+      // 使用されたパス
+       usedPassesRef
+        .orderBy('acceptedDate', 'desc')
+        .get()
+        .then(function(snapshot) {
+          if (!snapshot.empty) {
+            snapshot.forEach(function(doc) {
+              let acceptedDate = doc.data()['acceptedDate']
+              if (acceptedDate) {
+                let date = new Date( acceptedDate.seconds * 1000 )
+                let year  = date.getFullYear()
+                let month = date.getMonth() + 1
+                let day  = date.getDate()
+                acceptedDate = `${year}/${month}/${day}`
+              }
+
+              const pass = {
+                passId: doc.id,
+                candidateId: doc.data()['candidateId'],
+                profileImageUrl: doc.data()['profileImageUrl'],
+                userName: doc.data()['userName'],
+                occupation: doc.data()['occupation'],
+                acceptedDate: acceptedDate,
+                isAccepted: doc.data()['isAccepted'],
+                isContracted: doc.data()['isContracted'],
+              }
+              commit('addPass', pass)
+            })
+          }
+          // 未使用のパス
+          passesRef
+            .limit(20)
+            .get()
+            .then(function(snapshot) {
+              var docCount = 0
+              snapshot.forEach(function(doc) {
+                docCount += 1
+                const pass = {
+                  passId: doc.id,
+                  candidateId: doc.data()['candidateId'],
+                  profileImageUrl: doc.data()['profileImageUrl'],
+                  userName: doc.data()['userName'],
+                  occupation: doc.data()['occupation'],
+                  isAccepted: doc.data()['isAccepted'],
+                  isContracted: doc.data()['isContracted'],
+                  createdAt: doc.data()['createdAt'],
+                  expirationDate: doc.data()['expirationDate'],
+                }
+                commit('addPass', pass)
+              })
+              if (docCount == 0) {
+                commit('setAllPassesQueried', true)
+              }
+
+              // loading
+              commit('updateIsInitialLoading', false)
+              commit('updateIsLoading', false)
+            })
+            .catch(function(error) {
+              commit('updateIsInitialLoading', false)
+              commit('updateIsLoading', false)
+              console.log("Error getting document:", error);
+            })
+        })
+        .catch(function(error) {
+          console.log("Error getting document:", error);
+        })
+    } else if (passes.length != 0) {
+      const lastIndex = passes.length - 1
+      const lastDate = passes[lastIndex].createdAt
+      passesRef
+        .startAfter(lastDate)
+        .limit(20)
+        .get()
+        .then(function(snapshot) {
+          var docCount = 0
+          snapshot.forEach(function(doc) {
+            docCount += 1
+            const pass = {
+              passId: doc.id,
+              candidateId: doc.data()['candidateId'],
+              profileImageUrl: doc.data()['profileImageUrl'],
+              userName: doc.data()['userName'],
+              occupation: doc.data()['occupation'],
+              isAccepted: doc.data()['isAccepted'],
+              isContracted: doc.data()['isContracted'],
+              createdAt: doc.data()['createdAt'],
+              expirationDate: doc.data()['expirationDate'],
+            }
+            commit('addPass', pass)
+          })
+          if (docCount == 0) {
+            commit('setAllPassesQueried', true)
+          }
+          commit('updateIsLoading', false)
+        })
+        .catch(function(error) {
+          commit('updateIsLoading', false)
+          console.log("Error getting document:", error);
+        })
+    }
+  },
   queryHiringPassCount({commit}, companyId) {
     firestore.collection('companies')
       .doc(companyId)
@@ -71,7 +204,7 @@ export const actions = {
               limit: doc.data()['limit'],
               count: doc.data()['count'],
             }
-            commit('addPass', pass)
+            commit('addYearPass', pass)
           })
           if (docCount == 0) {
             commit('setAllYearPassesQueried')
@@ -103,7 +236,7 @@ export const actions = {
               limit: doc.data()['limit'],
               count: doc.data()['count'],
             }
-            commit('addPass', pass)
+            commit('addYearPass', pass)
           })
           if (docCount == 0) {
             commit('setAllYearPassesQueried')
@@ -169,6 +302,8 @@ export const actions = {
   },
   resetState({commit}) {
     commit('setHiringPassCount', null)
+    commit('resetPasses')
+    commit('resetAllPassesQueried')
     commit('resetYearPasses')
     commit('updateIsInitialLoading', false)
     commit('updateIsLoading', false)

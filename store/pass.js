@@ -55,25 +55,25 @@ export const actions = {
   acceptOffer({commit}, {params, message}) {
     const passId = params.id
 
-    return firestore.collection('passes')
+    firestore.collection('passes')
       .doc(passId)
       .update({
         isAccepted: true,
         userMessage: message,
-        acceptedAt: new Date(),
+        acceptedDate: new Date(),
       })
       .then(() => {
         commit('setIsAccepted', true)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error updating document: ", error)
       })
 
   },
   queryPass({commit}, {nuxt, params}) {
     const passId = params.id
 
-    return firestore.collection('passes')
+    firestore.collection('passes')
       .doc(passId)
       .get()
       .then(function(doc) {

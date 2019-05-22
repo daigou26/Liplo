@@ -146,7 +146,7 @@ export const actions = {
         })
     } else if (passes.length != 0) {
       const lastIndex = passes.length - 1
-      const lastDate = passes[lastIndex].expirationDate
+      const lastDate = passes[lastIndex].createdAt
       firestore.collection('passes')
         .where('uid', '==', uid)
         .where('isContracted', '==', false)

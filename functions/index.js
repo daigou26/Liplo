@@ -479,6 +479,7 @@ exports.sendPass = functions.region('asia-northeast1')
           const passId = admin.firestore().collection('passes').doc().id
 
           var passData = {
+            candidateId: candidateId,
             uid: user.uid,
             userName: user.name,
             companyId: companyId,

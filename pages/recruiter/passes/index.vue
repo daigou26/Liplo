@@ -89,6 +89,7 @@
                           'elevation-6': hover && !$vuetify.breakpoint.xsOnly,
                           'elevation-2': !hover,
                         }"
+                        :to="'/recruiter/passes/' + yearPass.year + '?passType=hiring'"
                       >
                         <div class="font-weight-bold textColor">
                           入社パス
@@ -120,6 +121,7 @@
                           'elevation-6': hover && !$vuetify.breakpoint.xsOnly,
                           'elevation-2': !hover,
                         }"
+                        :to="'/recruiter/passes/' + yearPass.year + '?passType=offer'"
                       >
                         <div class="font-weight-bold textColor">
                           内定パス
@@ -149,6 +151,7 @@
                           'elevation-6': hover && !$vuetify.breakpoint.xsOnly,
                           'elevation-2': !hover,
                         }"
+                        :to="'/recruiter/passes/' + yearPass.year + '?passType=limited'"
                       >
                         <div class="font-weight-bold textColor">
                           先着パス
