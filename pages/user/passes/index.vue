@@ -40,17 +40,14 @@
           }"
         >
           <v-flex xs12>
-            <div
-              v-if="(passes && passes.length > 0) || (contractedPasses && contractedPasses.length > 0)"
-              class="text-xs-right pt-2 pb-2"
-            >
+            <div class="text-xs-right pt-2 pb-2">
               <v-btn
                 small
                 flat
                 class="grey--text text--darken-2"
                 @click="passTypesDialog=true"
               >
-                <v-icon class="mr-1" style="font-size: 18px; color: #BDBDBD">info</v-icon>
+                <v-icon class="mr-1" color="teal lighten-2" style="font-size: 18px; color: #BDBDBD">info</v-icon>
                 パスの種類について
               </v-btn>
             </div>
@@ -185,10 +182,10 @@
                     'headline': $vuetify.breakpoint.smAndUp,
                   }"
                 >
-                  内定パスがありません
+                  パスがありません
                 </div>
                 <div class="pt-3 light-text-color">
-                  企業から内定パスをもらった場合はこちらに表示されます
+                  企業からパスをもらった場合はこちらに表示されます
                 </div>
                 <v-btn class="mt-3 font-weight-bold" color="warning" to="/">募集を探す</v-btn>
               </div>
