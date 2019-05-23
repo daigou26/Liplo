@@ -42,6 +42,31 @@
             パスの種類について
           </v-btn>
         </div>
+        <v-flex xs12 sm6>
+          <v-hover>
+            <v-card
+              slot-scope="{ hover }"
+              class="pa-2 clickable"
+              :class="{
+                'elevation-6': hover && !$vuetify.breakpoint.xsOnly,
+                'elevation-2': !hover,
+                'mb-4': $vuetify.breakpoint.smAndUp,
+              }"
+              :to="'/recruiter/passes/hiring'"
+            >
+              <div class="font-weight-bold textColor">
+                入社パス
+              </div>
+              <div class="py-3 text-xs-center font-weight-bold light-text-color title">
+                <span v-if="hiringPassCount">{{ hiringPassCount }}</span>
+                <span v-else>0</span>
+              </div>
+              <div class="text-xs-right caption light-text-color">
+                発行数(全年度共通)
+              </div>
+            </v-card>
+          </v-hover>
+        </v-flex>
         <v-list class="py-0" v-if="yearPasses && yearPasses.length > 0">
           <template v-for="(yearPass, index) in yearPasses">
             <v-card
@@ -99,11 +124,9 @@
                         </div>
                         <div class="py-3 text-xs-center font-weight-bold light-text-color title">
                           {{ yearPass.count.hiring.used }}
-                          <span v-if="hiringPassCount"> / {{ hiringPassCount }}</span>
-                          <span v-else> / 0</span>
                         </div>
                         <div class="text-xs-right caption light-text-color">
-                          使用数 / 発行数(全年度共通)
+                          使用数
                         </div>
                       </v-card>
                     </v-hover>

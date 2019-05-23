@@ -169,12 +169,13 @@
             </v-form>
           </div>
           <!-- pass -->
-          <div v-if="pass && status && status.pass">
+          <div v-if="pass && status && (status.pass || status.contracted || status.hired || status.rejected)">
             <v-flex class="px-3 pt-5 break text-xs-left">
               <span class="textColor font-weight-bold">
                 パス
               </span>
               <v-btn
+                v-if="!status.contracted && !status.hired && !status.rejected"
                 v-show="!isEditingPass"
                 flat
                 small
@@ -210,7 +211,12 @@
               </div>
             </v-flex>
             <!-- pass編集 -->
-            <v-form v-show="isEditingPass" v-model="editPassValid" class="pa-3">
+            <v-form
+              v-if="!status.contracted && !status.hired && !status.rejected"
+              v-show="isEditingPass"
+              v-model="editPassValid"
+              class="pa-3"
+            >
               <!-- 職種 -->
               <v-text-field
                 label="職種"
@@ -288,7 +294,7 @@
             </v-form>
           </div>
           <!-- インターン延長 -->
-          <div v-if="status && (status.pass || status.contracted)">
+          <div v-if="status && (status.pass || status.contracted || status.hired || status.rejected)">
             <v-flex class="px-3 pt-5 break text-xs-left">
               <span class="textColor font-weight-bold">
                 インターン延長
@@ -300,7 +306,7 @@
                 <span>インターン延長は料金がかかりません</span>
               </v-tooltip>
               <v-btn
-                v-if="!extendedInternEnd"
+                v-if="!extendedInternEnd && !status.hired && !status.rejected"
                 v-show="!isEditingExtendedIntern"
                 flat
                 small
@@ -330,7 +336,11 @@
               </div>
             </v-flex>
             <!-- 編集 -->
-            <v-form v-if="isEditingExtendedIntern" v-model="editExtendedInternValid" class="pa-3">
+            <v-form
+              v-if="isEditingExtendedIntern && !status.hired && !status.rejected"
+              v-model="editExtendedInternValid"
+              class="pa-3"
+            >
               <v-text-field
                 v-if="!isInternExtended"
                 value="インターンを延長する"
@@ -448,12 +458,13 @@
                   </v-form>
                 </div>
                 <!-- pass -->
-                <div v-if="pass && status && status.pass">
+                <div v-if="pass && status && (status.pass || status.contracted || status.hired || status.rejected)">
                   <v-flex class="px-3 pt-5 break text-xs-left">
                     <span class="textColor font-weight-bold">
                       パス
                     </span>
                     <v-btn
+                      v-if="!status.contracted && !status.hired && !status.rejected"
                       v-show="!isEditingPass"
                       flat
                       small
@@ -489,7 +500,12 @@
                     </div>
                   </v-flex>
                   <!-- pass編集 -->
-                  <v-form v-show="isEditingPass" v-model="editPassValid" class="pa-3">
+                  <v-form
+                    v-if="!status.contracted && !status.hired && !status.rejected"
+                    v-show="isEditingPass"
+                    v-model="editPassValid"
+                    class="pa-3"
+                  >
                     <!-- 職種 -->
                     <v-text-field
                       label="職種"
@@ -567,7 +583,7 @@
                   </v-form>
                 </div>
                 <!-- インターン延長 -->
-                <div v-if="status && (status.pass || status.contracted)">
+                <div v-if="status && (status.pass || status.contracted || status.hired || status.rejected)">
                   <v-flex class="px-3 pt-5 break text-xs-left">
                     <span class="textColor font-weight-bold">
                       インターン延長
@@ -579,7 +595,7 @@
                       <span>インターン延長は料金がかかりません</span>
                     </v-tooltip>
                     <v-btn
-                      v-if="!extendedInternEnd"
+                      v-if="!extendedInternEnd && !status.hired && !status.rejected"
                       v-show="!isEditingExtendedIntern"
                       flat
                       small
@@ -609,7 +625,11 @@
                     </div>
                   </v-flex>
                   <!-- 編集 -->
-                  <v-form v-if="isEditingExtendedIntern" v-model="editExtendedInternValid" class="pa-3">
+                  <v-form
+                    v-if="isEditingExtendedIntern && !status.hired && !status.rejected"
+                    v-model="editExtendedInternValid"
+                    class="pa-3"
+                  >
                     <v-text-field
                       v-if="!isInternExtended"
                       value="インターンを延長する"
@@ -723,7 +743,7 @@
                       ></v-text-field>
                       <!-- 入社年度 -->
                       <v-text-field
-                        v-if="tempPassType != 'hiring'"
+                        v-if="tempPassType != '入社パス'"
                         v-model="tempJoiningYear"
                         class="pt-3"
                         label="入社年度"
@@ -764,6 +784,7 @@
                       </v-menu>
                       <div v-show="tempPassType == '内定パス' || tempPassType == '先着パス'" class=" light-text-color pb-3" style="font-size: 13px">
                         先着パスおよび内定パスの有効期限は、学生の卒業予定日付近を推奨しています。
+                        また、入社年度は、卒業の翌年度を指定してください。（卒業日が2019年3月の場合、入社年度は2019年度）
                         <div class="pt-2">
                           卒業予定日は、学生のプロフィールから確認できます。プロフィールに卒業予定日が設定されていない場合は、学生とのメッセージにてご確認ください。
                         </div>
@@ -829,7 +850,7 @@
                   候補者と雇用契約を結び次第、ステータスを<span class="font-weight-bold green--text text--lighten-1">入社</span>に変更してください。
                   ステータスを変更すると、候補者一覧に表示されなくなります。
                 </div>
-                <div class="text-xs-right">
+                <div v-if="!status.hired && !status.rejected" class="text-xs-right">
                   <v-btn
                     :disabled="updateStatusButtonDisabled"
                     @click="updateStatusButtonClicked"
@@ -1223,6 +1244,14 @@ export default {
           '入社',
           '不採用'
         ]
+      } else if (this.status.hired == true) {
+        items = [
+          '入社',
+        ]
+      } else if (this.status.rejected == true) {
+        items = [
+          '不採用',
+        ]
       }
       return items
     },
@@ -1336,6 +1365,10 @@ export default {
           this.tempStatus = 'パス'
         } else if (status.contracted == true) {
           this.tempStatus = '入社予定'
+        } else if (status.hired == true) {
+          this.tempStatus = '入社'
+        } else if (status.rejected == true) {
+          this.tempStatus = '不採用'
         }
       }
     },

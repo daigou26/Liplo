@@ -131,12 +131,6 @@ export const actions = {
           }
 
           commit('updateIsLoading', false)
-
-          if (doc.data()['status'].rejected || doc.data()['status'].hired) {
-            commit('updateIsLoading', false)
-            console.log('404')
-            nuxt.error({ statusCode: 404, message: 'not found' })
-          }
         } else {
           commit('updateIsLoading', false)
           console.log('404')

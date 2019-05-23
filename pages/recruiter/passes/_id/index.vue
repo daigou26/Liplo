@@ -16,8 +16,9 @@
     </v-flex>
     <v-flex v-else xs12>
       <div class="textColor title pa-3 font-weight-bold">
-        <span>{{ year }}年度 </span>
-        <span v-if="passType == 'hiring'">入社パス</span>
+        <span v-if="paramsId != 'hiring'">{{ paramsId }}年度 </span>
+        <span v-if="!passType && paramsId == 'hiring'">入社パス（未使用）</span>
+        <span v-else-if="passType == 'hiring'">入社パス</span>
         <span v-else-if="passType == 'offer'">内定パス</span>
         <span v-else-if="passType == 'limited'">先着パス</span>
       </div>
@@ -118,7 +119,7 @@ export default {
     }
   },
   computed: {
-    year() {
+    paramsId() {
       return this.$route.params.id
     },
     passType() {
@@ -154,7 +155,16 @@ export default {
         this.queryPasses({
           companyId: this.companyId,
           type: this.$route.query.passType,
-          year: Number(this.$route.params.id)
+          year: Number(this.paramsId)
+        })
+      } else if (this.$route.query.passType == null && this.$route.params.id == 'hiring') {
+        this.resetState()
+        this.updateIsInitialLoading(true)
+        this.updateIsLoading(true)
+        this.queryPasses({
+          companyId: this.companyId,
+          type: 'hiring',
+          year: null
         })
       } else {
         this.$nuxt.error({ statusCode: 404, message: 'not found' })
@@ -163,7 +173,6 @@ export default {
   },
   watch: {
     companyId(companyId) {
-      console.log('watch');
       if (companyId != null && companyId != '') {
         if (this.$route.query.passType && this.$route.params.id) {
           this.resetState()
@@ -173,7 +182,16 @@ export default {
           this.queryPasses({
             companyId: companyId,
             type: this.$route.query.passType,
-            year: Number(this.$route.params.id)
+            year: Number(this.paramsId)
+          })
+        } else if (this.$route.query.passType == null && this.$route.params.id == 'hiring') {
+          this.resetState()
+          this.updateIsInitialLoading(true)
+          this.updateIsLoading(true)
+          this.queryPasses({
+            companyId: companyId,
+            type: 'hiring',
+            year: null
           })
         } else {
           this.$nuxt.error({ statusCode: 404, message: 'not found' })

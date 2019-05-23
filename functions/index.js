@@ -562,7 +562,7 @@ exports.sendPass = functions.region('asia-northeast1')
                         if (err) {
                           console.log(err)
                         }
-                        console.log('New pass email sent to:', user.email)
+                        console.log('New pass email sent to:', userDoc.data().email)
                       })
                     }
                   }
@@ -571,7 +571,7 @@ exports.sendPass = functions.region('asia-northeast1')
                   console.error("Error getting document: ", error)
                 })
 
-              console.log('sendPass completed.')
+              console.log('update pass info & send notification completed.')
             })
             .catch((error) => {
               console.error("Error: ", error)
@@ -752,28 +752,65 @@ exports.passHasChanged = functions.region('asia-northeast1')
             .doc(String(joiningYear))
             .get()
             .then(doc => {
-              var count = doc.data().count
-              if (type == 'hiring') {
-                count.hiring.used += 1
-              } else if (type == 'offer') {
-                count.offer.used += 1
-              } else if (type == 'limited') {
-                count.limited.used += 1
+              if (doc.exists) {
+                var count = doc.data().count
+                if (type == 'hiring') {
+                  count.hiring.used += 1
+                } else if (type == 'offer') {
+                  count.offer.used += 1
+                } else if (type == 'limited') {
+                  count.limited.used += 1
+                }
+                admin.firestore()
+                  .collection('companies')
+                  .doc(companyId)
+                  .collection('yearPasses')
+                  .doc(String(joiningYear))
+                  .update({
+                    count: count
+                  })
+                  .then(() => {
+                    console.log('acceptJobOffer: update pass count complete.')
+                  })
+                  .catch((error) => {
+                    console.error("Error updating document: ", error)
+                  })
+              } else {
+                var passData
+                if (type == 'hiring') {
+                  // 内定パス
+                  passData = {
+                    count: {
+                      hiring: {
+                        used: 1
+                      },
+                      offer: {
+                        all: 0,
+                        used: 0
+                      },
+                      limited: {
+                        all: 0,
+                        used: 0
+                      }
+                    }
+                  }
+                }
+                passData.year = joiningYear
+                passData.limit = null
+                // 更新
+                admin.firestore()
+                  .collection('companies')
+                  .doc(companyId)
+                  .collection('yearPasses')
+                  .doc(String(joiningYear))
+                  .set(passData)
+                  .then(() => {
+                    console.log('acceptJobOffer: update pass count complete.')
+                  })
+                  .catch((error) => {
+                    console.error("Error updating document: ", error)
+                  })
               }
-              admin.firestore()
-                .collection('companies')
-                .doc(companyId)
-                .collection('yearPasses')
-                .doc(String(joiningYear))
-                .update({
-                  count: count
-                })
-                .then(() => {
-                  console.log('acceptJobOffer: update pass count complete.')
-                })
-                .catch((error) => {
-                  console.error("Error updating document: ", error)
-                })
             })
             .catch((error) => {
               console.error("Error getting document: ", error)
@@ -1002,8 +1039,8 @@ exports.passHasChanged = functions.region('asia-northeast1')
     }
   })
 
-// 候補者のステータスが変更した時、候補者数を更新する処理
-exports.updateCandidatesCount = functions.region('asia-northeast1')
+// 候補者のステータスが変更した時の処理(候補者数やパスの発行数を更新する)
+exports.updateCompany = functions.region('asia-northeast1')
   .firestore
   .document('companies/{companyId}/candidates/{candidateId}')
   .onUpdate((change, context) => {
@@ -1033,6 +1070,7 @@ exports.updateCandidatesCount = functions.region('asia-northeast1')
 
     const companyId = context.params.companyId
     const candidateId = context.params.candidateId
+    const passType = newValue.pass.type
     const type = newValue.type
 
     return admin.firestore()
@@ -1041,6 +1079,7 @@ exports.updateCandidatesCount = functions.region('asia-northeast1')
       .get()
       .then(doc => {
         if (doc.exists) {
+          // candidate
           var currentCandidates = doc.data().currentCandidates
           var allCandidates = doc.data().allCandidates
 
@@ -1107,14 +1146,21 @@ exports.updateCandidatesCount = functions.region('asia-northeast1')
             }
           }
 
+          var companyData = {
+            currentCandidates: currentCandidates,
+            allCandidates: allCandidates
+          }
+          // hiringPassCount
+          if ((newStatus.hired || newStatus.rejected) && passType == 'hiring') {
+            var hiringPassCount = doc.data().hiringPassCount
+            companyData.hiringPassCount = hiringPassCount - 1
+          }
+
           admin.firestore().collection('companies')
             .doc(companyId)
-            .update({
-              currentCandidates: currentCandidates,
-              allCandidates: allCandidates
-            })
+            .update(companyData)
             .then(() => {
-              console.log('updateCandidatesCount completed.')
+              console.log('updateCompany completed.')
             })
             .catch((error) => {
               console.error("Error adding document: ", error)

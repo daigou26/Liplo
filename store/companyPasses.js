@@ -57,47 +57,164 @@ export const actions = {
     var passesRef = firestore.collection('passes')
       .where('companyId', '==', companyId).where('type', '==', type)
       .where('isAccepted', '==', false)
+
     if (type != 'hiring') {
-      passesRef = passesRef.where('joiningYear', '==', year)
-    }
+      // type が offer, limited
+      passesRef = passesRef.where('joiningYear', '==', year).orderBy('createdAt', 'desc')
 
-    passesRef = passesRef.orderBy('createdAt', 'desc')
+      if (passes.length == 0) {
+        var usedPassesRef = firestore.collection('passes')
+          .where('companyId', '==', companyId).where('type', '==', type)
+          .where('isAccepted', '==', true).where('joiningYear', '==', year)
 
-    if (passes.length == 0) {
-      var usedPassesRef = firestore.collection('passes')
-        .where('companyId', '==', companyId).where('type', '==', type)
-        .where('isAccepted', '==', true).where('joiningYear', '==', year)
+        // 使用されたパス
+         usedPassesRef
+          .orderBy('acceptedDate', 'desc')
+          .get()
+          .then(function(snapshot) {
+            if (!snapshot.empty) {
+              snapshot.forEach(function(doc) {
+                let acceptedDate = doc.data()['acceptedDate']
+                if (acceptedDate) {
+                  let date = new Date( acceptedDate.seconds * 1000 )
+                  let year  = date.getFullYear()
+                  let month = date.getMonth() + 1
+                  let day  = date.getDate()
+                  acceptedDate = `${year}/${month}/${day}`
+                }
 
-      // 使用されたパス
-       usedPassesRef
-        .orderBy('acceptedDate', 'desc')
-        .get()
-        .then(function(snapshot) {
-          if (!snapshot.empty) {
+                const pass = {
+                  passId: doc.id,
+                  candidateId: doc.data()['candidateId'],
+                  profileImageUrl: doc.data()['profileImageUrl'],
+                  userName: doc.data()['userName'],
+                  occupation: doc.data()['occupation'],
+                  acceptedDate: acceptedDate,
+                  isAccepted: doc.data()['isAccepted'],
+                  isContracted: doc.data()['isContracted'],
+                }
+                commit('addPass', pass)
+              })
+            }
+            // 未使用のパス
+            passesRef
+              .limit(20)
+              .get()
+              .then(function(snapshot) {
+                var docCount = 0
+                snapshot.forEach(function(doc) {
+                  docCount += 1
+                  const pass = {
+                    passId: doc.id,
+                    candidateId: doc.data()['candidateId'],
+                    profileImageUrl: doc.data()['profileImageUrl'],
+                    userName: doc.data()['userName'],
+                    occupation: doc.data()['occupation'],
+                    isAccepted: doc.data()['isAccepted'],
+                    isContracted: doc.data()['isContracted'],
+                    createdAt: doc.data()['createdAt'],
+                    expirationDate: doc.data()['expirationDate'],
+                  }
+                  commit('addPass', pass)
+                })
+                if (docCount == 0) {
+                  commit('setAllPassesQueried', true)
+                }
+
+                // loading
+                commit('updateIsInitialLoading', false)
+                commit('updateIsLoading', false)
+              })
+              .catch(function(error) {
+                commit('updateIsInitialLoading', false)
+                commit('updateIsLoading', false)
+                console.log("Error getting document:", error);
+              })
+          })
+          .catch(function(error) {
+            console.log("Error getting document:", error);
+          })
+      } else if (passes.length != 0) {
+        const lastIndex = passes.length - 1
+        const lastDate = passes[lastIndex].createdAt
+        passesRef
+          .startAfter(lastDate)
+          .limit(20)
+          .get()
+          .then(function(snapshot) {
+            var docCount = 0
             snapshot.forEach(function(doc) {
-              let acceptedDate = doc.data()['acceptedDate']
-              if (acceptedDate) {
-                let date = new Date( acceptedDate.seconds * 1000 )
-                let year  = date.getFullYear()
-                let month = date.getMonth() + 1
-                let day  = date.getDate()
-                acceptedDate = `${year}/${month}/${day}`
-              }
-
+              docCount += 1
               const pass = {
                 passId: doc.id,
                 candidateId: doc.data()['candidateId'],
                 profileImageUrl: doc.data()['profileImageUrl'],
                 userName: doc.data()['userName'],
                 occupation: doc.data()['occupation'],
-                acceptedDate: acceptedDate,
                 isAccepted: doc.data()['isAccepted'],
                 isContracted: doc.data()['isContracted'],
+                createdAt: doc.data()['createdAt'],
+                expirationDate: doc.data()['expirationDate'],
               }
               commit('addPass', pass)
             })
-          }
-          // 未使用のパス
+            if (docCount == 0) {
+              commit('setAllPassesQueried', true)
+            }
+            commit('updateIsLoading', false)
+          })
+          .catch(function(error) {
+            commit('updateIsLoading', false)
+            console.log("Error getting document:", error);
+          })
+      }
+    } else {
+      // type が hiring
+      if (year) {
+        // 使用数をクエリ
+        firestore.collection('passes')
+          .where('companyId', '==', companyId)
+          .where('type', '==', type)
+          .where('isAccepted', '==', true)
+          .where('joiningYear', '==', year)
+          .orderBy('acceptedDate', 'desc')
+          .get()
+          .then(function(snapshot) {
+            if (!snapshot.empty) {
+              snapshot.forEach(function(doc) {
+                let acceptedDate = doc.data()['acceptedDate']
+                if (acceptedDate) {
+                  let date = new Date( acceptedDate.seconds * 1000 )
+                  let year  = date.getFullYear()
+                  let month = date.getMonth() + 1
+                  let day  = date.getDate()
+                  acceptedDate = `${year}/${month}/${day}`
+                }
+
+                const pass = {
+                  passId: doc.id,
+                  candidateId: doc.data()['candidateId'],
+                  profileImageUrl: doc.data()['profileImageUrl'],
+                  userName: doc.data()['userName'],
+                  occupation: doc.data()['occupation'],
+                  acceptedDate: acceptedDate,
+                  isAccepted: doc.data()['isAccepted'],
+                  isContracted: doc.data()['isContracted'],
+                }
+                commit('addPass', pass)
+              })
+            }
+            commit('updateIsInitialLoading', false)
+          })
+          .catch(function(error) {
+            commit('updateIsInitialLoading', false)
+            console.log("Error getting document:", error);
+          })
+      } else {
+        // 発行数をクエリ
+        passesRef = passesRef.orderBy('createdAt', 'desc')
+
+        if (passes.length == 0) {
           passesRef
             .limit(20)
             .get()
@@ -131,43 +248,41 @@ export const actions = {
               commit('updateIsLoading', false)
               console.log("Error getting document:", error);
             })
-        })
-        .catch(function(error) {
-          console.log("Error getting document:", error);
-        })
-    } else if (passes.length != 0) {
-      const lastIndex = passes.length - 1
-      const lastDate = passes[lastIndex].createdAt
-      passesRef
-        .startAfter(lastDate)
-        .limit(20)
-        .get()
-        .then(function(snapshot) {
-          var docCount = 0
-          snapshot.forEach(function(doc) {
-            docCount += 1
-            const pass = {
-              passId: doc.id,
-              candidateId: doc.data()['candidateId'],
-              profileImageUrl: doc.data()['profileImageUrl'],
-              userName: doc.data()['userName'],
-              occupation: doc.data()['occupation'],
-              isAccepted: doc.data()['isAccepted'],
-              isContracted: doc.data()['isContracted'],
-              createdAt: doc.data()['createdAt'],
-              expirationDate: doc.data()['expirationDate'],
-            }
-            commit('addPass', pass)
-          })
-          if (docCount == 0) {
-            commit('setAllPassesQueried', true)
-          }
-          commit('updateIsLoading', false)
-        })
-        .catch(function(error) {
-          commit('updateIsLoading', false)
-          console.log("Error getting document:", error);
-        })
+        } else if (passes.length != 0) {
+          const lastIndex = passes.length - 1
+          const lastDate = passes[lastIndex].createdAt
+          passesRef
+            .startAfter(lastDate)
+            .limit(20)
+            .get()
+            .then(function(snapshot) {
+              var docCount = 0
+              snapshot.forEach(function(doc) {
+                docCount += 1
+                const pass = {
+                  passId: doc.id,
+                  candidateId: doc.data()['candidateId'],
+                  profileImageUrl: doc.data()['profileImageUrl'],
+                  userName: doc.data()['userName'],
+                  occupation: doc.data()['occupation'],
+                  isAccepted: doc.data()['isAccepted'],
+                  isContracted: doc.data()['isContracted'],
+                  createdAt: doc.data()['createdAt'],
+                  expirationDate: doc.data()['expirationDate'],
+                }
+                commit('addPass', pass)
+              })
+              if (docCount == 0) {
+                commit('setAllPassesQueried', true)
+              }
+              commit('updateIsLoading', false)
+            })
+            .catch(function(error) {
+              commit('updateIsLoading', false)
+              console.log("Error getting document:", error);
+            })
+        }
+      }
     }
   },
   queryHiringPassCount({commit}, companyId) {

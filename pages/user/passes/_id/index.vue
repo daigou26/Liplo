@@ -112,7 +112,7 @@
             </v-alert>
             <!-- 無効 -->
             <v-alert
-              v-if="!isContracted && !isAccepted && (!isValid || isExpired)"
+              v-if="!isContracted && (!isValid || isExpired)"
               :value="true"
               color="blue-grey lighten-2"
               outline
@@ -182,7 +182,7 @@
                 <v-form v-model="acceptOfferValid" class="text-xs-right">
                   <!-- 入社年度 -->
                   <v-text-field
-                    v-if="passType == 'hiring'"
+                    v-if="type == 'hiring'"
                     v-model="tempJoiningYear"
                     class="pt-3"
                     label="入社年度"
