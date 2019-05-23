@@ -99,7 +99,7 @@ export default {
     return {
       windowHeight: 0,
       items: [
-        { title: '内定パス', icon: 'card_giftcard', url: '/user/passes' },
+        { title: 'パス', icon: 'card_giftcard', url: '/user/passes' },
         { title: 'キャリア', icon: 'work_outline', url: '/user/career' },
         { title: 'レビュー', icon: 'bar_chart', url: '/user/reviews' },
         { title: 'フィードバック', icon: 'chat_bubble_outline', url: '/user/feedbacks' },

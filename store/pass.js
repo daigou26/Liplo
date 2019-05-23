@@ -5,6 +5,14 @@ export const state = () => ({
   companyId: null,
   companyImageUrl: null,
   companyName: null,
+  type: '',
+  joiningYear: null,
+  // パスの使用上限(先着パスのみ)
+  limit: null,
+  // パスの発行数(先着パスのみ)
+  allCount: null,
+  // パスの使用数(先着パスのみ)
+  usedCount: null,
   message: '',
   occupation: '',
   expirationDate: null,
@@ -24,6 +32,21 @@ export const mutations = {
   },
   setCompanyName(state, companyName) {
     state.companyName = companyName
+  },
+  setType(state, type) {
+    state.type = type
+  },
+  setJoiningYear(state, joiningYear) {
+    state.joiningYear = joiningYear
+  },
+  setLimit(state, limit) {
+    state.limit = limit
+  },
+  setAllCount(state, count) {
+    state.allCount = count
+  },
+  setUsedCount(state, count) {
+    state.usedCount = count
   },
   setMessage(state, message) {
     state.message = message
@@ -52,28 +75,10 @@ export const mutations = {
 }
 
 export const actions = {
-  acceptOffer({commit}, {params, message}) {
-    const passId = params.id
-
-    return firestore.collection('passes')
-      .doc(passId)
-      .update({
-        isAccepted: true,
-        userMessage: message,
-        acceptedAt: new Date(),
-      })
-      .then(() => {
-        commit('setIsAccepted', true)
-      })
-      .catch((error) => {
-        console.error("Error adding document: ", error)
-      })
-
-  },
   queryPass({commit}, {nuxt, params}) {
     const passId = params.id
 
-    return firestore.collection('passes')
+    firestore.collection('passes')
       .doc(passId)
       .get()
       .then(function(doc) {
@@ -87,23 +92,45 @@ export const actions = {
 
           let expirationDate = doc.data()['expirationDate']
           if (expirationDate) {
-            let date = new Date( expirationDate.seconds * 1000 )
-            let year  = date.getFullYear()
-            let month = date.getMonth() + 1
-            let day  = date.getDate()
-            expirationDate = `${year}/${month}/${day}`
+            expirationDate = new Date( expirationDate.seconds * 1000 )
+            commit('setExpirationDate', expirationDate)
           }
 
           commit('setCompanyId', doc.data()['companyId'])
           commit('setCompanyImageUrl', doc.data()['companyImageUrl'])
           commit('setCompanyName', doc.data()['companyName'])
+          commit('setType', doc.data()['type'])
+          commit('setJoiningYear', doc.data()['joiningYear'])
           commit('setMessage', doc.data()['picMessage'])
           commit('setOccupation', doc.data()['occupation'])
-          commit('setExpirationDate', expirationDate)
           commit('setIsAccepted', doc.data()['isAccepted'])
           commit('setIsContracted', doc.data()['isContracted'])
           commit('setIsValid', doc.data()['isValid'])
-          commit('updateIsLoading', false)
+
+          // 先着パスの上限,使用数などを取得
+          if (doc.data()['type'] == 'limited') {
+            firestore.collection('companies')
+              .doc(doc.data()['companyId'])
+              .collection('yearPasses')
+              .doc(String(doc.data()['joiningYear']))
+              .get()
+              .then(function(yearPassDoc) {
+                if (doc.exists) {
+                  commit('setLimit', yearPassDoc.data()['limit'])
+                  if (yearPassDoc.data()['count']) {
+                    commit('setAllCount', yearPassDoc.data()['count'].limited.all)
+                    commit('setUsedCount', yearPassDoc.data()['count'].limited.used)
+                  }
+                }
+                commit('updateIsLoading', false)
+              })
+              .catch(function(error) {
+                commit('updateIsLoading', false)
+                console.log("Error getting document:", error)
+              })
+          } else {
+            commit('updateIsLoading', false)
+          }
         } else {
           // 404
           console.log('404')
@@ -114,7 +141,30 @@ export const actions = {
       .catch(function(error) {
         commit('updateIsLoading', false)
         console.log("Error getting document:", error)
-        nuxt.error({ statusCode: 404, message: 'not found' })
+      })
+  },
+  acceptOffer({commit}, {params, message, joiningYear}) {
+    const passId = params.id
+
+    var passData = {
+      isAccepted: true,
+      userMessage: message,
+      acceptedDate: new Date()
+    }
+
+    if (joiningYear) {
+      passData.joiningYear = Number(joiningYear)
+    }
+
+    firestore.collection('passes')
+      .doc(passId)
+      .update(passData)
+      .then(() => {
+        commit('setIsAccepted', true)
+        commit('setJoiningYear', Number(joiningYear))
+      })
+      .catch((error) => {
+        console.error("Error updating document: ", error)
       })
   },
   updateIsLoading({commit}, isLoading) {
@@ -124,6 +174,8 @@ export const actions = {
     commit('setCompanyId', null)
     commit('setCompanyImageUrl', null)
     commit('setCompanyName', null)
+    commit('setType', '')
+    commit('setJoiningYear', null)
     commit('setMessage', '')
     commit('setOccupation', '')
     commit('setExpirationDate', null)

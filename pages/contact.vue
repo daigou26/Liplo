@@ -67,7 +67,6 @@
                   </v-flex>
                   <!-- 送信ボタン -->
                   <v-btn
-                    block
                     :disabled="!valid"
                     class="orange darken-1"
                     @click="sendButtonClicked"

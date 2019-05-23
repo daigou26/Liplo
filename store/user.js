@@ -117,6 +117,7 @@ export const actions = {
               .collection('candidates')
               .where('user.uid', '==', uid)
               .where('status.rejected', '==', false)
+              .where('status.hired', '==', false)
               .get()
               .then(function(snapshot) {
                 if (snapshot.empty) {
@@ -144,7 +145,6 @@ export const actions = {
       })
   },
   scout({commit, state},{user, pic, companyId, message}) {
-    console.log("scout", user);
     var scouts = state.scouts
     const status = {
       scouted: true,

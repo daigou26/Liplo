@@ -333,7 +333,7 @@
                         justify-center
                       >
                         <v-flex xs12>
-                          <!-- メールアドレス -->
+                          <!-- メッセージ -->
                           <v-textarea
                             v-model="message"
                             :rules="messageRules"
@@ -342,9 +342,8 @@
                             required
                           ></v-textarea>
                         </v-flex>
-                        <!-- ログインボタン -->
+                        <!-- スカウトボタン -->
                         <v-btn
-                          block
                           :disabled="!valid || !companyId"
                           class="orange darken-1"
                           @click="scoutButtonClicked"
@@ -483,16 +482,20 @@ export default {
       this.scoutDialog = true
     },
     scoutButtonClicked() {
-      const user = {
+      var user = {
         uid: this.$route.params.id,
-        imageUrl: this.userImageUrl,
         name: this.userLastName + ' ' + this.userFirstName,
       }
+      if (this.userImageUrl) {
+        user.imageUrl = this.userImageUrl
+      }
 
-      const pic = {
+      var pic = {
         uid: this.picUid,
-        imageUrl: this.picImageUrl,
         name: this.picLastName + ' ' + this.picFirstName
+      }
+      if (this.picImageUrl) {
+        pic.imageUrl = this.picImageUrl
       }
 
       this.scout({

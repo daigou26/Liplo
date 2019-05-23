@@ -63,6 +63,8 @@ export const actions = {
                 passId: doc.id,
                 companyImageUrl: doc.data()['companyImageUrl'],
                 companyName: doc.data()['companyName'],
+                type: doc.data()['type'],
+                joiningYear: doc.data()['joiningYear'],
                 occupation: doc.data()['occupation'],
                 contractedDate: contractedDate,
                 isAccepted: doc.data()['isAccepted'],
@@ -109,6 +111,8 @@ export const actions = {
               passId: doc.id,
               companyImageUrl: doc.data()['companyImageUrl'],
               companyName: doc.data()['companyName'],
+              type: doc.data()['type'],
+              joiningYear: doc.data()['joiningYear'],
               occupation: doc.data()['occupation'],
               isAccepted: doc.data()['isAccepted'],
               isContracted: doc.data()['isContracted'],
@@ -146,7 +150,7 @@ export const actions = {
         })
     } else if (passes.length != 0) {
       const lastIndex = passes.length - 1
-      const lastDate = passes[lastIndex].expirationDate
+      const lastDate = passes[lastIndex].createdAt
       firestore.collection('passes')
         .where('uid', '==', uid)
         .where('isContracted', '==', false)
@@ -171,6 +175,8 @@ export const actions = {
               passId: doc.id,
               companyImageUrl: doc.data()['companyImageUrl'],
               companyName: doc.data()['companyName'],
+              type: doc.data()['type'],
+              joiningYear: doc.data()['joiningYear'],
               occupation: doc.data()['occupation'],
               isAccepted: doc.data()['isAccepted'],
               isContracted: doc.data()['isContracted'],

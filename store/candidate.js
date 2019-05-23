@@ -131,12 +131,6 @@ export const actions = {
           }
 
           commit('updateIsLoading', false)
-
-          if (doc.data()['status'].rejected || doc.data()['status'].hired) {
-            commit('updateIsLoading', false)
-            console.log('404')
-            nuxt.error({ statusCode: 404, message: 'not found' })
-          }
         } else {
           commit('updateIsLoading', false)
           console.log('404')
@@ -170,13 +164,16 @@ export const actions = {
   updateIsEditingPass({commit}, isEditing) {
     commit('updateIsEditingPass', isEditing)
   },
-  updatePass({commit, state}, {params, companyId, expirationDate, occupation}) {
+  updatePass({commit, state}, {params, companyId, joiningYear, expirationDate, occupation}) {
     const candidateId = params.id
     var pass = state.pass
 
-    var expirationDateArr = expirationDate.split('-')
-    pass.expirationDate = new Date(expirationDateArr[0], expirationDateArr[1] - 1, expirationDateArr[2]),
+    pass.expirationDate = expirationDate
     pass.occupation = occupation
+
+    if (joiningYear) {
+      pass.joiningYear = joiningYear
+    }
 
     const batch = firestore.batch()
     const candidateRef = firestore.collection('companies').doc(companyId)
@@ -186,10 +183,16 @@ export const actions = {
     })
 
     const passRef = firestore.collection('passes').doc(pass.passId)
-    batch.update(passRef, {
+    var passData = {
       expirationDate: expirationDate,
       occupation: occupation,
-    })
+    }
+
+    if (joiningYear) {
+      passData.joiningYear = joiningYear
+    }
+
+    batch.update(passRef, passData)
 
     batch.commit()
       .then(() => {

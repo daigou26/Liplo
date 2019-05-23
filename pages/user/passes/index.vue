@@ -40,6 +40,17 @@
           }"
         >
           <v-flex xs12>
+            <div class="text-xs-right pt-2 pb-2">
+              <v-btn
+                small
+                flat
+                class="grey--text text--darken-2"
+                @click="passTypesDialog=true"
+              >
+                <v-icon class="mr-1" color="teal lighten-2" style="font-size: 18px; color: #BDBDBD">info</v-icon>
+                パスの種類について
+              </v-btn>
+            </div>
             <!-- 契約済み -->
             <div
               v-if="contractedPasses && contractedPasses.length > 0"
@@ -56,8 +67,19 @@
                 <v-flex v-for="(pass, index) in contractedPasses" :key="pass.passId" xs6 md4>
                   <v-card
                     :to="'/user/passes/' + pass.passId"
-                    class="text-xs-center py-2 contracted"
+                    class="text-xs-center py-2"
+                    :class="{
+                      'hiring': pass.type == 'hiring',
+                      'offer': pass.type == 'offer',
+                      'limited': pass.type == 'limited',
+                    }"
                   >
+                    <div
+                      v-if="pass.type != 'hiring' && pass.joiningYear"
+                      class="pa-2 textColor font-weight-bold text-xs-left"
+                    >
+                      {{ pass.joiningYear }}年度
+                    </div>
                     <v-avatar
                       :size="avatarSize"
                       :class="{
@@ -102,10 +124,17 @@
                     :to="'/user/passes/' + pass.passId"
                     class="text-xs-center py-2"
                     :class="{
-                      'accepted': pass.isAccepted,
-                      'invalid': (!pass.isValid || pass.isExpired) && !pass.isAccepted,
+                      'hiring': pass.type == 'hiring',
+                      'offer': pass.type == 'offer',
+                      'limited': pass.type == 'limited',
                     }"
                   >
+                    <div
+                      v-if="pass.type != 'hiring' && pass.joiningYear"
+                      class="pa-2 textColor font-weight-bold text-xs-left"
+                    >
+                      {{ pass.joiningYear }}年度
+                    </div>
                     <v-avatar
                       :size="avatarSize"
                       :class="{
@@ -153,16 +182,16 @@
                     'headline': $vuetify.breakpoint.smAndUp,
                   }"
                 >
-                  内定パスがありません
+                  パスがありません
                 </div>
                 <div class="pt-3 light-text-color">
-                  企業から内定パスをもらった場合はこちらに表示されます
+                  企業からパスをもらった場合はこちらに表示されます
                 </div>
                 <v-btn class="mt-3 font-weight-bold" color="warning" to="/">募集を探す</v-btn>
               </div>
             </v-card>
             <infinite-loading
-              v-if="showInfiniteLoading && passes && passes.length >= 1 && !isLoading"
+              v-if="showInfiniteLoading && passes && passes.length >= 10 && !isLoading"
               :distance="50"
               spinner="waveDots"
               @infinite="infiniteHandler">
@@ -170,6 +199,61 @@
             </infinite-loading>
           </v-flex>
         </v-flex>
+        <!-- パスの種類の説明 -->
+        <v-dialog
+          v-model="passTypesDialog"
+          :fullscreen="$vuetify.breakpoint.xsOnly"
+          width="600"
+        >
+          <v-card>
+            <v-toolbar flat color="white">
+              <v-btn class="hidden-sm-and-up" icon @click="passTypesDialog=false">
+                <v-icon>close</v-icon>
+              </v-btn>
+              <span
+                class="pl-3 textColor font-weight-bold"
+                :class="{
+                  'title': $vuetify.breakpoint.smAndUp,
+                  'subheading': $vuetify.breakpoint.xsOnly
+                }"
+              >
+                パスの種類
+              </span>
+            </v-toolbar>
+            <v-flex
+              xs12
+              py-3
+              class="light-text-color"
+              :class="{'px-4': $vuetify.breakpoint.smAndUp, 'px-4 mt-4': $vuetify.breakpoint.xsOnly}"
+            >
+              <!-- 入社パス -->
+              <div class="pb-3">
+                <div class="subheading font-weight-bold">
+                  1. 入社パス
+                  <v-icon class="ml-2" color="pink lighten-2" style="font-size: 18px">bookmark</v-icon>
+                </div>
+                <div class="pt-2">
+                  卒業後の一定期間、いつでも入社できるパスです。
+                </div>
+                <div class="pt-4 subheading font-weight-bold">
+                  2. 内定パス
+                  <v-icon class="ml-2" color="blue lighten-1" style="font-size: 18px">bookmark</v-icon>
+                </div>
+                <div class="pt-2">
+                  企業が定めた期間内であれば、いつでも内定を取得できるパスです。
+
+                </div>
+                <div class="pt-4 subheading font-weight-bold">
+                  3. 先着パス
+                  <v-icon class="ml-2" color="green lighten-2" style="font-size: 18px">bookmark</v-icon>
+                </div>
+                <div class="pt-2">
+                  企業が定めた期間内であり、採用枠にあまりがある場合に限り、内定を取得できるパスです。
+                </div>
+              </div>
+            </v-flex>
+          </v-card>
+        </v-dialog>
       </v-layout>
     </v-flex>
   </v-layout>
@@ -188,6 +272,7 @@ export default {
     windowHeight: 0,
     count: 0,
     showInfiniteLoading: false,
+    passTypesDialog: false,
   }),
   computed: {
     avatarSize() {
@@ -270,13 +355,13 @@ export default {
 }
 </script>
 <style>
-.contracted {
-  background-image: linear-gradient(-135deg, #FB8C00 20px, transparent 0);
+.hiring {
+  background-image: linear-gradient(-135deg, #F06292 30px, transparent 0);
 }
-.accepted {
-  background-image: linear-gradient(-135deg, #66BB6A 20px, transparent 0);
+.offer {
+  background-image: linear-gradient(-135deg, #42A5F5 30px, transparent 0);
 }
-.invalid {
-  background-image: linear-gradient(-135deg, #90A4AE 20px, transparent 0);
+.limited {
+  background-image: linear-gradient(-135deg, #81C784 30px, transparent 0);
 }
 </style>

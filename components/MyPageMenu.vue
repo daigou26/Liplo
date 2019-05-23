@@ -61,7 +61,7 @@ export default {
     dropdownText: '',
     mypageItems: [
       {
-        title: '内定パス',
+        title: 'パス',
         value: 'passes',
         icon: 'card_giftcard'
       },
@@ -101,7 +101,7 @@ export default {
     } else if (this.path.includes('user/feedbacks')) {
       this.dropdownText = 'フィードバック'
     } else if (this.path.includes('user/passes')) {
-      this.dropdownText = '内定パス'
+      this.dropdownText = 'パス'
     }
   },
 }

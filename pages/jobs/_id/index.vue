@@ -228,7 +228,7 @@
               <!-- 期間 -->
               <div v-if="period" class="py-3">
                 <p class="job-sub-title font-weight-bold textColor">
-                  内定を出すまでのインターン期間
+                  パスを出すまでのインターン期間
                 </p>
                 <div>
                   <p class="body-text return">{{ period }}ヶ月</p>
