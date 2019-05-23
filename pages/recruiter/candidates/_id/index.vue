@@ -662,7 +662,7 @@
                 <!-- ステータスが inProcess の時 -->
                 <div v-if="status.inProcess">
                   この候補者を採用する際は、まずメッセージにてやり取りをして頂き、
-                  候補者と労働契約を結んだ時点で、ステータスを
+                  候補者と雇用契約を結んだ時点で、ステータスを
                   <span class="font-weight-bold orange--text text--darken-1">インターン</span>
                   に変更してください。
                   <div class="pt-3">
@@ -1566,7 +1566,7 @@ export default {
     updatePassButtonClicked() {
       var expirationDateArr = this.tempExpirationDate.split('-')
       var expirationDate = new Date(expirationDateArr[0], expirationDateArr[1] - 1, expirationDateArr[2])
-      
+
       if (this.passType == 'hiring') {
         this.updatePass({
           params: this.params,

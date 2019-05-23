@@ -598,9 +598,16 @@ exports.sendPass = functions.region('asia-northeast1')
                     // 内定パス
                     passData = {
                       count: {
+                        hiring: {
+                          used: count.hiring.used
+                        },
                         offer: {
                           all: count.offer.all + 1,
                           used: count.offer.used
+                        },
+                        limited: {
+                          all: count.limited.all,
+                          used: count.limited.used
                         }
                       }
                     }
@@ -608,6 +615,13 @@ exports.sendPass = functions.region('asia-northeast1')
                     // 先着パス
                     passData = {
                       count: {
+                        hiring: {
+                          used: count.hiring.used
+                        },
+                        offer: {
+                          all: count.offer.all,
+                          used: count.offer.used
+                        },
                         limited: {
                           all: count.limited.all + 1,
                           used: count.limited.used

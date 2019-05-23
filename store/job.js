@@ -286,6 +286,7 @@ export const actions = {
                   .collection('candidates')
                   .where('user.uid', '==', uid)
                   .where('status.rejected', '==', false)
+                  .where('status.hired', '==', false)
                   .get()
                   .then(function(snapshot) {
                     if (snapshot.empty) {
@@ -293,7 +294,6 @@ export const actions = {
                     } else {
                       commit('updateIsCandidate', true)
                     }
-
                     isCandidateQueried = true
                     if (isCandidateQueried && isCompanyDetailQueried) {
                       commit('updateIsLoading', false)

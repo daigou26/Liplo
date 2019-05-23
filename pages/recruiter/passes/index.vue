@@ -56,7 +56,10 @@
                 </div>
                 <!-- 先着パスの上限 -->
                 <div class="pt-4">
-                  <span v-if="yearPass.limit" class="textColor">
+                  <span v-if="yearPass.limit == 0" class="textColor">
+                    先着パスの上限： <span class="font-weight-bold">0</span>
+                  </span>
+                  <span v-else-if="yearPass.limit" class="textColor">
                     先着パスの上限： <span class="font-weight-bold">{{ yearPass.limit }}</span>
                   </span>
                   <span v-else class="textColor">

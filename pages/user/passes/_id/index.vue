@@ -62,7 +62,7 @@
           <v-flex sm10 xs12 offset-sm1>
             <!-- 未使用 & 未契約 -->
             <v-alert
-              v-if="!isContracted && !isAccepted && isValid && !isExpired"
+              v-if="!isContracted && !isAccepted && isValid && !isExpired && !(type == 'limited' && limit <= usedCount)"
               :value="true"
               color="teal lighten-1"
               outline
@@ -101,7 +101,7 @@
             </v-alert>
             <!-- 未使用 & 未契約 & 先着パスの上限 -->
             <v-alert
-              v-if="!isContracted && !isAccepted && isValid && !isExpired && type == 'limited' && limit == usedCount"
+              v-if="!isContracted && !isAccepted && isValid && !isExpired && type == 'limited' && limit <= usedCount"
               :value="true"
               color="blue-grey lighten-2"
               outline
@@ -169,7 +169,7 @@
                   !isAccepted &&
                   isValid &&
                   !isExpired &&
-                  !(type == 'limited' && allCount == usedCount)
+                  !(type == 'limited' && limit <= usedCount)
                 "
               >
                 <div v-if="type == 'limited'" class="pb-3">
