@@ -161,7 +161,7 @@
                 <p v-if="message" class="pt-2 body-text light-text-color return">{{ message }}</p>
               </div>
               <div class="pb-3">
-                <span class="font-weight-bold textColor">期限：　{{ expirationDate }}</span>
+                <span class="font-weight-bold textColor">期限：　{{ expirationDateText }}</span>
               </div>
               <div
                 v-if="
@@ -232,6 +232,15 @@ export default {
     count: 0,
   }),
   computed: {
+    expirationDateText() {
+      if (this.expirationDate) {
+        let date = this.expirationDate
+        let year  = date.getFullYear()
+        let month = date.getMonth() + 1
+        let day  = date.getDate()
+      return `${year}/${month}/${day}`
+      }
+    },
     typeText() {
       if (this.type == 'hiring') {
         return '入社パス'
@@ -245,6 +254,7 @@ export default {
       const year = new Date()
       return [
         v => (String(v).length == 4) || '4桁で指定してください',
+        v => (v <= this.expirationDate.getFullYear()) || '有効期間を過ぎています',
         v => (v >= year.getFullYear() - 1) || `${year.getFullYear() - 1}以上で指定してください`,
       ]
     },

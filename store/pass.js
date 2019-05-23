@@ -92,11 +92,8 @@ export const actions = {
 
           let expirationDate = doc.data()['expirationDate']
           if (expirationDate) {
-            let date = new Date( expirationDate.seconds * 1000 )
-            let year  = date.getFullYear()
-            let month = date.getMonth() + 1
-            let day  = date.getDate()
-            expirationDate = `${year}/${month}/${day}`
+            expirationDate = new Date( expirationDate.seconds * 1000 )
+            commit('setExpirationDate', expirationDate)
           }
 
           commit('setCompanyId', doc.data()['companyId'])
@@ -106,7 +103,6 @@ export const actions = {
           commit('setJoiningYear', doc.data()['joiningYear'])
           commit('setMessage', doc.data()['picMessage'])
           commit('setOccupation', doc.data()['occupation'])
-          commit('setExpirationDate', expirationDate)
           commit('setIsAccepted', doc.data()['isAccepted'])
           commit('setIsContracted', doc.data()['isContracted'])
           commit('setIsValid', doc.data()['isValid'])
