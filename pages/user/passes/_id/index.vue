@@ -62,14 +62,14 @@
           <v-flex sm10 xs12 offset-sm1>
             <!-- 未使用 & 未契約 -->
             <v-alert
-              v-if="!isContracted && !isAccepted && isValid && !isExpired && !(type == 'limited' && limit <= usedCount)"
+              v-if="!isContracted && !isAccepted && isValid && !isExpired && !(type == 'limited' && limit && limit <= usedCount)"
               :value="true"
               color="teal lighten-1"
               outline
               icon="card_giftcard"
               class="text-xs-left"
             >
-              <div class="font-weight-bold">おめでとうございます！　{{ typeText }}をもらいました！</div>
+              <div class="font-weight-bold">おめでとうございます！　{{ typeText }}が送られました。</div>
               <div v-if="type == 'limited'" class="font-weight-bold">
                 先着パスは、採用枠がなくなり次第無効になるため、入社しようと考えている場合は、早めに使用してください！
               </div>
@@ -101,14 +101,14 @@
             </v-alert>
             <!-- 未使用 & 未契約 & 先着パスの上限 -->
             <v-alert
-              v-if="!isContracted && !isAccepted && isValid && !isExpired && type == 'limited' && limit <= usedCount"
+              v-if="!isContracted && !isAccepted && isValid && !isExpired && type == 'limited' && limit && limit <= usedCount"
               :value="true"
               color="blue-grey lighten-2"
               outline
               icon="warning"
               class="text-xs-left"
             >
-              <div class="font-weight-bold ">先着パスが上限に達したため、無効になりました。</div>
+              <div class="font-weight-bold ">採用人数が上限に達したため、無効になりました。</div>
             </v-alert>
             <!-- 無効 -->
             <v-alert
@@ -169,11 +169,15 @@
                   !isAccepted &&
                   isValid &&
                   !isExpired &&
-                  !(type == 'limited' && limit <= usedCount)
+                  !(type == 'limited' && limit && limit <= usedCount)
                 "
               >
-                <div v-if="type == 'limited'" class="pb-3">
-                  <span class="font-weight-bold textColor">採用枠：　残り{{ limit - usedCount }}人</span>
+                <div
+                  v-if="type == 'limited'"
+                  class="pb-3 font-weight-bold textColor"
+                >
+                  <span v-if="limit == null">採用枠： あり</span>
+                  <span v-else>採用枠：　残り{{ limit - usedCount }}人</span>
                 </div>
                 <v-form v-model="acceptOfferValid" class="text-xs-right">
                   <!-- 入社年度 -->
