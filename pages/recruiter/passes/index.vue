@@ -42,7 +42,13 @@
             パスの種類について
           </v-btn>
         </div>
-        <v-flex xs12 sm6>
+        <v-flex
+          xs12
+          sm6
+          :class="{
+            'offset-sm3': yearPasses == null || yearPasses.length == 0,
+          }"
+        >
           <v-hover>
             <v-card
               slot-scope="{ hover }"
