@@ -1036,6 +1036,8 @@ exports.passHasChanged = functions.region('asia-northeast1')
         .catch((error) => {
           console.error("Error getting document: ", error)
         })
+    } else {
+      return 0
     }
   })
 
