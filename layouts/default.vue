@@ -179,7 +179,7 @@ export default {
   font-size: 18px;
 }
 .body-text {
-  color: #484848;
+  color: #555555;
   font-size: 15px;
   font-weight: 400;
 }

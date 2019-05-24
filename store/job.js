@@ -24,6 +24,7 @@ export const state = () => ({
   workweek: null,
   period: null,
   workday: 0,
+  worktime: null,
   idealCandidate: '',
   occupation: null,
   features: null,
@@ -109,6 +110,9 @@ export const mutations = {
   },
   setWorkday(state, workday) {
     state.workday = workday
+  },
+  setWorktime(state, worktime) {
+    state.worktime = worktime
   },
   setIdealCandidate(state, idealCandidate) {
     state.idealCandidate = idealCandidate
@@ -213,6 +217,7 @@ export const actions = {
             commit('setWorkweek', doc.data()['workweek'])
             commit('setPeriod', doc.data()['period'])
             commit('setWorkday', doc.data()['workday'])
+            commit('setWorktime', doc.data()['worktime'])
             commit('setIdealCandidate', doc.data()['idealCandidate'])
             commit('setOccupation', doc.data()['occupation'])
             commit('setFeatures', doc.data()['features'])
@@ -394,6 +399,7 @@ export const actions = {
     commit('setWorkweek', null)
     commit('setPeriod', null)
     commit('setWorkday', 0)
+    commit('setWorktime', null)
     commit('setIdealCandidate', '')
     commit('setOccupation', null)
     commit('setFeatures', null)

@@ -97,6 +97,7 @@
             v-model="workweek.days"
             :rules="workweekDaysRules"
             label="週の最低勤務日数（必須）"
+            placeholder="2"
             suffix="日"
             type="number"
             required
@@ -107,6 +108,7 @@
             v-model="workweek.hours"
             :rules="workweekHoursRules"
             label="週の最低勤務時間（必須）"
+            placeholder="10"
             suffix="時間"
             type="number"
             required
@@ -117,20 +119,44 @@
             v-model="period"
             :rules="periodRules"
             label="勤務期間（必須）"
+            placeholder="1"
             suffix="ヶ月"
             type="number"
             required
           ></v-text-field>
           <p class="textColor pt-1" style="font-size: 12px;">
-            パスを出すまでの試用期間。期間は1ヶ月程度を推奨しています。試用期間が終わった後にインターンを延長することができます。
+            パスを出すまでの試用期間。期間は1ヶ月から2ヶ月ほどを推奨しています。試用期間が終わった後にインターンを延長することができます。
           </p>
         </v-flex>
-        <v-select
-          class="pt-5"
-          v-model="workday"
-          :items="workdayItems"
-          label="勤務可能曜日（必須）"
-        ></v-select>
+        <v-flex sm6 pt-4>
+          <v-select
+            v-model="workday"
+            :items="workdayItems"
+            label="勤務可能曜日（必須）"
+            placeholder="平日のみ"
+          ></v-select>
+        </v-flex>
+        <v-layout row wrap pt-4>
+          <v-flex sm3 class="pr-2">
+            <v-text-field
+              v-model="worktime.begin"
+              mask="time"
+              label="勤務可能時間（始め）"
+              placeholder="10:00"
+              :rules="worktimeRules"
+              required
+              ></v-text-field>
+          </v-flex>
+          <v-flex sm3 class="pl-2">
+            <v-text-field
+              v-model="worktime.end"
+              mask="time"
+              label="勤務可能時間（終わり）"
+              placeholder="19:00"
+              required
+              ></v-text-field>
+          </v-flex>
+        </v-layout>
         <v-select
           class="pt-5"
           v-model="occupation"
@@ -243,6 +269,20 @@ export default {
       v => (v <= 48) || '48までで指定してください'
     ],
     workday: null,
+    workdayItems: [
+      '平日のみ',
+      '土曜可',
+      '日曜可',
+      '土日可',
+    ],
+    worktime: {
+      begin: '',
+      end: ''
+    },
+    worktimeRules: [
+      v => !!v || '数字を入力してください',
+      v => (v <= 2400) || '時間を指定してください'
+    ],
     workdayItems: [
       '平日のみ',
       '土曜可',
@@ -431,15 +471,20 @@ export default {
         five: false,
       }
       switch (this.workweek.days) {
-        case 1: workweekDays.one = true; break
-        case 2: workweekDays.two = true; break
-        case 3: workweekDays.three = true; break
-        case 4: workweekDays.four = true; break
-        case 5: workweekDays.five = true; break
+        case '1': workweekDays.one = true; break
+        case '2': workweekDays.two = true; break
+        case '3': workweekDays.three = true; break
+        case '4': workweekDays.four = true; break
+        case '5': workweekDays.five = true; break
       }
       const workweek = {
         days: workweekDays,
         hours: Number(this.workweek.hours)
+      }
+
+      var worktime = {
+        begin: Number(this.worktime.begin),
+        end: Number(this.worktime.end),
       }
 
       const status = this.status == '公開' ? 'published' : 'draft'
@@ -457,6 +502,7 @@ export default {
         workweek: workweek,
         period: Number(this.period),
         workday: workday,
+        worktime: worktime,
         idealCandidate: this.idealCandidate,
         occupation: occupation,
         features: features,

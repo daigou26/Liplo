@@ -135,12 +135,34 @@
               パスを出すまでの試用期間。期間は1ヶ月程度を推奨しています。試用期間が終わった後にインターンを延長することができます。
             </p>
           </v-flex>
-          <v-select
-            class="pt-5"
-            v-model="tempWorkday"
-            :items="workdayItems"
-            label="勤務可能曜日（必須）"
-          ></v-select>
+          <v-flex sm6 pt-5>
+            <v-select
+              v-model="tempWorkday"
+              :items="workdayItems"
+              label="勤務可能曜日（必須）"
+            ></v-select>
+          </v-flex>
+          <v-layout row wrap pt-4>
+            <v-flex sm3 class="pr-2">
+              <v-text-field
+                v-model="tempWorktime.begin"
+                mask="time"
+                label="勤務可能時間（始め）"
+                placeholder="10:00"
+                :rules="worktimeRules"
+                required
+                ></v-text-field>
+            </v-flex>
+            <v-flex sm3 class="pl-2">
+              <v-text-field
+                v-model="tempWorktime.end"
+                mask="time"
+                label="勤務可能時間（終わり）"
+                placeholder="19:00"
+                required
+                ></v-text-field>
+            </v-flex>
+          </v-layout>
           <v-select
             class="pt-5"
             v-model="tempOccupation"
@@ -261,6 +283,14 @@ export default {
       '日曜可',
       '土日可',
     ],
+    tempWorktime: {
+      begin: '',
+      end: ''
+    },
+    worktimeRules: [
+      v => !!v || '数字を入力してください',
+      v => (v <= 2400) || '時間を指定してください'
+    ],
     tempOccupation: '',
     occupationItems: [
       'エンジニア',
@@ -339,6 +369,7 @@ export default {
       workweek: state => state.companyJob.workweek,
       period: state => state.companyJob.period,
       workday: state => state.companyJob.workday,
+      worktime: state => state.companyJob.worktime,
       idealCandidate: state => state.companyJob.idealCandidate,
       occupation: state => state.companyJob.occupation,
       features: state => state.companyJob.features,
@@ -389,15 +420,15 @@ export default {
     workweek(workweek) {
       if (workweek) {
         if (workweek.days.one) {
-          this.tempWorkweek.days = 1
+          this.tempWorkweek.days = '1'
         } else if (workweek.days.two) {
-          this.tempWorkweek.days = 2
+          this.tempWorkweek.days = '2'
         } else if (workweek.days.three) {
-          this.tempWorkweek.days = 3
+          this.tempWorkweek.days = '3'
         } else if (workweek.days.four) {
-          this.tempWorkweek.days = 4
+          this.tempWorkweek.days = '4'
         } else if (workweek.days.five) {
-          this.tempWorkweek.days = 5
+          this.tempWorkweek.days = '5'
         }
 
         this.tempWorkweek.hours = workweek.hours
@@ -416,6 +447,9 @@ export default {
       } else if (workday == 3) {
         this.tempWorkday = '土日可'
       }
+    },
+    worktime(worktime) {
+      this.tempWorktime = worktime
     },
     idealCandidate(idealCandidate) {
       this.tempIdealCandidate = idealCandidate
@@ -607,16 +641,21 @@ export default {
         five: false,
       }
       switch (this.tempWorkweek.days) {
-        case 1: workweekDays.one = true; break
-        case 2: workweekDays.two = true; break
-        case 3: workweekDays.three = true; break
-        case 4: workweekDays.four = true; break
-        case 5: workweekDays.five = true; break
+        case '1': workweekDays.one = true; break
+        case '2': workweekDays.two = true; break
+        case '3': workweekDays.three = true; break
+        case '4': workweekDays.four = true; break
+        case '5': workweekDays.five = true; break
       }
 
       const workweek = {
         days: workweekDays,
         hours: Number(this.tempWorkweek.hours)
+      }
+
+      var worktime = {
+        begin: Number(this.tempWorktime.begin),
+        end: Number(this.tempWorktime.end),
       }
 
       const status = this.tempStatus == '公開中' ? 'published' : 'draft'
@@ -635,6 +674,7 @@ export default {
         workweek: workweek,
         period: Number(this.tempPeriod),
         workday: workday,
+        worktime: worktime,
         idealCandidate: this.tempIdealCandidate,
         occupation: occupation,
         features: features,

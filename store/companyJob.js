@@ -13,6 +13,7 @@ export const state = () => ({
   workweek: null,
   period: null,
   workday: null,
+  worktime: null,
   idealCandidate: '',
   occupation: '',
   features: '',
@@ -56,6 +57,9 @@ export const mutations = {
   },
   setWorkday(state, workday) {
     state.workday = workday
+  },
+  setWorktime(state, worktime) {
+    state.worktime = worktime
   },
   setIdealCandidate(state, idealCandidate) {
     state.idealCandidate = idealCandidate
@@ -102,6 +106,7 @@ export const actions = {
           commit('setWorkweek', doc.data()['workweek'])
           commit('setPeriod', doc.data()['period'])
           commit('setWorkday', doc.data()['workday'])
+          commit('setWorktime', doc.data()['worktime'])
           commit('setIdealCandidate', doc.data()['idealCandidate'])
           commit('setOccupation', doc.data()['occupation'])
           commit('setFeatures', doc.data()['features'])
@@ -130,6 +135,7 @@ export const actions = {
     workweek,
     period,
     workday,
+    worktime,
     idealCandidate,
     occupation,
     features,
@@ -146,6 +152,7 @@ export const actions = {
       workweek: workweek,
       period: period,
       workday: workday,
+      worktime: worktime,
       occupation: occupation,
       features: features,
       industry: industry,
@@ -163,6 +170,7 @@ export const actions = {
       workweek: workweek,
       period: period,
       workday: workday,
+      worktime: worktime,
       idealCandidate: idealCandidate,
       occupation: occupation,
       features: features,
@@ -237,6 +245,7 @@ export const actions = {
     workweek,
     period,
     workday,
+    worktime,
     idealCandidate,
     occupation,
     features,
@@ -265,6 +274,7 @@ export const actions = {
           workweek: workweek,
           period: period,
           workday: workday,
+          worktime: worktime,
           occupation: occupation,
           features: features,
           industry: industry,
@@ -283,6 +293,7 @@ export const actions = {
           workweek: workweek,
           period: period,
           workday: workday,
+          worktime: worktime,
           idealCandidate: idealCandidate,
           occupation: occupation,
           features: features,
@@ -325,6 +336,7 @@ export const actions = {
     commit('setWorkweek', null)
     commit('setPeriod', null)
     commit('setWorkday', null)
+    commit('setWorktime', null)
     commit('setIdealCandidate', '')
     commit('setOccupation', '')
     commit('setFeatures', '')
