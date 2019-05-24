@@ -234,22 +234,32 @@
                   <p class="body-text return">{{ period }}ヶ月</p>
                 </div>
               </div>
-              <!-- 勤務日 -->
+              <!-- 勤務条件 -->
+              <div v-if="workweek" class="py-3">
+                <p class="job-sub-title font-weight-bold textColor">
+                  勤務条件
+                </p>
+                <div>
+                  <p class="body-text return">週{{ workweekDays(workweek.days) }}日以上</p>
+                  <p v-if="workweek.hours != 0" class="body-text">週合計{{ workweek.hours }}時間以上</p>
+                </div>
+              </div>
+              <!-- 勤務可能日 -->
               <div v-if="workday != null" class="py-3">
                 <p class="job-sub-title font-weight-bold textColor">
-                  勤務日
+                  勤務可能日
                 </p>
                 <div>
                   <p class="body-text return">{{ workdayText(workday) }}</p>
                 </div>
               </div>
-              <!-- 勤務時間 -->
-              <div v-if="workweek" class="py-3">
+              <!-- 勤務可能時間 -->
+              <div v-if="worktime" class="py-3">
                 <p class="job-sub-title font-weight-bold textColor">
-                  勤務時間
+                  勤務可能時間
                 </p>
                 <div>
-                  <p class="body-text return">週{{ workweekDays(workweek.days) }}日以上、週合計{{ workweek.hours }}時間以上</p>
+                  <p class="body-text return">{{ worktimeText(worktime) }}</p>
                 </div>
               </div>
               <!-- 給与 -->
@@ -1002,6 +1012,19 @@ export default {
     selectedUserId: '',
   }),
   computed: {
+    worktimeText: function() {
+      return function(worktime) {
+        var begin =
+          String(worktime.begin).substr(0,2)
+          + ':'
+          + String(worktime.begin).substr(2,2)
+        var end =
+          String(worktime.end).substr(0,2)
+          + ':'
+          + String(worktime.end).substr(2,2)
+        return begin + '〜' + end
+      }
+    },
     workdayText: function() {
       return function(workday) {
         if (workday == 0) {
@@ -1117,6 +1140,7 @@ export default {
       workweek: state => state.job.workweek,
       period: state => state.job.period,
       workday: state => state.job.workday,
+      worktime: state => state.job.worktime,
       idealCandidate: state => state.job.idealCandidate,
       occupation: state => state.job.occupation,
       features: state => state.job.features,
