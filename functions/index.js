@@ -2601,7 +2601,7 @@ exports.sendReview = functions.region('asia-northeast1')
   })
 
 // メッセージを送信した時の処理
-exports.sendMessageFromUser = functions.region('asia-northeast1')
+exports.sendMessage = functions.region('asia-northeast1')
   .firestore
   .document('chats/{chatId}/messages/{messageId}')
   .onCreate((snap, context) => {
@@ -2612,56 +2612,26 @@ exports.sendMessageFromUser = functions.region('asia-northeast1')
     const pic = snap.data().pic
 
     // chatのupdatedAt, picUnreadCountを更新
+    var chatData = {
+      updatedAt: snap.data().createdAt,
+      lastMessage: message,
+      messagesExist: true,
+    }
+
+    if (user != null && pic == null) {
+      chatData.picUnreadCount = admin.firestore.FieldValue.increment(1)
+    } else if (user == null && pic != null) {
+      chatData.userUnreadCount = admin.firestore.FieldValue.increment(1)
+    }
+
     return admin.firestore()
       .collection('chats').doc(chatId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          var from
-          var picUnreadCount
-          var userUnreadCount
-
-          if (user != null && pic == null) {
-            from = 'user'
-            if (doc.data().picUnreadCount != null) {
-              picUnreadCount = doc.data().picUnreadCount
-            } else {
-              picUnreadCount = 0
-            }
-          } else if (user == null && pic != null) {
-            from = 'pic'
-            if (doc.data().userUnreadCount != null) {
-              userUnreadCount = doc.data().userUnreadCount
-            } else {
-              userUnreadCount = 0
-            }
-          }
-
-          var chatData = {
-            updatedAt: snap.data().createdAt,
-            lastMessage: message,
-            messagesExist: true,
-          }
-
-          if (from == 'user') {
-            chatData.picUnreadCount = picUnreadCount + 1
-          } else if (from == 'pic') {
-            chatData.userUnreadCount = userUnreadCount + 1
-          }
-
-          admin.firestore()
-            .collection('chats').doc(chatId)
-            .update(chatData)
-            .then(() => {
-              console.log('sendMessageFromUser completed.')
-            })
-            .catch(err => {
-              console.log('Error getting document', err)
-            })
-        }
+      .update(chatData)
+      .then(() => {
+        console.log('completed.')
       })
-      .catch(err => {
-        console.log('Error getting document', err)
+      .catch(error => {
+        console.log('Error updating document', error)
       })
   })
 
