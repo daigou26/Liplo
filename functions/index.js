@@ -1072,18 +1072,20 @@ exports.updateCompany = functions.region('asia-northeast1')
 
     const companyId = context.params.companyId
     const candidateId = context.params.candidateId
-    const passType = newValue.pass.type
     const type = newValue.type
+    let passType
+    if (newValue.pass) {
+      passType = newValue.pass.type
+    }
 
-    return admin.firestore()
-      .collection('companies')
-      .doc(companyId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          // candidate
-          var currentCandidates = doc.data().currentCandidates
-          var allCandidates = doc.data().allCandidates
+    // company の候補者カウント, hiringPassCount 更新
+    const companyRef = admin.firestore().collection('companies').doc(companyId)
+
+    return admin.firestore().runTransaction(function(transaction) {
+      return transaction.get(companyRef).then(function(companyDoc) {
+        if (companyDoc.exists) {
+          var currentCandidates = companyDoc.data().currentCandidates
+          var allCandidates = companyDoc.data().allCandidates
 
           if (beforeStatus.scouted) {
             currentCandidates.scouted -= 1
@@ -1152,26 +1154,23 @@ exports.updateCompany = functions.region('asia-northeast1')
             currentCandidates: currentCandidates,
             allCandidates: allCandidates
           }
+
           // hiringPassCount
           if ((newStatus.hired || newStatus.rejected) && passType == 'hiring') {
             var hiringPassCount = doc.data().hiringPassCount
-            companyData.hiringPassCount = hiringPassCount - 1
+            companyData.hiringPassCount -= 1
           }
 
-          admin.firestore().collection('companies')
-            .doc(companyId)
-            .update(companyData)
-            .then(() => {
-              console.log('updateCompany completed.')
-            })
-            .catch((error) => {
-              console.error("Error adding document: ", error)
-            })
+          const companyRef = admin.firestore().collection('companies').doc(companyId)
+          transaction.update(companyRef, companyData)
         }
       })
-      .catch((error) => {
-        console.error("Error adding document: ", error)
-      })
+    }).then(() => {
+      console.log('completed.')
+
+    }).catch(error => {
+        console.error(error)
+    })
   })
 
 // recruiterがスカウトした時の処理
@@ -1190,18 +1189,16 @@ exports.scoutUser = functions.region('asia-northeast1')
     const candidateId = context.params.candidateId
 
     // company の応募者数の更新、応募者の情報格納, スカウトメッセージ送信
-    return admin.firestore()
-      .collection('companies').doc(companyId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          const companyName = doc.data().companyName
-          const companyImageUrl = doc.data().imageUrl
-          var currentCandidates = doc.data().currentCandidates
-          var allCandidates = doc.data().allCandidates
-          // 処理が完了したかのフラグ
-          var isUpdatedCandidates = false
-          var isSendedMessage = false
+    const companyRef = admin.firestore().collection('companies').doc(companyId)
+
+    return admin.firestore().runTransaction(function(transaction) {
+      return transaction.get(companyRef).then(function(companyDoc) {
+        if (companyDoc.exists) {
+          const companyName = companyDoc.data().companyName
+          const companyImageUrl = companyDoc.data().imageUrl
+          const members = companyDoc.data().members
+          var currentCandidates = companyDoc.data().currentCandidates
+          var allCandidates = companyDoc.data().allCandidates
 
           // company の応募者数の更新、応募者の情報格納
           if (currentCandidates) {
@@ -1223,6 +1220,7 @@ exports.scoutUser = functions.region('asia-northeast1')
             scout: 0,
             application: 0,
           }
+
           if (allCandidates) {
             allCandidates.scouted += 1
           } else {
@@ -1238,130 +1236,53 @@ exports.scoutUser = functions.region('asia-northeast1')
             }
           }
 
-          const batch = admin.firestore().batch()
+          // 候補者カウント更新
           const companyRef = admin.firestore().collection('companies').doc(companyId)
-          batch.update(companyRef, {
+          transaction.update(companyRef, {
             currentCandidates: currentCandidates,
             allCandidates: allCandidates,
           })
-          const companyScoutedUsersRef = admin.firestore().collection('companies').doc(companyId).collection('scoutedUsers').doc()
-          batch.set(companyScoutedUsersRef, {
-            user: user,
-            createdAt: createdAt,
-          })
-          batch.commit()
-            .then(() => {
-              isUpdatedCandidates = true
-              if (isUpdatedCandidates && isSendedMessage) {
-                console.log('scoutUser completed.')
-              }
-            })
-            .catch((error) => {
-              console.error("Error adding document: ", error)
-            })
+          return companyDoc
+        }
+      })
+    }).then((companyDoc) => {
+      console.log('update candidates count completed.')
 
-          // chatにスカウト メッセージを送信(chatがなければ作成)
-          admin.firestore()
-            .collection('chats')
-            .where('companyId', '==', companyId)
-            .where('uid', '==', user.uid)
-            .get()
-            .then(function(snapshot) {
-              if (!snapshot.empty) {
-                var docCount = 0
-                snapshot.forEach(function(chatDoc) {
-                  docCount += 1
-                  if (docCount == 1) {
-                    const batch = admin.firestore().batch()
-                    // スカウトメッセージ作成
-                    const messagesRef = admin.firestore().collection('chats').doc(chatDoc.id)
-                      .collection('messages').doc()
-                    batch.set(messagesRef, {
-                      pic: pic,
-                      message: message,
-                      createdAt: createdAt,
-                      type: 'scout',
-                    })
-                    // candidate に chatId 格納
-                    const candidateRef = admin.firestore().collection('companies').doc(companyId)
-                      .collection('candidates').doc(candidateId)
-                    batch.update(candidateRef, {
-                      chatId: chatDoc.id
-                    })
-                    // 通知
-                    const notificationRef = admin.firestore().collection('users').doc(user.uid)
-                      .collection('notifications').doc()
-                    const url = '/messages/' + chatDoc.id
-                    batch.set(notificationRef, {
-                      type: 'normal',
-                      isImportant: true,
-                      content: companyName + 'にスカウトされました！ メッセージを確認してみましょう。',
-                      createdAt: new Date(),
-                      url: url,
-                      isUnread: true,
-                    })
-                    batch.commit()
-                      .then(() => {
-                        isSendedMessage = true
-                        if (isUpdatedCandidates && isSendedMessage) {
-                          admin.firestore().collection('users')
-                            .doc(user.uid)
-                            .get()
-                            .then(userDoc => {
-                              if (userDoc.exists) {
-                                if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.scout) {
-                                  // スカウトされたユーザーにメール送信
-                                  const mailOptions = {
-                                    from: `LightHouse <noreply@firebase.com>`,
-                                    to: userDoc.data().email,
-                                  }
-                                  mailOptions.subject = `${companyName}にスカウトされました！`
-                                  mailOptions.text = `${companyName}にスカウトされました！　ご確認ください。`
-                                  mailTransport.sendMail(mailOptions, (err, info) => {
-                                    if (err) {
-                                      console.log(err)
-                                    }
-                                    console.log('New scout email sent to:', userDoc.data().email)
-                                  })
-                                }
-                              }
-                            })
-                            .catch((error) => {
-                              console.error("Error adding document: ", error)
-                            })
+      const companyName = companyDoc.data().companyName
+      const companyImageUrl = companyDoc.data().imageUrl
+      const members = companyDoc.data().members
 
-                          console.log('scoutUser completed.')
-                        }
-                      })
-                      .catch((error) => {
-                        console.error("Error adding document: ", error)
-                      })
-                  }
-                })
-              } else {
-                const chatId = admin.firestore().collection('chats').doc().id
-                var chatData = {
-                  uid: user.uid,
-                  userName: user.name,
-                  companyId: companyId,
-                  companyName: companyName,
-                  lastMessage: message,
-                  messagesExist: true,
-                  updatedAt: createdAt,
-                }
-                if (user.imageUrl) {
-                  chatData.profileImageUrl = user.imageUrl
-                }
-                if (companyImageUrl) {
-                  chatData.companyImageUrl = companyImageUrl
-                }
+      // scoutedUsersに追加
+      admin.firestore()
+        .collection('companies')
+        .doc(companyId)
+        .collection('scoutedUsers')
+        .add({
+          user: user,
+          createdAt: createdAt,
+        })
+        .then(() => {
+          console.log('set scoutedUsers completed.')
+        })
+        .catch((error) => {
+          console.error("Error", error)
+        })
 
+      // chatIdをcandidateに格納, chatにスカウト メッセージを送信(chatがなければ作成), ユーザーにメール送信
+      admin.firestore()
+        .collection('chats')
+        .where('companyId', '==', companyId)
+        .where('uid', '==', user.uid)
+        .get()
+        .then(function(snapshot) {
+          if (!snapshot.empty) {
+            var docCount = 0
+            snapshot.forEach(function(chatDoc) {
+              docCount += 1
+              if (docCount == 1) {
                 const batch = admin.firestore().batch()
-                // chat 作成
-                const chatsRef = admin.firestore().collection('chats').doc(chatId)
-                batch.set(chatsRef, chatData)
                 // スカウトメッセージ作成
-                const messagesRef = admin.firestore().collection('chats').doc(chatId)
+                const messagesRef = admin.firestore().collection('chats').doc(chatDoc.id)
                   .collection('messages').doc()
                 batch.set(messagesRef, {
                   pic: pic,
@@ -1373,12 +1294,12 @@ exports.scoutUser = functions.region('asia-northeast1')
                 const candidateRef = admin.firestore().collection('companies').doc(companyId)
                   .collection('candidates').doc(candidateId)
                 batch.update(candidateRef, {
-                  chatId: chatId
+                  chatId: chatDoc.id
                 })
                 // 通知
                 const notificationRef = admin.firestore().collection('users').doc(user.uid)
                   .collection('notifications').doc()
-                const url = '/messages/' + chatId
+                const url = '/messages/' + chatDoc.id
                 batch.set(notificationRef, {
                   type: 'normal',
                   isImportant: true,
@@ -1389,50 +1310,127 @@ exports.scoutUser = functions.region('asia-northeast1')
                 })
                 batch.commit()
                   .then(() => {
-                    isSendedMessage = true
-                    if (isUpdatedCandidates && isSendedMessage) {
-                      admin.firestore().collection('users')
-                        .doc(user.uid)
-                        .get()
-                        .then(userDoc => {
-                          if (userDoc.exists) {
-                            if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.scout) {
-                              // スカウトされたユーザーにメール送信
-                              const mailOptions = {
-                                from: `LightHouse <noreply@firebase.com>`,
-                                to: userDoc.data().email,
-                              }
-                              mailOptions.subject = `${companyName}にスカウトされました！`
-                              mailOptions.text = `${companyName}にスカウトされました！　ご確認ください。`
-                              mailTransport.sendMail(mailOptions, (err, info) => {
-                                if (err) {
-                                  console.log(err)
-                                }
-                                console.log('New scout email sent to:', userDoc.data().email)
-                              })
+                    admin.firestore().collection('users')
+                      .doc(user.uid)
+                      .get()
+                      .then(userDoc => {
+                        if (userDoc.exists) {
+                          if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.scout) {
+                            // スカウトされたユーザーにメール送信
+                            const mailOptions = {
+                              from: `LightHouse <noreply@firebase.com>`,
+                              to: userDoc.data().email,
                             }
+                            mailOptions.subject = `${companyName}にスカウトされました！`
+                            mailOptions.text = `${companyName}にスカウトされました！　ご確認ください。`
+                            mailTransport.sendMail(mailOptions, (err, info) => {
+                              if (err) {
+                                console.log(err)
+                              }
+                              console.log('New scout email sent to:', userDoc.data().email)
+                            })
                           }
-                        })
-                        .catch((error) => {
-                          console.error("Error adding document: ", error)
-                        })
-
-                      console.log('scoutUser completed.')
-                    }
+                        }
+                      })
+                      .catch((error) => {
+                        console.error("Error getting document", error)
+                      })
+                    console.log('send message & update candidate & send notification completed.')
                   })
                   .catch((error) => {
-                    console.error("Error adding document: ", error)
+                    console.error("Error", error)
                   })
               }
             })
-            .catch(err => {
-              console.log('Error getting document', err)
+          } else {
+            const chatId = admin.firestore().collection('chats').doc().id
+            var chatData = {
+              uid: user.uid,
+              userName: user.name,
+              companyId: companyId,
+              companyName: companyName,
+              lastMessage: message,
+              messagesExist: true,
+              updatedAt: createdAt,
+            }
+            if (user.imageUrl) {
+              chatData.profileImageUrl = user.imageUrl
+            }
+            if (companyImageUrl) {
+              chatData.companyImageUrl = companyImageUrl
+            }
+
+            const batch = admin.firestore().batch()
+            // chat 作成
+            const chatsRef = admin.firestore().collection('chats').doc(chatId)
+            batch.set(chatsRef, chatData)
+            // スカウトメッセージ作成
+            const messagesRef = admin.firestore().collection('chats').doc(chatId)
+              .collection('messages').doc()
+            batch.set(messagesRef, {
+              pic: pic,
+              message: message,
+              createdAt: createdAt,
+              type: 'scout',
             })
-        }
-      })
-      .catch(err => {
-        console.log('Error getting document', err)
-      })
+            // candidate に chatId 格納
+            const candidateRef = admin.firestore().collection('companies').doc(companyId)
+              .collection('candidates').doc(candidateId)
+            batch.update(candidateRef, {
+              chatId: chatId
+            })
+            // 通知
+            const notificationRef = admin.firestore().collection('users').doc(user.uid)
+              .collection('notifications').doc()
+            const url = '/messages/' + chatId
+            batch.set(notificationRef, {
+              type: 'normal',
+              isImportant: true,
+              content: companyName + 'にスカウトされました！ メッセージを確認してみましょう。',
+              createdAt: new Date(),
+              url: url,
+              isUnread: true,
+            })
+            batch.commit()
+              .then(() => {
+                admin.firestore().collection('users')
+                  .doc(user.uid)
+                  .get()
+                  .then(userDoc => {
+                    if (userDoc.exists) {
+                      if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.scout) {
+                        // スカウトされたユーザーにメール送信
+                        const mailOptions = {
+                          from: `LightHouse <noreply@firebase.com>`,
+                          to: userDoc.data().email,
+                        }
+                        mailOptions.subject = `${companyName}にスカウトされました！`
+                        mailOptions.text = `${companyName}にスカウトされました！　ご確認ください。`
+                        mailTransport.sendMail(mailOptions, (err, info) => {
+                          if (err) {
+                            console.log(err)
+                          }
+                          console.log('New scout email sent to:', userDoc.data().email)
+                        })
+                      }
+                    }
+                  })
+                  .catch((error) => {
+                    console.error("Error getting document", error)
+                  })
+                console.log('send message & update candidate & send notification completed.')
+              })
+              .catch((error) => {
+                console.error("Error", error)
+              })
+          }
+        })
+        .catch(err => {
+          console.log('Error getting document', err)
+        })
+    }).catch(error => {
+        console.error(error)
+    })
   })
 
 // ユーザーが応募した時の処理
@@ -1451,19 +1449,16 @@ exports.applyForJob = functions.region('asia-northeast1')
     const createdAt = snap.data().createdAt
 
     // company の応募者数の更新、応募者の情報格納
-    return admin.firestore()
-      .collection('companies').doc(companyId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          const companyName = doc.data().companyName
-          const companyImageUrl = doc.data().imageUrl
-          const members = doc.data().members
-          var currentCandidates = doc.data().currentCandidates
-          var allCandidates = doc.data().allCandidates
-          // 処理が完了したかのフラグ
-          var isUpdatedCandidates = false
-          var setChatId = false
+    const companyRef = admin.firestore().collection('companies').doc(companyId)
+
+    return admin.firestore().runTransaction(function(transaction) {
+      return transaction.get(companyRef).then(function(companyDoc) {
+        if (companyDoc.exists) {
+          const companyName = companyDoc.data().companyName
+          const companyImageUrl = companyDoc.data().imageUrl
+          const members = companyDoc.data().members
+          var currentCandidates = companyDoc.data().currentCandidates
+          var allCandidates = companyDoc.data().allCandidates
 
           if (currentCandidates) {
             currentCandidates.inbox += 1
@@ -1500,156 +1495,156 @@ exports.applyForJob = functions.region('asia-northeast1')
             }
           }
 
-          const batch = admin.firestore().batch()
           // 候補者カウント更新
           const companyRef = admin.firestore().collection('companies').doc(companyId)
-          batch.update(companyRef, {
+          transaction.update(companyRef, {
             currentCandidates: currentCandidates,
             allCandidates: allCandidates,
           })
-          const companyApplicantsRef = admin.firestore().collection('companies').doc(companyId).collection('applicants').doc()
-          batch.set(companyApplicantsRef, {
-            user: user,
-            createdAt: createdAt,
-            jobId: jobId
-          })
-          // 通知
-          members.forEach((member, i) => {
-            const notificationRef = admin.firestore().collection('users').doc(member.uid)
-              .collection('notifications').doc()
-            const url = '/recruiter/candidates/' + candidateId
-            batch.set(notificationRef, {
-              type: 'normal',
-              isImportant: true,
-              content: user.name + 'さんから応募が届きました。',
-              createdAt: new Date(),
-              url: url,
-              isUnread: true,
-            })
-          })
-          batch.commit()
-            .then(() => {
-              isUpdatedCandidates = true
-              if (isUpdatedCandidates && setChatId) {
-                console.log('applyForJob completed.')
-              }
-            })
-            .catch((error) => {
-              console.error("Error adding document: ", error)
-            })
-
-          // chat作成、chatIdをcandidateに格納
-          admin.firestore()
-            .collection('chats')
-            .where('companyId', '==', companyId)
-            .where('uid', '==', user.uid)
-            .get()
-            .then(function(snapshot) {
-              if (!snapshot.empty) {
-                var docCount = 0
-                snapshot.forEach(function(chatDoc) {
-                  docCount += 1
-                  if (docCount == 1) {
-                    admin.firestore().collection('companies')
-                      .doc(companyId)
-                      .collection('candidates')
-                      .doc(candidateId)
-                      .update({
-                        chatId: chatDoc.id
-                      })
-                      .then(() => {
-                        setChatId = true
-                        if (isUpdatedCandidates && setChatId) {
-                          // 応募が来たら担当者にメール送信
-                          members.forEach((member, i) => {
-                            if (member.notificationsSetting == null ||
-                              member.notificationsSetting.application) {
-                              const mailOptions = {
-                                from: `LightHouse <noreply@firebase.com>`,
-                                to: member.email,
-                              }
-                              mailOptions.subject = `${user.name}さんから応募が来ました。`
-                              mailOptions.text = `${user.name}さんから応募が来ました。　ご確認ください。`
-                              mailTransport.sendMail(mailOptions, (err, info) => {
-                                if (err) {
-                                  console.log(err)
-                                }
-                                console.log('New apply email sent to:', member.email)
-                              })
-                            }
-                          })
-                          console.log('applyForJob completed.')
-                        }
-                      })
-                      .catch((error) => {
-                        console.error("Error adding document: ", error)
-                      })
-                  }
-                })
-              } else {
-                const chatId = admin.firestore().collection('chats').doc().id
-                var chatData = {
-                  uid: user.uid,
-                  userName: user.name,
-                  companyId: companyId,
-                  companyName: companyName,
-                  messagesExist: false,
-                  updatedAt: createdAt,
-                }
-                if (user.imageUrl) {
-                  chatData.profileImageUrl = user.imageUrl
-                }
-                if (companyImageUrl) {
-                  chatData.companyImageUrl = companyImageUrl
-                }
-
-                const batch = admin.firestore().batch()
-                const chatsRef = admin.firestore().collection('chats').doc(chatId)
-                batch.set(chatsRef, chatData)
-                const candidateRef = admin.firestore().collection('companies').doc(companyId)
-                  .collection('candidates').doc(candidateId)
-                batch.update(candidateRef, {
-                  chatId: chatId
-                })
-                batch.commit()
-                  .then(() => {
-                    setChatId = true
-                    if (isUpdatedCandidates && setChatId) {
-                      // 応募が来たら担当者にメール送信
-                      members.forEach((member, i) => {
-                        if (member.notificationsSetting == null ||
-                          member.notificationsSetting.application) {
-                          const mailOptions = {
-                            from: `LightHouse <noreply@firebase.com>`,
-                            to: member.email,
-                          }
-                          mailOptions.subject = `${user.name}さんから応募が来ました。`
-                          mailOptions.text = `${user.name}さんから応募が来ました。　ご確認ください。`
-                          mailTransport.sendMail(mailOptions, (err, info) => {
-                            if (err) {
-                              console.log(err)
-                            }
-                            console.log('New apply email sent to:', member.email)
-                          })
-                        }
-                      })
-
-                      console.log('applyForJob completed.')
-                    }
-                  })
-                  .catch((error) => {
-                    console.error("Error adding document: ", error)
-                  })
-              }
-            })
-            .catch(err => {
-              console.log('Error getting document', err)
-            })
+          return companyDoc
         }
       })
-      .catch(err => {
-        console.log('Error getting document', err)
+    }).then((companyDoc) => {
+      console.log('update candidates count completed.')
+
+      const companyName = companyDoc.data().companyName
+      const companyImageUrl = companyDoc.data().imageUrl
+      const members = companyDoc.data().members
+
+      const batch = admin.firestore().batch()
+      // applicantsに追加
+      const companyApplicantsRef = admin.firestore().collection('companies')
+        .doc(companyId).collection('applicants').doc()
+      batch.set(companyApplicantsRef, {
+        user: user,
+        createdAt: createdAt,
+        jobId: jobId
       })
+      // 通知
+      members.forEach((member, i) => {
+        const notificationRef = admin.firestore().collection('users')
+          .doc(member.uid).collection('notifications').doc()
+        const url = '/recruiter/candidates/' + candidateId
+        batch.set(notificationRef, {
+          type: 'normal',
+          isImportant: true,
+          content: user.name + 'さんから応募が届きました。',
+          createdAt: new Date(),
+          url: url,
+          isUnread: true,
+        })
+      })
+      batch.commit()
+        .then(() => {
+          console.log('set applicants & send notification completed.')
+        })
+        .catch((error) => {
+          console.error("Error", error)
+        })
+
+      // chat作成、chatIdをcandidateに格納, 担当者にメール送信
+      admin.firestore()
+        .collection('chats')
+        .where('companyId', '==', companyId)
+        .where('uid', '==', user.uid)
+        .get()
+        .then(function(snapshot) {
+          if (!snapshot.empty) {
+            var docCount = 0
+            snapshot.forEach(function(chatDoc) {
+              docCount += 1
+              if (docCount == 1) {
+                admin.firestore().collection('companies')
+                  .doc(companyId)
+                  .collection('candidates')
+                  .doc(candidateId)
+                  .update({
+                    chatId: chatDoc.id
+                  })
+                  .then(() => {
+                    // 応募が来たら担当者にメール送信
+                    members.forEach((member, i) => {
+                      if (member.notificationsSetting == null ||
+                        member.notificationsSetting.application) {
+                        const mailOptions = {
+                          from: `LightHouse <noreply@firebase.com>`,
+                          to: member.email,
+                        }
+                        mailOptions.subject = `${user.name}さんから応募が来ました。`
+                        mailOptions.text = `${user.name}さんから応募が来ました。　ご確認ください。`
+                        mailTransport.sendMail(mailOptions, (err, info) => {
+                          if (err) {
+                            console.log(err)
+                          }
+                          console.log('New apply email sent to:', member.email)
+                        })
+                      }
+                    })
+                    console.log('update candidate completed.')
+                  })
+                  .catch((error) => {
+                    console.error("Error updating document: ", error)
+                  })
+              }
+            })
+          } else {
+            const chatId = admin.firestore().collection('chats').doc().id
+            var chatData = {
+              uid: user.uid,
+              userName: user.name,
+              companyId: companyId,
+              companyName: companyName,
+              messagesExist: false,
+              updatedAt: createdAt,
+            }
+            if (user.imageUrl) {
+              chatData.profileImageUrl = user.imageUrl
+            }
+            if (companyImageUrl) {
+              chatData.companyImageUrl = companyImageUrl
+            }
+
+            const batch = admin.firestore().batch()
+            const chatsRef = admin.firestore().collection('chats').doc(chatId)
+            batch.set(chatsRef, chatData)
+            const candidateRef = admin.firestore().collection('companies').doc(companyId)
+              .collection('candidates').doc(candidateId)
+            batch.update(candidateRef, {
+              chatId: chatId
+            })
+            batch.commit()
+              .then(() => {
+                // 応募が来たら担当者にメール送信
+                members.forEach((member, i) => {
+                  if (member.notificationsSetting == null ||
+                    member.notificationsSetting.application) {
+                    const mailOptions = {
+                      from: `LightHouse <noreply@firebase.com>`,
+                      to: member.email,
+                    }
+                    mailOptions.subject = `${user.name}さんから応募が来ました。`
+                    mailOptions.text = `${user.name}さんから応募が来ました。　ご確認ください。`
+                    mailTransport.sendMail(mailOptions, (err, info) => {
+                      if (err) {
+                        console.log(err)
+                      }
+                      console.log('New apply email sent to:', member.email)
+                    })
+                  }
+                })
+                console.log('update candidate completed.')
+              })
+              .catch((error) => {
+                console.error("Error updating document: ", error)
+              })
+          }
+        })
+        .catch(err => {
+          console.log('Error getting document', err)
+        })
+    }).catch(error => {
+        console.error(error)
+    })
   })
 
 // 採用担当者が募集を投稿した時の処理
