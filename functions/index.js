@@ -200,34 +200,21 @@ exports.updateCareer = functions.region('asia-northeast1')
                 console.log('updateCareer completed.')
               })
               .catch((error) => {
-                console.error("Error adding document: ", error)
+                console.error("Error", error)
               })
 
             // userスコア更新
             admin.firestore()
               .collection('users')
               .doc(user.uid)
-              .get()
-              .then(userDoc => {
-                var points = userDoc.data().points
-                if (points == null) {
-                  points = 0
-                }
-                admin.firestore()
-                  .collection('users')
-                  .doc(user.uid)
-                  .update({
-                    points: points + 1,
-                  })
-                  .then(() => {
-                    console.log('updateCareer: update user score completed.')
-                  })
-                  .catch((error) => {
-                    console.error("Error adding document: ", error)
-                  })
+              .update({
+                points: admin.firestore.FieldValue.increment(1),
+              })
+              .then(() => {
+                console.log('update user score completed.')
               })
               .catch((error) => {
-                console.error("Error adding document: ", error)
+                console.error("Error updating document", error)
               })
           } else if (newStatus.pass || newStatus.rejected) {
             // ステータスがインターン、インターン延長から変わった時
@@ -261,13 +248,13 @@ exports.updateCareer = functions.region('asia-northeast1')
                 console.log('updateCareer completed.')
               })
               .catch((error) => {
-                console.error("Error adding document: ", error)
+                console.error("Error", error)
               })
           }
         }
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error getting document", error)
       })
   })
 
@@ -303,84 +290,90 @@ exports.sendFeedback = functions.region('asia-northeast1')
     const updatedAt = newValue.updatedAt
     const user = newValue.user
 
-    return admin.firestore()
-      .collection('companies')
-      .doc(companyId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          const companyName = doc.data().companyName
-          const companyImageUrl = doc.data().imageUrl
+    // company feedback writtenCount 更新
+    const companyRef = admin.firestore().collection('companies').doc(companyId)
 
-          var feedbackData = {
-            uid: user.uid,
-            userName: user.name,
-            companyId: companyId,
-            companyName: companyName,
-            occupation: internOccupation,
-            createdAt: updatedAt,
-          }
-          if (user.imageUrl) {
-            feedbackData.profileImageUrl = user.imageUrl
-          }
-          if (companyImageUrl) {
-            feedbackData.companyImageUrl = companyImageUrl
-          }
+    return admin.firestore().runTransaction(function(transaction) {
+      return transaction.get(companyRef).then(function(companyDoc) {
+        // company feedback all 更新
+        var companyFeedbackData = companyDoc.data().feedback
+        companyFeedbackData.all += 1
+        const companyRef = admin.firestore().collection('companies').doc(companyId)
+        transaction.update(companyRef, {
+          feedback: companyFeedbackData,
+        })
+        const companyDetailRef = admin.firestore().collection('companies')
+          .doc(companyId).collection('detail').doc(companyId)
+        transaction.update(companyDetailRef, {
+          feedback: companyFeedbackData,
+        })
+        return companyDoc
+      })
+    }).then(companyDoc => {
+      console.log('update company feedback count completed.')
 
-          if (newValue.feedback == null) {
-            feedbackData.isWritten = false
-          } else {
-            feedbackData.isWritten = true
-            feedbackData.goodPoint = feedback.goodPoint
-            feedbackData.advice = feedback.advice
-          }
+      const companyName = companyDoc.data().companyName
+      const companyImageUrl = companyDoc.data().imageUrl
 
-          const feedbackId = admin.firestore().collection('feedbacks').doc().id
-          const batch = admin.firestore().batch()
+      var feedbackData = {
+        uid: user.uid,
+        userName: user.name,
+        companyId: companyId,
+        companyName: companyName,
+        occupation: internOccupation,
+        createdAt: updatedAt,
+      }
+      if (user.imageUrl) {
+        feedbackData.profileImageUrl = user.imageUrl
+      }
+      if (companyImageUrl) {
+        feedbackData.companyImageUrl = companyImageUrl
+      }
 
-          // company feedback all 更新
-          var companyFeedbackData = doc.data().feedback
-          companyFeedbackData.all += 1
-          const companyRef = admin.firestore().collection('companies').doc(companyId)
-          batch.update(companyRef, {
-            feedback: companyFeedbackData,
-          })
-          const companyDetailRef = admin.firestore().collection('companies')
-            .doc(companyId).collection('detail').doc(companyId)
-          batch.update(companyDetailRef, {
-            feedback: companyFeedbackData,
-          })
-          // フィードバック
-          const feedbackRef = admin.firestore().collection('feedbacks').doc(feedbackId)
-          batch.set(feedbackRef, feedbackData)
+      if (newValue.feedback == null) {
+        feedbackData.isWritten = false
+      } else {
+        feedbackData.isWritten = true
+        feedbackData.goodPoint = feedback.goodPoint
+        feedbackData.advice = feedback.advice
+      }
 
+      const feedbackId = admin.firestore().collection('feedbacks').doc().id
+      const batch = admin.firestore().batch()
+
+      // フィードバック
+      const feedbackRef = admin.firestore().collection('feedbacks').doc(feedbackId)
+      batch.set(feedbackRef, feedbackData)
+
+      if (newValue.feedback != null) {
+        // 通知
+        const notificationRef = admin.firestore().collection('users').doc(user.uid)
+          .collection('notifications').doc()
+        const url = '/user/feedbacks/' + feedbackId
+        batch.set(notificationRef, {
+          type: 'normal',
+          isImportant: false,
+          content: companyName + 'からフィードバックが送られました！ ',
+          createdAt: new Date(),
+          url: url,
+          isUnread: true,
+        })
+      }
+
+      batch.commit()
+        .then(() => {
           if (newValue.feedback != null) {
-            // 通知
-            const notificationRef = admin.firestore().collection('users').doc(user.uid)
-              .collection('notifications').doc()
-            const url = '/user/feedbacks/' + feedbackId
-            batch.set(notificationRef, {
-              type: 'normal',
-              isImportant: false,
-              content: companyName + 'からフィードバックが送られました！ ',
-              createdAt: new Date(),
-              url: url,
-              isUnread: true,
-            })
+            console.log('set feedback & send notification completed.')
+          } else {
+            console.log('set feedback completed.')
           }
-
-          batch.commit()
-            .then(() => {
-              console.log('sendFeedback completed.')
-            })
-            .catch((error) => {
-              console.error("Error adding document: ", error)
-            })
-        }
-      })
-      .catch((error) => {
-        console.error("Error adding document: ", error)
-      })
+        })
+        .catch((error) => {
+          console.error("Error", error)
+        })
+    }).catch(error => {
+      console.error(error)
+    })
   })
 
 // フィードバックが送られた時、企業のfeedback countを更新
@@ -390,39 +383,29 @@ exports.updateCompanyFeedbackCount = functions.region('asia-northeast1')
   .onCreate((snap, context) => {
     const companyId = snap.data().companyId
 
-    return admin.firestore()
-      .collection('companies')
-      .doc(companyId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          // company feedback writtenCount 更新
-          var feedback = doc.data().feedback
-          feedback.writtenCount += 1
+    // company feedback writtenCount 更新
+    const companyRef = admin.firestore().collection('companies').doc(companyId)
 
-          const batch = admin.firestore().batch()
-          const companyRef = admin.firestore().collection('companies').doc(companyId)
-          batch.update(companyRef, {
-            feedback: feedback
-          })
-          const companyDetailRef = admin.firestore().collection('companies')
-            .doc(companyId).collection('detail').doc(companyId)
-          batch.update(companyDetailRef, {
-            feedback: feedback
-          })
+    return admin.firestore().runTransaction(function(transaction) {
+      return transaction.get(companyRef).then(function(companyDoc) {
+        var feedback = companyDoc.data().feedback
+        feedback.writtenCount += 1
 
-          batch.commit()
-            .then(() => {
-              console.log('updateCompanyFeedbackCount completed.')
-            })
-            .catch((error) => {
-              console.error("Error adding document: ", error)
-            })
-        }
+        const companyRef = admin.firestore().collection('companies').doc(companyId)
+        transaction.update(companyRef, {
+          feedback: feedback
+        })
+        const companyDetailRef = admin.firestore().collection('companies')
+          .doc(companyId).collection('detail').doc(companyId)
+        transaction.update(companyDetailRef, {
+          feedback: feedback
+        })
       })
-      .catch((error) => {
-        console.error("Error adding document: ", error)
-      })
+    }).then(() => {
+      console.log('completed.')
+    }).catch(error => {
+      console.error(error)
+    })
   })
 
 // 候補者のステータスが pass になった時、パスを送る処理
