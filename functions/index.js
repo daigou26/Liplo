@@ -2456,143 +2456,150 @@ exports.sendReview = functions.region('asia-northeast1')
 
     const userRef = admin.firestore().collection('users').doc(uid)
 
-    return admin.firestore()
-      .collection('jobs')
-      .where('companyId', '==', companyId)
-      .get()
-      .then(function(jobsSnapshot) {
-        admin.firestore().runTransaction(function(transaction) {
-          return transaction.getAll(companyDetailRef, userRef).then(function(docs) {
-              const companyDetailDoc = docs[0]
-              const userDoc = docs[1]
+    return admin.firestore().runTransaction(function(transaction) {
+      return transaction.getAll(companyDetailRef, userRef).then(function(docs) {
+        const companyDetailDoc = docs[0]
+        const userDoc = docs[1]
 
-              if (companyDetailDoc.exists) {
-                // スコア更新
-                var points = companyDetailDoc.data().points
-                if (points == null) {
-                  points = 100
-                }
-                if (snap.data().all < 1.5) {
-                  if (points < 2) {
-                    points = 0
-                  } else {
-                    points -= 2
-                  }
-                } else if (snap.data().all >= 1.5 && snap.data().all < 2.5) {
-                  if (points < 1) {
-                    points = 0
-                  } else {
-                    points -= 1
-                  }
-                } else if (snap.data().all >= 2.5 && snap.data().all < 3.5) {
-                  // points維持
-                } else if (snap.data().all >= 3.5 && snap.data().all < 4.5) {
-                  points += 1
-                } else if (snap.data().all >= 4.5) {
-                  points += 2
-                }
+        if (companyDetailDoc.exists) {
+          // スコア更新
+          var points = companyDetailDoc.data().points
+          if (points == null) {
+            points = 100
+          }
+          if (snap.data().all < 1.5) {
+            if (points < 2) {
+              points = 0
+            } else {
+              points -= 2
+            }
+          } else if (snap.data().all >= 1.5 && snap.data().all < 2.5) {
+            if (points < 1) {
+              points = 0
+            } else {
+              points -= 1
+            }
+          } else if (snap.data().all >= 2.5 && snap.data().all < 3.5) {
+            // points維持
+          } else if (snap.data().all >= 3.5 && snap.data().all < 4.5) {
+            points += 1
+          } else if (snap.data().all >= 4.5) {
+            points += 2
+          }
 
-                var reviewCount
-                var atmosphere
-                var job
-                var discretion
-                var flexibleSchedule
-                var flexibility
-                var mentor
-                var growth
-                var all
-                var comments
+          var reviewCount
+          var atmosphere
+          var job
+          var discretion
+          var flexibleSchedule
+          var flexibility
+          var mentor
+          var growth
+          var all
+          var comments
 
-                if (companyDetailDoc.data().reviews) {
-                  reviewCount = companyDetailDoc.data().reviews.rating.count
-                  atmosphere = Math.round((companyDetailDoc.data().reviews.rating.atmosphere * reviewCount + snap.data().atmosphere) / (reviewCount + 1) * 10) / 10
-                  job = Math.round((companyDetailDoc.data().reviews.rating.job * reviewCount + snap.data().job) / (reviewCount + 1) * 10) / 10
-                  discretion = Math.round((companyDetailDoc.data().reviews.rating.discretion * reviewCount + snap.data().discretion) / (reviewCount + 1) * 10) / 10
-                  flexibleSchedule = Math.round((companyDetailDoc.data().reviews.rating.flexibleSchedule * reviewCount + snap.data().flexibleSchedule) / (reviewCount + 1) * 10) / 10
-                  flexibility = Math.round((companyDetailDoc.data().reviews.rating.flexibility * reviewCount + snap.data().flexibility) / (reviewCount + 1) * 10) / 10
-                  mentor = Math.round((companyDetailDoc.data().reviews.rating.mentor * reviewCount + snap.data().mentor) / (reviewCount + 1) * 10) / 10
-                  growth = Math.round((companyDetailDoc.data().reviews.rating.growth * reviewCount + snap.data().growth) / (reviewCount + 1) * 10) / 10
-                  all = Math.round((atmosphere + job + discretion + flexibleSchedule + flexibility + mentor + growth) / 7 * 10) / 10
-                  comments = companyDetailDoc.data().reviews.comments
+          if (companyDetailDoc.data().reviews) {
+            reviewCount = companyDetailDoc.data().reviews.rating.count
+            atmosphere = Math.round((companyDetailDoc.data().reviews.rating.atmosphere * reviewCount + snap.data().atmosphere) / (reviewCount + 1) * 10) / 10
+            job = Math.round((companyDetailDoc.data().reviews.rating.job * reviewCount + snap.data().job) / (reviewCount + 1) * 10) / 10
+            discretion = Math.round((companyDetailDoc.data().reviews.rating.discretion * reviewCount + snap.data().discretion) / (reviewCount + 1) * 10) / 10
+            flexibleSchedule = Math.round((companyDetailDoc.data().reviews.rating.flexibleSchedule * reviewCount + snap.data().flexibleSchedule) / (reviewCount + 1) * 10) / 10
+            flexibility = Math.round((companyDetailDoc.data().reviews.rating.flexibility * reviewCount + snap.data().flexibility) / (reviewCount + 1) * 10) / 10
+            mentor = Math.round((companyDetailDoc.data().reviews.rating.mentor * reviewCount + snap.data().mentor) / (reviewCount + 1) * 10) / 10
+            growth = Math.round((companyDetailDoc.data().reviews.rating.growth * reviewCount + snap.data().growth) / (reviewCount + 1) * 10) / 10
+            all = Math.round((atmosphere + job + discretion + flexibleSchedule + flexibility + mentor + growth) / 7 * 10) / 10
+            comments = companyDetailDoc.data().reviews.comments
 
-                  if (comments == null) {
-                    comments = [comment]
-                  } else if (comments.length < 3) {
-                    comments.push(comment)
-                  } else if (comments.length >= 3) {
-                    var date
-                    var index
-                    comments.forEach((comment, i) => {
-                      if (date == null || date > comment.createdAt.seconds * 1000) {
-                        date = comment.createdAt.seconds * 1000
-                        index = i
-                      }
-                    })
-                    comments.splice(index, 1)
-                    comments.push(comment)
-                  }
-                } else {
-                  reviewCount = 0
-                  atmosphere = snap.data().atmosphere
-                  job = snap.data().job
-                  discretion = snap.data().discretion
-                  flexibleSchedule = snap.data().flexibleSchedule
-                  flexibility = snap.data().flexibility
-                  mentor = snap.data().mentor
-                  growth = snap.data().growth
-                  all = Math.round((atmosphere + job + discretion + flexibleSchedule + flexibility + mentor + growth) / 7 * 10) / 10
-                  comments = [comment]
+            if (comments == null) {
+              comments = [comment]
+            } else if (comments.length < 3) {
+              comments.push(comment)
+            } else if (comments.length >= 3) {
+              var date
+              var index
+              comments.forEach((comment, i) => {
+                if (date == null || date > comment.createdAt.seconds * 1000) {
+                  date = comment.createdAt.seconds * 1000
+                  index = i
                 }
+              })
+              comments.splice(index, 1)
+              comments.push(comment)
+            }
+          } else {
+            reviewCount = 0
+            atmosphere = snap.data().atmosphere
+            job = snap.data().job
+            discretion = snap.data().discretion
+            flexibleSchedule = snap.data().flexibleSchedule
+            flexibility = snap.data().flexibility
+            mentor = snap.data().mentor
+            growth = snap.data().growth
+            all = Math.round((atmosphere + job + discretion + flexibleSchedule + flexibility + mentor + growth) / 7 * 10) / 10
+            comments = [comment]
+          }
 
-                const rating = {
-                  all: all,
-                  count: reviewCount + 1,
-                  atmosphere: atmosphere,
-                  job: job,
-                  discretion: discretion,
-                  flexibleSchedule: flexibleSchedule,
-                  flexibility: flexibility,
-                  mentor: mentor,
-                  growth: growth
-                }
-                const reviews = {
-                  rating: rating,
-                  comments: comments,
-                }
-                // company rating, points 更新
-                const companyRef = admin.firestore().collection('companies').doc(companyId)
-                transaction.update(companyRef, {
-                  rating: rating,
-                  points: points
-                })
-                // companyDetail reviews, points 更新
-                transaction.update(companyDetailRef, {
-                  reviews: reviews,
-                  points: points,
-                })
-                // job rating, points更新
-                jobsSnapshot.forEach(function(jobDoc) {
-                  const jobRef = admin.firestore().collection('jobs').doc(jobDoc.id)
-                  transaction.update(jobRef, {
-                    rating: rating,
-                    points: points
-                  })
-                })
-                // userスコア更新
-                transaction.update(userRef, {
-                  points: userDoc.data().points + 1,
-                })
-              }
-          });
-        }).then(() => {
-          console.log('completed.')
-        }).catch(error => {
-            console.error(error)
+          const rating = {
+            all: all,
+            count: reviewCount + 1,
+            atmosphere: atmosphere,
+            job: job,
+            discretion: discretion,
+            flexibleSchedule: flexibleSchedule,
+            flexibility: flexibility,
+            mentor: mentor,
+            growth: growth
+          }
+          const reviews = {
+            rating: rating,
+            comments: comments,
+          }
+          // company rating, points 更新
+          const companyRef = admin.firestore().collection('companies').doc(companyId)
+          transaction.update(companyRef, {
+            rating: rating,
+            points: points
+          })
+          // companyDetail reviews, points 更新
+          transaction.update(companyDetailRef, {
+            reviews: reviews,
+            points: points,
+          })
+          // userスコア更新
+          transaction.update(userRef, {
+            points: userDoc.data().points + 1,
+          })
+          return { rating: rating, points: points }
+        }
+      })
+    }).then((updatedData) => {
+      console.log('update company & detail & user score completed.')
+      // job rating, points更新
+      admin.firestore()
+        .collection('jobs')
+        .where('companyId', '==', companyId)
+        .get()
+        .then(snapshot => {
+          const batch = admin.firestore().batch()
+
+          snapshot.forEach(function(jobDoc) {
+            const jobRef = admin.firestore().collection('jobs').doc(jobDoc.id)
+            batch.update(jobRef, updatedData)
+          })
+          batch.commit()
+            .then(() => {
+              console.log('update jobs completed.')
+            })
+            .catch((error) => {
+              console.error("Error", error)
+            })
         })
-      })
-      .catch(error => {
-        console.log('Error getting document', error)
-      })
+        .catch(error => {
+          console.log('Error getting document', error)
+        })
+    }).catch(error => {
+        console.error(error)
+    })
   })
 
 // メッセージを送信した時の処理
