@@ -66,7 +66,7 @@ export const actions = {
       })
   },
   queryNotReviewedLists({commit}, uid) {
-    return firestore.collection('users').doc(uid)
+    firestore.collection('users').doc(uid)
       .collection('career')
       .where('end', '==', true)
       .where('isReviewWritten', '==', false)
@@ -93,7 +93,7 @@ export const actions = {
       })
   },
   queryCareer({commit}, uid) {
-    return firestore.collection('users').doc(uid)
+    firestore.collection('users').doc(uid)
       .collection('career')
       .orderBy("startedAt", "asc")
       .get()
