@@ -15,7 +15,7 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex v-else xs12 class="py-3 break">
+    <v-flex v-else-if="uid" xs12 class="py-3 break">
       <!-- Profile画像 & UserName -->
       <div class="py-4 align-center">
         <v-card flat>
@@ -282,6 +282,7 @@
 import { mapActions, mapState, mapGetters } from 'vuex'
 
 export default {
+  middleware: 'auth',
   data: () => ({
     isQueried: false,
     windowHeight: 0,

@@ -16,7 +16,7 @@
       </v-layout>
     </v-flex>
     <v-flex
-      v-else
+      v-else-if="uid"
       xs12
       md10
       offset-md1
@@ -81,6 +81,7 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
+  middleware: 'auth',
   data: () => ({
     isQueried: false,
     windowHeight: 0,
@@ -100,6 +101,7 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
+      uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
       companyId: state => state.profile.companyId,
       userName: state => state.feedback.userName,

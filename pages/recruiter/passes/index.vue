@@ -13,7 +13,7 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex xs12 v-else>
+    <v-flex xs12 v-else-if="uid">
       <div
         v-if="yearPasses && yearPasses.length > 0"
         class="text-xs-right pa-3"
@@ -457,6 +457,7 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
+  middleware: 'auth',
   data() {
     return {
       count: 0,
@@ -482,6 +483,7 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
+      uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
       companyId: state => state.profile.companyId,
       hiringPassCount: state => state.companyPasses.hiringPassCount,

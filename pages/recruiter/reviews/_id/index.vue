@@ -16,7 +16,7 @@
       </v-layout>
     </v-flex>
     <v-flex
-      v-else
+      v-else-if="uid"
       xs12
       py-3
       :class="{
@@ -222,6 +222,7 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
+  middleware: 'auth',
   data: () => ({
     isQueried: false,
     windowHeight: 0,
@@ -243,6 +244,7 @@ export default {
   }),
   computed: {
     ...mapState({
+      uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
       companyId: state => state.profile.companyId,
       content: state => state.review.content,

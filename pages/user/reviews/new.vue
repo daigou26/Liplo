@@ -16,7 +16,7 @@
       </v-layout>
     </v-flex>
     <v-flex
-      v-else
+      v-else-if="uid"
       xs12
       md10
       offset-md1
@@ -207,6 +207,7 @@ import { mapActions, mapState } from 'vuex'
 import MyPageMenu from '~/components/MyPageMenu'
 
 export default {
+  middleware: 'auth',
   components: {
     MyPageMenu
   },
@@ -291,7 +292,7 @@ export default {
         this.mentor +
         this.mentor
       ) / 7 * 10) / 10
-      
+
       var review = {
         uid: this.uid,
         careerId: this.notReviewedCompany.careerId,

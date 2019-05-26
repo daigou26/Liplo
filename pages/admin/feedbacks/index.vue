@@ -16,7 +16,7 @@
       </v-layout>
     </v-flex>
     <v-flex
-      v-else
+      v-else-if="uid"
       xs12
       class="break"
     >
@@ -69,6 +69,7 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 export default {
+  middleware: 'auth',
   data() {
     return {
       isQueried: false,

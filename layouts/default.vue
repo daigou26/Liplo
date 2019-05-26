@@ -12,8 +12,8 @@
           breakpoint != 'xs' &&
           (routeName == 'jobs-id' ||
           routeName == 'companies-id' ||
-          path == '/user/profile' ||
-          path.includes('/user/settings'))
+          (path == '/user/profile' && uid) ||
+          (path.includes('/user/settings') && uid))
         "
       ></footer-content>
       <v-footer

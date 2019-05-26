@@ -20,7 +20,7 @@
       </v-layout>
     </v-flex>
     <v-flex
-      v-else
+      v-else-if="uid"
       xs12
       md10
       offset-md1
@@ -125,6 +125,7 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
+  middleware: 'auth',
   data: () => ({
     isQueried: false,
     windowHeight: 0,

@@ -16,7 +16,7 @@
           Now Loading...
         </v-layout>
       </v-flex>
-      <v-flex v-else xs12 pt-3 px-2>
+      <v-flex v-else-if="uid" xs12 pt-3 px-2>
         <v-layout row wrap>
           <v-flex xs12 md9>
             <v-card flat>
@@ -926,9 +926,10 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
+  middleware: 'auth',
   data: () => ({
     isQueried: false,
     windowHeight: 0,

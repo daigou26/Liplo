@@ -22,7 +22,14 @@
         Close
       </v-btn>
     </v-snackbar>
+    <!-- loading -->
+    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
+      <v-layout justify-center>
+        Now Loading...
+      </v-layout>
+    </v-flex>
     <v-flex
+      v-else-if="uid"
       xs12
       md10
       offset-md1
@@ -247,6 +254,7 @@ import { mapActions, mapState } from 'vuex'
 import SettingsMenu from '~/components/SettingsMenu'
 
 export default {
+  middleware: 'auth',
   components: {
     SettingsMenu
   },
@@ -283,6 +291,7 @@ export default {
     },
     ...mapState({
       uid: state => state.uid,
+      isRefreshing: state => state.isRefreshing,
       type: state => state.profile.type,
       currentEmail: state => state.profile.email,
       acceptScout: state => state.settings.acceptScout,
@@ -292,7 +301,7 @@ export default {
     }),
   },
   mounted() {
-    if (this.uid != null && !this.isQueried) {
+    if (this.uid != null && this.uid != '' && !this.isQueried) {
       this.resetState()
       this.updateIsLoading(true)
       this.querySettings(this.uid)

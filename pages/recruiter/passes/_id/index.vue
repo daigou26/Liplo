@@ -14,7 +14,7 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex v-else xs12>
+    <v-flex v-else-if="uid" xs12>
       <div class="textColor title pa-3 font-weight-bold">
         <span v-if="paramsId != 'hiring'">{{ paramsId }}年度 </span>
         <span v-if="!passType && paramsId == 'hiring'">入社パス（未使用）</span>
@@ -93,6 +93,7 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 export default {
+  middleware: 'auth',
   data() {
     return {
       count: 0,
@@ -129,6 +130,7 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
+      uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
       companyId: state => state.profile.companyId,
       passes: state => state.companyPasses.passes,

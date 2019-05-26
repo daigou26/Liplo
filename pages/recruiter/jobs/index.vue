@@ -14,7 +14,7 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex v-else xs12>
+    <v-flex v-else-if="uid" xs12>
       <div class="text-xs-right">
         <v-btn to="/recruiter/jobs/new">新規作成</v-btn>
       </div>
@@ -73,6 +73,7 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
+  middleware: 'auth',
   data() {
     return {
       count: 0,
@@ -107,6 +108,7 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
+      uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
       companyId: state => state.profile.companyId,
       jobs: state => state.companyJobs.jobs,

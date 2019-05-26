@@ -195,6 +195,7 @@ export const actions = {
     dispatch('resetState')
     dispatch('messages/resetState')
     dispatch('profile/resetState')
+    dispatch('profile/resetProfileState')
     dispatch('review/resetState')
     dispatch('reviews/resetCompanyReviewsState')
     dispatch('reviews/resetUserReviewsState')
@@ -311,6 +312,7 @@ export const actions = {
             dispatch('resetState')
             dispatch('messages/resetState')
             dispatch('profile/resetState')
+            dispatch('profile/resetProfileState')
             dispatch('review/resetState')
             dispatch('reviews/resetCompanyReviewsState')
             dispatch('reviews/resetUserReviewsState')
@@ -636,7 +638,14 @@ export const actions = {
     } else {
       commit('updateIsRefreshing', false)
       commit('setUid', null)
-      if (route.path !== '/' && route.path !== '/signup' && route.path !== '/company_registration' && route.name !== 'jobs-id' && route.name !== 'companies-id') {
+      if (route.path !== '/' &&
+        route.path !== '/signup' &&
+        route.path !== '/company_registration' &&
+        route.path !== '/contact' &&
+        route.path !== '/feedback' &&
+        route.name !== 'jobs-id' &&
+        route.name !== 'companies-id'
+      ) {
         router.push('/')
       }
     }

@@ -16,7 +16,7 @@
       </v-layout>
     </v-flex>
     <v-flex
-      v-else
+      v-else-if="uid"
       xs12
       md10
       offset-md1
@@ -116,10 +116,10 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import { auth } from '@/plugins/firebase'
 import MyPageMenu from '~/components/MyPageMenu'
 
 export default {
+  middleware: 'auth',
   components: {
     MyPageMenu
   },

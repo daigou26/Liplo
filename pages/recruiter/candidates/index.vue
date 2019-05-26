@@ -14,7 +14,7 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex v-else xs12>
+    <v-flex v-else-if="uid" xs12>
       <v-data-table
         :headers="headers"
         :items="candidates"
@@ -85,6 +85,7 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 export default {
+  middleware: 'auth',
   data() {
     return {
       count: 0,
@@ -115,6 +116,7 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
+      uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
       companyId: state => state.profile.companyId,
       candidates: state => state.candidates.candidates,

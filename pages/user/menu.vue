@@ -4,7 +4,7 @@
     row
     wrap
   >
-    <v-flex xs10 offset-xs1 v-if="true">
+    <v-flex xs10 offset-xs1 v-if="uid">
       <!-- user name, image -->
       <v-card flat class="py-3">
         <v-list-tile to="/user/profile">
@@ -88,10 +88,14 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 export default {
+  middleware: 'auth',
   head () {
     return {
       link: [
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp' }
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp'
+        }
       ]
     }
   },
