@@ -282,7 +282,16 @@ export default {
   methods: {
     reviewButtonClicked() {
       this.reviewValid = false
-      const all = Math.round((this.atmosphere + this.job + this.discretion + this.flexibleSchedule + this.flexibility + this.mentor + this.mentor) / 7 * 10) / 10
+      const all = Math.round((
+        this.atmosphere +
+        this.job +
+        this.discretion +
+        this.flexibleSchedule +
+        this.flexibility +
+        this.mentor +
+        this.mentor
+      ) / 7 * 10) / 10
+      
       var review = {
         uid: this.uid,
         careerId: this.notReviewedCompany.careerId,

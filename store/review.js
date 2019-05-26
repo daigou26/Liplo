@@ -75,7 +75,7 @@ export const actions = {
     batch.set(reviewRef, review)
     batch.commit()
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error", error)
       })
   },
   queryReview({commit}, {nuxt, params, companyId, uid}) {

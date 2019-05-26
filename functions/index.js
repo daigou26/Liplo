@@ -119,7 +119,7 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
         console.log('sendMailToInvitedMember completed. sent to:', email)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error", error)
       })
   })
 
@@ -200,34 +200,21 @@ exports.updateCareer = functions.region('asia-northeast1')
                 console.log('updateCareer completed.')
               })
               .catch((error) => {
-                console.error("Error adding document: ", error)
+                console.error("Error", error)
               })
 
             // userスコア更新
             admin.firestore()
               .collection('users')
               .doc(user.uid)
-              .get()
-              .then(userDoc => {
-                var points = userDoc.data().points
-                if (points == null) {
-                  points = 0
-                }
-                admin.firestore()
-                  .collection('users')
-                  .doc(user.uid)
-                  .update({
-                    points: points + 1,
-                  })
-                  .then(() => {
-                    console.log('updateCareer: update user score completed.')
-                  })
-                  .catch((error) => {
-                    console.error("Error adding document: ", error)
-                  })
+              .update({
+                points: admin.firestore.FieldValue.increment(1),
+              })
+              .then(() => {
+                console.log('update user score completed.')
               })
               .catch((error) => {
-                console.error("Error adding document: ", error)
+                console.error("Error updating document", error)
               })
           } else if (newStatus.pass || newStatus.rejected) {
             // ステータスがインターン、インターン延長から変わった時
@@ -261,13 +248,13 @@ exports.updateCareer = functions.region('asia-northeast1')
                 console.log('updateCareer completed.')
               })
               .catch((error) => {
-                console.error("Error adding document: ", error)
+                console.error("Error", error)
               })
           }
         }
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error getting document", error)
       })
   })
 
@@ -303,84 +290,90 @@ exports.sendFeedback = functions.region('asia-northeast1')
     const updatedAt = newValue.updatedAt
     const user = newValue.user
 
-    return admin.firestore()
-      .collection('companies')
-      .doc(companyId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          const companyName = doc.data().companyName
-          const companyImageUrl = doc.data().imageUrl
+    // company feedback writtenCount 更新
+    const companyRef = admin.firestore().collection('companies').doc(companyId)
 
-          var feedbackData = {
-            uid: user.uid,
-            userName: user.name,
-            companyId: companyId,
-            companyName: companyName,
-            occupation: internOccupation,
-            createdAt: updatedAt,
-          }
-          if (user.imageUrl) {
-            feedbackData.profileImageUrl = user.imageUrl
-          }
-          if (companyImageUrl) {
-            feedbackData.companyImageUrl = companyImageUrl
-          }
+    return admin.firestore().runTransaction(function(transaction) {
+      return transaction.get(companyRef).then(function(companyDoc) {
+        // company feedback all 更新
+        var companyFeedbackData = companyDoc.data().feedback
+        companyFeedbackData.all += 1
+        const companyRef = admin.firestore().collection('companies').doc(companyId)
+        transaction.update(companyRef, {
+          feedback: companyFeedbackData,
+        })
+        const companyDetailRef = admin.firestore().collection('companies')
+          .doc(companyId).collection('detail').doc(companyId)
+        transaction.update(companyDetailRef, {
+          feedback: companyFeedbackData,
+        })
+        return companyDoc
+      })
+    }).then(companyDoc => {
+      console.log('update company feedback count completed.')
 
-          if (newValue.feedback == null) {
-            feedbackData.isWritten = false
-          } else {
-            feedbackData.isWritten = true
-            feedbackData.goodPoint = feedback.goodPoint
-            feedbackData.advice = feedback.advice
-          }
+      const companyName = companyDoc.data().companyName
+      const companyImageUrl = companyDoc.data().imageUrl
 
-          const feedbackId = admin.firestore().collection('feedbacks').doc().id
-          const batch = admin.firestore().batch()
+      var feedbackData = {
+        uid: user.uid,
+        userName: user.name,
+        companyId: companyId,
+        companyName: companyName,
+        occupation: internOccupation,
+        createdAt: updatedAt,
+      }
+      if (user.imageUrl) {
+        feedbackData.profileImageUrl = user.imageUrl
+      }
+      if (companyImageUrl) {
+        feedbackData.companyImageUrl = companyImageUrl
+      }
 
-          // company feedback all 更新
-          var companyFeedbackData = doc.data().feedback
-          companyFeedbackData.all += 1
-          const companyRef = admin.firestore().collection('companies').doc(companyId)
-          batch.update(companyRef, {
-            feedback: companyFeedbackData,
-          })
-          const companyDetailRef = admin.firestore().collection('companies')
-            .doc(companyId).collection('detail').doc(companyId)
-          batch.update(companyDetailRef, {
-            feedback: companyFeedbackData,
-          })
-          // フィードバック
-          const feedbackRef = admin.firestore().collection('feedbacks').doc(feedbackId)
-          batch.set(feedbackRef, feedbackData)
+      if (newValue.feedback == null) {
+        feedbackData.isWritten = false
+      } else {
+        feedbackData.isWritten = true
+        feedbackData.goodPoint = feedback.goodPoint
+        feedbackData.advice = feedback.advice
+      }
 
+      const feedbackId = admin.firestore().collection('feedbacks').doc().id
+      const batch = admin.firestore().batch()
+
+      // フィードバック
+      const feedbackRef = admin.firestore().collection('feedbacks').doc(feedbackId)
+      batch.set(feedbackRef, feedbackData)
+
+      if (newValue.feedback != null) {
+        // 通知
+        const notificationRef = admin.firestore().collection('users').doc(user.uid)
+          .collection('notifications').doc()
+        const url = '/user/feedbacks/' + feedbackId
+        batch.set(notificationRef, {
+          type: 'normal',
+          isImportant: false,
+          content: companyName + 'からフィードバックが送られました！ ',
+          createdAt: new Date(),
+          url: url,
+          isUnread: true,
+        })
+      }
+
+      batch.commit()
+        .then(() => {
           if (newValue.feedback != null) {
-            // 通知
-            const notificationRef = admin.firestore().collection('users').doc(user.uid)
-              .collection('notifications').doc()
-            const url = '/user/feedbacks/' + feedbackId
-            batch.set(notificationRef, {
-              type: 'normal',
-              isImportant: false,
-              content: companyName + 'からフィードバックが送られました！ ',
-              createdAt: new Date(),
-              url: url,
-              isUnread: true,
-            })
+            console.log('set feedback & send notification completed.')
+          } else {
+            console.log('set feedback completed.')
           }
-
-          batch.commit()
-            .then(() => {
-              console.log('sendFeedback completed.')
-            })
-            .catch((error) => {
-              console.error("Error adding document: ", error)
-            })
-        }
-      })
-      .catch((error) => {
-        console.error("Error adding document: ", error)
-      })
+        })
+        .catch((error) => {
+          console.error("Error", error)
+        })
+    }).catch(error => {
+      console.error(error)
+    })
   })
 
 // フィードバックが送られた時、企業のfeedback countを更新
@@ -390,39 +383,29 @@ exports.updateCompanyFeedbackCount = functions.region('asia-northeast1')
   .onCreate((snap, context) => {
     const companyId = snap.data().companyId
 
-    return admin.firestore()
-      .collection('companies')
-      .doc(companyId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          // company feedback writtenCount 更新
-          var feedback = doc.data().feedback
-          feedback.writtenCount += 1
+    // company feedback writtenCount 更新
+    const companyRef = admin.firestore().collection('companies').doc(companyId)
 
-          const batch = admin.firestore().batch()
-          const companyRef = admin.firestore().collection('companies').doc(companyId)
-          batch.update(companyRef, {
-            feedback: feedback
-          })
-          const companyDetailRef = admin.firestore().collection('companies')
-            .doc(companyId).collection('detail').doc(companyId)
-          batch.update(companyDetailRef, {
-            feedback: feedback
-          })
+    return admin.firestore().runTransaction(function(transaction) {
+      return transaction.get(companyRef).then(function(companyDoc) {
+        var feedback = companyDoc.data().feedback
+        feedback.writtenCount += 1
 
-          batch.commit()
-            .then(() => {
-              console.log('updateCompanyFeedbackCount completed.')
-            })
-            .catch((error) => {
-              console.error("Error adding document: ", error)
-            })
-        }
+        const companyRef = admin.firestore().collection('companies').doc(companyId)
+        transaction.update(companyRef, {
+          feedback: feedback
+        })
+        const companyDetailRef = admin.firestore().collection('companies')
+          .doc(companyId).collection('detail').doc(companyId)
+        transaction.update(companyDetailRef, {
+          feedback: feedback
+        })
       })
-      .catch((error) => {
-        console.error("Error adding document: ", error)
-      })
+    }).then(() => {
+      console.log('completed.')
+    }).catch(error => {
+      console.error(error)
+    })
   })
 
 // 候補者のステータスが pass になった時、パスを送る処理
@@ -466,215 +449,186 @@ exports.sendPass = functions.region('asia-northeast1')
       passType = '先着パス'
     }
 
-    return admin.firestore()
-      .collection('companies')
-      .doc(companyId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          const companyName = doc.data().companyName
-          const companyImageUrl = doc.data().imageUrl
-          // 入社パスのカウント
-          const hiringPassCount = doc.data().hiringPassCount
-          const passId = admin.firestore().collection('passes').doc().id
+    const companyRef = admin.firestore().collection('companies').doc(companyId)
+    const yearPassRef = admin.firestore().collection('companies').doc(companyId)
+      .collection('yearPasses').doc(String(pass.joiningYear))
 
-          var passData = {
-            candidateId: candidateId,
-            uid: user.uid,
-            userName: user.name,
-            companyId: companyId,
-            companyName: companyName,
-            createdAt: updatedAt,
-            type: pass.type,
-            expirationDate: pass.expirationDate,
-            occupation: pass.occupation,
-            picMessage: pass.message,
-            pic: pass.pic,
-            isAccepted: false,
-            isContracted: false,
-            isValid: true,
-            candidateId: candidateId,
-          }
-          if (user.imageUrl) {
-            passData.profileImageUrl = user.imageUrl
-          }
-          if (companyImageUrl) {
-            passData.companyImageUrl = companyImageUrl
-          }
-          if (pass.type != 'hiring') {
-            passData.joiningYear = pass.joiningYear
-          }
+    return admin.firestore().runTransaction(function(transaction) {
+      return transaction.getAll(companyRef, yearPassRef).then(function(docs) {
+        const companyDoc = docs[0]
+        const yearPassDoc = docs[1]
 
-          const batch = admin.firestore().batch()
+        // 入社パスのカウント
+        const hiringPassCount = companyDoc.data().hiringPassCount
+
+        if (pass.type == 'hiring') {
           // 入社パスの場合、hiringPassCount を更新
-          if (pass.type == 'hiring') {
-            const companyRef = admin.firestore().collection('companies').doc(companyId)
-            var companyData
-            if (hiringPassCount) {
-              companyData = {
-                hiringPassCount: hiringPassCount + 1,
+          let companyData
+          if (hiringPassCount) {
+            companyData = {
+              hiringPassCount: hiringPassCount + 1,
+            }
+          } else {
+            companyData = {
+              hiringPassCount: 1
+            }
+          }
+          transaction.update(companyRef, companyData)
+        } else {
+          // 内定パスまたは先着パスの場合
+          if (yearPassDoc.exists) {
+            // doc が存在する場合
+            let count = yearPassDoc.data().count
+            if (pass.type == 'offer') {
+              // 内定パス
+              count.offer.all += 1
+            } else if (pass.type == 'limited') {
+              // 先着パス
+              count.limited.all += 1
+            }
+            transaction.update(yearPassRef, {
+              count: count
+            })
+          } else {
+            // doc が存在しない場合
+            let passData
+            if (pass.type == 'offer') {
+              // 内定パス
+              passData = {
+                count: {
+                  hiring: {
+                    used: 0
+                  },
+                  offer: {
+                    all: 1,
+                    used: 0
+                  },
+                  limited: {
+                    all: 0,
+                    used: 0
+                  }
+                }
               }
-            } else {
-              companyData = {
-                hiringPassCount: 1
+            } else if (pass.type == 'limited') {
+              // 先着パス
+              passData = {
+                count: {
+                  hiring: {
+                    used: 0
+                  },
+                  offer: {
+                    all: 0,
+                    used: 0
+                  },
+                  limited: {
+                    all: 1,
+                    used: 0
+                  }
+                }
               }
             }
-            batch.update(companyRef, companyData)
-          }
-          // パス
-          const passRef = admin.firestore().collection('passes').doc(passId)
-          batch.set(passRef, passData)
-          // パスのデータをcandidateに
-          const candidateRef = admin.firestore().collection('companies')
-            .doc(companyId).collection('candidates').doc(candidateId)
-          pass.passId = passId
-          batch.update(candidateRef, {
-            pass: pass
-          })
-          // 通知
-          const notificationRef = admin.firestore().collection('users').doc(user.uid)
-            .collection('notifications').doc()
-          const url = '/user/passes/' + passId
-          batch.set(notificationRef, {
-            type: 'normal',
-            isImportant: true,
-            content: `${companyName}から${passType}が送られました！ パスを使用する場合は、使用ボタンを押してから企業と連絡を取り、契約をしてください。`,
-            createdAt: new Date(),
-            url: url,
-            isUnread: true,
-          })
-          batch.commit()
-            .then(() => {
-              admin.firestore().collection('users')
-                .doc(user.uid)
-                .get()
-                .then(userDoc => {
-                  if (userDoc.exists) {
-                    if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.pass) {
-                      // パスが渡されたユーザーにメール送信
-                      const mailOptions = {
-                        from: `LightHouse <noreply@firebase.com>`,
-                        to: userDoc.data().email,
-                      }
-                      mailOptions.subject = `${companyName}に${passType}をもらいました！`
-                      mailOptions.text = `${companyName}に${passType}をもらいました！　ご確認ください。`
-                      mailTransport.sendMail(mailOptions, (err, info) => {
-                        if (err) {
-                          console.log(err)
-                        }
-                        console.log('New pass email sent to:', userDoc.data().email)
-                      })
-                    }
-                  }
-                })
-                .catch((error) => {
-                  console.error("Error getting document: ", error)
-                })
-
-              console.log('update pass info & send notification completed.')
-            })
-            .catch((error) => {
-              console.error("Error: ", error)
-            })
-
-          // 内定パスまたは先着パスの場合
-          if (pass.type != 'hiring') {
-            admin.firestore()
-              .collection('companies')
-              .doc(companyId)
-              .collection('yearPasses')
-              .doc(String(pass.joiningYear))
-              .get()
-              .then(doc => {
-                if (doc.exists) {
-                  // すでにカウントある場合
-                  var count = doc.data().count
-                  if (pass.type == 'offer') {
-                    // 内定パス
-                    count.offer.all += 1
-                  } else if (pass.type == 'limited') {
-                    // 先着パス
-                    count.limited.all += 1
-                  }
-                  // 更新
-                  admin.firestore()
-                    .collection('companies')
-                    .doc(companyId)
-                    .collection('yearPasses')
-                    .doc(String(pass.joiningYear))
-                    .update({
-                      count: count
-                    })
-                    .then(() => {
-                      console.log('update pass count completed.')
-                    })
-                    .catch((error) => {
-                      console.error("Error updating document: ", error)
-                    })
-                } else {
-                  // まだカウントがない場合
-                  var passData
-                  if (pass.type == 'offer') {
-                    // 内定パス
-                    passData = {
-                      count: {
-                        hiring: {
-                          used: 0
-                        },
-                        offer: {
-                          all: 1,
-                          used: 0
-                        },
-                        limited: {
-                          all: 0,
-                          used: 0
-                        }
-                      }
-                    }
-                  } else if (pass.type == 'limited') {
-                    // 先着パス
-                    passData = {
-                      count: {
-                        hiring: {
-                          used: 0
-                        },
-                        offer: {
-                          all: 0,
-                          used: 0
-                        },
-                        limited: {
-                          all: 1,
-                          used: 0
-                        }
-                      }
-                    }
-                  }
-                  passData.year = pass.joiningYear
-                  passData.limit = null
-                  // 更新
-                  admin.firestore()
-                    .collection('companies')
-                    .doc(companyId)
-                    .collection('yearPasses')
-                    .doc(String(pass.joiningYear))
-                    .set(passData)
-                    .then(() => {
-                      console.log('set pass count completed.')
-                    })
-                    .catch((error) => {
-                      console.error("Error adding document: ", error)
-                    })
-                }
-              })
-              .catch((error) => {
-                console.error("Error getting document: ", error)
-              })
+            passData.year = pass.joiningYear
+            passData.limit = null
+            transaction.set(yearPassRef, passData)
           }
         }
+
+        return companyDoc
       })
-      .catch((error) => {
-        console.error("Error getting document: ", error)
+    }).then(companyDoc => {
+      console.log("update pass count completed.")
+
+      const companyName = companyDoc.data().companyName
+      const companyImageUrl = companyDoc.data().imageUrl
+      const passId = admin.firestore().collection('passes').doc().id
+
+      var passData = {
+        candidateId: candidateId,
+        uid: user.uid,
+        userName: user.name,
+        companyId: companyId,
+        companyName: companyName,
+        createdAt: updatedAt,
+        type: pass.type,
+        expirationDate: pass.expirationDate,
+        occupation: pass.occupation,
+        picMessage: pass.message,
+        pic: pass.pic,
+        isAccepted: false,
+        isContracted: false,
+        isValid: true,
+        candidateId: candidateId,
+      }
+      if (user.imageUrl) {
+        passData.profileImageUrl = user.imageUrl
+      }
+      if (companyImageUrl) {
+        passData.companyImageUrl = companyImageUrl
+      }
+      if (pass.type != 'hiring') {
+        passData.joiningYear = pass.joiningYear
+      }
+
+      const batch = admin.firestore().batch()
+      // パス
+      const passRef = admin.firestore().collection('passes').doc(passId)
+      batch.set(passRef, passData)
+      // パスのデータをcandidateに
+      const candidateRef = admin.firestore().collection('companies')
+        .doc(companyId).collection('candidates').doc(candidateId)
+      pass.passId = passId
+      batch.update(candidateRef, {
+        pass: pass
       })
+      // 通知
+      const notificationRef = admin.firestore().collection('users').doc(user.uid)
+        .collection('notifications').doc()
+      const url = '/user/passes/' + passId
+      batch.set(notificationRef, {
+        type: 'normal',
+        isImportant: true,
+        content: `${companyName}から${passType}が送られました！ パスを使用する場合は、使用ボタンを押してから企業と連絡を取り、契約をしてください。`,
+        createdAt: new Date(),
+        url: url,
+        isUnread: true,
+      })
+      batch.commit()
+        .then(() => {
+          admin.firestore().collection('users')
+            .doc(user.uid)
+            .get()
+            .then(userDoc => {
+              if (userDoc.exists) {
+                if (userDoc.data().notificationsSetting == null
+                  || userDoc.data().notificationsSetting.pass) {
+                  // パスが渡されたユーザーにメール送信
+                  const mailOptions = {
+                    from: `LightHouse <noreply@firebase.com>`,
+                    to: userDoc.data().email,
+                  }
+                  mailOptions.subject = `${companyName}に${passType}をもらいました！`
+                  mailOptions.text = `${companyName}に${passType}をもらいました！　ご確認ください。`
+                  mailTransport.sendMail(mailOptions, (err, info) => {
+                    if (err) {
+                      console.log(err)
+                    }
+                    console.log('New pass email sent to:', userDoc.data().email)
+                  })
+                }
+              }
+            })
+            .catch((error) => {
+              console.error("Error getting document", error)
+            })
+
+          console.log('set pass & update candidate & send notification, email to user completed.')
+        })
+        .catch((error) => {
+          console.error("Error", error)
+        })
+    }).catch(function(error) {
+      console.error(error)
+    })
   })
 
 // パスの情報が変更された時の処理 （パスを使用した時、recruiter がパスの入社年度を変更した時）
@@ -721,156 +675,136 @@ exports.passHasChanged = functions.region('asia-northeast1')
         typeText = '先着パス'
       }
 
-      // メッセージを messages に追加
-      return admin.firestore()
-        .collection('chats')
-        .where('uid', '==', uid)
-        .where('companyId', '==', companyId)
-        .get()
-        .then(function(snapshot) {
-          var docCount = 0
-          snapshot.forEach(function(doc) {
-            docCount += 1
-            if (docCount == 1) {
-              admin.firestore().collection('chats').doc(doc.id)
-                .collection('messages')
-                .add(message)
+      const yearPassRef = admin.firestore().collection('companies').doc(companyId)
+        .collection('yearPasses').doc(String(joiningYear))
+
+      return admin.firestore().runTransaction(function(transaction) {
+        return transaction.get(yearPassRef).then(function(yearPassDoc) {
+          if (yearPassDoc.exists) {
+            // doc が存在する時
+            var count = yearPassDoc.data().count
+            if (type == 'hiring') {
+              count.hiring.used += 1
+            } else if (type == 'offer') {
+              count.offer.used += 1
+            } else if (type == 'limited') {
+              count.limited.used += 1
+            }
+
+            transaction.update(yearPassRef, {
+              count: count
+            })
+          } else {
+            // doc が存在しない時
+            var passData
+            if (type == 'hiring') {
+              // 内定パス
+              passData = {
+                count: {
+                  hiring: {
+                    used: 1
+                  },
+                  offer: {
+                    all: 0,
+                    used: 0
+                  },
+                  limited: {
+                    all: 0,
+                    used: 0
+                  }
+                }
+              }
+            }
+            passData.year = joiningYear
+            passData.limit = null
+
+            transaction.set(yearPassRef, passData)
+          }
+        })
+      }).then(() => {
+        console.log("update pass count completed.")
+
+        // メッセージを messages に追加
+        admin.firestore()
+          .collection('chats')
+          .where('uid', '==', uid)
+          .where('companyId', '==', companyId)
+          .get()
+          .then(function(snapshot) {
+            var docCount = 0
+            snapshot.forEach(function(doc) {
+              docCount += 1
+              if (docCount == 1) {
+                admin.firestore().collection('chats').doc(doc.id)
+                  .collection('messages')
+                  .add(message)
+                  .then(() => {
+                    console.log('add message complete.')
+                  })
+                  .catch((error) => {
+                    console.error("Error adding document", error)
+                  })
+              }
+            })
+          })
+          .catch(err => {
+            console.log('Error getting document', err)
+          })
+
+        // 通知
+        admin.firestore()
+          .collection('companies')
+          .doc(companyId)
+          .get()
+          .then(doc => {
+            if (doc.exists) {
+              const members = doc.data().members
+              const batch = admin.firestore().batch()
+              members.forEach((member, i) => {
+                const notificationRef = admin.firestore().collection('users').doc(member.uid)
+                  .collection('notifications').doc()
+                const url = '/recruiter/candidates/' + candidateId
+                batch.set(notificationRef, {
+                  type: 'normal',
+                  isImportant: true,
+                  content: `${userName}さんが${typeText}を使用しました！ 契約が済みましたら、ステータスを採用予定に変更してください。`,
+                  createdAt: new Date(),
+                  url: url,
+                  isUnread: true,
+                })
+              })
+              batch.commit()
                 .then(() => {
-                  console.log('acceptJobOffer: add message complete.')
+                  // パスが使用されたら担当者にメール送信
+                  members.forEach((member, i) => {
+                    if (member.notificationsSetting == null || member.notificationsSetting.acceptPass) {
+                      const mailOptions = {
+                        from: `LightHouse <noreply@firebase.com>`,
+                        to: member.email,
+                      }
+                      mailOptions.subject = `${userName}さんが${typeText}を使用しました。`
+                      mailOptions.text = `${userName}さんが${typeText}を使用しました。　契約が済みましたら、ステータスを採用予定に変更してください。`
+                      mailTransport.sendMail(mailOptions, (err, info) => {
+                        if (err) {
+                          console.log(err)
+                        }
+                        console.log('New accept pass email sent to:', member.email)
+                      })
+                    }
+                  })
+                  console.log('send notification, mail to recruiter complete.')
                 })
                 .catch((error) => {
-                  console.error("Error adding document: ", error)
+                  console.error("Error", error)
                 })
             }
           })
-
-          // パス　カウント 更新
-          admin.firestore()
-            .collection('companies')
-            .doc(companyId)
-            .collection('yearPasses')
-            .doc(String(joiningYear))
-            .get()
-            .then(doc => {
-              if (doc.exists) {
-                var count = doc.data().count
-                if (type == 'hiring') {
-                  count.hiring.used += 1
-                } else if (type == 'offer') {
-                  count.offer.used += 1
-                } else if (type == 'limited') {
-                  count.limited.used += 1
-                }
-                admin.firestore()
-                  .collection('companies')
-                  .doc(companyId)
-                  .collection('yearPasses')
-                  .doc(String(joiningYear))
-                  .update({
-                    count: count
-                  })
-                  .then(() => {
-                    console.log('acceptJobOffer: update pass count complete.')
-                  })
-                  .catch((error) => {
-                    console.error("Error updating document: ", error)
-                  })
-              } else {
-                var passData
-                if (type == 'hiring') {
-                  // 内定パス
-                  passData = {
-                    count: {
-                      hiring: {
-                        used: 1
-                      },
-                      offer: {
-                        all: 0,
-                        used: 0
-                      },
-                      limited: {
-                        all: 0,
-                        used: 0
-                      }
-                    }
-                  }
-                }
-                passData.year = joiningYear
-                passData.limit = null
-                // 更新
-                admin.firestore()
-                  .collection('companies')
-                  .doc(companyId)
-                  .collection('yearPasses')
-                  .doc(String(joiningYear))
-                  .set(passData)
-                  .then(() => {
-                    console.log('acceptJobOffer: update pass count complete.')
-                  })
-                  .catch((error) => {
-                    console.error("Error updating document: ", error)
-                  })
-              }
-            })
-            .catch((error) => {
-              console.error("Error getting document: ", error)
-            })
-
-          // 通知
-          admin.firestore()
-            .collection('companies')
-            .doc(companyId)
-            .get()
-            .then(doc => {
-              if (doc.exists) {
-                const members = doc.data().members
-                const batch = admin.firestore().batch()
-                members.forEach((member, i) => {
-                  const notificationRef = admin.firestore().collection('users').doc(member.uid)
-                    .collection('notifications').doc()
-                  const url = '/recruiter/candidates/' + candidateId
-                  batch.set(notificationRef, {
-                    type: 'normal',
-                    isImportant: true,
-                    content: `${userName}さんが${typeText}を使用しました！ 契約が済みましたら、ステータスを採用予定に変更してください。`,
-                    createdAt: new Date(),
-                    url: url,
-                    isUnread: true,
-                  })
-                })
-                batch.commit()
-                  .then(() => {
-                    // パスが使用されたら担当者にメール送信
-                    members.forEach((member, i) => {
-                      if (member.notificationsSetting == null || member.notificationsSetting.acceptPass) {
-                        const mailOptions = {
-                          from: `LightHouse <noreply@firebase.com>`,
-                          to: member.email,
-                        }
-                        mailOptions.subject = `${userName}さんが${typeText}を使用しました。`
-                        mailOptions.text = `${userName}さんが${typeText}を使用しました。　契約が済みましたら、ステータスを採用予定に変更してください。`
-                        mailTransport.sendMail(mailOptions, (err, info) => {
-                          if (err) {
-                            console.log(err)
-                          }
-                          console.log('New accept pass email sent to:', member.email)
-                        })
-                      }
-                    })
-                    console.log('acceptJobOffer: notification complete.')
-                  })
-                  .catch((error) => {
-                    console.error("Error: ", error)
-                  })
-              }
-            })
-            .catch(err => {
-              console.log('Error getting document', err)
-            })
-        })
-        .catch(err => {
-          console.log('Error getting document', err)
-        })
+          .catch(error => {
+            console.log('Error getting document', error)
+          })
+      }).catch(function(error) {
+        console.error(error)
+      })
     } else if (
       type != 'hiring' &&
       joiningYear &&
@@ -878,13 +812,17 @@ exports.passHasChanged = functions.region('asia-northeast1')
       joiningYear != previousValue.joiningYear
     ) {
       // recruiter がパスの入社年度を変更した時
-      return admin.firestore()
-        .collection('companies')
-        .doc(companyId)
-        .collection('yearPasses')
-        .doc(String(previousValue.joiningYear))
-        .get()
-        .then(previousDoc => {
+      const previousYearPassRef = admin.firestore().collection('companies').doc(companyId)
+        .collection('yearPasses').doc(String(previousValue.joiningYear))
+
+      const newYearPassRef = admin.firestore().collection('companies').doc(companyId)
+        .collection('yearPasses').doc(String(joiningYear))
+
+      return admin.firestore().runTransaction(function(transaction) {
+        return transaction.getAll(previousYearPassRef, newYearPassRef).then(function(docs) {
+          const previousDoc = docs[0]
+          const newDoc = docs[1]
+
           // 変更前の入社年度のパスカウント　更新
           if (previousDoc.exists) {
             var count = previousDoc.data().count
@@ -906,136 +844,94 @@ exports.passHasChanged = functions.region('asia-northeast1')
                 count.limited.used -= 1
               }
             }
-            // 更新
-            admin.firestore()
-              .collection('companies')
-              .doc(companyId)
-              .collection('yearPasses')
-              .doc(String(previousValue.joiningYear))
-              .update({
-                count: count
-              })
-              .then(() => {
-                console.log('updatePassesCount: update previous year passes count completed.')
-              })
-              .catch((error) => {
-                console.error("Error updating document: ", error)
-              })
+
+            transaction.update(previousYearPassRef, {
+              count: count
+            })
           }
 
           // 変更後の入社年度のパスカウント更新
-          admin.firestore()
-            .collection('companies')
-            .doc(companyId)
-            .collection('yearPasses')
-            .doc(String(joiningYear))
-            .get()
-            .then(newDoc => {
-              var passData
-              if (newDoc.exists) {
-                var count = newDoc.data().count
-                if (type == 'offer') {
-                  // 内定パス
-                  count.offer.all += 1
+          if (newDoc.exists) {
+            // doc が存在する場合
+            var count = newDoc.data().count
+            if (type == 'offer') {
+              // 内定パス
+              count.offer.all += 1
 
-                  // 使用済みなら usedも+1
-                  if (isAccepted) {
-                    count.offer.used += 1
-                  }
-                } else if (type == 'limited') {
-                  // 先着パス
-                  count.limited.all += 1
-
-                  // 使用済みなら usedも+1
-                  if (isAccepted) {
-                    count.limited.used += 1
-                  }
-                }
-                // 更新
-                admin.firestore()
-                  .collection('companies')
-                  .doc(companyId)
-                  .collection('yearPasses')
-                  .doc(String(joiningYear))
-                  .update({
-                    count: count
-                  })
-                  .then(() => {
-                    console.log('updatePassesCount: update new year passes count completed.')
-                  })
-                  .catch((error) => {
-                    console.error("Error updating document: ", error)
-                  })
-              } else {
-                // まだ年度が存在しない場合
-                if (type == 'offer') {
-                  // 内定パス
-                  passData = {
-                    count: {
-                      hiring: {
-                        used: 0
-                      },
-                      offer: {
-                        all: 1,
-                        used: 0
-                      },
-                      limited: {
-                        all: 0,
-                        used: 0
-                      }
-                    }
-                  }
-                  // 使用済みなら usedも+1
-                  if (isAccepted) {
-                    passData.count.offer.used += 1
-                  }
-                } else if (type == 'limited') {
-                  // 先着パス
-                  passData = {
-                    count: {
-                      hiring: {
-                        used: 0
-                      },
-                      offer: {
-                        all: 0,
-                        used: 0
-                      },
-                      limited: {
-                        all: 1,
-                        used: 0
-                      }
-                    }
-                  }
-                  // 使用済みなら usedも+1
-                  if (isAccepted) {
-                    passData.count.limited.used += 1
-                  }
-                }
-                passData.year = joiningYear
-                passData.limit = null
-
-                // 更新
-                admin.firestore()
-                  .collection('companies')
-                  .doc(companyId)
-                  .collection('yearPasses')
-                  .doc(String(joiningYear))
-                  .set(passData)
-                  .then(() => {
-                    console.log('updatePassesCount: update new year passes count completed.')
-                  })
-                  .catch((error) => {
-                    console.error("Error updating document: ", error)
-                  })
+              // 使用済みなら usedも+1
+              if (isAccepted) {
+                count.offer.used += 1
               }
+            } else if (type == 'limited') {
+              // 先着パス
+              count.limited.all += 1
+
+              // 使用済みなら usedも+1
+              if (isAccepted) {
+                count.limited.used += 1
+              }
+            }
+
+            transaction.update(newYearPassRef, {
+              count: count
             })
-            .catch((error) => {
-              console.error("Error getting document: ", error)
-            })
+          } else {
+            // doc が存在しない場合
+            var passData
+            if (type == 'offer') {
+              // 内定パス
+              passData = {
+                count: {
+                  hiring: {
+                    used: 0
+                  },
+                  offer: {
+                    all: 1,
+                    used: 0
+                  },
+                  limited: {
+                    all: 0,
+                    used: 0
+                  }
+                }
+              }
+              // 使用済みなら usedも+1
+              if (isAccepted) {
+                passData.count.offer.used += 1
+              }
+            } else if (type == 'limited') {
+              // 先着パス
+              passData = {
+                count: {
+                  hiring: {
+                    used: 0
+                  },
+                  offer: {
+                    all: 0,
+                    used: 0
+                  },
+                  limited: {
+                    all: 1,
+                    used: 0
+                  }
+                }
+              }
+              // 使用済みなら usedも+1
+              if (isAccepted) {
+                passData.count.limited.used += 1
+              }
+            }
+            passData.year = joiningYear
+            passData.limit = null
+
+            transaction.set(newYearPassRef, passData)
+          }
         })
-        .catch((error) => {
-          console.error("Error getting document: ", error)
-        })
+      }).then(() => {
+        console.log("update pass count")
+      }).catch(error => {
+        console.error(error)
+      })
     } else {
       return 0
     }
@@ -1072,18 +968,20 @@ exports.updateCompany = functions.region('asia-northeast1')
 
     const companyId = context.params.companyId
     const candidateId = context.params.candidateId
-    const passType = newValue.pass.type
     const type = newValue.type
+    let passType
+    if (newValue.pass) {
+      passType = newValue.pass.type
+    }
 
-    return admin.firestore()
-      .collection('companies')
-      .doc(companyId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          // candidate
-          var currentCandidates = doc.data().currentCandidates
-          var allCandidates = doc.data().allCandidates
+    // company の候補者カウント, hiringPassCount 更新
+    const companyRef = admin.firestore().collection('companies').doc(companyId)
+
+    return admin.firestore().runTransaction(function(transaction) {
+      return transaction.get(companyRef).then(function(companyDoc) {
+        if (companyDoc.exists) {
+          var currentCandidates = companyDoc.data().currentCandidates
+          var allCandidates = companyDoc.data().allCandidates
 
           if (beforeStatus.scouted) {
             currentCandidates.scouted -= 1
@@ -1152,26 +1050,23 @@ exports.updateCompany = functions.region('asia-northeast1')
             currentCandidates: currentCandidates,
             allCandidates: allCandidates
           }
+
           // hiringPassCount
           if ((newStatus.hired || newStatus.rejected) && passType == 'hiring') {
             var hiringPassCount = doc.data().hiringPassCount
-            companyData.hiringPassCount = hiringPassCount - 1
+            companyData.hiringPassCount -= 1
           }
 
-          admin.firestore().collection('companies')
-            .doc(companyId)
-            .update(companyData)
-            .then(() => {
-              console.log('updateCompany completed.')
-            })
-            .catch((error) => {
-              console.error("Error adding document: ", error)
-            })
+          const companyRef = admin.firestore().collection('companies').doc(companyId)
+          transaction.update(companyRef, companyData)
         }
       })
-      .catch((error) => {
-        console.error("Error adding document: ", error)
-      })
+    }).then(() => {
+      console.log('completed.')
+
+    }).catch(error => {
+        console.error(error)
+    })
   })
 
 // recruiterがスカウトした時の処理
@@ -1190,18 +1085,16 @@ exports.scoutUser = functions.region('asia-northeast1')
     const candidateId = context.params.candidateId
 
     // company の応募者数の更新、応募者の情報格納, スカウトメッセージ送信
-    return admin.firestore()
-      .collection('companies').doc(companyId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          const companyName = doc.data().companyName
-          const companyImageUrl = doc.data().imageUrl
-          var currentCandidates = doc.data().currentCandidates
-          var allCandidates = doc.data().allCandidates
-          // 処理が完了したかのフラグ
-          var isUpdatedCandidates = false
-          var isSendedMessage = false
+    const companyRef = admin.firestore().collection('companies').doc(companyId)
+
+    return admin.firestore().runTransaction(function(transaction) {
+      return transaction.get(companyRef).then(function(companyDoc) {
+        if (companyDoc.exists) {
+          const companyName = companyDoc.data().companyName
+          const companyImageUrl = companyDoc.data().imageUrl
+          const members = companyDoc.data().members
+          var currentCandidates = companyDoc.data().currentCandidates
+          var allCandidates = companyDoc.data().allCandidates
 
           // company の応募者数の更新、応募者の情報格納
           if (currentCandidates) {
@@ -1223,6 +1116,7 @@ exports.scoutUser = functions.region('asia-northeast1')
             scout: 0,
             application: 0,
           }
+
           if (allCandidates) {
             allCandidates.scouted += 1
           } else {
@@ -1238,130 +1132,53 @@ exports.scoutUser = functions.region('asia-northeast1')
             }
           }
 
-          const batch = admin.firestore().batch()
+          // 候補者カウント更新
           const companyRef = admin.firestore().collection('companies').doc(companyId)
-          batch.update(companyRef, {
+          transaction.update(companyRef, {
             currentCandidates: currentCandidates,
             allCandidates: allCandidates,
           })
-          const companyScoutedUsersRef = admin.firestore().collection('companies').doc(companyId).collection('scoutedUsers').doc()
-          batch.set(companyScoutedUsersRef, {
-            user: user,
-            createdAt: createdAt,
-          })
-          batch.commit()
-            .then(() => {
-              isUpdatedCandidates = true
-              if (isUpdatedCandidates && isSendedMessage) {
-                console.log('scoutUser completed.')
-              }
-            })
-            .catch((error) => {
-              console.error("Error adding document: ", error)
-            })
+          return companyDoc
+        }
+      })
+    }).then((companyDoc) => {
+      console.log('update candidates count completed.')
 
-          // chatにスカウト メッセージを送信(chatがなければ作成)
-          admin.firestore()
-            .collection('chats')
-            .where('companyId', '==', companyId)
-            .where('uid', '==', user.uid)
-            .get()
-            .then(function(snapshot) {
-              if (!snapshot.empty) {
-                var docCount = 0
-                snapshot.forEach(function(chatDoc) {
-                  docCount += 1
-                  if (docCount == 1) {
-                    const batch = admin.firestore().batch()
-                    // スカウトメッセージ作成
-                    const messagesRef = admin.firestore().collection('chats').doc(chatDoc.id)
-                      .collection('messages').doc()
-                    batch.set(messagesRef, {
-                      pic: pic,
-                      message: message,
-                      createdAt: createdAt,
-                      type: 'scout',
-                    })
-                    // candidate に chatId 格納
-                    const candidateRef = admin.firestore().collection('companies').doc(companyId)
-                      .collection('candidates').doc(candidateId)
-                    batch.update(candidateRef, {
-                      chatId: chatDoc.id
-                    })
-                    // 通知
-                    const notificationRef = admin.firestore().collection('users').doc(user.uid)
-                      .collection('notifications').doc()
-                    const url = '/messages/' + chatDoc.id
-                    batch.set(notificationRef, {
-                      type: 'normal',
-                      isImportant: true,
-                      content: companyName + 'にスカウトされました！ メッセージを確認してみましょう。',
-                      createdAt: new Date(),
-                      url: url,
-                      isUnread: true,
-                    })
-                    batch.commit()
-                      .then(() => {
-                        isSendedMessage = true
-                        if (isUpdatedCandidates && isSendedMessage) {
-                          admin.firestore().collection('users')
-                            .doc(user.uid)
-                            .get()
-                            .then(userDoc => {
-                              if (userDoc.exists) {
-                                if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.scout) {
-                                  // スカウトされたユーザーにメール送信
-                                  const mailOptions = {
-                                    from: `LightHouse <noreply@firebase.com>`,
-                                    to: userDoc.data().email,
-                                  }
-                                  mailOptions.subject = `${companyName}にスカウトされました！`
-                                  mailOptions.text = `${companyName}にスカウトされました！　ご確認ください。`
-                                  mailTransport.sendMail(mailOptions, (err, info) => {
-                                    if (err) {
-                                      console.log(err)
-                                    }
-                                    console.log('New scout email sent to:', userDoc.data().email)
-                                  })
-                                }
-                              }
-                            })
-                            .catch((error) => {
-                              console.error("Error adding document: ", error)
-                            })
+      const companyName = companyDoc.data().companyName
+      const companyImageUrl = companyDoc.data().imageUrl
+      const members = companyDoc.data().members
 
-                          console.log('scoutUser completed.')
-                        }
-                      })
-                      .catch((error) => {
-                        console.error("Error adding document: ", error)
-                      })
-                  }
-                })
-              } else {
-                const chatId = admin.firestore().collection('chats').doc().id
-                var chatData = {
-                  uid: user.uid,
-                  userName: user.name,
-                  companyId: companyId,
-                  companyName: companyName,
-                  lastMessage: message,
-                  messagesExist: true,
-                  updatedAt: createdAt,
-                }
-                if (user.imageUrl) {
-                  chatData.profileImageUrl = user.imageUrl
-                }
-                if (companyImageUrl) {
-                  chatData.companyImageUrl = companyImageUrl
-                }
+      // scoutedUsersに追加
+      admin.firestore()
+        .collection('companies')
+        .doc(companyId)
+        .collection('scoutedUsers')
+        .add({
+          user: user,
+          createdAt: createdAt,
+        })
+        .then(() => {
+          console.log('set scoutedUsers completed.')
+        })
+        .catch((error) => {
+          console.error("Error", error)
+        })
 
+      // chatIdをcandidateに格納, chatにスカウト メッセージを送信(chatがなければ作成), ユーザーにメール送信
+      admin.firestore()
+        .collection('chats')
+        .where('companyId', '==', companyId)
+        .where('uid', '==', user.uid)
+        .get()
+        .then(function(snapshot) {
+          if (!snapshot.empty) {
+            var docCount = 0
+            snapshot.forEach(function(chatDoc) {
+              docCount += 1
+              if (docCount == 1) {
                 const batch = admin.firestore().batch()
-                // chat 作成
-                const chatsRef = admin.firestore().collection('chats').doc(chatId)
-                batch.set(chatsRef, chatData)
                 // スカウトメッセージ作成
-                const messagesRef = admin.firestore().collection('chats').doc(chatId)
+                const messagesRef = admin.firestore().collection('chats').doc(chatDoc.id)
                   .collection('messages').doc()
                 batch.set(messagesRef, {
                   pic: pic,
@@ -1373,12 +1190,12 @@ exports.scoutUser = functions.region('asia-northeast1')
                 const candidateRef = admin.firestore().collection('companies').doc(companyId)
                   .collection('candidates').doc(candidateId)
                 batch.update(candidateRef, {
-                  chatId: chatId
+                  chatId: chatDoc.id
                 })
                 // 通知
                 const notificationRef = admin.firestore().collection('users').doc(user.uid)
                   .collection('notifications').doc()
-                const url = '/messages/' + chatId
+                const url = '/messages/' + chatDoc.id
                 batch.set(notificationRef, {
                   type: 'normal',
                   isImportant: true,
@@ -1389,50 +1206,127 @@ exports.scoutUser = functions.region('asia-northeast1')
                 })
                 batch.commit()
                   .then(() => {
-                    isSendedMessage = true
-                    if (isUpdatedCandidates && isSendedMessage) {
-                      admin.firestore().collection('users')
-                        .doc(user.uid)
-                        .get()
-                        .then(userDoc => {
-                          if (userDoc.exists) {
-                            if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.scout) {
-                              // スカウトされたユーザーにメール送信
-                              const mailOptions = {
-                                from: `LightHouse <noreply@firebase.com>`,
-                                to: userDoc.data().email,
-                              }
-                              mailOptions.subject = `${companyName}にスカウトされました！`
-                              mailOptions.text = `${companyName}にスカウトされました！　ご確認ください。`
-                              mailTransport.sendMail(mailOptions, (err, info) => {
-                                if (err) {
-                                  console.log(err)
-                                }
-                                console.log('New scout email sent to:', userDoc.data().email)
-                              })
+                    admin.firestore().collection('users')
+                      .doc(user.uid)
+                      .get()
+                      .then(userDoc => {
+                        if (userDoc.exists) {
+                          if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.scout) {
+                            // スカウトされたユーザーにメール送信
+                            const mailOptions = {
+                              from: `LightHouse <noreply@firebase.com>`,
+                              to: userDoc.data().email,
                             }
+                            mailOptions.subject = `${companyName}にスカウトされました！`
+                            mailOptions.text = `${companyName}にスカウトされました！　ご確認ください。`
+                            mailTransport.sendMail(mailOptions, (err, info) => {
+                              if (err) {
+                                console.log(err)
+                              }
+                              console.log('New scout email sent to:', userDoc.data().email)
+                            })
                           }
-                        })
-                        .catch((error) => {
-                          console.error("Error adding document: ", error)
-                        })
-
-                      console.log('scoutUser completed.')
-                    }
+                        }
+                      })
+                      .catch((error) => {
+                        console.error("Error getting document", error)
+                      })
+                    console.log('send message & update candidate & send notification completed.')
                   })
                   .catch((error) => {
-                    console.error("Error adding document: ", error)
+                    console.error("Error", error)
                   })
               }
             })
-            .catch(err => {
-              console.log('Error getting document', err)
+          } else {
+            const chatId = admin.firestore().collection('chats').doc().id
+            var chatData = {
+              uid: user.uid,
+              userName: user.name,
+              companyId: companyId,
+              companyName: companyName,
+              lastMessage: message,
+              messagesExist: true,
+              updatedAt: createdAt,
+            }
+            if (user.imageUrl) {
+              chatData.profileImageUrl = user.imageUrl
+            }
+            if (companyImageUrl) {
+              chatData.companyImageUrl = companyImageUrl
+            }
+
+            const batch = admin.firestore().batch()
+            // chat 作成
+            const chatsRef = admin.firestore().collection('chats').doc(chatId)
+            batch.set(chatsRef, chatData)
+            // スカウトメッセージ作成
+            const messagesRef = admin.firestore().collection('chats').doc(chatId)
+              .collection('messages').doc()
+            batch.set(messagesRef, {
+              pic: pic,
+              message: message,
+              createdAt: createdAt,
+              type: 'scout',
             })
-        }
-      })
-      .catch(err => {
-        console.log('Error getting document', err)
-      })
+            // candidate に chatId 格納
+            const candidateRef = admin.firestore().collection('companies').doc(companyId)
+              .collection('candidates').doc(candidateId)
+            batch.update(candidateRef, {
+              chatId: chatId
+            })
+            // 通知
+            const notificationRef = admin.firestore().collection('users').doc(user.uid)
+              .collection('notifications').doc()
+            const url = '/messages/' + chatId
+            batch.set(notificationRef, {
+              type: 'normal',
+              isImportant: true,
+              content: companyName + 'にスカウトされました！ メッセージを確認してみましょう。',
+              createdAt: new Date(),
+              url: url,
+              isUnread: true,
+            })
+            batch.commit()
+              .then(() => {
+                admin.firestore().collection('users')
+                  .doc(user.uid)
+                  .get()
+                  .then(userDoc => {
+                    if (userDoc.exists) {
+                      if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.scout) {
+                        // スカウトされたユーザーにメール送信
+                        const mailOptions = {
+                          from: `LightHouse <noreply@firebase.com>`,
+                          to: userDoc.data().email,
+                        }
+                        mailOptions.subject = `${companyName}にスカウトされました！`
+                        mailOptions.text = `${companyName}にスカウトされました！　ご確認ください。`
+                        mailTransport.sendMail(mailOptions, (err, info) => {
+                          if (err) {
+                            console.log(err)
+                          }
+                          console.log('New scout email sent to:', userDoc.data().email)
+                        })
+                      }
+                    }
+                  })
+                  .catch((error) => {
+                    console.error("Error getting document", error)
+                  })
+                console.log('send message & update candidate & send notification completed.')
+              })
+              .catch((error) => {
+                console.error("Error", error)
+              })
+          }
+        })
+        .catch(err => {
+          console.log('Error getting document', err)
+        })
+    }).catch(error => {
+        console.error(error)
+    })
   })
 
 // ユーザーが応募した時の処理
@@ -1451,19 +1345,16 @@ exports.applyForJob = functions.region('asia-northeast1')
     const createdAt = snap.data().createdAt
 
     // company の応募者数の更新、応募者の情報格納
-    return admin.firestore()
-      .collection('companies').doc(companyId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          const companyName = doc.data().companyName
-          const companyImageUrl = doc.data().imageUrl
-          const members = doc.data().members
-          var currentCandidates = doc.data().currentCandidates
-          var allCandidates = doc.data().allCandidates
-          // 処理が完了したかのフラグ
-          var isUpdatedCandidates = false
-          var setChatId = false
+    const companyRef = admin.firestore().collection('companies').doc(companyId)
+
+    return admin.firestore().runTransaction(function(transaction) {
+      return transaction.get(companyRef).then(function(companyDoc) {
+        if (companyDoc.exists) {
+          const companyName = companyDoc.data().companyName
+          const companyImageUrl = companyDoc.data().imageUrl
+          const members = companyDoc.data().members
+          var currentCandidates = companyDoc.data().currentCandidates
+          var allCandidates = companyDoc.data().allCandidates
 
           if (currentCandidates) {
             currentCandidates.inbox += 1
@@ -1500,156 +1391,156 @@ exports.applyForJob = functions.region('asia-northeast1')
             }
           }
 
-          const batch = admin.firestore().batch()
           // 候補者カウント更新
           const companyRef = admin.firestore().collection('companies').doc(companyId)
-          batch.update(companyRef, {
+          transaction.update(companyRef, {
             currentCandidates: currentCandidates,
             allCandidates: allCandidates,
           })
-          const companyApplicantsRef = admin.firestore().collection('companies').doc(companyId).collection('applicants').doc()
-          batch.set(companyApplicantsRef, {
-            user: user,
-            createdAt: createdAt,
-            jobId: jobId
-          })
-          // 通知
-          members.forEach((member, i) => {
-            const notificationRef = admin.firestore().collection('users').doc(member.uid)
-              .collection('notifications').doc()
-            const url = '/recruiter/candidates/' + candidateId
-            batch.set(notificationRef, {
-              type: 'normal',
-              isImportant: true,
-              content: user.name + 'さんから応募が届きました。',
-              createdAt: new Date(),
-              url: url,
-              isUnread: true,
-            })
-          })
-          batch.commit()
-            .then(() => {
-              isUpdatedCandidates = true
-              if (isUpdatedCandidates && setChatId) {
-                console.log('applyForJob completed.')
-              }
-            })
-            .catch((error) => {
-              console.error("Error adding document: ", error)
-            })
-
-          // chat作成、chatIdをcandidateに格納
-          admin.firestore()
-            .collection('chats')
-            .where('companyId', '==', companyId)
-            .where('uid', '==', user.uid)
-            .get()
-            .then(function(snapshot) {
-              if (!snapshot.empty) {
-                var docCount = 0
-                snapshot.forEach(function(chatDoc) {
-                  docCount += 1
-                  if (docCount == 1) {
-                    admin.firestore().collection('companies')
-                      .doc(companyId)
-                      .collection('candidates')
-                      .doc(candidateId)
-                      .update({
-                        chatId: chatDoc.id
-                      })
-                      .then(() => {
-                        setChatId = true
-                        if (isUpdatedCandidates && setChatId) {
-                          // 応募が来たら担当者にメール送信
-                          members.forEach((member, i) => {
-                            if (member.notificationsSetting == null ||
-                              member.notificationsSetting.application) {
-                              const mailOptions = {
-                                from: `LightHouse <noreply@firebase.com>`,
-                                to: member.email,
-                              }
-                              mailOptions.subject = `${user.name}さんから応募が来ました。`
-                              mailOptions.text = `${user.name}さんから応募が来ました。　ご確認ください。`
-                              mailTransport.sendMail(mailOptions, (err, info) => {
-                                if (err) {
-                                  console.log(err)
-                                }
-                                console.log('New apply email sent to:', member.email)
-                              })
-                            }
-                          })
-                          console.log('applyForJob completed.')
-                        }
-                      })
-                      .catch((error) => {
-                        console.error("Error adding document: ", error)
-                      })
-                  }
-                })
-              } else {
-                const chatId = admin.firestore().collection('chats').doc().id
-                var chatData = {
-                  uid: user.uid,
-                  userName: user.name,
-                  companyId: companyId,
-                  companyName: companyName,
-                  messagesExist: false,
-                  updatedAt: createdAt,
-                }
-                if (user.imageUrl) {
-                  chatData.profileImageUrl = user.imageUrl
-                }
-                if (companyImageUrl) {
-                  chatData.companyImageUrl = companyImageUrl
-                }
-
-                const batch = admin.firestore().batch()
-                const chatsRef = admin.firestore().collection('chats').doc(chatId)
-                batch.set(chatsRef, chatData)
-                const candidateRef = admin.firestore().collection('companies').doc(companyId)
-                  .collection('candidates').doc(candidateId)
-                batch.update(candidateRef, {
-                  chatId: chatId
-                })
-                batch.commit()
-                  .then(() => {
-                    setChatId = true
-                    if (isUpdatedCandidates && setChatId) {
-                      // 応募が来たら担当者にメール送信
-                      members.forEach((member, i) => {
-                        if (member.notificationsSetting == null ||
-                          member.notificationsSetting.application) {
-                          const mailOptions = {
-                            from: `LightHouse <noreply@firebase.com>`,
-                            to: member.email,
-                          }
-                          mailOptions.subject = `${user.name}さんから応募が来ました。`
-                          mailOptions.text = `${user.name}さんから応募が来ました。　ご確認ください。`
-                          mailTransport.sendMail(mailOptions, (err, info) => {
-                            if (err) {
-                              console.log(err)
-                            }
-                            console.log('New apply email sent to:', member.email)
-                          })
-                        }
-                      })
-
-                      console.log('applyForJob completed.')
-                    }
-                  })
-                  .catch((error) => {
-                    console.error("Error adding document: ", error)
-                  })
-              }
-            })
-            .catch(err => {
-              console.log('Error getting document', err)
-            })
+          return companyDoc
         }
       })
-      .catch(err => {
-        console.log('Error getting document', err)
+    }).then((companyDoc) => {
+      console.log('update candidates count completed.')
+
+      const companyName = companyDoc.data().companyName
+      const companyImageUrl = companyDoc.data().imageUrl
+      const members = companyDoc.data().members
+
+      const batch = admin.firestore().batch()
+      // applicantsに追加
+      const companyApplicantsRef = admin.firestore().collection('companies')
+        .doc(companyId).collection('applicants').doc()
+      batch.set(companyApplicantsRef, {
+        user: user,
+        createdAt: createdAt,
+        jobId: jobId
       })
+      // 通知
+      members.forEach((member, i) => {
+        const notificationRef = admin.firestore().collection('users')
+          .doc(member.uid).collection('notifications').doc()
+        const url = '/recruiter/candidates/' + candidateId
+        batch.set(notificationRef, {
+          type: 'normal',
+          isImportant: true,
+          content: user.name + 'さんから応募が届きました。',
+          createdAt: new Date(),
+          url: url,
+          isUnread: true,
+        })
+      })
+      batch.commit()
+        .then(() => {
+          console.log('set applicants & send notification completed.')
+        })
+        .catch((error) => {
+          console.error("Error", error)
+        })
+
+      // chat作成、chatIdをcandidateに格納, 担当者にメール送信
+      admin.firestore()
+        .collection('chats')
+        .where('companyId', '==', companyId)
+        .where('uid', '==', user.uid)
+        .get()
+        .then(function(snapshot) {
+          if (!snapshot.empty) {
+            var docCount = 0
+            snapshot.forEach(function(chatDoc) {
+              docCount += 1
+              if (docCount == 1) {
+                admin.firestore().collection('companies')
+                  .doc(companyId)
+                  .collection('candidates')
+                  .doc(candidateId)
+                  .update({
+                    chatId: chatDoc.id
+                  })
+                  .then(() => {
+                    // 応募が来たら担当者にメール送信
+                    members.forEach((member, i) => {
+                      if (member.notificationsSetting == null ||
+                        member.notificationsSetting.application) {
+                        const mailOptions = {
+                          from: `LightHouse <noreply@firebase.com>`,
+                          to: member.email,
+                        }
+                        mailOptions.subject = `${user.name}さんから応募が来ました。`
+                        mailOptions.text = `${user.name}さんから応募が来ました。　ご確認ください。`
+                        mailTransport.sendMail(mailOptions, (err, info) => {
+                          if (err) {
+                            console.log(err)
+                          }
+                          console.log('New apply email sent to:', member.email)
+                        })
+                      }
+                    })
+                    console.log('update candidate completed.')
+                  })
+                  .catch((error) => {
+                    console.error("Error updating document: ", error)
+                  })
+              }
+            })
+          } else {
+            const chatId = admin.firestore().collection('chats').doc().id
+            var chatData = {
+              uid: user.uid,
+              userName: user.name,
+              companyId: companyId,
+              companyName: companyName,
+              messagesExist: false,
+              updatedAt: createdAt,
+            }
+            if (user.imageUrl) {
+              chatData.profileImageUrl = user.imageUrl
+            }
+            if (companyImageUrl) {
+              chatData.companyImageUrl = companyImageUrl
+            }
+
+            const batch = admin.firestore().batch()
+            const chatsRef = admin.firestore().collection('chats').doc(chatId)
+            batch.set(chatsRef, chatData)
+            const candidateRef = admin.firestore().collection('companies').doc(companyId)
+              .collection('candidates').doc(candidateId)
+            batch.update(candidateRef, {
+              chatId: chatId
+            })
+            batch.commit()
+              .then(() => {
+                // 応募が来たら担当者にメール送信
+                members.forEach((member, i) => {
+                  if (member.notificationsSetting == null ||
+                    member.notificationsSetting.application) {
+                    const mailOptions = {
+                      from: `LightHouse <noreply@firebase.com>`,
+                      to: member.email,
+                    }
+                    mailOptions.subject = `${user.name}さんから応募が来ました。`
+                    mailOptions.text = `${user.name}さんから応募が来ました。　ご確認ください。`
+                    mailTransport.sendMail(mailOptions, (err, info) => {
+                      if (err) {
+                        console.log(err)
+                      }
+                      console.log('New apply email sent to:', member.email)
+                    })
+                  }
+                })
+                console.log('update candidate completed.')
+              })
+              .catch((error) => {
+                console.error("Error updating document: ", error)
+              })
+          }
+        })
+        .catch(err => {
+          console.log('Error getting document', err)
+        })
+    }).catch(error => {
+        console.error(error)
+    })
   })
 
 // 採用担当者が募集を投稿した時の処理
@@ -1746,7 +1637,7 @@ exports.postJob = functions.region('asia-northeast1')
               console.log('postJob completed.')
             })
             .catch((error) => {
-              console.error("Error adding document: ", error)
+              console.error("Error", error)
             })
         }
       })
@@ -1796,7 +1687,7 @@ exports.deleteCompany = functions.region('asia-northeast1')
             console.log('deleteCompany completed.')
           })
           .catch((error) => {
-            console.error("Error adding document: ", error)
+            console.error("Error", error)
           })
       })
       .catch(err => {
@@ -1938,10 +1829,10 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
         })
         jobBatch.commit()
           .then(() => {
-            console.log('editCompanyProfile job completed.')
+            console.log('update job completed.')
           })
           .catch((error) => {
-            console.error("Error adding document: ", error)
+            console.error("Error", error)
           })
 
           // name or imageUrl が変わっていれば続行
@@ -1960,10 +1851,10 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
               })
               batch.commit()
                 .then(() => {
-                  console.log('editCompanyProfile chat completed.')
+                  console.log('update chat completed.')
                 })
                 .catch((error) => {
-                  console.error("Error adding document: ", error)
+                  console.error("Error", error)
                 })
             })
             .catch(err => {
@@ -1984,10 +1875,10 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
               })
               batch.commit()
                 .then(() => {
-                  console.log('editCompanyProfile review completed.')
+                  console.log('update review completed.')
                 })
                 .catch((error) => {
-                  console.error("Error adding document: ", error)
+                  console.error("Error", error)
                 })
             })
             .catch(err => {
@@ -2008,10 +1899,10 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
               })
               batch.commit()
                 .then(() => {
-                  console.log('editCompanyProfile feedback completed.')
+                  console.log('update feedback completed.')
                 })
                 .catch((error) => {
-                  console.error("Error adding document: ", error)
+                  console.error("Error", error)
                 })
             })
             .catch(err => {
@@ -2032,10 +1923,10 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
               })
               batch.commit()
                 .then(() => {
-                  console.log('editCompanyProfile pass completed.')
+                  console.log('update pass completed.')
                 })
                 .catch((error) => {
-                  console.error("Error adding document: ", error)
+                  console.error("Error", error)
                 })
             })
             .catch(err => {
@@ -2066,7 +1957,7 @@ exports.sendAddCompanyMail = functions
       if (err) {
         console.log(err)
       }
-      console.log('sendAddCompanyMail completed.')
+      console.log('completed.')
     })
   })
 
@@ -2128,10 +2019,10 @@ exports.createRecruiter = functions.region('asia-northeast1')
           })
           batch.commit()
             .then(() => {
-              console.log('createInvitedMemberProfile completed.')
+              console.log('completed.')
             })
             .catch((error) => {
-              console.error("Error adding document: ", error)
+              console.error("Error", error)
             })
         }
       })
@@ -2197,10 +2088,10 @@ exports.editRecruiterSetting = functions.region('asia-northeast1')
             })
             batch.commit()
               .then(() => {
-                console.log('recruiter editRecruiterSetting completed.')
+                console.log('completed.')
               })
               .catch((error) => {
-                console.error("Error adding document: ", error)
+                console.error("Error", error)
               })
           }
         })
@@ -2245,10 +2136,10 @@ exports.editRecruiterSetting = functions.region('asia-northeast1')
             batch.update(companyDetailRef, companyData)
             batch.commit()
               .then(() => {
-                console.log('recruiter editRecruiterSetting completed.')
+                console.log('completed.')
               })
               .catch((error) => {
-                console.error("Error adding document: ", error)
+                console.error("Error", error)
               })
           }
         })
@@ -2328,10 +2219,10 @@ exports.editProfile = functions.region('asia-northeast1')
           canSearch: canSearch
         })
         .then(() => {
-          console.log('user editProfile: update completionPercentage completed.')
+          console.log('update completionPercentage completed.')
         })
         .catch((error) => {
-          console.error("Error adding document: ", error)
+          console.error("Error updating document", error)
         })
 
       if (
@@ -2361,14 +2252,14 @@ exports.editProfile = functions.region('asia-northeast1')
 
             batch.commit()
               .then(() => {
-                console.log('user editProfile completed.')
+                console.log('update chat completed.')
               })
               .catch((error) => {
-                console.error("Error adding document: ", error)
+                console.error("Error", error)
               })
           })
           .catch((error) => {
-            console.error("Error adding document: ", error)
+            console.error("Error getting document: ", error)
           })
       } else {
         return 0
@@ -2423,10 +2314,10 @@ exports.editProfile = functions.region('asia-northeast1')
             })
             batch.commit()
               .then(() => {
-                console.log('recruiter editProfile completed.')
+                console.log('completed.')
               })
               .catch((error) => {
-                console.error("Error adding document: ", error)
+                console.error("Error", error)
               })
           }
         })
@@ -2456,16 +2347,19 @@ exports.sendReview = functions.region('asia-northeast1')
     }
 
     // job の rating, companies detail の reviews, points を更新
-    return admin.firestore()
-      .collection('companies')
-      .doc(companyId)
-      .collection('detail')
-      .doc(companyId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
+    const companyDetailRef = admin.firestore().collection('companies')
+      .doc(companyId).collection('detail').doc(companyId)
+
+    const userRef = admin.firestore().collection('users').doc(uid)
+
+    return admin.firestore().runTransaction(function(transaction) {
+      return transaction.getAll(companyDetailRef, userRef).then(function(docs) {
+        const companyDetailDoc = docs[0]
+        const userDoc = docs[1]
+
+        if (companyDetailDoc.exists) {
           // スコア更新
-          var points = doc.data().points
+          var points = companyDetailDoc.data().points
           if (points == null) {
             points = 100
           }
@@ -2500,17 +2394,17 @@ exports.sendReview = functions.region('asia-northeast1')
           var all
           var comments
 
-          if (doc.data().reviews) {
-            reviewCount = doc.data().reviews.rating.count
-            atmosphere = Math.round((doc.data().reviews.rating.atmosphere * reviewCount + snap.data().atmosphere) / (reviewCount + 1) * 10) / 10
-            job = Math.round((doc.data().reviews.rating.job * reviewCount + snap.data().job) / (reviewCount + 1) * 10) / 10
-            discretion = Math.round((doc.data().reviews.rating.discretion * reviewCount + snap.data().discretion) / (reviewCount + 1) * 10) / 10
-            flexibleSchedule = Math.round((doc.data().reviews.rating.flexibleSchedule * reviewCount + snap.data().flexibleSchedule) / (reviewCount + 1) * 10) / 10
-            flexibility = Math.round((doc.data().reviews.rating.flexibility * reviewCount + snap.data().flexibility) / (reviewCount + 1) * 10) / 10
-            mentor = Math.round((doc.data().reviews.rating.mentor * reviewCount + snap.data().mentor) / (reviewCount + 1) * 10) / 10
-            growth = Math.round((doc.data().reviews.rating.growth * reviewCount + snap.data().growth) / (reviewCount + 1) * 10) / 10
+          if (companyDetailDoc.data().reviews) {
+            reviewCount = companyDetailDoc.data().reviews.rating.count
+            atmosphere = Math.round((companyDetailDoc.data().reviews.rating.atmosphere * reviewCount + snap.data().atmosphere) / (reviewCount + 1) * 10) / 10
+            job = Math.round((companyDetailDoc.data().reviews.rating.job * reviewCount + snap.data().job) / (reviewCount + 1) * 10) / 10
+            discretion = Math.round((companyDetailDoc.data().reviews.rating.discretion * reviewCount + snap.data().discretion) / (reviewCount + 1) * 10) / 10
+            flexibleSchedule = Math.round((companyDetailDoc.data().reviews.rating.flexibleSchedule * reviewCount + snap.data().flexibleSchedule) / (reviewCount + 1) * 10) / 10
+            flexibility = Math.round((companyDetailDoc.data().reviews.rating.flexibility * reviewCount + snap.data().flexibility) / (reviewCount + 1) * 10) / 10
+            mentor = Math.round((companyDetailDoc.data().reviews.rating.mentor * reviewCount + snap.data().mentor) / (reviewCount + 1) * 10) / 10
+            growth = Math.round((companyDetailDoc.data().reviews.rating.growth * reviewCount + snap.data().growth) / (reviewCount + 1) * 10) / 10
             all = Math.round((atmosphere + job + discretion + flexibleSchedule + flexibility + mentor + growth) / 7 * 10) / 10
-            comments = doc.data().reviews.comments
+            comments = companyDetailDoc.data().reviews.comments
 
             if (comments == null) {
               comments = [comment]
@@ -2557,87 +2451,55 @@ exports.sendReview = functions.region('asia-northeast1')
             comments: comments,
           }
           // company rating, points 更新
-          const batch = admin.firestore().batch()
           const companyRef = admin.firestore().collection('companies').doc(companyId)
-          batch.update(companyRef, {
+          transaction.update(companyRef, {
             rating: rating,
             points: points
           })
-          const companyDetailRef = admin.firestore().collection('companies').doc(companyId).collection('detail').doc(companyId)
-          batch.update(companyDetailRef, {
+          // companyDetail reviews, points 更新
+          transaction.update(companyDetailRef, {
             reviews: reviews,
             points: points,
           })
-          batch.commit()
-            .then(() => {
-              console.log('sendReview company completed.')
-            })
-            .catch((error) => {
-              console.error("Error adding document: ", error)
-            })
-
-          // job rating, points更新
-          admin.firestore()
-            .collection('jobs')
-            .where('companyId', '==', companyId)
-            .get()
-            .then(function(snapshot) {
-              const jobsBatch = admin.firestore().batch()
-
-              snapshot.forEach(function(doc) {
-                const jobRef = admin.firestore().collection('jobs').doc(doc.id)
-                jobsBatch.update(jobRef, {
-                  rating: rating,
-                  points: points
-                })
-              })
-              jobsBatch.commit()
-                .then(() => {
-                  console.log('sendReview job completed.')
-                })
-                .catch((error) => {
-                  console.error("Error adding document: ", error)
-                })
-            })
-            .catch(err => {
-              console.log('Error getting document', err)
-            })
-
           // userスコア更新
-          admin.firestore()
-            .collection('users')
-            .doc(uid)
-            .get()
-            .then(userDoc => {
-              var points = userDoc.data().points
-              if (points == null) {
-                points = 0
-              }
-              admin.firestore()
-                .collection('users')
-                .doc(uid)
-                .update({
-                  points: points + 1,
-                })
-                .then(() => {
-                  console.log('sendReview: update user score completed.')
-                })
-                .catch((error) => {
-                  console.error("Error adding document: ", error)
-                })
-            })
-            .catch((error) => {
-              console.error("Error adding document: ", error)
-            })
+          transaction.update(userRef, {
+            points: userDoc.data().points + 1,
+          })
+          return { rating: rating, points: points }
         }
       })
-      .catch(err => {
-        console.log('Error getting document', err)
-      })
+    }).then((updatedData) => {
+      console.log('update company & detail & user score completed.')
+      // job rating, points更新
+      admin.firestore()
+        .collection('jobs')
+        .where('companyId', '==', companyId)
+        .get()
+        .then(snapshot => {
+          const batch = admin.firestore().batch()
+
+          snapshot.forEach(function(jobDoc) {
+            const jobRef = admin.firestore().collection('jobs').doc(jobDoc.id)
+            batch.update(jobRef, updatedData)
+          })
+          batch.commit()
+            .then(() => {
+              console.log('update jobs completed.')
+            })
+            .catch((error) => {
+              console.error("Error", error)
+            })
+        })
+        .catch(error => {
+          console.log('Error getting document', error)
+        })
+    }).catch(error => {
+        console.error(error)
+    })
   })
 
 // メッセージを送信した時の処理
-exports.sendMessageFromUser = functions.region('asia-northeast1')
+exports.sendMessage = functions.region('asia-northeast1')
   .firestore
   .document('chats/{chatId}/messages/{messageId}')
   .onCreate((snap, context) => {
@@ -2648,56 +2510,26 @@ exports.sendMessageFromUser = functions.region('asia-northeast1')
     const pic = snap.data().pic
 
     // chatのupdatedAt, picUnreadCountを更新
+    var chatData = {
+      updatedAt: snap.data().createdAt,
+      lastMessage: message,
+      messagesExist: true,
+    }
+
+    if (user != null && pic == null) {
+      chatData.picUnreadCount = admin.firestore.FieldValue.increment(1)
+    } else if (user == null && pic != null) {
+      chatData.userUnreadCount = admin.firestore.FieldValue.increment(1)
+    }
+
     return admin.firestore()
       .collection('chats').doc(chatId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          var from
-          var picUnreadCount
-          var userUnreadCount
-
-          if (user != null && pic == null) {
-            from = 'user'
-            if (doc.data().picUnreadCount != null) {
-              picUnreadCount = doc.data().picUnreadCount
-            } else {
-              picUnreadCount = 0
-            }
-          } else if (user == null && pic != null) {
-            from = 'pic'
-            if (doc.data().userUnreadCount != null) {
-              userUnreadCount = doc.data().userUnreadCount
-            } else {
-              userUnreadCount = 0
-            }
-          }
-
-          var chatData = {
-            updatedAt: snap.data().createdAt,
-            lastMessage: message,
-            messagesExist: true,
-          }
-
-          if (from == 'user') {
-            chatData.picUnreadCount = picUnreadCount + 1
-          } else if (from == 'pic') {
-            chatData.userUnreadCount = userUnreadCount + 1
-          }
-
-          admin.firestore()
-            .collection('chats').doc(chatId)
-            .update(chatData)
-            .then(() => {
-              console.log('sendMessageFromUser completed.')
-            })
-            .catch(err => {
-              console.log('Error getting document', err)
-            })
-        }
+      .update(chatData)
+      .then(() => {
+        console.log('completed.')
       })
-      .catch(err => {
-        console.log('Error getting document', err)
+      .catch(error => {
+        console.log('Error updating document', error)
       })
   })
 
@@ -2714,6 +2546,6 @@ exports.sendContact = functions
       if (err) {
         console.log(err)
       }
-      console.log('sendContact completed.')
+      console.log('completed.')
     })
   })
