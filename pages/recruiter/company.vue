@@ -15,7 +15,7 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex v-else xs12>
+    <v-flex v-else-if="uid" xs12>
       <v-snackbar
        v-model="snackbar"
        color="teal lighten-1"
@@ -1108,6 +1108,7 @@
 import { mapActions, mapState, mapGetters } from 'vuex'
 
 export default {
+  middleware: 'auth',
   data: () => ({
     snackbar: false,
     snackbarText: '',
@@ -1236,6 +1237,7 @@ export default {
       }
     },
     ...mapState({
+      uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
       firstName: state => state.profile.firstName,
       lastName: state => state.profile.lastName,

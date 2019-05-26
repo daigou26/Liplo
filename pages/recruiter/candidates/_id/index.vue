@@ -11,7 +11,7 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex xs12 v-else>
+    <v-flex xs12 v-else-if="uid">
       <v-layout
         row
         white
@@ -1076,6 +1076,7 @@ import { mapActions, mapState, mapGetters } from 'vuex'
 import { firestore, auth, storage, storageRef } from '@/plugins/firebase'
 
 export default {
+  middleware: 'auth',
   data: () => ({
     isQueried: false,
     windowHeight: 0,

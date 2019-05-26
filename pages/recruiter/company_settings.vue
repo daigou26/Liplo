@@ -23,6 +23,7 @@
       </v-btn>
     </v-snackbar>
     <v-flex
+      v-if="uid"
       xs12
       md10
       offset-md1
@@ -118,6 +119,7 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
+  middleware: 'auth',
   data: () => ({
     isQueried: false,
     snackbar: false,

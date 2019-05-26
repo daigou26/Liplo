@@ -201,7 +201,6 @@ export const actions = {
   },
   resetMessagesListener({commit, state}) {
     if (state.unsubscribe) {
-      console.log('messages listener unsubscribed');
       state.unsubscribe()
     }
     commit('setUnsubscribe', null)

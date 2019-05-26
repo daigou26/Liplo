@@ -15,7 +15,7 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex v-else xs12>
+    <v-flex v-else-if="uid" xs12>
       <v-flex xs12 sm10 offset-sm1>
         <div class="title textColor font-weight-bold py-3">
           求人を更新
@@ -219,6 +219,7 @@
 import { mapActions, mapState, mapGetters } from 'vuex'
 
 export default {
+  middleware: 'auth',
   data: () => ({
     isQueried: false,
     windowHeight: 0,
@@ -356,6 +357,7 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
+      uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
       companyId: state => state.profile.companyId,
       imageUrl: state => state.companyJob.imageUrl,

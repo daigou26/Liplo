@@ -14,7 +14,7 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex xs12 v-else>
+    <v-flex xs12 v-else-if="uid">
       <v-flex xs12 class="break">
         <!-- snackbar -->
         <v-snackbar
@@ -371,6 +371,7 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
+  middleware: 'auth',
   data: () => ({
     isQueried: false,
     windowHeight: 0,
@@ -419,6 +420,7 @@ export default {
       return this.$route.params
     },
     ...mapState({
+      uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
       type: state => state.profile.type,
       companyId: state => state.profile.companyId,

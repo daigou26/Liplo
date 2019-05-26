@@ -15,7 +15,7 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex v-else xs12>
+    <v-flex v-else-if="uid" xs12>
       <v-layout
         row
         white
@@ -148,6 +148,7 @@
 import { auth } from '@/plugins/firebase'
 import { mapActions, mapState } from 'vuex'
 export default {
+  middleware: 'auth',
   data() {
     return {
       isQueried: false,
@@ -224,6 +225,7 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
+      uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
       type: state => state.profile.type,
       companyId: state => state.profile.companyId,

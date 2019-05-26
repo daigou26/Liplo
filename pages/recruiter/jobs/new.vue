@@ -4,7 +4,7 @@
     white
     wrap
   >
-    <v-flex xs12 sm10 offset-sm1 pb-3>
+    <v-flex v-if="uid" xs12 sm10 offset-sm1 pb-3>
       <div class="title textColor font-weight-bold py-3">
         求人を投稿
       </div>
@@ -211,6 +211,7 @@
 import { mapActions, mapState, mapGetters } from 'vuex'
 
 export default {
+  middleware: 'auth',
   data: () => ({
     valid: true,
     imageFileSizeValid: true,
@@ -355,6 +356,7 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
+      uid: state => state.uid,
       companyId: state => state.profile.companyId,
     }),
   },
