@@ -449,215 +449,186 @@ exports.sendPass = functions.region('asia-northeast1')
       passType = '先着パス'
     }
 
-    return admin.firestore()
-      .collection('companies')
-      .doc(companyId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          const companyName = doc.data().companyName
-          const companyImageUrl = doc.data().imageUrl
-          // 入社パスのカウント
-          const hiringPassCount = doc.data().hiringPassCount
-          const passId = admin.firestore().collection('passes').doc().id
+    const companyRef = admin.firestore().collection('companies').doc(companyId)
+    const yearPassRef = admin.firestore().collection('companies').doc(companyId)
+      .collection('yearPasses').doc(String(pass.joiningYear))
 
-          var passData = {
-            candidateId: candidateId,
-            uid: user.uid,
-            userName: user.name,
-            companyId: companyId,
-            companyName: companyName,
-            createdAt: updatedAt,
-            type: pass.type,
-            expirationDate: pass.expirationDate,
-            occupation: pass.occupation,
-            picMessage: pass.message,
-            pic: pass.pic,
-            isAccepted: false,
-            isContracted: false,
-            isValid: true,
-            candidateId: candidateId,
-          }
-          if (user.imageUrl) {
-            passData.profileImageUrl = user.imageUrl
-          }
-          if (companyImageUrl) {
-            passData.companyImageUrl = companyImageUrl
-          }
-          if (pass.type != 'hiring') {
-            passData.joiningYear = pass.joiningYear
-          }
+    return admin.firestore().runTransaction(function(transaction) {
+      return transaction.getAll(companyRef, yearPassRef).then(function(docs) {
+        const companyDoc = docs[0]
+        const yearPassDoc = docs[1]
 
-          const batch = admin.firestore().batch()
+        // 入社パスのカウント
+        const hiringPassCount = companyDoc.data().hiringPassCount
+
+        if (pass.type == 'hiring') {
           // 入社パスの場合、hiringPassCount を更新
-          if (pass.type == 'hiring') {
-            const companyRef = admin.firestore().collection('companies').doc(companyId)
-            var companyData
-            if (hiringPassCount) {
-              companyData = {
-                hiringPassCount: hiringPassCount + 1,
+          let companyData
+          if (hiringPassCount) {
+            companyData = {
+              hiringPassCount: hiringPassCount + 1,
+            }
+          } else {
+            companyData = {
+              hiringPassCount: 1
+            }
+          }
+          transaction.update(companyRef, companyData)
+        } else {
+          // 内定パスまたは先着パスの場合
+          if (yearPassDoc.exists) {
+            // doc が存在する場合
+            let count = yearPassDoc.data().count
+            if (pass.type == 'offer') {
+              // 内定パス
+              count.offer.all += 1
+            } else if (pass.type == 'limited') {
+              // 先着パス
+              count.limited.all += 1
+            }
+            transaction.update(yearPassRef, {
+              count: count
+            })
+          } else {
+            // doc が存在しない場合
+            let passData
+            if (pass.type == 'offer') {
+              // 内定パス
+              passData = {
+                count: {
+                  hiring: {
+                    used: 0
+                  },
+                  offer: {
+                    all: 1,
+                    used: 0
+                  },
+                  limited: {
+                    all: 0,
+                    used: 0
+                  }
+                }
               }
-            } else {
-              companyData = {
-                hiringPassCount: 1
+            } else if (pass.type == 'limited') {
+              // 先着パス
+              passData = {
+                count: {
+                  hiring: {
+                    used: 0
+                  },
+                  offer: {
+                    all: 0,
+                    used: 0
+                  },
+                  limited: {
+                    all: 1,
+                    used: 0
+                  }
+                }
               }
             }
-            batch.update(companyRef, companyData)
-          }
-          // パス
-          const passRef = admin.firestore().collection('passes').doc(passId)
-          batch.set(passRef, passData)
-          // パスのデータをcandidateに
-          const candidateRef = admin.firestore().collection('companies')
-            .doc(companyId).collection('candidates').doc(candidateId)
-          pass.passId = passId
-          batch.update(candidateRef, {
-            pass: pass
-          })
-          // 通知
-          const notificationRef = admin.firestore().collection('users').doc(user.uid)
-            .collection('notifications').doc()
-          const url = '/user/passes/' + passId
-          batch.set(notificationRef, {
-            type: 'normal',
-            isImportant: true,
-            content: `${companyName}から${passType}が送られました！ パスを使用する場合は、使用ボタンを押してから企業と連絡を取り、契約をしてください。`,
-            createdAt: new Date(),
-            url: url,
-            isUnread: true,
-          })
-          batch.commit()
-            .then(() => {
-              admin.firestore().collection('users')
-                .doc(user.uid)
-                .get()
-                .then(userDoc => {
-                  if (userDoc.exists) {
-                    if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.pass) {
-                      // パスが渡されたユーザーにメール送信
-                      const mailOptions = {
-                        from: `LightHouse <noreply@firebase.com>`,
-                        to: userDoc.data().email,
-                      }
-                      mailOptions.subject = `${companyName}に${passType}をもらいました！`
-                      mailOptions.text = `${companyName}に${passType}をもらいました！　ご確認ください。`
-                      mailTransport.sendMail(mailOptions, (err, info) => {
-                        if (err) {
-                          console.log(err)
-                        }
-                        console.log('New pass email sent to:', userDoc.data().email)
-                      })
-                    }
-                  }
-                })
-                .catch((error) => {
-                  console.error("Error getting document: ", error)
-                })
-
-              console.log('update pass info & send notification completed.')
-            })
-            .catch((error) => {
-              console.error("Error: ", error)
-            })
-
-          // 内定パスまたは先着パスの場合
-          if (pass.type != 'hiring') {
-            admin.firestore()
-              .collection('companies')
-              .doc(companyId)
-              .collection('yearPasses')
-              .doc(String(pass.joiningYear))
-              .get()
-              .then(doc => {
-                if (doc.exists) {
-                  // すでにカウントある場合
-                  var count = doc.data().count
-                  if (pass.type == 'offer') {
-                    // 内定パス
-                    count.offer.all += 1
-                  } else if (pass.type == 'limited') {
-                    // 先着パス
-                    count.limited.all += 1
-                  }
-                  // 更新
-                  admin.firestore()
-                    .collection('companies')
-                    .doc(companyId)
-                    .collection('yearPasses')
-                    .doc(String(pass.joiningYear))
-                    .update({
-                      count: count
-                    })
-                    .then(() => {
-                      console.log('update pass count completed.')
-                    })
-                    .catch((error) => {
-                      console.error("Error updating document: ", error)
-                    })
-                } else {
-                  // まだカウントがない場合
-                  var passData
-                  if (pass.type == 'offer') {
-                    // 内定パス
-                    passData = {
-                      count: {
-                        hiring: {
-                          used: 0
-                        },
-                        offer: {
-                          all: 1,
-                          used: 0
-                        },
-                        limited: {
-                          all: 0,
-                          used: 0
-                        }
-                      }
-                    }
-                  } else if (pass.type == 'limited') {
-                    // 先着パス
-                    passData = {
-                      count: {
-                        hiring: {
-                          used: 0
-                        },
-                        offer: {
-                          all: 0,
-                          used: 0
-                        },
-                        limited: {
-                          all: 1,
-                          used: 0
-                        }
-                      }
-                    }
-                  }
-                  passData.year = pass.joiningYear
-                  passData.limit = null
-                  // 更新
-                  admin.firestore()
-                    .collection('companies')
-                    .doc(companyId)
-                    .collection('yearPasses')
-                    .doc(String(pass.joiningYear))
-                    .set(passData)
-                    .then(() => {
-                      console.log('set pass count completed.')
-                    })
-                    .catch((error) => {
-                      console.error("Error adding document: ", error)
-                    })
-                }
-              })
-              .catch((error) => {
-                console.error("Error getting document: ", error)
-              })
+            passData.year = pass.joiningYear
+            passData.limit = null
+            transaction.set(yearPassRef, passData)
           }
         }
+
+        return companyDoc
       })
-      .catch((error) => {
-        console.error("Error getting document: ", error)
+    }).then(companyDoc => {
+      console.log("update pass count completed.")
+
+      const companyName = companyDoc.data().companyName
+      const companyImageUrl = companyDoc.data().imageUrl
+      const passId = admin.firestore().collection('passes').doc().id
+
+      var passData = {
+        candidateId: candidateId,
+        uid: user.uid,
+        userName: user.name,
+        companyId: companyId,
+        companyName: companyName,
+        createdAt: updatedAt,
+        type: pass.type,
+        expirationDate: pass.expirationDate,
+        occupation: pass.occupation,
+        picMessage: pass.message,
+        pic: pass.pic,
+        isAccepted: false,
+        isContracted: false,
+        isValid: true,
+        candidateId: candidateId,
+      }
+      if (user.imageUrl) {
+        passData.profileImageUrl = user.imageUrl
+      }
+      if (companyImageUrl) {
+        passData.companyImageUrl = companyImageUrl
+      }
+      if (pass.type != 'hiring') {
+        passData.joiningYear = pass.joiningYear
+      }
+
+      const batch = admin.firestore().batch()
+      // パス
+      const passRef = admin.firestore().collection('passes').doc(passId)
+      batch.set(passRef, passData)
+      // パスのデータをcandidateに
+      const candidateRef = admin.firestore().collection('companies')
+        .doc(companyId).collection('candidates').doc(candidateId)
+      pass.passId = passId
+      batch.update(candidateRef, {
+        pass: pass
       })
+      // 通知
+      const notificationRef = admin.firestore().collection('users').doc(user.uid)
+        .collection('notifications').doc()
+      const url = '/user/passes/' + passId
+      batch.set(notificationRef, {
+        type: 'normal',
+        isImportant: true,
+        content: `${companyName}から${passType}が送られました！ パスを使用する場合は、使用ボタンを押してから企業と連絡を取り、契約をしてください。`,
+        createdAt: new Date(),
+        url: url,
+        isUnread: true,
+      })
+      batch.commit()
+        .then(() => {
+          admin.firestore().collection('users')
+            .doc(user.uid)
+            .get()
+            .then(userDoc => {
+              if (userDoc.exists) {
+                if (userDoc.data().notificationsSetting == null
+                  || userDoc.data().notificationsSetting.pass) {
+                  // パスが渡されたユーザーにメール送信
+                  const mailOptions = {
+                    from: `LightHouse <noreply@firebase.com>`,
+                    to: userDoc.data().email,
+                  }
+                  mailOptions.subject = `${companyName}に${passType}をもらいました！`
+                  mailOptions.text = `${companyName}に${passType}をもらいました！　ご確認ください。`
+                  mailTransport.sendMail(mailOptions, (err, info) => {
+                    if (err) {
+                      console.log(err)
+                    }
+                    console.log('New pass email sent to:', userDoc.data().email)
+                  })
+                }
+              }
+            })
+            .catch((error) => {
+              console.error("Error getting document", error)
+            })
+
+          console.log('set pass & update candidate & send notification, email to user completed.')
+        })
+        .catch((error) => {
+          console.error("Error", error)
+        })
+    }).catch(function(error) {
+      console.error(error)
+    })
   })
 
 // パスの情報が変更された時の処理 （パスを使用した時、recruiter がパスの入社年度を変更した時）
@@ -704,156 +675,136 @@ exports.passHasChanged = functions.region('asia-northeast1')
         typeText = '先着パス'
       }
 
-      // メッセージを messages に追加
-      return admin.firestore()
-        .collection('chats')
-        .where('uid', '==', uid)
-        .where('companyId', '==', companyId)
-        .get()
-        .then(function(snapshot) {
-          var docCount = 0
-          snapshot.forEach(function(doc) {
-            docCount += 1
-            if (docCount == 1) {
-              admin.firestore().collection('chats').doc(doc.id)
-                .collection('messages')
-                .add(message)
+      const yearPassRef = admin.firestore().collection('companies').doc(companyId)
+        .collection('yearPasses').doc(String(joiningYear))
+
+      return admin.firestore().runTransaction(function(transaction) {
+        return transaction.get(yearPassRef).then(function(yearPassDoc) {
+          if (yearPassDoc.exists) {
+            // doc が存在する時
+            var count = yearPassDoc.data().count
+            if (type == 'hiring') {
+              count.hiring.used += 1
+            } else if (type == 'offer') {
+              count.offer.used += 1
+            } else if (type == 'limited') {
+              count.limited.used += 1
+            }
+
+            transaction.update(yearPassRef, {
+              count: count
+            })
+          } else {
+            // doc が存在しない時
+            var passData
+            if (type == 'hiring') {
+              // 内定パス
+              passData = {
+                count: {
+                  hiring: {
+                    used: 1
+                  },
+                  offer: {
+                    all: 0,
+                    used: 0
+                  },
+                  limited: {
+                    all: 0,
+                    used: 0
+                  }
+                }
+              }
+            }
+            passData.year = joiningYear
+            passData.limit = null
+
+            transaction.set(yearPassRef, passData)
+          }
+        })
+      }).then(() => {
+        console.log("update pass count completed.")
+
+        // メッセージを messages に追加
+        admin.firestore()
+          .collection('chats')
+          .where('uid', '==', uid)
+          .where('companyId', '==', companyId)
+          .get()
+          .then(function(snapshot) {
+            var docCount = 0
+            snapshot.forEach(function(doc) {
+              docCount += 1
+              if (docCount == 1) {
+                admin.firestore().collection('chats').doc(doc.id)
+                  .collection('messages')
+                  .add(message)
+                  .then(() => {
+                    console.log('add message complete.')
+                  })
+                  .catch((error) => {
+                    console.error("Error adding document", error)
+                  })
+              }
+            })
+          })
+          .catch(err => {
+            console.log('Error getting document', err)
+          })
+
+        // 通知
+        admin.firestore()
+          .collection('companies')
+          .doc(companyId)
+          .get()
+          .then(doc => {
+            if (doc.exists) {
+              const members = doc.data().members
+              const batch = admin.firestore().batch()
+              members.forEach((member, i) => {
+                const notificationRef = admin.firestore().collection('users').doc(member.uid)
+                  .collection('notifications').doc()
+                const url = '/recruiter/candidates/' + candidateId
+                batch.set(notificationRef, {
+                  type: 'normal',
+                  isImportant: true,
+                  content: `${userName}さんが${typeText}を使用しました！ 契約が済みましたら、ステータスを採用予定に変更してください。`,
+                  createdAt: new Date(),
+                  url: url,
+                  isUnread: true,
+                })
+              })
+              batch.commit()
                 .then(() => {
-                  console.log('acceptJobOffer: add message complete.')
+                  // パスが使用されたら担当者にメール送信
+                  members.forEach((member, i) => {
+                    if (member.notificationsSetting == null || member.notificationsSetting.acceptPass) {
+                      const mailOptions = {
+                        from: `LightHouse <noreply@firebase.com>`,
+                        to: member.email,
+                      }
+                      mailOptions.subject = `${userName}さんが${typeText}を使用しました。`
+                      mailOptions.text = `${userName}さんが${typeText}を使用しました。　契約が済みましたら、ステータスを採用予定に変更してください。`
+                      mailTransport.sendMail(mailOptions, (err, info) => {
+                        if (err) {
+                          console.log(err)
+                        }
+                        console.log('New accept pass email sent to:', member.email)
+                      })
+                    }
+                  })
+                  console.log('send notification, mail to recruiter complete.')
                 })
                 .catch((error) => {
-                  console.error("Error adding document: ", error)
+                  console.error("Error", error)
                 })
             }
           })
-
-          // パス　カウント 更新
-          admin.firestore()
-            .collection('companies')
-            .doc(companyId)
-            .collection('yearPasses')
-            .doc(String(joiningYear))
-            .get()
-            .then(doc => {
-              if (doc.exists) {
-                var count = doc.data().count
-                if (type == 'hiring') {
-                  count.hiring.used += 1
-                } else if (type == 'offer') {
-                  count.offer.used += 1
-                } else if (type == 'limited') {
-                  count.limited.used += 1
-                }
-                admin.firestore()
-                  .collection('companies')
-                  .doc(companyId)
-                  .collection('yearPasses')
-                  .doc(String(joiningYear))
-                  .update({
-                    count: count
-                  })
-                  .then(() => {
-                    console.log('acceptJobOffer: update pass count complete.')
-                  })
-                  .catch((error) => {
-                    console.error("Error updating document: ", error)
-                  })
-              } else {
-                var passData
-                if (type == 'hiring') {
-                  // 内定パス
-                  passData = {
-                    count: {
-                      hiring: {
-                        used: 1
-                      },
-                      offer: {
-                        all: 0,
-                        used: 0
-                      },
-                      limited: {
-                        all: 0,
-                        used: 0
-                      }
-                    }
-                  }
-                }
-                passData.year = joiningYear
-                passData.limit = null
-                // 更新
-                admin.firestore()
-                  .collection('companies')
-                  .doc(companyId)
-                  .collection('yearPasses')
-                  .doc(String(joiningYear))
-                  .set(passData)
-                  .then(() => {
-                    console.log('acceptJobOffer: update pass count complete.')
-                  })
-                  .catch((error) => {
-                    console.error("Error updating document: ", error)
-                  })
-              }
-            })
-            .catch((error) => {
-              console.error("Error getting document: ", error)
-            })
-
-          // 通知
-          admin.firestore()
-            .collection('companies')
-            .doc(companyId)
-            .get()
-            .then(doc => {
-              if (doc.exists) {
-                const members = doc.data().members
-                const batch = admin.firestore().batch()
-                members.forEach((member, i) => {
-                  const notificationRef = admin.firestore().collection('users').doc(member.uid)
-                    .collection('notifications').doc()
-                  const url = '/recruiter/candidates/' + candidateId
-                  batch.set(notificationRef, {
-                    type: 'normal',
-                    isImportant: true,
-                    content: `${userName}さんが${typeText}を使用しました！ 契約が済みましたら、ステータスを採用予定に変更してください。`,
-                    createdAt: new Date(),
-                    url: url,
-                    isUnread: true,
-                  })
-                })
-                batch.commit()
-                  .then(() => {
-                    // パスが使用されたら担当者にメール送信
-                    members.forEach((member, i) => {
-                      if (member.notificationsSetting == null || member.notificationsSetting.acceptPass) {
-                        const mailOptions = {
-                          from: `LightHouse <noreply@firebase.com>`,
-                          to: member.email,
-                        }
-                        mailOptions.subject = `${userName}さんが${typeText}を使用しました。`
-                        mailOptions.text = `${userName}さんが${typeText}を使用しました。　契約が済みましたら、ステータスを採用予定に変更してください。`
-                        mailTransport.sendMail(mailOptions, (err, info) => {
-                          if (err) {
-                            console.log(err)
-                          }
-                          console.log('New accept pass email sent to:', member.email)
-                        })
-                      }
-                    })
-                    console.log('acceptJobOffer: notification complete.')
-                  })
-                  .catch((error) => {
-                    console.error("Error: ", error)
-                  })
-              }
-            })
-            .catch(err => {
-              console.log('Error getting document', err)
-            })
-        })
-        .catch(err => {
-          console.log('Error getting document', err)
-        })
+          .catch(error => {
+            console.log('Error getting document', error)
+          })
+      }).catch(function(error) {
+        console.error(error)
+      })
     } else if (
       type != 'hiring' &&
       joiningYear &&
@@ -861,13 +812,17 @@ exports.passHasChanged = functions.region('asia-northeast1')
       joiningYear != previousValue.joiningYear
     ) {
       // recruiter がパスの入社年度を変更した時
-      return admin.firestore()
-        .collection('companies')
-        .doc(companyId)
-        .collection('yearPasses')
-        .doc(String(previousValue.joiningYear))
-        .get()
-        .then(previousDoc => {
+      const previousYearPassRef = admin.firestore().collection('companies').doc(companyId)
+        .collection('yearPasses').doc(String(previousValue.joiningYear))
+
+      const newYearPassRef = admin.firestore().collection('companies').doc(companyId)
+        .collection('yearPasses').doc(String(joiningYear))
+
+      return admin.firestore().runTransaction(function(transaction) {
+        return transaction.getAll(previousYearPassRef, newYearPassRef).then(function(docs) {
+          const previousDoc = docs[0]
+          const newDoc = docs[1]
+
           // 変更前の入社年度のパスカウント　更新
           if (previousDoc.exists) {
             var count = previousDoc.data().count
@@ -889,136 +844,94 @@ exports.passHasChanged = functions.region('asia-northeast1')
                 count.limited.used -= 1
               }
             }
-            // 更新
-            admin.firestore()
-              .collection('companies')
-              .doc(companyId)
-              .collection('yearPasses')
-              .doc(String(previousValue.joiningYear))
-              .update({
-                count: count
-              })
-              .then(() => {
-                console.log('updatePassesCount: update previous year passes count completed.')
-              })
-              .catch((error) => {
-                console.error("Error updating document: ", error)
-              })
+
+            transaction.update(previousYearPassRef, {
+              count: count
+            })
           }
 
           // 変更後の入社年度のパスカウント更新
-          admin.firestore()
-            .collection('companies')
-            .doc(companyId)
-            .collection('yearPasses')
-            .doc(String(joiningYear))
-            .get()
-            .then(newDoc => {
-              var passData
-              if (newDoc.exists) {
-                var count = newDoc.data().count
-                if (type == 'offer') {
-                  // 内定パス
-                  count.offer.all += 1
+          if (newDoc.exists) {
+            // doc が存在する場合
+            var count = newDoc.data().count
+            if (type == 'offer') {
+              // 内定パス
+              count.offer.all += 1
 
-                  // 使用済みなら usedも+1
-                  if (isAccepted) {
-                    count.offer.used += 1
-                  }
-                } else if (type == 'limited') {
-                  // 先着パス
-                  count.limited.all += 1
-
-                  // 使用済みなら usedも+1
-                  if (isAccepted) {
-                    count.limited.used += 1
-                  }
-                }
-                // 更新
-                admin.firestore()
-                  .collection('companies')
-                  .doc(companyId)
-                  .collection('yearPasses')
-                  .doc(String(joiningYear))
-                  .update({
-                    count: count
-                  })
-                  .then(() => {
-                    console.log('updatePassesCount: update new year passes count completed.')
-                  })
-                  .catch((error) => {
-                    console.error("Error updating document: ", error)
-                  })
-              } else {
-                // まだ年度が存在しない場合
-                if (type == 'offer') {
-                  // 内定パス
-                  passData = {
-                    count: {
-                      hiring: {
-                        used: 0
-                      },
-                      offer: {
-                        all: 1,
-                        used: 0
-                      },
-                      limited: {
-                        all: 0,
-                        used: 0
-                      }
-                    }
-                  }
-                  // 使用済みなら usedも+1
-                  if (isAccepted) {
-                    passData.count.offer.used += 1
-                  }
-                } else if (type == 'limited') {
-                  // 先着パス
-                  passData = {
-                    count: {
-                      hiring: {
-                        used: 0
-                      },
-                      offer: {
-                        all: 0,
-                        used: 0
-                      },
-                      limited: {
-                        all: 1,
-                        used: 0
-                      }
-                    }
-                  }
-                  // 使用済みなら usedも+1
-                  if (isAccepted) {
-                    passData.count.limited.used += 1
-                  }
-                }
-                passData.year = joiningYear
-                passData.limit = null
-
-                // 更新
-                admin.firestore()
-                  .collection('companies')
-                  .doc(companyId)
-                  .collection('yearPasses')
-                  .doc(String(joiningYear))
-                  .set(passData)
-                  .then(() => {
-                    console.log('updatePassesCount: update new year passes count completed.')
-                  })
-                  .catch((error) => {
-                    console.error("Error updating document: ", error)
-                  })
+              // 使用済みなら usedも+1
+              if (isAccepted) {
+                count.offer.used += 1
               }
+            } else if (type == 'limited') {
+              // 先着パス
+              count.limited.all += 1
+
+              // 使用済みなら usedも+1
+              if (isAccepted) {
+                count.limited.used += 1
+              }
+            }
+
+            transaction.update(newYearPassRef, {
+              count: count
             })
-            .catch((error) => {
-              console.error("Error getting document: ", error)
-            })
+          } else {
+            // doc が存在しない場合
+            var passData
+            if (type == 'offer') {
+              // 内定パス
+              passData = {
+                count: {
+                  hiring: {
+                    used: 0
+                  },
+                  offer: {
+                    all: 1,
+                    used: 0
+                  },
+                  limited: {
+                    all: 0,
+                    used: 0
+                  }
+                }
+              }
+              // 使用済みなら usedも+1
+              if (isAccepted) {
+                passData.count.offer.used += 1
+              }
+            } else if (type == 'limited') {
+              // 先着パス
+              passData = {
+                count: {
+                  hiring: {
+                    used: 0
+                  },
+                  offer: {
+                    all: 0,
+                    used: 0
+                  },
+                  limited: {
+                    all: 1,
+                    used: 0
+                  }
+                }
+              }
+              // 使用済みなら usedも+1
+              if (isAccepted) {
+                passData.count.limited.used += 1
+              }
+            }
+            passData.year = joiningYear
+            passData.limit = null
+
+            transaction.set(newYearPassRef, passData)
+          }
         })
-        .catch((error) => {
-          console.error("Error getting document: ", error)
-        })
+      }).then(() => {
+        console.log("update pass count")
+      }).catch(error => {
+        console.error(error)
+      })
     } else {
       return 0
     }
