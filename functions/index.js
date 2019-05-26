@@ -119,7 +119,7 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
         console.log('sendMailToInvitedMember completed. sent to:', email)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error", error)
       })
   })
 
@@ -1829,7 +1829,7 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
         })
         jobBatch.commit()
           .then(() => {
-            console.log('editCompanyProfile job completed.')
+            console.log('update job completed.')
           })
           .catch((error) => {
             console.error("Error", error)
@@ -1851,7 +1851,7 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
               })
               batch.commit()
                 .then(() => {
-                  console.log('editCompanyProfile chat completed.')
+                  console.log('update chat completed.')
                 })
                 .catch((error) => {
                   console.error("Error", error)
@@ -1875,7 +1875,7 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
               })
               batch.commit()
                 .then(() => {
-                  console.log('editCompanyProfile review completed.')
+                  console.log('update review completed.')
                 })
                 .catch((error) => {
                   console.error("Error", error)
@@ -1899,7 +1899,7 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
               })
               batch.commit()
                 .then(() => {
-                  console.log('editCompanyProfile feedback completed.')
+                  console.log('update feedback completed.')
                 })
                 .catch((error) => {
                   console.error("Error", error)
@@ -1923,7 +1923,7 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
               })
               batch.commit()
                 .then(() => {
-                  console.log('editCompanyProfile pass completed.')
+                  console.log('update pass completed.')
                 })
                 .catch((error) => {
                   console.error("Error", error)
@@ -1957,7 +1957,7 @@ exports.sendAddCompanyMail = functions
       if (err) {
         console.log(err)
       }
-      console.log('sendAddCompanyMail completed.')
+      console.log('completed.')
     })
   })
 
@@ -2019,10 +2019,10 @@ exports.createRecruiter = functions.region('asia-northeast1')
           })
           batch.commit()
             .then(() => {
-              console.log('createInvitedMemberProfile completed.')
+              console.log('completed.')
             })
             .catch((error) => {
-              console.error("Error adding document: ", error)
+              console.error("Error", error)
             })
         }
       })
@@ -2088,10 +2088,10 @@ exports.editRecruiterSetting = functions.region('asia-northeast1')
             })
             batch.commit()
               .then(() => {
-                console.log('recruiter editRecruiterSetting completed.')
+                console.log('completed.')
               })
               .catch((error) => {
-                console.error("Error adding document: ", error)
+                console.error("Error", error)
               })
           }
         })
@@ -2136,10 +2136,10 @@ exports.editRecruiterSetting = functions.region('asia-northeast1')
             batch.update(companyDetailRef, companyData)
             batch.commit()
               .then(() => {
-                console.log('recruiter editRecruiterSetting completed.')
+                console.log('completed.')
               })
               .catch((error) => {
-                console.error("Error adding document: ", error)
+                console.error("Error", error)
               })
           }
         })
@@ -2219,10 +2219,10 @@ exports.editProfile = functions.region('asia-northeast1')
           canSearch: canSearch
         })
         .then(() => {
-          console.log('user editProfile: update completionPercentage completed.')
+          console.log('update completionPercentage completed.')
         })
         .catch((error) => {
-          console.error("Error adding document: ", error)
+          console.error("Error updating document", error)
         })
 
       if (
@@ -2252,14 +2252,14 @@ exports.editProfile = functions.region('asia-northeast1')
 
             batch.commit()
               .then(() => {
-                console.log('user editProfile completed.')
+                console.log('update chat completed.')
               })
               .catch((error) => {
-                console.error("Error adding document: ", error)
+                console.error("Error", error)
               })
           })
           .catch((error) => {
-            console.error("Error adding document: ", error)
+            console.error("Error getting document: ", error)
           })
       } else {
         return 0
@@ -2314,10 +2314,10 @@ exports.editProfile = functions.region('asia-northeast1')
             })
             batch.commit()
               .then(() => {
-                console.log('recruiter editProfile completed.')
+                console.log('completed.')
               })
               .catch((error) => {
-                console.error("Error adding document: ", error)
+                console.error("Error", error)
               })
           }
         })
@@ -2546,6 +2546,6 @@ exports.sendContact = functions
       if (err) {
         console.log(err)
       }
-      console.log('sendContact completed.')
+      console.log('completed.')
     })
   })
