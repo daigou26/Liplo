@@ -304,7 +304,6 @@ export const actions = {
   },
   resetNotificationsListener({commit, state}) {
     if (state.unsubscribe) {
-      console.log('notification listener unsubscribed');
       state.unsubscribe()
     }
     commit('setUnsubscribe', null)
