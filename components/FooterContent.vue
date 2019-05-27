@@ -47,7 +47,9 @@
         </v-flex>
       </v-layout>
       <v-divider class="py-2"></v-divider>
-      <span >&copy; 2019 All rights reserved.</span>
+      <div class="text-xs-right">
+        <span>&copy; 2019 All rights reserved.</span>
+      </div>
     </v-flex>
   </v-flex>
 </template>
