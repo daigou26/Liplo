@@ -297,7 +297,7 @@
         <v-card v-if="type == 'recruiter'" flat class="shadow-top text-xs-right py-2 pr-2">
           <v-btn
             large
-            :disabled="companyId == null || isCandidate"
+            :disabled="companyId == null || isCandidate || plan == null"
             class="warning"
             id="user-scout"
             @click="scoutDialogButtonClicked"
@@ -344,7 +344,7 @@
                         </v-flex>
                         <!-- スカウトボタン -->
                         <v-btn
-                          :disabled="!valid || !companyId"
+                          :disabled="!valid || !companyId || plan == null"
                           class="orange darken-1"
                           @click="scoutButtonClicked"
                         >
@@ -422,6 +422,7 @@ export default {
     ...mapState({
       uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
+      plan: state => state.profile.plan,
       type: state => state.profile.type,
       companyId: state => state.profile.companyId,
       picUid: state => state.uid,

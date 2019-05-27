@@ -1646,8 +1646,8 @@ exports.postJob = functions.region('asia-northeast1')
       })
   })
 
-// 企業アカウントが削除された時の処理
-exports.deleteCompany = functions.region('asia-northeast1')
+// 企業アカウントが削除された時、契約が終了した時に募集を private に変更する処理
+exports.updateJobStatusToPrivate = functions.region('asia-northeast1')
   .firestore
   .document('companies/{companyId}')
   .onUpdate((change, context) => {
@@ -1655,9 +1655,13 @@ exports.deleteCompany = functions.region('asia-northeast1')
     const newValue = change.after.data()
     const companyId = context.params.companyId
     const isDeleted = newValue.isDeleted
+    const plan = newValue.plan
 
     // 変化がない場合は終了
-    if (isDeleted == previousValue.isDeleted) {
+    if (isDeleted == previousValue.isDeleted && plan == previousValue.plan ) {
+      return 0
+    }
+    if (isDeleted != true && plan != null) {
       return 0
     }
 
@@ -1684,7 +1688,7 @@ exports.deleteCompany = functions.region('asia-northeast1')
         })
         batch.commit()
           .then(() => {
-            console.log('deleteCompany completed.')
+            console.log('completed.')
           })
           .catch((error) => {
             console.error("Error", error)
@@ -2113,7 +2117,8 @@ exports.editRecruiterSetting = functions.region('asia-northeast1')
               members = []
               companyData = {
                 members: members,
-                isDeleted: true
+                isDeleted: true,
+                plan: null,
               }
             } else {
               var index

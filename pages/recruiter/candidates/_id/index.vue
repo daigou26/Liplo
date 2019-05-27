@@ -160,7 +160,7 @@
                   キャンセル
                 </v-btn>
                 <v-btn
-                  :disabled="!editTagsValid"
+                  :disabled="!editTagsValid || plan == null"
                   @click="updateTags({params: params, companyId: companyId, tags: tempTags})"
                 >
                   更新
@@ -285,7 +285,7 @@
                   キャンセル
                 </v-btn>
                 <v-btn
-                  :disabled="!editPassValid"
+                  :disabled="!editPassValid || plan == null"
                   @click="updatePassButtonClicked"
                 >
                   更新
@@ -362,7 +362,7 @@
                   キャンセル
                 </v-btn>
                 <v-btn
-                  :disabled="!editExtendedInternValid"
+                  :disabled="!editExtendedInternValid || plan == null"
                   @click="updateExtendedInternButtonClicked"
                 >
                   更新
@@ -449,7 +449,7 @@
                         キャンセル
                       </v-btn>
                       <v-btn
-                        :disabled="!editTagsValid"
+                        :disabled="!editTagsValid || plan == null"
                         @click="updateTags({params: params, companyId: companyId, tags: tempTags})"
                       >
                         更新
@@ -574,7 +574,7 @@
                         キャンセル
                       </v-btn>
                       <v-btn
-                        :disabled="!editPassValid"
+                        :disabled="!editPassValid || plan == null"
                         @click="updatePassButtonClicked"
                       >
                         更新
@@ -651,7 +651,7 @@
                         キャンセル
                       </v-btn>
                       <v-btn
-                        :disabled="!editExtendedInternValid"
+                        :disabled="!editExtendedInternValid || plan == null"
                         @click="updateExtendedInternButtonClicked"
                       >
                         更新
@@ -874,10 +874,11 @@
                     rows="3"
                     :rules="messageRules"
                     required
+                    :disabled="plan == null"
                   ></v-textarea>
                   <div class="text-xs-right">
                     <v-btn
-                      :disabled="!reviewValid || rating == 0"
+                      :disabled="!reviewValid || rating == 0 || plan == null"
                       color="warning"
                       @click="sendReviewButtonClicked">
                       {{ sendReviewButtonText }}
@@ -1176,7 +1177,11 @@ export default {
       }
     },
     updateStatusButtonDisabled() {
-      var disabled = false
+      // 企業が未契約の場合
+      if (this.plan == null) {
+        return true
+      }
+
       let currentStatus
       if (this.status.scouted == true) {
         currentStatus = 'スカウト'
@@ -1289,6 +1294,7 @@ export default {
     ...mapState({
       uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
+      plan: state => state.profile.plan,
       companyId: state => state.profile.companyId,
       firstName: state => state.profile.firstName,
       lastName: state => state.profile.lastName,

@@ -223,6 +223,7 @@
             <v-btn
               class="mt-3 font-weight-bold"
               color="warning"
+              :disabled="plan == null"
               @click="openAddYearDialogButtonClicked"
             >
               追加する
@@ -302,7 +303,7 @@
                 </v-flex>
                 <!-- 追加ボタン -->
                 <v-btn
-                  :disabled="!addYearValid"
+                  :disabled="!addYearValid || plan == null"
                   class="orange darken-1"
                   @click="addYearButtonClicked"
                 >
@@ -374,7 +375,7 @@
                 </v-flex>
                 <!-- 更新ボタン -->
                 <v-btn
-                  :disabled="!updatePassLimitValid"
+                  :disabled="!updatePassLimitValid || plan == null"
                   class="orange darken-1"
                   @click="updatePassLimitButtonClicked"
                 >
@@ -485,6 +486,7 @@ export default {
     ...mapState({
       uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
+      plan: state => state.profile.plan,
       companyId: state => state.profile.companyId,
       hiringPassCount: state => state.companyPasses.hiringPassCount,
       yearPasses: state => state.companyPasses.yearPasses,

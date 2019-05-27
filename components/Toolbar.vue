@@ -447,7 +447,7 @@
                   <v-icon v-else>person</v-icon>
                 </v-avatar>
                 <v-list>
-                  <v-list-tile v-if="isAdmin" to="/admin/feedbacks">
+                  <v-list-tile v-if="isAdmin" to="/admin/companies">
                     <v-list-tile-title>Admin</v-list-tile-title>
                   </v-list-tile>
                   <v-divider v-if="isAdmin"></v-divider>

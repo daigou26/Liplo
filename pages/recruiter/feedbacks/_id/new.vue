@@ -65,7 +65,7 @@
           ></v-textarea>
           <div class="text-xs-right py-3">
             <v-btn
-              :disabled="!feedbackValid"
+              :disabled="!feedbackValid || plan == null"
               @click="sendFeedbackButtonClicked"
             >
               送信
@@ -103,6 +103,7 @@ export default {
     ...mapState({
       uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
+      plan: state => state.profile.plan,
       companyId: state => state.profile.companyId,
       userName: state => state.feedback.userName,
       profileImageUrl: state => state.feedback.profileImageUrl,

@@ -3,6 +3,7 @@ import { firestore, functions } from '@/plugins/firebase'
 
 export const state = () => ({
   plan: null,
+  isDeleted: null,
   imageUrl: '',
   companyId: '',
   companyName: '',
@@ -39,6 +40,9 @@ export const state = () => ({
 export const mutations = {
   setPlan(state, plan) {
     state.plan = plan
+  },
+  setIsDeleted(state, isDeleted) {
+    state.isDeleted = isDeleted
   },
   setImageUrl(state, imageUrl) {
     state.imageUrl = imageUrl
@@ -438,6 +442,32 @@ export const actions = {
         nuxt.error({ statusCode: 404, message: 'not found' })
       }
   },
+  // admin で表示
+  queryCompanyFromAdmin({commit}, companyId) {
+    firestore.collection('companies')
+      .doc(companyId)
+      .get()
+      .then(function(doc) {
+        if (doc.exists) {
+          commit('setImageUrl', doc.data()['imageUrl'])
+          commit('setCompanyId', doc.id)
+          commit('setCompanyName', doc.data()['companyName'])
+          commit('setEmail', doc.data()['email'])
+          commit('setPlan', doc.data()['plan'])
+          commit('setInvoiceEmail', doc.data()['invoiceEmail'])
+          commit('setIsDeleted', doc.data()['isDeleted'])
+        }
+        commit('updateIsLoading', false)
+      })
+      .catch(function(error) {
+        commit('updateIsLoading', false)
+        console.log("Error getting document:", error)
+      })
+  },
+  // admin から編集
+  updatePlan({commit}, plan) {
+    commit('setPlan', plan)
+  },
   addCompany({commit}, {companyName, companyEmail, userName, email, position, inquiry}) {
     const companyId = firestore.collection('companies').doc().id
     const member = {
@@ -516,6 +546,7 @@ export const actions = {
     commit('updateIsLoading', isLoading)
   },
   resetState({commit}) {
+    commit('setIsDeleted', null)
     commit('setPlan', null)
     commit('setCurrentCandidates', null)
     commit('setCandidatesChartData', null)

@@ -46,7 +46,7 @@
           no-data-text="企業がありません"
         >
           <template v-slot:items="props">
-            <n-link class="clickable" tag="tr" to="/">
+            <n-link class="clickable" tag="tr" :to="'/admin/companies/' + props.item.companyId">
               <td class="py-1">
                 <v-avatar
                   size="50"

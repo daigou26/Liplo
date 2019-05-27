@@ -91,7 +91,7 @@
                 <v-btn
                   color="primary"
                   flat
-                  :disabled ="selectedImage == null"
+                  :disabled ="selectedImage == null || plan == null"
                   @click="updateProfileImage({uid: uid, imageFile: imageFile})"
                 >
                   変更
@@ -143,7 +143,7 @@
                 <v-btn
                   color="primary"
                   flat
-                  :disabled="!editUserNameValid"
+                  :disabled="!editUserNameValid || plan == null"
                   @click="updateUserName({uid: uid, firstName: tempFirstName, lastName: tempLastName})"
                 >
                   変更
@@ -201,7 +201,7 @@
                   キャンセル
                 </v-btn>
                 <v-btn
-                  :disabled="!editPositionValid"
+                  :disabled="!editPositionValid || plan == null"
                   @click="updatePosition({uid: uid, position: tempPosition})"
                 >
                   更新
@@ -264,7 +264,7 @@
                   キャンセル
                 </v-btn>
                 <v-btn
-                  :disabled="!editSelfIntroValid"
+                  :disabled="!editSelfIntroValid || plan == null"
                   @click="updateSelfIntro({uid: uid, selfIntro: tempSelfIntro})"
                 >
                   更新
@@ -326,6 +326,7 @@ export default {
       uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
       isLoading: state => state.profile.isLoading,
+      plan: state => state.profile.plan,
       imageUrl: state => state.profile.imageUrl,
       imageFileSizeValid: state => state.profile.imageFileSizeValid,
       isEditingProfileImage: state => state.profile.isEditingProfileImage,

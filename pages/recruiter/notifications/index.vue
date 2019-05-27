@@ -23,7 +23,15 @@
       <v-card flat>
         <div v-if="notifications && notifications.length > 0">
           <div class="text-xs-right">
-            <v-btn small flat color="teal" @click="updateAllIsUnread(uid)">すべて既読にする</v-btn>
+            <v-btn
+              small
+              flat
+              color="teal"
+              :disabled="plan == null"
+              @click="updateAllIsUnread(uid)"
+            >
+              すべて既読にする
+            </v-btn>
           </div>
           <v-divider
             v-if="breakpoint == 'xs'"
@@ -107,6 +115,7 @@ export default {
     ...mapState({
       uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
+      plan: state => state.profile.plan,
       notifications: state => state.notifications.notifications,
       isInitialLoading: state => state.notifications.isInitialLoading,
       isLoading: state => state.notifications.isLoading,
