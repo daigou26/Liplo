@@ -43,19 +43,38 @@
             'px-3': $vuetify.breakpoint.mdOnly,
           }"
         >
-          <v-flex md10 sm8 xs10 offset-md1 offset-sm2 offset-xs1>
+          <v-flex md10 sm8 xs10 offset-md1 offset-sm2 offset-xs1 class="textColor">
+            <!-- プラン変更 -->
+            <div class="py-5">
+              <div
+                class="title font-weight-bold">
+                プランについて
+              </div>
+              <div v-if="planText" class="pt-3">
+                現在のプラン：
+                <span class="light-text-color font-weight-bold">{{ planText }}</span>
+              </div>
+              <div class="pt-3">
+                <div v-if="plan == 0">
+                  このプランは、6ヶ月ごとに自動更新されます。
+                  自動更新の停止やプランの変更、解約などは、お手数ですが、go26dev@gmail.com までご連絡ください。
+                </div>
+              </div>
+            </div>
             <!-- 請求書を送るメアド変更 -->
-            <div
-              class="title textColor pt-5">
-              請求書を送るメールアドレスを変更する
-            </div>
-            <div class="pt-3">
-              現在のメールアドレス： {{ invoiceEmail }}
-            </div>
-            <div class="text-xs-right pt-4">
-              <v-btn @click="changeInvoiceEmailDialog = true">
-                メールアドレスを変更する
-              </v-btn>
+            <div class="py-5">
+              <div
+                class="title font-weight-bold">
+                請求書を送るメールアドレスを変更する
+              </div>
+              <div class="pt-3">
+                現在のメールアドレス： {{ invoiceEmail }}
+              </div>
+              <div class="text-xs-right pt-4">
+                <v-btn @click="changeInvoiceEmailDialog = true">
+                  メールアドレスを変更する
+                </v-btn>
+              </div>
             </div>
           </v-flex>
         </v-flex>
@@ -139,6 +158,11 @@ export default {
     ],
   }),
   computed: {
+    planText() {
+      if (this.plan == 0) {
+        return '成功報酬型'
+      }
+    },
     params() {
       return this.$route.params
     },
@@ -152,19 +176,19 @@ export default {
       uid: state => state.uid,
       type: state => state.profile.type,
       companyId: state => state.profile.companyId,
-      currentEmail: state => state.profile.email,
+      plan: state => state.company.plan,
       invoiceEmail: state => state.company.invoiceEmail,
     }),
   },
   mounted() {
     if (this.companyId != null && !this.isQueried) {
-      this.queryCompanyInvoiceEmail(this.companyId)
+      this.queryCompanyInfo(this.companyId)
     }
   },
   watch: {
     companyId(companyId) {
       if (companyId != null && companyId != '') {
-        this.queryCompanyInvoiceEmail(companyId)
+        this.queryCompanyInfo(companyId)
       }
     },
   },
@@ -176,7 +200,7 @@ export default {
       this.snackbarText = 'メールアドレスを更新しました！'
     },
     ...mapActions({
-      queryCompanyInvoiceEmail: 'company/queryCompanyInvoiceEmail',
+      queryCompanyInfo: 'company/queryCompanyInfo',
       updateInvoiceEmail: 'company/updateCompanyInvoiceEmail',
     }),
   }

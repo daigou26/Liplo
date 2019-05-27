@@ -2,6 +2,7 @@ export const strict = false
 import { firestore, functions } from '@/plugins/firebase'
 
 export const state = () => ({
+  plan: null,
   imageUrl: '',
   companyId: '',
   companyName: '',
@@ -36,6 +37,9 @@ export const state = () => ({
 })
 
 export const mutations = {
+  setPlan(state, plan) {
+    state.plan = plan
+  },
   setImageUrl(state, imageUrl) {
     state.imageUrl = imageUrl
   },
@@ -480,12 +484,13 @@ export const actions = {
       console.log('sendAddCompanyMail completed.');
     })
   },
-  queryCompanyInvoiceEmail({commit}, companyId) {
+  queryCompanyInfo({commit}, companyId) {
     firestore.collection('companies')
       .doc(companyId)
       .get()
       .then(function(doc) {
         if (doc.exists) {
+          commit('setPlan', doc.data()['plan'])
           commit('setInvoiceEmail', doc.data()['invoiceEmail'])
         }
       })
@@ -510,6 +515,7 @@ export const actions = {
     commit('updateIsLoading', isLoading)
   },
   resetState({commit}) {
+    commit('setPlan', null)
     commit('setCurrentCandidates', null)
     commit('setCandidatesChartData', null)
     commit('setAllCandidates', null)
