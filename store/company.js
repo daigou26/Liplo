@@ -456,7 +456,8 @@ export const actions = {
       feedback: {
         all: 0,
         writtenCount: 0
-      }
+      },
+      createdAt: new Date(),
     }
     const batch = firestore.batch()
     const companyRef = firestore.collection('companies').doc(companyId)

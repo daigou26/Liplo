@@ -292,7 +292,7 @@ export const actions = {
     const batch = firestore.batch()
     const companyRef = firestore.collection('companies').doc(companyId)
     batch.update(companyRef, {
-      name: companyName
+      companyName: companyName
     })
     const companyDetailRef = firestore.collection('companies')
       .doc(companyId)

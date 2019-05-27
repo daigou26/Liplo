@@ -49,6 +49,7 @@ export default {
     return {
       showDrawer: false,
       items: [
+        { title: 'Companies', icon: 'business', url: 'companies' },
         { title: 'Feedbacks', icon: 'chat_bubble_outline', url: 'feedbacks' },
       ],
     }
