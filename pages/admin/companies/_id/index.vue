@@ -86,16 +86,6 @@ export default {
     isQueried: false,
     windowHeight: 0,
     avatarSize: 50,
-    selectedImageSize: 200,
-    selectedImage: null,
-    imageFile: null,
-    tempFirstName: '',
-    tempLastName: '',
-    firstNameRules: [
-      v => !!v || '名前を入力してください',
-      v => (v && v.length <= 30) || '30文字を超えています'
-    ],
-    editPositionValid: true,
   }),
   computed: {
     breakpoint() {

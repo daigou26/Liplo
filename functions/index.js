@@ -1944,19 +1944,27 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
   })
 
 // 問い合わせがあった時
-exports.sendAddCompanyMail = functions
+exports.sendInquiryMail = functions
   .https
   .onCall((data, context) => {
+    var type
+    if (data.type == 0) {
+      type = '資料請求'
+    } else if (data.type == 1) {
+      type = '質問がしたい'
+    } else if (data.type == 2) {
+      type = 'すぐに導入したい'
+    }
     const mailOptions = {
-      from: `${data.email}`,
+      from: `LightHouse <noreply@firebase.com>`,
       to: 'go26dev@gmail.com',
     }
     mailOptions.subject = `${data.companyName}の${data.userName}様からのお問い合わせ`
     mailOptions.text =
       `${data.companyName}の${data.userName}様からお問い合わせを頂きました。\n\n
-      id: ${data.companyId} \n\n
       メールアドレス： ${data.email} \n\n
-      お問い合わせ内容：${data.inquiry}`
+      タイプ： ${type} \n\n
+      お問い合わせ内容：${data.content}`
     mailTransport.sendMail(mailOptions, (err, info) => {
       if (err) {
         console.log(err)

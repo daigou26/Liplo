@@ -661,7 +661,7 @@ export const actions = {
       commit('setUid', null)
       if (route.path !== '/' &&
         route.path !== '/signup' &&
-        route.path !== '/company_registration' &&
+        route.path !== '/inquiry_for_recruiter' &&
         route.path !== '/contact' &&
         route.path !== '/feedback' &&
         route.name !== 'jobs-id' &&
