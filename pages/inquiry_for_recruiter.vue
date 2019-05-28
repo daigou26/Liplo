@@ -92,11 +92,20 @@
                     ></v-text-field>
                     <!-- 要望 -->
                     <v-select
-                      v-model="inquiry"
+                      v-model="type"
                       class="py-2"
-                      :items="inquiryItems"
-                      label="お問い合わせ内容"
+                      :items="typeItems"
+                      label="お問い合わせの種類"
                     ></v-select>
+                    <!-- 内容 -->
+                    <v-textarea
+                      v-model="content"
+                      class="py-2"
+                      :rules="contentRules"
+                      label="お問い合わせ内容"
+                      placeholder="何かございましたらご記入ください。"
+                      required
+                    ></v-textarea>
                   </v-flex>
                   <!-- 送信ボタン -->
                   <v-btn
@@ -159,10 +168,15 @@ export default {
       v => !!v || '入力されていません',
       v => (v && v.length <= 30) || '30文字を超えています'
     ],
-    inquiry: '資料請求',
-    inquiryItems: [
+    type: '資料請求',
+    typeItems: [
       '資料請求',
+      '質問がしたい',
       'すぐにサービスを導入したい'
+    ],
+    content: '',
+    contentRules: [
+      v => (v.length <= 300) || '300文字以内でお願いします'
     ],
   }),
   computed: {
@@ -175,20 +189,30 @@ export default {
   },
   methods: {
     sendButtonClicked() {
-      this.addCompany({
+      let type
+      if (this.type == '資料請求') {
+        type = 0
+      } else if (this.type == '質問がしたい') {
+        type = 1
+      } else if (this.type == 'すぐにサービスを導入したい') {
+        type = 2
+      }
+
+      this.addInquiry({
         companyName: this.companyName,
         companyEmail: this.companyEmail,
         userName: this.lastName + ' ' + this.firstName,
         email: this.email,
         position: this.position,
-        inquiry: this.inquiry,
+        type: type,
+        content: this.content
       })
       this.valid = false
       this.snackbar = true
       this.snackbarText = `送信が完了しました。こちらからメールをお送りしますので、少々お待ちください。`
     },
     ...mapActions({
-      addCompany: 'company/addCompany',
+      addInquiry: 'inquiry/addInquiry',
     }),
   }
 }

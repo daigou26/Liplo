@@ -17,7 +17,7 @@
       <v-layout row wrap pb-4>
         <v-flex md5 sm6>
           <div class="pb-2">
-            <nuxt-link to="/company_registration" class="font-weight-bold textColor">採用担当者様はこちら</nuxt-link>
+            <nuxt-link to="/inquiry_for_recruiter" class="font-weight-bold textColor">採用担当者様はこちら</nuxt-link>
           </div>
           <div class="pb-2">
             <nuxt-link to="/contact" class="font-weight-bold textColor">お問い合わせ</nuxt-link>

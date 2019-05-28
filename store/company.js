@@ -468,53 +468,6 @@ export const actions = {
   updatePlan({commit}, plan) {
     commit('setPlan', plan)
   },
-  addCompany({commit}, {companyName, companyEmail, userName, email, position, inquiry}) {
-    const companyId = firestore.collection('companies').doc().id
-    const member = {
-      name: userName,
-      position: position,
-      email: email,
-      isInitialMember: true,
-    }
-    const companyData = {
-      companyName: companyName,
-      email: companyEmail,
-      invoiceEmail: companyEmail,
-      members: [member],
-      isDeleted: false,
-      points: 100,
-      feedback: {
-        all: 0,
-        writtenCount: 0
-      },
-      createdAt: new Date(),
-    }
-    const batch = firestore.batch()
-    const companyRef = firestore.collection('companies').doc(companyId)
-    batch.set(companyRef, companyData)
-
-    const companyDetailRef = firestore.collection('companies')
-      .doc(companyId)
-      .collection('detail')
-      .doc(companyId)
-    batch.set(companyDetailRef, companyData)
-
-    batch.commit()
-      .catch((error) => {
-        console.error("Error adding document: ", error)
-      })
-
-    var sendAddCompanyMail = functions.httpsCallable("sendAddCompanyMail")
-    sendAddCompanyMail({
-      companyId: companyId,
-      companyName: companyName,
-      userName: userName,
-      email: email,
-      inquiry: inquiry
-    }).then(function(result) {
-      console.log('sendAddCompanyMail completed.');
-    })
-  },
   queryCompanyInfo({commit}, companyId) {
     firestore.collection('companies')
       .doc(companyId)

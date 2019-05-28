@@ -20,10 +20,6 @@
       xs12
       class="break"
     >
-      <!-- 新規作成 -->
-      <div class="pr-3 pt-3 text-xs-right">
-        <v-btn to="/admin/companies/new">新規作成</v-btn>
-      </div>
       <!-- 検索 -->
       <div class="pl-3">
         <v-layout row wrap>
@@ -44,36 +40,25 @@
       <div class="pt-3">
         <v-data-table
           :headers="headers"
-          :items="companies"
+          :items="inquiries"
           class="elevation-1"
           hide-actions
           no-data-text="企業がありません"
         >
           <template v-slot:items="props">
-            <n-link class="clickable" tag="tr" :to="'/admin/companies/' + props.item.companyId">
-              <td class="py-1">
-                <v-avatar
-                  size="50"
-                  class="grey lighten-3"
-                >
-                  <v-img
-                    v-if="props.item.imageUrl"
-                    :src="props.item.imageUrl"
-                  />
-                  <v-icon v-else :size="50">person</v-icon>
-                </v-avatar>
-              </td>
+            <n-link class="clickable" tag="tr" :to="'/admin/inquiries/' + props.item.inquiryId">
               <td style="min-width: 150px">{{ props.item.companyName }}</td>
               <td style="min-width: 150px">
-                <span v-if="props.item.isDeleted" class="orange--text font-weight-bold">削除済み</span>
-                <span v-else-if="props.item.plan == 0" class="teal--text font-weight-bold">成功報酬プラン</span>
-                <span v-else-if="props.item.plan == null" class="grey--text font-weight-bold">未契約</span>
+                <span v-if="props.item.type == 0" class="teal--text font-weight-bold">資料請求</span>
+                <span v-else-if="props.item.type == 1" class="green--text font-weight-bold">質問がしたい</span>
+                <span v-else-if="props.item.type == 2" class="orange--text font-weight-bold">すぐに導入したい</span>
               </td>
+              <td class="text-xs-left" style="min-width: 150px">{{ props.item.timestamp }}</td>
             </n-link>
           </template>
         </v-data-table>
         <infinite-loading
-          v-if="showInfiniteLoading && companies && companies.length >= 20 && !isLoading"
+          v-if="showInfiniteLoading && inquiries && inquiries.length >= 20 && !isLoading"
           :distance="50"
           spinner="waveDots"
           @infinite="infiniteHandler">
@@ -93,14 +78,9 @@ export default {
       isQueried: false,
       count: 0,
       windowHeight: 0,
-      showInfiniteLoading: false,
       searchText: '',
+      showInfiniteLoading: false,
       headers: [
-        {
-          sortable: false,
-          value: 'imageUrl',
-          width: '100'
-        },
         {
           text: '企業名',
           align: 'left',
@@ -108,10 +88,15 @@ export default {
           value: 'companyName'
         },
         {
-          text: 'ステータス',
+          text: 'Type',
           align: 'left',
           sortable: false,
-          value: 'status'
+          value: 'type'
+        },
+        {
+          text: 'Date',
+          align: 'left',
+          value: 'timestamp'
         },
       ],
     }
@@ -124,10 +109,10 @@ export default {
       isRefreshing: state => state.isRefreshing,
       uid: state => state.uid,
       isAdmin: state => state.profile.isAdmin,
-      companies: state => state.companies.companies,
-      isInitialLoading: state => state.companies.isInitialLoading,
-      isLoading: state => state.companies.isLoading,
-      allCompaniesQueried: state => state.companies.allCompaniesQueried,
+      inquiries: state => state.inquiries.inquiries,
+      isInitialLoading: state => state.inquiries.isInitialLoading,
+      isLoading: state => state.inquiries.isLoading,
+      allInquiriesQueried: state => state.inquiries.allInquiriesQueried,
     }),
   },
   mounted() {
@@ -144,7 +129,7 @@ export default {
       this.resetState()
       this.updateIsInitialLoading(true)
       this.updateIsLoading(true)
-      this.queryCompanies()
+      this.queryInquiries()
     } else {
       // 管理者出ない場合は rootへ
       this.$router.push('/')
@@ -154,14 +139,14 @@ export default {
     searchButtonClicked() {
       this.resetState()
       this.updateIsLoading(true)
-      this.searchCompanies(this.searchText)
+      this.searchInquiries(this.searchText)
     },
     infiniteHandler($state) {
-      if (!this.allCompaniesQueried) {
+      if (!this.allInquiriesQueried) {
         if (!this.isLoading) {
           this.count += 1
           this.updateIsLoading(true)
-          this.queryCompanies()
+          this.queryInquiries()
         }
         if (this.count > 50) {
           $state.complete()
@@ -173,11 +158,11 @@ export default {
       }
     },
     ...mapActions({
-      queryCompanies: 'companies/queryCompanies',
-      searchCompanies: 'companies/searchCompanies',
-      updateIsInitialLoading: 'companies/updateIsInitialLoading',
-      updateIsLoading: 'companies/updateIsLoading',
-      resetState: 'companies/resetState',
+      queryInquiries: 'inquiries/queryInquiries',
+      searchInquiries: 'inquiries/searchInquiries',
+      updateIsInitialLoading: 'inquiries/updateIsInitialLoading',
+      updateIsLoading: 'inquiries/updateIsLoading',
+      resetState: 'inquiries/resetState',
     }),
   }
 }
