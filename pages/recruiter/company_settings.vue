@@ -50,14 +50,22 @@
                 class="title font-weight-bold">
                 プランについて
               </div>
-              <div v-if="planText" class="pt-3">
+              <div class="pt-3">
                 現在のプラン：
-                <span class="light-text-color font-weight-bold">{{ planText }}</span>
+                <span v-if="planText" class="light-text-color font-weight-bold">{{ planText }}</span>
               </div>
               <div class="pt-3">
                 <div v-if="plan == 0">
                   このプランは、6ヶ月ごとに自動更新されます。
-                  自動更新の停止やプランの変更、解約などは、お手数ですが、go26dev@gmail.com までご連絡ください。
+                </div>
+                自動更新の停止やプランの変更、解約などは、お手数ですが、go26dev@gmail.com までご連絡ください。
+                <div v-if="plan != null" class="light-text-color pt-2">
+                  ※ 解約されますと、候補者を採用することが出来なくなるため、採用する予定の候補者がいる場合は、
+                  採用した後にご解約をお願いします。
+                  また、パスを出している場合は、有効期間が終了するかパスが使用されるまで原則、解約が出来ません。
+                  それでも解約される方は、解約後パスの使用や候補者のステータスの変更などが出来なくなるため、
+                  候補者の方とメッセージにてやり取りをして頂き、解約前に使用して頂くか、両者合意の上で取り消しして頂くことになります。
+                  何か不明な点がございましたら、お問い合わせよりご連絡ください。
                 </div>
               </div>
             </div>
@@ -161,6 +169,8 @@ export default {
     planText() {
       if (this.plan == 0) {
         return '成功報酬型'
+      } else if (this.plan == null) {
+        return '未契約'
       }
     },
     params() {

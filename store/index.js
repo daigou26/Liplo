@@ -419,6 +419,16 @@ export const actions = {
                   batch.set(profileRef, profileData)
                   batch.commit()
                     .then(() => {
+                      // 契約しているか(recruiter)
+                      firestore.collection('companies')
+                        .doc(companyId)
+                        .get()
+                        .then(companyDoc => {
+                          if (companyDoc.exists) {
+                            dispatch('profile/setPlan', companyDoc.data()['plan'])
+                          }
+                        })
+
                       commit('updateIsRefreshing', false)
                       commit('updateIsRecruiterSignedIn', true)
                       dispatch('profile/setCompanyId', companyId)
@@ -527,11 +537,22 @@ export const actions = {
               firestore.collection('adminUsers')
                 .doc(user.uid)
                 .get()
-                .then(doc => {
-                  if (doc.exists) {
+                .then(userDoc => {
+                  if (userDoc.exists) {
                     dispatch('profile/updateIsAdmin', true)
                   } else {
                     dispatch('profile/updateIsAdmin', false)
+                  }
+                })
+            }
+            // 契約しているか(recruiter)
+            if (doc.data()['type'] == 'recruiter' && doc.data()['companyId']) {
+              firestore.collection('companies')
+                .doc(doc.data()['companyId'])
+                .get()
+                .then(companyDoc => {
+                  if (companyDoc.exists) {
+                    dispatch('profile/setPlan', companyDoc.data()['plan'])
                   }
                 })
             }
@@ -567,7 +588,7 @@ export const actions = {
                   dispatch('profile/setEmail', user.email)
                 })
                 .catch((error) => {
-                  console.error("Error adding document: ", error)
+                  console.error("Error", error)
                 })
             } else {
               dispatch('profile/setEmail', doc.data()['email'])

@@ -27,6 +27,15 @@
             'pa-4': $vuetify.breakpoint.mdAndUp,
           }"
         >
+          <v-alert
+            v-if="plan == null"
+            class="mb-3"
+            :value="true"
+            type="error"
+            outline
+          >
+            現在、解約されているため、操作が制限されます
+          </v-alert>
           <v-card :flat="flat">
             <div class="title textColor font-weight-bold pa-4">
               候補者
@@ -227,6 +236,7 @@ export default {
     ...mapState({
       uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
+      plan: state => state.profile.plan,
       type: state => state.profile.type,
       companyId: state => state.profile.companyId,
       rating: state => state.company.rating,

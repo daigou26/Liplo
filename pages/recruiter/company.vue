@@ -88,7 +88,7 @@
                 <v-btn
                   color="primary"
                   flat
-                  :disabled ="selectedTopImage == null || !imageFileSizeValid"
+                  :disabled ="selectedTopImage == null || !imageFileSizeValid || plan == null"
                   @click="updateTopImage({companyId: companyId, imageFile: topImageFile})"
                 >
                   変更
@@ -172,7 +172,7 @@
                   <v-btn
                     color="primary"
                     flat
-                    :disabled ="selectedCompanyImage == null || !imageFileSizeValid"
+                    :disabled ="selectedCompanyImage == null || !imageFileSizeValid || plan == null"
                     @click="updateCompanyImage({companyId: companyId, imageFile: companyImageFile})"
                   >
                     変更
@@ -216,7 +216,7 @@
                   <v-btn
                     color="primary"
                     flat
-                    :disabled="!editCompanyNameValid"
+                    :disabled="!editCompanyNameValid || plan == null"
                     @click="updateCompanyName({companyId: companyId, companyName: tempCompanyName})"
                   >
                     変更
@@ -311,7 +311,7 @@
                       <!-- 招待ボタン -->
                       <v-btn
                         block
-                        :disabled="!addMemberValid || addMemberLoading"
+                        :disabled="!addMemberValid || addMemberLoading || plan == null"
                         class="orange darken-1"
                         @click="inviteMember"
                       >
@@ -379,7 +379,7 @@
                   キャンセル
                 </v-btn>
                 <v-btn
-                  :disabled="!editMissionValid"
+                  :disabled="!editMissionValid || plan == null"
                   @click="updateMission({companyId: companyId, mission: tempMission})"
                 >
                   更新
@@ -438,7 +438,7 @@
                   キャンセル
                 </v-btn>
                 <v-btn
-                  :disabled="!editVisionValid"
+                  :disabled="!editVisionValid || plan == null"
                   @click="updateVision({companyId: companyId, vision: tempVision})"
                 >
                   更新
@@ -497,7 +497,7 @@
                   キャンセル
                 </v-btn>
                 <v-btn
-                  :disabled="!editValueValid"
+                  :disabled="!editValueValid || plan == null"
                   @click="updateValue({companyId: companyId, value: tempValue})"
                 >
                   更新
@@ -556,7 +556,7 @@
                   キャンセル
                 </v-btn>
                 <v-btn
-                  :disabled="!editCultureValid"
+                  :disabled="!editCultureValid || plan == null"
                   @click="updateCulture({companyId: companyId, culture: tempCulture})"
                 >
                   更新
@@ -615,7 +615,7 @@
                   キャンセル
                 </v-btn>
                 <v-btn
-                  :disabled="!editSystemValid"
+                  :disabled="!editSystemValid || plan == null"
                   @click="updateSystem({companyId: companyId, system: tempSystem})"
                 >
                   更新
@@ -673,7 +673,7 @@
                   キャンセル
                 </v-btn>
                 <v-btn
-                  :disabled="!editWhyValid"
+                  :disabled="!editWhyValid || plan == null"
                   @click="updateWhy({companyId: companyId, why: tempWhy})"
                 >
                   更新
@@ -732,7 +732,7 @@
                   キャンセル
                 </v-btn>
                 <v-btn
-                  :disabled="!editWhatValid"
+                  :disabled="!editWhatValid || plan == null"
                   @click="updateWhat({companyId: companyId, what: tempWhat})"
                 >
                   更新
@@ -868,6 +868,7 @@
                     </v-btn>
                     <v-btn
                       v-if="selectedServiceIndex != null"
+                      :disabled="plan == null"
                       @click="deleteService({
                         companyId: companyId,
                         selectedIndex: selectedServiceIndex,
@@ -878,7 +879,7 @@
                       削除
                     </v-btn>
                     <v-btn
-                      :disabled="!editServicesValid || tempServiceUrl == null || !imageFileSizeValid"
+                      :disabled="!editServicesValid || tempServiceUrl == null || !imageFileSizeValid || plan == null"
                       @click="updateServices({
                         companyId: companyId,
                         isServiceImageChanged: isServiceImageChanged,
@@ -950,7 +951,7 @@
                   キャンセル
                 </v-btn>
                 <v-btn
-                  :disabled="!editWelfareValid"
+                  :disabled="!editWelfareValid || plan == null"
                   @click="updateWelfare({companyId: companyId, welfare: tempWelfare})"
                 >
                   更新
@@ -1083,7 +1084,7 @@
                   キャンセル
                 </v-btn>
                 <v-btn
-                  :disabled="!editCompanyInfoValid"
+                  :disabled="!editCompanyInfoValid || plan == null"
                   @click="updateCompanyInfo({
                     companyId: companyId,
                     location: tempLocation,
@@ -1239,6 +1240,7 @@ export default {
     ...mapState({
       uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
+      plan: state => state.profile.plan,
       firstName: state => state.profile.firstName,
       lastName: state => state.profile.lastName,
       companyId: state => state.profile.companyId,

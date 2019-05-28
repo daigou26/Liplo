@@ -16,7 +16,7 @@
     </v-flex>
     <v-flex v-else-if="uid" xs12>
       <div class="text-xs-right">
-        <v-btn to="/recruiter/jobs/new">新規作成</v-btn>
+        <v-btn :disabled="plan == null" to="/recruiter/jobs/new">新規作成</v-btn>
       </div>
       <v-data-table
         :headers="headers"
@@ -47,6 +47,7 @@
               small
               flat
               fab
+              :disabled="plan == null"
               :to="'/recruiter/jobs/' + props.item.jobId + '/edit'"
             >
               <v-icon
@@ -110,6 +111,7 @@ export default {
     ...mapState({
       uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
+      plan: state => state.profile.plan,
       companyId: state => state.profile.companyId,
       jobs: state => state.companyJobs.jobs,
       isInitialLoading: state => state.companyJobs.isInitialLoading,

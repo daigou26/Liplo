@@ -196,7 +196,7 @@
             ></v-select>
           </v-flex>
           <v-btn
-            :disabled="postButtonDisabled"
+            :disabled="postButtonDisabled || plan == null"
             @click="postButtonClicked"
           >
             投稿する
@@ -357,6 +357,7 @@ export default {
     },
     ...mapState({
       uid: state => state.uid,
+      plan: state => state.profile.plan,
       companyId: state => state.profile.companyId,
     }),
   },

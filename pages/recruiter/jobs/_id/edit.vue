@@ -203,7 +203,7 @@
               ></v-select>
             </v-flex>
             <v-btn
-              :disabled="!valid || !imageFileSizeValid"
+              :disabled="!valid || !imageFileSizeValid || plan == null"
               @click="updateButtonClicked"
             >
               更新
@@ -359,6 +359,7 @@ export default {
     ...mapState({
       uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
+      plan: state => state.profile.plan,
       companyId: state => state.profile.companyId,
       imageUrl: state => state.companyJob.imageUrl,
       title: state => state.companyJob.title,
