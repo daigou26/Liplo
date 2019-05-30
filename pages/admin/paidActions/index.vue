@@ -20,42 +20,46 @@
       xs12
       class="break"
     >
-      <!-- フィードバック -->
+      <!-- 請求一覧 -->
       <div>
         <v-data-table
           :headers="headers"
-          :items="feedbacks"
+          :items="paidActions"
           class="elevation-1"
           hide-actions
-          no-data-text="フィードバックがありません。"
+          no-data-text="データがありません"
         >
           <template v-slot:items="props">
-            <n-link class="clickable" tag="tr" :to="'/admin/feedbacks/' + props.item.feedbackId">
-              <td class="text-xs-left" style="min-width: 150px">
-                <span
-                  v-if="props.item.type == 'バグ'"
-                  class="font-weight-bold orange--text"
-                >{{ props.item.type }}</span>
-                <span
-                  v-else-if="props.item.type == '要望'"
-                  class="font-weight-bold teal--text"
-                >{{ props.item.type }}</span>
-                <span
-                  v-else-if="props.item.type == '感想'"
-                  class="font-weight-bold green--text"
-                >{{ props.item.type }}</span>
-                <span
-                  v-else
-                  class="font-weight-bold grey--text"
-                >{{ props.item.type }}</span>
+            <n-link class="clickable" tag="tr" :to="'/admin/paidActions/' + props.item.paidActionId">
+              <td class="py-1">
+                <v-avatar
+                  size="50"
+                  class="grey lighten-3"
+                >
+                  <v-img
+                    v-if="props.item.companyImageUrl"
+                    :src="props.item.companyImageUrl"
+                  />
+                </v-avatar>
               </td>
-              <td class="text-xs-left textColor break" style="min-width: 250px">{{ props.item.content }}</td>
+              <td style="min-width: 150px">{{ props.item.companyName }}</td>
+              <td style="min-width: 150px">
+                <span v-if="props.item.type == 'intern'" class="green--text text--lighten-1 font-weight-bold">インターン</span>
+                <span v-else-if="props.item.type == 'hired'" class="pink--text text--lighten-2 font-weight-bold">本採用</span>
+              </td>
+              <td style="min-width: 150px">
+                <v-icon v-if="props.item.isFree" color="green">check</v-icon>
+                <v-icon v-else>remove</v-icon>
+              </td>
+              <td style="min-width: 150px">
+                <span v-if="props.item.plan == 0" class="teal--text font-weight-bold">成功報酬</span>
+              </td>
               <td class="text-xs-left" style="min-width: 150px">{{ props.item.timestamp }}</td>
             </n-link>
           </template>
         </v-data-table>
         <infinite-loading
-          v-if="showInfiniteLoading && feedbacks && feedbacks.length >= 20 && !isLoading"
+          v-if="showInfiniteLoading && paidActions && paidActions.length >= 20 && !isLoading"
           :distance="50"
           spinner="waveDots"
           @infinite="infiniteHandler">
@@ -79,14 +83,32 @@ export default {
       headers: [
         {
           sortable: false,
-          text: 'Type',
-          value: 'type',
+          value: 'companyImageUrl',
+          width: '100'
         },
         {
-          text: 'Content',
+          text: '企業名',
           align: 'left',
           sortable: false,
-          value: 'content'
+          value: 'companyName'
+        },
+        {
+          text: 'type',
+          align: 'left',
+          sortable: false,
+          value: 'type'
+        },
+        {
+          text: 'free',
+          align: 'left',
+          sortable: false,
+          value: 'free'
+        },
+        {
+          text: 'plan',
+          align: 'left',
+          sortable: false,
+          value: 'plan'
         },
         {
           text: 'Date',
@@ -104,10 +126,10 @@ export default {
       isRefreshing: state => state.isRefreshing,
       uid: state => state.uid,
       isAdmin: state => state.profile.isAdmin,
-      feedbacks: state => state.appFeedbacks.feedbacks,
-      isInitialLoading: state => state.appFeedbacks.isInitialLoading,
-      isLoading: state => state.appFeedbacks.isLoading,
-      allFeedbacksQueried: state => state.appFeedbacks.allFeedbacksQueried,
+      paidActions: state => state.paidActions.paidActions,
+      isInitialLoading: state => state.paidActions.isInitialLoading,
+      isLoading: state => state.paidActions.isLoading,
+      allPaidActionsQueried: state => state.paidActions.allPaidActionsQueried,
     }),
   },
   mounted() {
@@ -124,7 +146,7 @@ export default {
       this.resetState()
       this.updateIsInitialLoading(true)
       this.updateIsLoading(true)
-      this.queryFeedbacks()
+      this.queryPaidActions()
     } else {
       // 管理者出ない場合は rootへ
       this.$router.push('/')
@@ -132,11 +154,11 @@ export default {
   },
   methods: {
     infiniteHandler($state) {
-      if (!this.allFeedbacksQueried) {
+      if (!this.allPaidActionsQueried) {
         if (!this.isLoading && this.companyId != null) {
           this.count += 1
           this.updateIsLoading(true)
-          this.queryFeedbacks()
+          this.queryPaidActions()
         }
         if (this.count > 50) {
           $state.complete()
@@ -148,10 +170,10 @@ export default {
       }
     },
     ...mapActions({
-      queryFeedbacks: 'appFeedbacks/queryFeedbacks',
-      updateIsInitialLoading: 'appFeedbacks/updateIsInitialLoading',
-      updateIsLoading: 'appFeedbacks/updateIsLoading',
-      resetState: 'appFeedbacks/resetState',
+      queryPaidActions: 'paidActions/queryPaidActions',
+      updateIsInitialLoading: 'paidActions/updateIsInitialLoading',
+      updateIsLoading: 'paidActions/updateIsLoading',
+      resetState: 'paidActions/resetState',
     }),
   }
 }

@@ -297,7 +297,7 @@
         <v-card v-if="type == 'recruiter'" flat class="shadow-top text-xs-right py-2 pr-2">
           <v-btn
             large
-            :disabled="companyId == null || isCandidate || plan == null"
+            :disabled="(companyId == null || companyId == '') || isCandidate || plan == null"
             class="warning"
             id="user-scout"
             @click="scoutDialogButtonClicked"

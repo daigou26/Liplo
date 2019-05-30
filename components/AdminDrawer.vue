@@ -49,9 +49,10 @@ export default {
     return {
       showDrawer: false,
       items: [
-        { title: 'Companies', icon: 'business', url: 'companies' },
-        { title: 'Inquiries', icon: 'call', url: 'inquiries' },
-        { title: 'Feedbacks', icon: 'chat_bubble_outline', url: 'feedbacks' },
+        { title: '企業', icon: 'business', url: 'companies' },
+        { title: '請求', icon: 'payment', url: 'paidActions' },
+        { title: '問い合わせ', icon: 'call', url: 'inquiries' },
+        { title: 'フィードバック', icon: 'chat_bubble_outline', url: 'feedbacks' },
       ],
     }
   },

@@ -160,6 +160,7 @@ export const actions = {
             commit('setCurrentCandidates', doc.data()['currentCandidates'])
             commit('setAllCandidates', doc.data()['allCandidates'])
             commit('setFeedback', doc.data()['feedback'])
+            commit('setPlan', doc.data()['plan'])
 
             // chart Data
             // 候補者の数
@@ -483,16 +484,23 @@ export const actions = {
       })
   },
   updateCompanyInvoiceEmail({commit}, {companyId, email}) {
-    firestore.collection('companies')
-      .doc(companyId)
-      .update({
-        invoiceEmail: email
-      })
+    const batch = firestore.batch()
+    const companyRef = firestore.collection('companies').doc(companyId)
+    batch.update(companyRef, {
+      invoiceEmail: email
+    })
+    const companyDetailRef = firestore.collection('companies')
+      .doc(companyId).collection('detail').doc(companyId)
+    batch.set(companyDetailRef, {
+      invoiceEmail: email
+    })
+
+    batch.commit()
       .then(() => {
         commit('setInvoiceEmail', email)
       })
       .catch((error) => {
-        console.log("Error getting document:", error)
+        console.log("Error", error)
       })
   },
   updateIsLoading({commit}, isLoading) {
