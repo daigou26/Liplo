@@ -937,6 +937,8 @@ export default {
   destroyed () {
     // listenerがあればデタッチ
     this.resetNotificationsListener()
+    this.resetMessagesListener()
+    this.resetCompaniesListener()
   },
   watch: {
     isRecruiterSignedIn(isSignedIn) {
@@ -1017,9 +1019,8 @@ export default {
       setLoading: 'setLoading',
       resetAuthError: 'resetAuthError',
       resetMessagesListener: 'chats/resetMessagesListener',
-      resetHasNewMessage: 'chats/resetHasNewMessage',
       resetNotificationsListener: 'notifications/resetNotificationsListener',
-      resetHasNewNotification: 'notifications/resetHasNewNotification',
+      resetCompaniesListener: 'profile/resetCompaniesListener',
       updateIsUnread: 'notifications/updateIsUnread',
       updateAllIsUnread: 'notifications/updateAllIsUnread',
       queryLatestNotifications: 'notifications/queryLatestNotifications',
@@ -1027,19 +1028,7 @@ export default {
       resetNotificationsState: 'notifications/resetLatestNotificationsState',
       setAuthInfo: 'setAuthInfo',
       updateIsRefreshed: 'updateIsRefreshed',
-      resetCareerState: 'career/resetState',
-      resetChatState: 'chat/resetState',
-      resetChatsState: 'chats/resetState',
-      resetFeedbackState: 'feedback/resetState',
-      resetFeedbacksState: 'feedbacks/resetState',
       resetState: 'resetState',
-      resetMessagesState: 'messages/resetState',
-      resetProfileState: 'profile/resetState',
-      resetReviewState: 'review/resetState',
-      resetReviewsState: 'reviews/resetState',
-      resetPassState: 'pass/resetState',
-      resetPassesState: 'passes/resetState',
-      resetCompanyProfileState: 'companyProfile/resetState',
     }),
   }
 }

@@ -196,6 +196,7 @@ export const actions = {
     dispatch('messages/resetState')
     dispatch('profile/resetState')
     dispatch('profile/resetProfileState')
+    dispatch('profile/resetCompaniesListener')
     dispatch('review/resetState')
     dispatch('reviews/resetCompanyReviewsState')
     dispatch('reviews/resetUserReviewsState')
@@ -313,6 +314,7 @@ export const actions = {
             dispatch('messages/resetState')
             dispatch('profile/resetState')
             dispatch('profile/resetProfileState')
+            dispatch('profile/resetCompaniesListener')
             dispatch('review/resetState')
             dispatch('reviews/resetCompanyReviewsState')
             dispatch('reviews/resetUserReviewsState')
@@ -547,14 +549,7 @@ export const actions = {
             }
             // 契約しているか(recruiter)
             if (doc.data()['type'] == 'recruiter' && doc.data()['companyId']) {
-              firestore.collection('companies')
-                .doc(doc.data()['companyId'])
-                .get()
-                .then(companyDoc => {
-                  if (companyDoc.exists) {
-                    dispatch('profile/setPlan', companyDoc.data()['plan'])
-                  }
-                })
+              dispatch('profile/setCompaniesListener', doc.data()['companyId'])
             }
 
             dispatch('profile/setFirstName', doc.data()['firstName'])
