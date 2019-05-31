@@ -1,5 +1,6 @@
 const functions = require('firebase-functions')
 const nodemailer = require('nodemailer')
+const appUrl = functions.config().app.url
 const gmailEmail = functions.config().gmail.email
 const gmailPassword = functions.config().gmail.password
 const mailTransport = nodemailer.createTransport({
@@ -105,7 +106,7 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
     const email = snap.data().email
     const companyName = snap.data().companyName
     const userName = snap.data().userName
-    const url = `http://localhost:3000/?type=invited&id=${companyId}`
+    const url = `${appUrl}/?type=invited&id=${companyId}`
 
     // 招待されたユーザーにメール送信
     const mailOptions = {
@@ -724,7 +725,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
                       to: userDoc.data().email,
                     }
                     mailOptions.subject = `${companyName}に${passTypeText}をもらいました！`
-                    mailOptions.text = `${companyName}に${passTypeText}をもらいました！　ご確認ください。`
+                    mailOptions.text = `${companyName}に${passTypeText}をもらいました！　${appUrl}${passUrl}にアクセスしてご確認ください。`
                     mailTransport.sendMail(mailOptions, (err, info) => {
                       if (err) {
                         console.log(err)
@@ -834,11 +835,24 @@ exports.passHasChanged = functions.region('asia-northeast1')
         typeText = '先着パス'
       }
 
+      const companyRef = admin.firestore().collection('companies').doc(companyId)
       const yearPassRef = admin.firestore().collection('companies').doc(companyId)
         .collection('yearPasses').doc(String(joiningYear))
 
       return admin.firestore().runTransaction(function(transaction) {
-        return transaction.get(yearPassRef).then(function(yearPassDoc) {
+        return transaction.getAll(companyRef, yearPassRef).then(function(docs) {
+          const companyDoc = docs[0]
+          const yearPassDoc = docs[1]
+
+          if (companyDoc.exists) {
+            // hiringPassCount 更新
+            if (type == 'hiring') {
+              transaction.update(companyRef, {
+                hiringPassCount: companyDoc.data().hiringPassCount - 1
+              })
+            }
+          }
+
           if (yearPassDoc.exists) {
             // doc が存在する時
             var count = yearPassDoc.data().count
@@ -917,18 +931,18 @@ exports.passHasChanged = functions.region('asia-northeast1')
           .get()
           .then(doc => {
             if (doc.exists) {
+              const candidateUrl = '/recruiter/candidates/' + candidateId
               const members = doc.data().members
               const batch = admin.firestore().batch()
               members.forEach((member, i) => {
                 const notificationRef = admin.firestore().collection('users').doc(member.uid)
                   .collection('notifications').doc()
-                const url = '/recruiter/candidates/' + candidateId
                 batch.set(notificationRef, {
                   type: 'normal',
                   isImportant: true,
                   content: `${userName}さんが${typeText}を使用しました！ 契約が済みましたら、ステータスを採用予定に変更してください。`,
                   createdAt: new Date(),
-                  url: url,
+                  url: candidateUrl,
                   isUnread: true,
                 })
               })
@@ -942,7 +956,7 @@ exports.passHasChanged = functions.region('asia-northeast1')
                         to: member.email,
                       }
                       mailOptions.subject = `${userName}さんが${typeText}を使用しました。`
-                      mailOptions.text = `${userName}さんが${typeText}を使用しました。　契約が済みましたら、ステータスを採用予定に変更してください。`
+                      mailOptions.text = `${userName}さんが${typeText}を使用しました。　契約が済みましたら、${appUrl}${candidateUrl}からステータスを採用予定に変更してください。`
                       mailTransport.sendMail(mailOptions, (err, info) => {
                         if (err) {
                           console.log(err)
@@ -1222,13 +1236,13 @@ exports.scoutUser = functions.region('asia-northeast1')
                 // 通知
                 const notificationRef = admin.firestore().collection('users').doc(user.uid)
                   .collection('notifications').doc()
-                const url = '/messages/' + chatDoc.id
+                const chatUrl = '/messages/' + chatDoc.id
                 batch.set(notificationRef, {
                   type: 'normal',
                   isImportant: true,
                   content: companyName + 'にスカウトされました！ メッセージを確認してみましょう。',
                   createdAt: new Date(),
-                  url: url,
+                  url: chatUrl,
                   isUnread: true,
                 })
                 batch.commit()
@@ -1246,7 +1260,7 @@ exports.scoutUser = functions.region('asia-northeast1')
                               to: userDoc.data().email,
                             }
                             mailOptions.subject = `${companyName}にスカウトされました！`
-                            mailOptions.text = `${companyName}にスカウトされました！　ご確認ください。`
+                            mailOptions.text = `${companyName}にスカウトされました！　${appUrl}${chatUrl}にアクセスして、メッセージをご確認ください。`
                             mailTransport.sendMail(mailOptions, (err, info) => {
                               if (err) {
                                 console.log(err)
@@ -1306,13 +1320,13 @@ exports.scoutUser = functions.region('asia-northeast1')
             // 通知
             const notificationRef = admin.firestore().collection('users').doc(user.uid)
               .collection('notifications').doc()
-            const url = '/messages/' + chatId
+            const chatUrl = '/messages/' + chatId
             batch.set(notificationRef, {
               type: 'normal',
               isImportant: true,
               content: companyName + 'にスカウトされました！ メッセージを確認してみましょう。',
               createdAt: new Date(),
-              url: url,
+              url: chatUrl,
               isUnread: true,
             })
             batch.commit()
@@ -1329,7 +1343,7 @@ exports.scoutUser = functions.region('asia-northeast1')
                           to: userDoc.data().email,
                         }
                         mailOptions.subject = `${companyName}にスカウトされました！`
-                        mailOptions.text = `${companyName}にスカウトされました！　ご確認ください。`
+                        mailOptions.text = `${companyName}にスカウトされました！　${appUrl}${chatUrl}にアクセスして、メッセージをご確認ください。`
                         mailTransport.sendMail(mailOptions, (err, info) => {
                           if (err) {
                             console.log(err)
@@ -1445,16 +1459,16 @@ exports.applyForJob = functions.region('asia-northeast1')
         jobId: jobId
       })
       // 通知
+      const candidateUrl = '/recruiter/candidates/' + candidateId
       members.forEach((member, i) => {
         const notificationRef = admin.firestore().collection('users')
           .doc(member.uid).collection('notifications').doc()
-        const url = '/recruiter/candidates/' + candidateId
         batch.set(notificationRef, {
           type: 'normal',
           isImportant: true,
           content: user.name + 'さんから応募が届きました。',
           createdAt: new Date(),
-          url: url,
+          url: candidateUrl,
           isUnread: true,
         })
       })
@@ -1495,7 +1509,7 @@ exports.applyForJob = functions.region('asia-northeast1')
                           to: member.email,
                         }
                         mailOptions.subject = `${user.name}さんから応募が来ました。`
-                        mailOptions.text = `${user.name}さんから応募が来ました。　ご確認ください。`
+                        mailOptions.text = `${user.name}さんから応募が来ました。　${appUrl}${candidateUrl}からご確認ください。`
                         mailTransport.sendMail(mailOptions, (err, info) => {
                           if (err) {
                             console.log(err)
@@ -1547,7 +1561,7 @@ exports.applyForJob = functions.region('asia-northeast1')
                       to: member.email,
                     }
                     mailOptions.subject = `${user.name}さんから応募が来ました。`
-                    mailOptions.text = `${user.name}さんから応募が来ました。　ご確認ください。`
+                    mailOptions.text = `${user.name}さんから応募が来ました。　${appUrl}${candidateUrl}からご確認ください。`
                     mailTransport.sendMail(mailOptions, (err, info) => {
                       if (err) {
                         console.log(err)
