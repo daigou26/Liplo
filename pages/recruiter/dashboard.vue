@@ -236,9 +236,9 @@ export default {
     ...mapState({
       uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
-      plan: state => state.profile.plan,
       type: state => state.profile.type,
       companyId: state => state.profile.companyId,
+      plan: state => state.company.plan,
       rating: state => state.company.rating,
       currentCandidates: state => state.company.currentCandidates,
       candidatesChartData: state => state.company.candidatesChartData,

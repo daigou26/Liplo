@@ -56,7 +56,7 @@
               :class="{
                 'elevation-6': hover && !$vuetify.breakpoint.xsOnly,
                 'elevation-2': !hover,
-                'mb-4': $vuetify.breakpoint.smAndUp,
+                'mb-4 mt-3': $vuetify.breakpoint.smAndUp,
               }"
               :to="'/recruiter/passes/hiring'"
             >
@@ -69,6 +69,9 @@
               </div>
               <div class="text-xs-right caption light-text-color">
                 発行数(全年度共通)
+                <div>
+                  ※ 未使用かつ有効のものに限る
+                </div>
               </div>
             </v-card>
           </v-hover>

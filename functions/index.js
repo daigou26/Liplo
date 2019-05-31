@@ -123,8 +123,8 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
       })
   })
 
-// 候補者のステータスが変わった時、user の career を更新
-exports.updateCareer = functions.region('asia-northeast1')
+// 採用したときに、paidActions に追加
+exports.candidateHasChanged = functions.region('asia-northeast1')
   .firestore
   .document('companies/{companyId}/candidates/{candidateId}')
   .onUpdate((change, context) => {
@@ -132,7 +132,7 @@ exports.updateCareer = functions.region('asia-northeast1')
     const previousValue = change.before.data()
     const beforeStatus = previousValue.status
     const newStatus = newValue.status
-    // ステータス変化なし
+    // ステータスに変化がない場合終了
     if (
       newStatus.scouted == beforeStatus.scouted &&
       newStatus.inbox == beforeStatus.inbox &&
@@ -143,492 +143,651 @@ exports.updateCareer = functions.region('asia-northeast1')
       newStatus.hired == beforeStatus.hired &&
       newStatus.rejected == beforeStatus.rejected
     ) {
-      return 0
-    }
-    // 前のステータスが選考中、インターンでなければ終了
-    if (!(beforeStatus.inProcess || beforeStatus.intern)) {
       return 0
     }
 
     const companyId = context.params.companyId
     const candidateId = context.params.candidateId
-    const createdAt = newValue.updatedAt
     const user = newValue.user
-    const career = newValue.career
-    const occupation = career.internOccupation
-
-    return admin.firestore()
-      .collection('companies')
-      .doc(companyId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          const companyName = doc.data().companyName
-          const companyImageUrl = doc.data().imageUrl
-
-          if (newStatus.intern) {
-            // ステータスがインターンになった時
-            const batch = admin.firestore().batch()
-            // キャリア更新
-            const careerId = admin.firestore().collection('users').doc(user.uid)
-              .collection('career').doc().id
-            const careerRef = admin.firestore().collection('users').doc(user.uid)
-              .collection('career').doc(careerId)
-            var careerData = {
-              occupation: occupation,
-              companyId: companyId,
-              companyName: companyName,
-              startedAt: createdAt,
-              end: false,
-              isReviewWritten: false,
-              isInternExtended: false,
-              extendedInternEnd: false,
-            }
-            if (companyImageUrl) {
-              careerData.companyImageUrl = companyImageUrl
-            }
-            batch.set(careerRef, careerData)
-            // キャリア情報をcandidateに格納
-            const candidateRef = admin.firestore().collection('companies')
-              .doc(companyId).collection('candidates').doc(candidateId)
-            career.careerId = careerId
-            batch.update(candidateRef, {
-              career: career
-            })
-            batch.commit()
-              .then(() => {
-                console.log('updateCareer completed.')
-              })
-              .catch((error) => {
-                console.error("Error", error)
-              })
-
-            // userスコア更新
-            admin.firestore()
-              .collection('users')
-              .doc(user.uid)
-              .update({
-                points: admin.firestore.FieldValue.increment(1),
-              })
-              .then(() => {
-                console.log('update user score completed.')
-              })
-              .catch((error) => {
-                console.error("Error updating document", error)
-              })
-          } else if (newStatus.pass || newStatus.rejected) {
-            // ステータスがインターン、インターン延長から変わった時
-            var careerData = {
-              end: true,
-              endedAt: new Date()
-            }
-
-            const batch = admin.firestore().batch()
-            // キャリア
-            const careerRef = admin.firestore().collection('users').doc(user.uid)
-              .collection('career').doc(career.careerId)
-            batch.update(careerRef, careerData)
-            // 通知
-            const notificationRef = admin.firestore().collection('users').doc(user.uid)
-              .collection('notifications').doc()
-            const url = '/user/reviews/new?id=' + career.careerId
-            batch.set(notificationRef, {
-              type: 'normal',
-              isImportant: true,
-              content:
-                'インターンが終了しました。お疲れ様でした！ ' +
-                companyName +
-                'のレビューをしましょう！',
-              createdAt: new Date(),
-              url: url,
-              isUnread: true,
-            })
-            batch.commit()
-              .then(() => {
-                console.log('updateCareer completed.')
-              })
-              .catch((error) => {
-                console.error("Error", error)
-              })
-          }
-        }
-      })
-      .catch((error) => {
-        console.error("Error getting document", error)
-      })
-  })
-
-// 候補者のステータスが internから変わった時、フィードバックを送る処理
-exports.sendFeedback = functions.region('asia-northeast1')
-  .firestore
-  .document('companies/{companyId}/candidates/{candidateId}')
-  .onUpdate((change, context) => {
-    const newValue = change.after.data()
-    const previousValue = change.before.data()
-    const beforeStatus = previousValue.status
-    const newStatus = newValue.status
-    // ステータス変化なし
-    if (
-      newStatus.scouted == beforeStatus.scouted &&
-      newStatus.inbox == beforeStatus.inbox &&
-      newStatus.inProcess == beforeStatus.inProcess &&
-      newStatus.intern == beforeStatus.intern &&
-      newStatus.pass == beforeStatus.pass &&
-      newStatus.contracted == beforeStatus.contracted &&
-      newStatus.hired == beforeStatus.hired &&
-      newStatus.rejected == beforeStatus.rejected
-    ) {
-      return 0
-    }
-    if (!previousValue.status.intern) {
-      return 0
-    }
-
-    const companyId = context.params.companyId
-    const internOccupation = newValue.internOccupation
     const feedback = newValue.feedback
+    const createdAt = newValue.updatedAt
     const updatedAt = newValue.updatedAt
-    const user = newValue.user
+    const career = newValue.career
+    let occupation
+    if (career) {
+      occupation = career.internOccupation
+    }
+    const type = newValue.type
+    let pass = newValue.pass
+    let passType
+    let passTypeText
+    if (pass) {
+      // パスの種類
+      passType = newValue.pass.type
+      if (pass.type == 'hiring') {
+        passTypeText = '入社パス'
+      } else if (pass.type == 'offer') {
+        passTypeText = '内定パス'
+      } else if (pass.type == 'limited') {
+        passTypeText = '先着パス'
+      }
+    }
 
-    // company feedback writtenCount 更新
+    // company の候補者カウント, hiringPassCount 更新
     const companyRef = admin.firestore().collection('companies').doc(companyId)
 
-    return admin.firestore().runTransaction(function(transaction) {
-      return transaction.get(companyRef).then(function(companyDoc) {
-        // company feedback all 更新
-        var companyFeedbackData = companyDoc.data().feedback
-        companyFeedbackData.all += 1
-        const companyRef = admin.firestore().collection('companies').doc(companyId)
-        transaction.update(companyRef, {
-          feedback: companyFeedbackData,
-        })
-        const companyDetailRef = admin.firestore().collection('companies')
-          .doc(companyId).collection('detail').doc(companyId)
-        transaction.update(companyDetailRef, {
-          feedback: companyFeedbackData,
-        })
-        return companyDoc
-      })
-    }).then(companyDoc => {
-      console.log('update company feedback count completed.')
+    if (!(beforeStatus.intern && newStatus.pass)) {
+      return admin.firestore().runTransaction(function(transaction) {
+        return transaction.get(companyRef).then(function(companyDoc) {
+          if (companyDoc.exists) {
+            const companyName = companyDoc.data().companyName
+            const companyImageUrl = companyDoc.data().imageUrl
+            let currentCandidates = companyDoc.data().currentCandidates
+            let allCandidates = companyDoc.data().allCandidates
+            let hiringPassCount = companyDoc.data().hiringPassCount
+            let companyFeedbackData = companyDoc.data().feedback
+            const plan = companyDoc.data().plan
+            const invoiceEmail = companyDoc.data().invoiceEmail
 
-      const companyName = companyDoc.data().companyName
-      const companyImageUrl = companyDoc.data().imageUrl
+            // candidate count 更新
+            if (beforeStatus.scouted) {
+              currentCandidates.scouted -= 1
+            } else if (beforeStatus.inbox) {
+              currentCandidates.inbox -= 1
+            } else if (beforeStatus.inProcess) {
+              currentCandidates.inProcess -= 1
+            } else if (beforeStatus.pass) {
+              currentCandidates.pass -= 1
+            } else if (beforeStatus.contracted) {
+              currentCandidates.contracted -= 1
+            }
 
-      var feedbackData = {
-        uid: user.uid,
-        userName: user.name,
-        companyId: companyId,
-        companyName: companyName,
-        occupation: internOccupation,
-        createdAt: updatedAt,
-      }
-      if (user.imageUrl) {
-        feedbackData.profileImageUrl = user.imageUrl
-      }
-      if (companyImageUrl) {
-        feedbackData.companyImageUrl = companyImageUrl
-      }
+            if (newStatus.inProcess) {
+              currentCandidates.inProcess += 1
+              allCandidates.inProcess.all += 1
+              if (type == 'scout') {
+                allCandidates.inProcess.scout += 1
+              } else {
+                allCandidates.inProcess.application += 1
+              }
+            } else if (newStatus.intern) {
+              currentCandidates.intern += 1
+              allCandidates.intern.all += 1
+              if (type == 'scout') {
+                allCandidates.intern.scout += 1
+              } else {
+                allCandidates.intern.application += 1
+              }
+            } else if (newStatus.contracted) {
+              currentCandidates.contracted += 1
+              allCandidates.contracted.all += 1
+              if (type == 'scout') {
+                allCandidates.contracted.scout += 1
+              } else {
+                allCandidates.contracted.application += 1
+              }
+            } else if (newStatus.hired) {
+              currentCandidates.hired += 1
+              allCandidates.hired.all += 1
+              if (type == 'scout') {
+                allCandidates.hired.scout += 1
+              } else {
+                allCandidates.hired.application += 1
+              }
+            } else if (newStatus.rejected) {
+              allCandidates.rejected.all += 1
+              if (type == 'scout') {
+                allCandidates.rejected.scout += 1
+              } else {
+                allCandidates.rejected.application += 1
+              }
+            }
 
-      if (newValue.feedback == null) {
-        feedbackData.isWritten = false
-      } else {
-        feedbackData.isWritten = true
-        feedbackData.goodPoint = feedback.goodPoint
-        feedbackData.advice = feedback.advice
-      }
+            var companyData = {
+              currentCandidates: currentCandidates,
+              allCandidates: allCandidates,
+            }
 
-      const feedbackId = admin.firestore().collection('feedbacks').doc().id
-      const batch = admin.firestore().batch()
+            if (hiringPassCount) {
+              companyData.hiringPassCount = hiringPassCount
+            }
 
-      // フィードバック
-      const feedbackRef = admin.firestore().collection('feedbacks').doc(feedbackId)
-      batch.set(feedbackRef, feedbackData)
+            // hiringPassCount
+            if ((newStatus.hired || newStatus.rejected) && passType == 'hiring') {
+              companyData.hiringPassCount -= 1
+            }
 
-      if (newValue.feedback != null) {
-        // 通知
-        const notificationRef = admin.firestore().collection('users').doc(user.uid)
-          .collection('notifications').doc()
-        const url = '/user/feedbacks/' + feedbackId
-        batch.set(notificationRef, {
-          type: 'normal',
-          isImportant: false,
-          content: companyName + 'からフィードバックが送られました！ ',
-          createdAt: new Date(),
-          url: url,
-          isUnread: true,
-        })
-      }
+            // company feedback all 更新
+            if (beforeStatus.intern) {
+              companyFeedbackData.all += 1
+              if (feedback) {
+                companyFeedbackData.writtenCount += 1
+              }
+              companyData.feedback = companyFeedbackData
 
-      batch.commit()
-        .then(() => {
-          if (newValue.feedback != null) {
-            console.log('set feedback & send notification completed.')
-          } else {
-            console.log('set feedback completed.')
+              const companyDetailRef = admin.firestore().collection('companies')
+                .doc(companyId).collection('detail').doc(companyId)
+              transaction.update(companyDetailRef, {
+                feedback: companyFeedbackData,
+              })
+            }
+
+            transaction.update(companyRef, companyData)
+
+            companyData.plan = plan
+            companyData.invoiceEmail = invoiceEmail
+            companyData.companyName = companyName
+            if (companyImageUrl) {
+              companyData.imageUrl = companyImageUrl
+            }
+            companyData.feedback = companyFeedbackData
+            return companyData
           }
         })
-        .catch((error) => {
-          console.error("Error", error)
+      }).then(companyData => {
+        console.log('update candidates count completed.')
+
+        const companyName = companyData.companyName
+        const companyImageUrl = companyData.imageUrl
+        let allCandidates = companyData.allCandidates
+        let hiringPassCount = companyData.hiringPassCount
+        let companyFeedbackData = companyData.feedback
+        const plan = companyData.plan
+        const invoiceEmail = companyData.invoiceEmail
+
+        if (beforeStatus.inProcess && newStatus.intern) {
+          const batch = admin.firestore().batch()
+
+          // paidActions に追加
+          const paidActionRef = admin.firestore().collection('paidActions').doc()
+          let paidActionData = {
+            companyId: companyId,
+            companyName: companyName,
+            type: 'intern',
+            invoiceEmail: invoiceEmail,
+            plan: plan,
+            createdAt: new Date()
+          }
+          if (companyImageUrl) {
+            paidActionData.companyImageUrl = companyImageUrl
+          }
+          if (plan == 0) {
+            let isFree = allCandidates.intern.all > 3 ? false : true
+            paidActionData.isFree = isFree
+          }
+          batch.set(paidActionRef, paidActionData)
+
+          // キャリア更新
+          const careerId = admin.firestore().collection('users').doc(user.uid)
+            .collection('career').doc().id
+          const careerRef = admin.firestore().collection('users').doc(user.uid)
+            .collection('career').doc(careerId)
+          var careerData = {
+            occupation: occupation,
+            companyId: companyId,
+            companyName: companyName,
+            startedAt: createdAt,
+            end: false,
+            isReviewWritten: false,
+            isInternExtended: false,
+            extendedInternEnd: false,
+          }
+          if (companyImageUrl) {
+            careerData.companyImageUrl = companyImageUrl
+          }
+          batch.set(careerRef, careerData)
+
+          // キャリア情報をcandidateに格納
+          const candidateRef = admin.firestore().collection('companies')
+            .doc(companyId).collection('candidates').doc(candidateId)
+          career.careerId = careerId
+          batch.update(candidateRef, {
+            career: career
+          })
+
+          // userスコア更新
+          const userRef = admin.firestore().collection('users').doc(user.uid)
+          batch.update(userRef, {
+            points: admin.firestore.FieldValue.increment(1),
+          })
+
+          batch.commit()
+            .then(() => {
+              console.log('update paidActions & career & candidate & user score completed.')
+            })
+            .catch((error) => {
+              console.error("Error", error)
+            })
+        } else if (beforeStatus.intern) {
+          const batch = admin.firestore().batch()
+
+          // feedbacks 追加
+          const feedbackId = admin.firestore().collection('feedbacks').doc().id
+          const feedbackRef = admin.firestore().collection('feedbacks').doc(feedbackId)
+          var feedbackData = {
+            uid: user.uid,
+            userName: user.name,
+            companyId: companyId,
+            companyName: companyName,
+            occupation: occupation,
+            createdAt: updatedAt,
+          }
+          if (user.imageUrl) {
+            feedbackData.profileImageUrl = user.imageUrl
+          }
+          if (companyImageUrl) {
+            feedbackData.companyImageUrl = companyImageUrl
+          }
+
+          if (feedback == null) {
+            feedbackData.isWritten = false
+          } else {
+            feedbackData.isWritten = true
+            feedbackData.goodPoint = feedback.goodPoint
+            feedbackData.advice = feedback.advice
+          }
+          batch.set(feedbackRef, feedbackData)
+
+          const notificationRef = admin.firestore().collection('users').doc(user.uid)
+            .collection('notifications').doc()
+
+          if (feedback != null) {
+            // フィードバック送信 通知
+            let feedbackUrl = '/user/feedbacks/' + feedbackId
+            batch.set(notificationRef, {
+              type: 'normal',
+              isImportant: false,
+              content: companyName + 'からフィードバックが送られました！ ',
+              createdAt: new Date(),
+              url: feedbackUrl,
+              isUnread: true,
+            })
+          }
+
+          // キャリア更新
+          const careerRef = admin.firestore().collection('users').doc(user.uid)
+            .collection('career').doc(career.careerId)
+          var careerData = {
+            end: true,
+            endedAt: new Date()
+          }
+          batch.update(careerRef, careerData)
+          // インターン終了 通知
+          let reviewUrl = '/user/reviews/new?id=' + career.careerId
+          batch.set(notificationRef, {
+            type: 'normal',
+            isImportant: true,
+            content:
+              'インターンが終了しました。お疲れ様でした！ ' +
+              companyName +
+              'のレビューをしましょう！',
+            createdAt: new Date(),
+            url: reviewUrl,
+            isUnread: true,
+          })
+
+          batch.commit()
+            .then(() => {
+              if (newValue.feedback != null) {
+                console.log('set feedback & update career & send notification completed.')
+              } else {
+                console.log('set feedback & update career completed.')
+              }
+            })
+            .catch((error) => {
+              console.error("Error", error)
+            })
+        } else if (newStatus.hired) {
+          // paidActions 追加
+          let paidActionData = {
+            companyId: companyId,
+            companyName: companyName,
+            type: 'hired',
+            plan: plan,
+            invoiceEmail: invoiceEmail,
+            createdAt: new Date()
+          }
+          if (plan == 0) {
+            paidActionData.isFree = false
+          }
+          if (companyImageUrl) {
+            paidActionData.companyImageUrl = companyImageUrl
+          }
+
+          admin.firestore()
+            .collection('paidActions')
+            .add(paidActionData)
+            .then(() => {
+              console.log('update paidActions completed.')
+            })
+            .catch((error) => {
+              console.error("Error adding document", error)
+            })
+        }
+      }).catch(error => {
+          console.error(error)
+      })
+    }
+    if (beforeStatus.intern && newStatus.pass) {
+      const companyRef = admin.firestore().collection('companies').doc(companyId)
+      const yearPassRef = admin.firestore().collection('companies').doc(companyId)
+        .collection('yearPasses').doc(String(pass.joiningYear))
+
+      return admin.firestore().runTransaction(function(transaction) {
+        return transaction.getAll(companyRef, yearPassRef).then(function(docs) {
+          const companyDoc = docs[0]
+          const yearPassDoc = docs[1]
+
+          if (companyDoc.exists) {
+            const companyName = companyDoc.data().companyName
+            const companyImageUrl = companyDoc.data().imageUrl
+            let currentCandidates = companyDoc.data().currentCandidates
+            let allCandidates = companyDoc.data().allCandidates
+            let hiringPassCount = companyDoc.data().hiringPassCount
+            let companyFeedbackData = companyDoc.data().feedback
+
+            // candidate count 更新
+            currentCandidates.intern -= 1
+            currentCandidates.pass += 1
+            allCandidates.pass.all += 1
+            if (type == 'scout') {
+              allCandidates.pass.scout += 1
+            } else {
+              allCandidates.pass.application += 1
+            }
+
+            var companyData = {
+              currentCandidates: currentCandidates,
+              allCandidates: allCandidates,
+              hiringPassCount: hiringPassCount
+            }
+
+            // company feedback all 更新
+            companyFeedbackData.all += 1
+            if (feedback) {
+              companyFeedbackData.writtenCount += 1
+            }
+            companyData.feedback = companyFeedbackData
+
+            const companyDetailRef = admin.firestore().collection('companies')
+              .doc(companyId).collection('detail').doc(companyId)
+            transaction.update(companyDetailRef, {
+              feedback: companyFeedbackData,
+            })
+
+            if (pass.type == 'hiring') {
+              // 入社パスの場合、hiringPassCount を更新
+              if (hiringPassCount) {
+                companyData.hiringPassCount = hiringPassCount + 1
+              } else {
+                companyData.hiringPassCount = 1
+              }
+            } else {
+              // 内定パスまたは先着パスの場合
+              if (yearPassDoc.exists) {
+                // doc が存在する場合
+                let count = yearPassDoc.data().count
+                if (pass.type == 'offer') {
+                  // 内定パス
+                  count.offer.all += 1
+                } else if (pass.type == 'limited') {
+                  // 先着パス
+                  count.limited.all += 1
+                }
+                transaction.update(yearPassRef, {
+                  count: count
+                })
+              } else {
+                // doc が存在しない場合
+                let passData
+                if (pass.type == 'offer') {
+                  // 内定パス
+                  passData = {
+                    count: {
+                      hiring: {
+                        used: 0
+                      },
+                      offer: {
+                        all: 1,
+                        used: 0
+                      },
+                      limited: {
+                        all: 0,
+                        used: 0
+                      }
+                    }
+                  }
+                } else if (pass.type == 'limited') {
+                  // 先着パス
+                  passData = {
+                    count: {
+                      hiring: {
+                        used: 0
+                      },
+                      offer: {
+                        all: 0,
+                        used: 0
+                      },
+                      limited: {
+                        all: 1,
+                        used: 0
+                      }
+                    }
+                  }
+                }
+                passData.year = pass.joiningYear
+                passData.limit = null
+                transaction.set(yearPassRef, passData)
+              }
+            }
+
+            transaction.update(companyRef, companyData)
+
+            companyData.companyName = companyName
+            if (companyImageUrl) {
+              companyData.imageUrl = companyImageUrl
+            }
+            companyData.feedback = companyFeedbackData
+            return companyData
+          }
         })
-    }).catch(error => {
-      console.error(error)
-    })
+      }).then(companyData => {
+        console.log("update pass count completed.")
+
+        const companyName = companyData.companyName
+        const companyImageUrl = companyData.imageUrl
+        let allCandidates = companyData.allCandidates
+        let hiringPassCount = companyData.hiringPassCount
+        let companyFeedbackData = companyData.feedback
+
+        const batch = admin.firestore().batch()
+
+        // feedback 追加
+        var feedbackData = {
+          uid: user.uid,
+          userName: user.name,
+          companyId: companyId,
+          companyName: companyName,
+          occupation: occupation,
+          createdAt: updatedAt,
+        }
+        if (user.imageUrl) {
+          feedbackData.profileImageUrl = user.imageUrl
+        }
+        if (companyImageUrl) {
+          feedbackData.companyImageUrl = companyImageUrl
+        }
+
+        if (feedback == null) {
+          feedbackData.isWritten = false
+        } else {
+          feedbackData.isWritten = true
+          feedbackData.goodPoint = feedback.goodPoint
+          feedbackData.advice = feedback.advice
+        }
+
+        const feedbackId = admin.firestore().collection('feedbacks').doc().id
+
+        const feedbackRef = admin.firestore().collection('feedbacks').doc(feedbackId)
+        batch.set(feedbackRef, feedbackData)
+
+        const notificationRef = admin.firestore().collection('users').doc(user.uid)
+          .collection('notifications').doc()
+
+        if (feedback != null) {
+          // フィードバック送信 通知
+          let feedbackUrl = '/user/feedbacks/' + feedbackId
+          batch.set(notificationRef, {
+            type: 'normal',
+            isImportant: false,
+            content: companyName + 'からフィードバックが送られました！ ',
+            createdAt: new Date(),
+            url: feedbackUrl,
+            isUnread: true,
+          })
+        }
+
+        // キャリア更新
+        const careerRef = admin.firestore().collection('users').doc(user.uid)
+          .collection('career').doc(career.careerId)
+        var careerData = {
+          end: true,
+          endedAt: new Date()
+        }
+        batch.update(careerRef, careerData)
+        // インターン終了 通知
+        let reviewUrl = '/user/reviews/new?id=' + career.careerId
+        batch.set(notificationRef, {
+          type: 'normal',
+          isImportant: true,
+          content:
+            'インターンが終了しました。お疲れ様でした！ ' +
+            companyName +
+            'のレビューをしましょう！',
+          createdAt: new Date(),
+          url: reviewUrl,
+          isUnread: true,
+        })
+
+        // pass 追加
+        var passData = {
+          candidateId: candidateId,
+          uid: user.uid,
+          userName: user.name,
+          companyId: companyId,
+          companyName: companyName,
+          createdAt: updatedAt,
+          type: pass.type,
+          expirationDate: pass.expirationDate,
+          occupation: pass.occupation,
+          picMessage: pass.message,
+          pic: pass.pic,
+          isAccepted: false,
+          isContracted: false,
+          isValid: true,
+        }
+        if (user.imageUrl) {
+          passData.profileImageUrl = user.imageUrl
+        }
+        if (companyImageUrl) {
+          passData.companyImageUrl = companyImageUrl
+        }
+        if (pass.type != 'hiring') {
+          passData.joiningYear = pass.joiningYear
+        }
+
+        const passRef = admin.firestore().collection('passes').doc(pass.passId)
+        batch.set(passRef, passData)
+
+        // pass 通知
+        let passUrl = '/user/passes/' + pass.passId
+        batch.set(notificationRef, {
+          type: 'normal',
+          isImportant: true,
+          content: `${companyName}から${passTypeText}が送られました！ パスを使用する場合は、使用ボタンを押してから企業と連絡を取り、契約をしてください。`,
+          createdAt: new Date(),
+          url: passUrl,
+          isUnread: true,
+        })
+        batch.commit()
+          .then(() => {
+            // パスが渡されたユーザーにメール送信
+            admin.firestore().collection('users')
+              .doc(user.uid)
+              .get()
+              .then(userDoc => {
+                if (userDoc.exists) {
+                  if (userDoc.data().notificationsSetting == null
+                    || userDoc.data().notificationsSetting.pass) {
+                    const mailOptions = {
+                      from: `LightHouse <noreply@firebase.com>`,
+                      to: userDoc.data().email,
+                    }
+                    mailOptions.subject = `${companyName}に${passTypeText}をもらいました！`
+                    mailOptions.text = `${companyName}に${passTypeText}をもらいました！　ご確認ください。`
+                    mailTransport.sendMail(mailOptions, (err, info) => {
+                      if (err) {
+                        console.log(err)
+                      }
+                      console.log('New pass email sent to:', userDoc.data().email)
+                    })
+                  }
+                }
+              })
+              .catch((error) => {
+                console.error("Error getting document", error)
+              })
+            if (newValue.feedback != null) {
+              console.log('set feedback & update career & send notification completed.')
+            } else {
+              console.log('set feedback & update career completed.')
+            }
+          })
+          .catch((error) => {
+            console.error("Error", error)
+          })
+      }).catch(function(error) {
+        console.error(error)
+      })
+    }
   })
 
 // フィードバックが送られた時、企業のfeedback countを更新
 exports.updateCompanyFeedbackCount = functions.region('asia-northeast1')
   .firestore
   .document('feedbacks/{feedbackId}')
-  .onCreate((snap, context) => {
-    const companyId = snap.data().companyId
-
-    // company feedback writtenCount 更新
-    const companyRef = admin.firestore().collection('companies').doc(companyId)
-
-    return admin.firestore().runTransaction(function(transaction) {
-      return transaction.get(companyRef).then(function(companyDoc) {
-        var feedback = companyDoc.data().feedback
-        feedback.writtenCount += 1
-
-        const companyRef = admin.firestore().collection('companies').doc(companyId)
-        transaction.update(companyRef, {
-          feedback: feedback
-        })
-        const companyDetailRef = admin.firestore().collection('companies')
-          .doc(companyId).collection('detail').doc(companyId)
-        transaction.update(companyDetailRef, {
-          feedback: feedback
-        })
-      })
-    }).then(() => {
-      console.log('completed.')
-    }).catch(error => {
-      console.error(error)
-    })
-  })
-
-// 候補者のステータスが pass になった時、パスを送る処理
-exports.sendPass = functions.region('asia-northeast1')
-  .firestore
-  .document('companies/{companyId}/candidates/{candidateId}')
   .onUpdate((change, context) => {
     const newValue = change.after.data()
     const previousValue = change.before.data()
-    const beforeStatus = previousValue.status
-    const newStatus = newValue.status
-    // ステータス変化なし
-    if (
-      newStatus.scouted == beforeStatus.scouted &&
-      newStatus.inbox == beforeStatus.inbox &&
-      newStatus.inProcess == beforeStatus.inProcess &&
-      newStatus.intern == beforeStatus.intern &&
-      newStatus.pass == beforeStatus.pass &&
-      newStatus.contracted == beforeStatus.contracted &&
-      newStatus.hired == beforeStatus.hired &&
-      newStatus.rejected == beforeStatus.rejected
-    ) {
-      return 0
-    }
-    if (previousValue.status.pass || !newValue.status.pass) {
-      return 0
-    }
 
-    const companyId = context.params.companyId
-    const candidateId = context.params.candidateId
-    const updatedAt = newValue.updatedAt
-    const user = newValue.user
-    var pass = newValue.pass
-    // パスの種類
-    var passType
-    if (pass.type == 'hiring') {
-      passType = '入社パス'
-    } else if (pass.type == 'offer') {
-      passType = '内定パス'
-    } else if (pass.type == 'limited') {
-      passType = '先着パス'
-    }
+    const companyId = newValue.companyId
+    const isWritten = newValue.isWritten
 
-    const companyRef = admin.firestore().collection('companies').doc(companyId)
-    const yearPassRef = admin.firestore().collection('companies').doc(companyId)
-      .collection('yearPasses').doc(String(pass.joiningYear))
+    if (isWritten && !previousValue.isWritten) {
+      // company feedback writtenCount 更新
+      const companyRef = admin.firestore().collection('companies').doc(companyId)
 
-    return admin.firestore().runTransaction(function(transaction) {
-      return transaction.getAll(companyRef, yearPassRef).then(function(docs) {
-        const companyDoc = docs[0]
-        const yearPassDoc = docs[1]
+      return admin.firestore().runTransaction(function(transaction) {
+        return transaction.get(companyRef).then(function(companyDoc) {
+          var feedback = companyDoc.data().feedback
+          feedback.writtenCount += 1
 
-        // 入社パスのカウント
-        const hiringPassCount = companyDoc.data().hiringPassCount
-
-        if (pass.type == 'hiring') {
-          // 入社パスの場合、hiringPassCount を更新
-          let companyData
-          if (hiringPassCount) {
-            companyData = {
-              hiringPassCount: hiringPassCount + 1,
-            }
-          } else {
-            companyData = {
-              hiringPassCount: 1
-            }
-          }
-          transaction.update(companyRef, companyData)
-        } else {
-          // 内定パスまたは先着パスの場合
-          if (yearPassDoc.exists) {
-            // doc が存在する場合
-            let count = yearPassDoc.data().count
-            if (pass.type == 'offer') {
-              // 内定パス
-              count.offer.all += 1
-            } else if (pass.type == 'limited') {
-              // 先着パス
-              count.limited.all += 1
-            }
-            transaction.update(yearPassRef, {
-              count: count
-            })
-          } else {
-            // doc が存在しない場合
-            let passData
-            if (pass.type == 'offer') {
-              // 内定パス
-              passData = {
-                count: {
-                  hiring: {
-                    used: 0
-                  },
-                  offer: {
-                    all: 1,
-                    used: 0
-                  },
-                  limited: {
-                    all: 0,
-                    used: 0
-                  }
-                }
-              }
-            } else if (pass.type == 'limited') {
-              // 先着パス
-              passData = {
-                count: {
-                  hiring: {
-                    used: 0
-                  },
-                  offer: {
-                    all: 0,
-                    used: 0
-                  },
-                  limited: {
-                    all: 1,
-                    used: 0
-                  }
-                }
-              }
-            }
-            passData.year = pass.joiningYear
-            passData.limit = null
-            transaction.set(yearPassRef, passData)
-          }
-        }
-
-        return companyDoc
-      })
-    }).then(companyDoc => {
-      console.log("update pass count completed.")
-
-      const companyName = companyDoc.data().companyName
-      const companyImageUrl = companyDoc.data().imageUrl
-      const passId = admin.firestore().collection('passes').doc().id
-
-      var passData = {
-        candidateId: candidateId,
-        uid: user.uid,
-        userName: user.name,
-        companyId: companyId,
-        companyName: companyName,
-        createdAt: updatedAt,
-        type: pass.type,
-        expirationDate: pass.expirationDate,
-        occupation: pass.occupation,
-        picMessage: pass.message,
-        pic: pass.pic,
-        isAccepted: false,
-        isContracted: false,
-        isValid: true,
-        candidateId: candidateId,
-      }
-      if (user.imageUrl) {
-        passData.profileImageUrl = user.imageUrl
-      }
-      if (companyImageUrl) {
-        passData.companyImageUrl = companyImageUrl
-      }
-      if (pass.type != 'hiring') {
-        passData.joiningYear = pass.joiningYear
-      }
-
-      const batch = admin.firestore().batch()
-      // パス
-      const passRef = admin.firestore().collection('passes').doc(passId)
-      batch.set(passRef, passData)
-      // パスのデータをcandidateに
-      const candidateRef = admin.firestore().collection('companies')
-        .doc(companyId).collection('candidates').doc(candidateId)
-      pass.passId = passId
-      batch.update(candidateRef, {
-        pass: pass
-      })
-      // 通知
-      const notificationRef = admin.firestore().collection('users').doc(user.uid)
-        .collection('notifications').doc()
-      const url = '/user/passes/' + passId
-      batch.set(notificationRef, {
-        type: 'normal',
-        isImportant: true,
-        content: `${companyName}から${passType}が送られました！ パスを使用する場合は、使用ボタンを押してから企業と連絡を取り、契約をしてください。`,
-        createdAt: new Date(),
-        url: url,
-        isUnread: true,
-      })
-      batch.commit()
-        .then(() => {
-          admin.firestore().collection('users')
-            .doc(user.uid)
-            .get()
-            .then(userDoc => {
-              if (userDoc.exists) {
-                if (userDoc.data().notificationsSetting == null
-                  || userDoc.data().notificationsSetting.pass) {
-                  // パスが渡されたユーザーにメール送信
-                  const mailOptions = {
-                    from: `LightHouse <noreply@firebase.com>`,
-                    to: userDoc.data().email,
-                  }
-                  mailOptions.subject = `${companyName}に${passType}をもらいました！`
-                  mailOptions.text = `${companyName}に${passType}をもらいました！　ご確認ください。`
-                  mailTransport.sendMail(mailOptions, (err, info) => {
-                    if (err) {
-                      console.log(err)
-                    }
-                    console.log('New pass email sent to:', userDoc.data().email)
-                  })
-                }
-              }
-            })
-            .catch((error) => {
-              console.error("Error getting document", error)
-            })
-
-          console.log('set pass & update candidate & send notification, email to user completed.')
+          const companyRef = admin.firestore().collection('companies').doc(companyId)
+          transaction.update(companyRef, {
+            feedback: feedback
+          })
+          const companyDetailRef = admin.firestore().collection('companies')
+            .doc(companyId).collection('detail').doc(companyId)
+          transaction.update(companyDetailRef, {
+            feedback: feedback
+          })
         })
-        .catch((error) => {
-          console.error("Error", error)
-        })
-    }).catch(function(error) {
-      console.error(error)
-    })
+      }).then(() => {
+        console.log('completed.')
+      }).catch(error => {
+        console.error(error)
+      })
+    }
   })
 
 // パスの情報が変更された時の処理 （パスを使用した時、recruiter がパスの入社年度を変更した時）
@@ -937,138 +1096,6 @@ exports.passHasChanged = functions.region('asia-northeast1')
     }
   })
 
-// 候補者のステータスが変更した時の処理(候補者数やパスの発行数を更新する)
-exports.updateCompany = functions.region('asia-northeast1')
-  .firestore
-  .document('companies/{companyId}/candidates/{candidateId}')
-  .onUpdate((change, context) => {
-    const newValue = change.after.data()
-    const previousValue = change.before.data()
-    const beforeStatus = previousValue.status
-    const newStatus = newValue.status
-
-    // ステータス変化なし
-    if (
-      newStatus.scouted == beforeStatus.scouted &&
-      newStatus.inbox == beforeStatus.inbox &&
-      newStatus.inProcess == beforeStatus.inProcess &&
-      newStatus.intern == beforeStatus.intern &&
-      newStatus.pass == beforeStatus.pass &&
-      newStatus.contracted == beforeStatus.contracted &&
-      newStatus.hired == beforeStatus.hired &&
-      newStatus.rejected == beforeStatus.rejected
-    ) {
-      return 0
-    }
-
-    if (newValue.status.scouted == true || newValue.status.inbox == true ||
-      previousValue.status.rejected == true || previousValue.status.hired == true) {
-      return 0
-    }
-
-    const companyId = context.params.companyId
-    const candidateId = context.params.candidateId
-    const type = newValue.type
-    let passType
-    if (newValue.pass) {
-      passType = newValue.pass.type
-    }
-
-    // company の候補者カウント, hiringPassCount 更新
-    const companyRef = admin.firestore().collection('companies').doc(companyId)
-
-    return admin.firestore().runTransaction(function(transaction) {
-      return transaction.get(companyRef).then(function(companyDoc) {
-        if (companyDoc.exists) {
-          var currentCandidates = companyDoc.data().currentCandidates
-          var allCandidates = companyDoc.data().allCandidates
-
-          if (beforeStatus.scouted) {
-            currentCandidates.scouted -= 1
-          } else if (beforeStatus.inbox) {
-            currentCandidates.inbox -= 1
-          } else if (beforeStatus.inProcess) {
-            currentCandidates.inProcess -= 1
-          } else if (beforeStatus.intern) {
-            currentCandidates.intern -= 1
-          } else if (beforeStatus.pass) {
-            currentCandidates.pass -= 1
-          } else if (beforeStatus.contracted) {
-            currentCandidates.contracted -= 1
-          }
-
-          if (newStatus.inProcess) {
-            currentCandidates.inProcess += 1
-            allCandidates.inProcess.all += 1
-            if (type == 'scout') {
-              allCandidates.inProcess.scout += 1
-            } else {
-              allCandidates.inProcess.application += 1
-            }
-          } else if (newStatus.intern) {
-            currentCandidates.intern += 1
-            allCandidates.intern.all += 1
-            if (type == 'scout') {
-              allCandidates.intern.scout += 1
-            } else {
-              allCandidates.intern.application += 1
-            }
-          } else if (newStatus.pass) {
-            currentCandidates.pass += 1
-            allCandidates.pass.all += 1
-            if (type == 'scout') {
-              allCandidates.pass.scout += 1
-            } else {
-              allCandidates.pass.application += 1
-            }
-          }  else if (newStatus.contracted) {
-            currentCandidates.contracted += 1
-            allCandidates.contracted.all += 1
-            if (type == 'scout') {
-              allCandidates.contracted.scout += 1
-            } else {
-              allCandidates.contracted.application += 1
-            }
-          } else if (newStatus.hired) {
-            currentCandidates.hired += 1
-            allCandidates.hired.all += 1
-            if (type == 'scout') {
-              allCandidates.hired.scout += 1
-            } else {
-              allCandidates.hired.application += 1
-            }
-          } else if (newStatus.rejected) {
-            allCandidates.rejected.all += 1
-            if (type == 'scout') {
-              allCandidates.rejected.scout += 1
-            } else {
-              allCandidates.rejected.application += 1
-            }
-          }
-
-          var companyData = {
-            currentCandidates: currentCandidates,
-            allCandidates: allCandidates
-          }
-
-          // hiringPassCount
-          if ((newStatus.hired || newStatus.rejected) && passType == 'hiring') {
-            var hiringPassCount = doc.data().hiringPassCount
-            companyData.hiringPassCount -= 1
-          }
-
-          const companyRef = admin.firestore().collection('companies').doc(companyId)
-          transaction.update(companyRef, companyData)
-        }
-      })
-    }).then(() => {
-      console.log('completed.')
-
-    }).catch(error => {
-        console.error(error)
-    })
-  })
-
 // recruiterがスカウトした時の処理
 exports.scoutUser = functions.region('asia-northeast1')
   .firestore
@@ -1213,6 +1240,7 @@ exports.scoutUser = functions.region('asia-northeast1')
                         if (userDoc.exists) {
                           if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.scout) {
                             // スカウトされたユーザーにメール送信
+                            console.log('scout', gmailEmail);
                             const mailOptions = {
                               from: `LightHouse <noreply@firebase.com>`,
                               to: userDoc.data().email,
@@ -1724,8 +1752,10 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
     const employeesCount = newValue.employeesCount
     const feedback = newValue.feedback
     const members = newValue.members
+    const invoiceEmail = newValue.invoiceEmail
     var isCompanyNameChanged = false
     var isCompanyImageUrlChanged = false
+    var isInvoiceEmailChanged = false
 
     // 変化がない場合は終了
     if (
@@ -1746,7 +1776,8 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
       employeesCount == previousValue.employeesCount &&
       feedback.all == previousValue.feedback.all &&
       feedback.writtenCount == previousValue.feedback.writtenCount &&
-      members == previousValue.members
+      members == previousValue.members &&
+      invoiceEmail == previousValue.invoiceEmail
     ) {
       return 0
     }
@@ -1756,6 +1787,9 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
     }
     if (companyImageUrl != previousValue.companyImageUrl) {
       isCompanyImageUrlChanged = true
+    }
+    if (invoiceEmail != previousValue.invoiceEmail) {
+      isInvoiceEmailChanged = true
     }
     var companyData = {
       companyName: companyName,
@@ -1839,7 +1873,37 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
             console.error("Error", error)
           })
 
-          // name or imageUrl が変わっていれば続行
+        // name or imageUrl or invoiceEmail が変わっていれば続行
+        if (isCompanyNameChanged || isCompanyImageUrlChanged || isInvoiceEmailChanged) {
+          // paidActions
+          admin.firestore()
+            .collection('paidActions')
+            .where('companyId', '==', companyId)
+            .get()
+            .then(function(snapshot) {
+              const batch = admin.firestore().batch()
+
+              snapshot.forEach(function(doc) {
+                const paidActionRef = admin.firestore().collection('paidActions').doc(doc.id)
+                batch.update(paidActionRef, {
+                  companyName: companyName,
+                  companyImageUrl: companyImageUrl,
+                  invoiceEmail: invoiceEmail
+                })
+              })
+              batch.commit()
+                .then(() => {
+                  console.log('update paidActions completed.')
+                })
+                .catch((error) => {
+                  console.error("Error", error)
+                })
+            })
+            .catch(err => {
+              console.log('Error getting document', err)
+            })
+        }
+        // name or imageUrl が変わっていれば続行
         if (isCompanyNameChanged || isCompanyImageUrlChanged) {
           // chats
           admin.firestore()

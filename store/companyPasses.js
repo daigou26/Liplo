@@ -212,7 +212,7 @@ export const actions = {
           })
       } else {
         // 発行数をクエリ
-        passesRef = passesRef.orderBy('createdAt', 'desc')
+        passesRef = passesRef.where('isValid', '==', true).orderBy('createdAt', 'desc')
 
         if (passes.length == 0) {
           passesRef

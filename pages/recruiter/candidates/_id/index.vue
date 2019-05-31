@@ -850,6 +850,9 @@
                   候補者と雇用契約を結び次第、ステータスを<span class="font-weight-bold green--text text--lighten-1">入社</span>に変更してください。
                   ステータスを変更すると、候補者一覧に表示されなくなります。
                 </div>
+                <div v-if="error && error != ''" class="pt-3 red--text">
+                  {{ error }}
+                </div>
                 <div v-if="!status.hired && !status.rejected" class="text-xs-right">
                   <v-btn
                     :disabled="updateStatusButtonDisabled"
@@ -861,6 +864,9 @@
               </div>
               <!-- reviews -->
               <div v-if="item.value == 'reviews'">
+                <div class="pl-3 pt-3 light-text-color">
+                  このレビューは候補者には表示されません。
+                </div>
                 <v-form v-model="reviewValid" class="pa-3">
                   <v-rating
                     v-model="rating"
@@ -1137,6 +1143,7 @@ export default {
     sendReviewButtonText: 'レビュー送信',
     message: '',
     isShowMessage: false,
+    updateStatusValid: true,
   }),
   computed: {
     joiningYearRules() {
@@ -1179,6 +1186,10 @@ export default {
     updateStatusButtonDisabled() {
       // 企業が未契約の場合
       if (this.plan == null) {
+        return true
+      }
+
+      if (!this.updateStatusValid) {
         return true
       }
 
@@ -1316,6 +1327,7 @@ export default {
       allMessagesQueried: state => state.candidate.allMessagesQueried,
       unsubscribe: state => state.candidate.unsubscribe,
       isNewMessage: state => state.candidate.isNewMessage,
+      error: state => state.candidate.error,
     }),
   },
   mounted() {
@@ -1430,7 +1442,14 @@ export default {
           }
         })
       }
-    }
+    },
+    error(error) {
+      this.updateStatusValid = true
+      if (error == null) {
+        this.snackbarText = '更新しました！'
+        this.snackbar = true
+      }
+    },
   },
   methods: {
     editTagsButtonClicked() {
@@ -1473,6 +1492,10 @@ export default {
       this.tempTags = [...this.tempTags]
     },
     updateStatusButtonClicked() {
+      this.resetError()
+      // 更新中はボタンを押せないようにする
+      // this.updateStatusValid = false
+
       let newStatus = {
         scouted: false,
         inbox: false,
@@ -1514,9 +1537,8 @@ export default {
           case '先着パス': passType = 'limited'; break
         }
 
-        const pass = {
+        let pass = {
           type: passType,
-          joiningYear: Number(this.tempJoiningYear),
           expirationDate: new Date(expirationDateArr[0], expirationDateArr[1] - 1, expirationDateArr[2]),
           message: this.passMessage,
           occupation: this.passOccupation,
@@ -1526,6 +1548,10 @@ export default {
             imageUrl: this.imageUrl,
           }
         }
+        if (this.tempPassType != '入社パス') {
+          pass.joiningYear = Number(this.tempJoiningYear)
+        }
+
         candidateData.pass = pass
       }
 
@@ -1539,9 +1565,6 @@ export default {
         }
         candidateData.feedback = feedback
       }
-
-      this.snackbarText = '更新しました！'
-      this.snackbar = true
 
       this.updateStatus(candidateData)
     },
@@ -1655,6 +1678,7 @@ export default {
       updateIsNewMessage: 'candidate/updateIsNewMessage',
       postMessageFromPic: 'message/postMessageFromPic',
       resetState: 'candidate/resetState',
+      resetError: 'candidate/resetError',
     }),
   }
 }

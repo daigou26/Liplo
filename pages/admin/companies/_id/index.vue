@@ -17,7 +17,7 @@
     </v-flex>
     <v-flex v-else-if="uid" xs12 class="py-3 break">
       <!-- Profile画像 & UserName -->
-      <div class="py-4 align-center">
+      <div class="align-center">
         <v-card flat>
           <v-card-actions
             class="break py-4"
@@ -41,8 +41,19 @@
         </v-card>
       </div>
       <div :class="{'px-5': $vuetify.breakpoint.smAndUp}">
+        <!-- 企業の請求一覧 -->
+        <div class="pb-3">
+          <v-btn
+            outline
+            color="teal"
+            class="ma-0"
+            :to="'/admin/companies/' + params.id + '/invoice'"
+          >
+            企業の請求一覧
+          </v-btn>
+        </div>
         <!-- 削除済み -->
-        <div v-if="isDeleted">
+        <div v-if="isDeleted" class="pt-4">
           <span class="orange--text font-weight-bold">削除済み</span>
         </div>
         <!-- email -->
@@ -88,6 +99,9 @@ export default {
     avatarSize: 50,
   }),
   computed: {
+    params() {
+      return this.$route.params
+    },
     breakpoint() {
       return this.$vuetify.breakpoint.name
     },

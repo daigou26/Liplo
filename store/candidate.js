@@ -23,6 +23,7 @@ export const state = () => ({
   allMessagesQueried: false,
   unsubscribe: null,
   isNewMessage: false,
+  error: '',
 })
 
 export const mutations = {
@@ -98,7 +99,10 @@ export const mutations = {
   },
   updateIsNewMessage(state, isNew) {
     state.isNewMessage = isNew
-  }
+  },
+  setError(state, error) {
+    state.error = error
+  },
 }
 
 export const actions = {
@@ -279,113 +283,171 @@ export const actions = {
     const isInternExtended = state.isInternExtended
     const extendedInternEnd = state.extendedInternEnd
 
-    // candidate 更新
-    var candidateData = {
-      status: newStatus,
-      updatedAt: new Date()
-    }
+    if (newStatus.contracted) {
+      // パスが使用されている場合に限り、ステータスを更新できる
+      firestore.collection('passes')
+        .doc(state.pass.passId)
+        .get()
+        .then(doc => {
+          if (doc.exists) {
+            if (doc.data().isAccepted) {
+              // パスが使用されている
+              commit('setError', null)
+              // candidate 更新
+              var candidateData = {
+                status: newStatus,
+                updatedAt: new Date()
+              }
 
-    if (newStatus.intern) {
-      candidateData.career = {
-        internOccupation: occupation,
+              const batch = firestore.batch()
+              // candidate 更新
+              const candidateRef = firestore.collection('companies').doc(companyId)
+                .collection('candidates').doc(candidateId)
+              batch.update(candidateRef, candidateData)
+
+              // pass 更新
+              const passRef = firestore.collection('passes').doc(state.pass.passId)
+              batch.update(passRef, {
+                isContracted: true,
+                isAccepted: true,
+                isValid: false,
+                contractedDate: new Date(),
+              })
+
+              // 候補者のデータを保存
+              let ref = firestore.collection('companies').doc(companyId)
+                .collection('contractedUsers').doc()
+
+              var data = {
+                user: user,
+                createdAt: new Date()
+              }
+              if (type != null) {
+                data.type = type
+              }
+              if (jobId != null) {
+                data.jobId = jobId
+              }
+              batch.set(ref, data)
+
+              batch.commit()
+                .then(() => {
+                  commit('setStatus', newStatus)
+                })
+                .catch((error) => {
+                  console.error("Error", error)
+                })
+            } else {
+              // パスが使用されいないため終了
+              commit('setError', 'パスが使用されていないので更新できません。候補者がパスを使用すると更新することが出来るようになります。')
+            }
+          } else {
+            commit('setError', 'エラーが発生しました')
+          }
+        })
+        .catch(error => {
+          console.log(error)
+          commit('setError', 'エラーが発生しました')
+        })
+    } else {
+      // candidate 更新
+      var candidateData = {
+        status: newStatus,
+        updatedAt: new Date()
       }
-      candidateData.internOccupation = occupation
-    }
-    if (newStatus.pass) {
-      candidateData.pass = pass
-    }
-    if (currentStatus.intern && feedback) {
-      candidateData.feedback = feedback
-    }
-    // ステータスが入社または不採用に変わるときに、延長しているインターンが終了になっていない場合は、終了にする
-    if ((newStatus.hired || newStatus.rejected) && isInternExtended && !extendedInternEnd) {
-      candidateData.extendedInternEnd = true
-    }
 
-    const batch = firestore.batch()
-    const candidateRef = firestore.collection('companies').doc(companyId)
-      .collection('candidates').doc(candidateId)
-    batch.update(candidateRef, candidateData)
-
-    // pass更新
-    if (newStatus.rejected && currentStatus.pass) {
-      const passRef = firestore.collection('passes').doc(state.pass.passId)
-      batch.update(passRef, {
-        isContracted: false,
-        isValid: false,
-      })
-    }
-    if (newStatus.contracted && currentStatus.pass) {
-      const passRef = firestore.collection('passes').doc(state.pass.passId)
-      batch.update(passRef, {
-        isContracted: true,
-        isAccepted: true,
-        isValid: false,
-        contractedDate: new Date(),
-      })
-    }
-
-    // career更新 （ステータスが入社または不採用に変わるときに、延長しているインターンが終了になっていない場合は、終了にする）
-    if ((newStatus.hired || newStatus.rejected) && isInternExtended && !extendedInternEnd) {
-      const careerRef = firestore.collection('users').doc(user.uid)
-        .collection('career').doc(careerId)
-
-      var careerData = {
-        endedAt: new Date(),
-        extendedInternEnd: true,
-      }
-      batch.update(careerRef, careerData)
-    }
-
-    // 候補者のデータを保存
-    var setData = false
-    let ref
-    if (newStatus.intern) {
-      setData = true
-      ref = firestore.collection('companies').doc(companyId)
-        .collection('interns').doc()
-    } else if (newStatus.pass) {
-      setData = true
-      ref = firestore.collection('companies').doc(companyId)
-        .collection('passedUsers').doc()
-    } else if (newStatus.contracted) {
-      setData = true
-      ref = firestore.collection('companies').doc(companyId)
-        .collection('contractedUsers').doc()
-    } else if (newStatus.hired) {
-      setData = true
-      ref = firestore.collection('companies').doc(companyId)
-        .collection('hiredUsers').doc()
-    }
-
-    if (setData) {
-      var data = {
-        user: user,
-        createdAt: new Date()
-      }
-      if (type != null) {
-        data.type = type
-      }
-      if (jobId != null) {
-        data.jobId = jobId
-      }
-      batch.set(ref, data)
-    }
-
-    batch.commit()
-      .then(() => {
-        if (newStatus.pass) {
-          commit('setPass', pass)
+      if (newStatus.intern) {
+        candidateData.career = {
+          internOccupation: occupation,
         }
-        if (newStatus.rejected || newStatus.hired) {
-          router.replace({path: '/recruiter/candidates'})
-        } else {
-          commit('setStatus', newStatus)
+        candidateData.internOccupation = occupation
+      }
+      if (newStatus.pass) {
+        pass.passId = firestore.collection('passes').doc().id
+        candidateData.pass = pass
+      }
+      if (currentStatus.intern && feedback) {
+        candidateData.feedback = feedback
+      }
+      // ステータスが入社または不採用に変わるときに、延長しているインターンが終了になっていない場合は、終了にする
+      if ((newStatus.hired || newStatus.rejected) && isInternExtended && !extendedInternEnd) {
+        candidateData.extendedInternEnd = true
+      }
+
+      const batch = firestore.batch()
+      const candidateRef = firestore.collection('companies').doc(companyId)
+        .collection('candidates').doc(candidateId)
+      batch.update(candidateRef, candidateData)
+
+      // pass更新
+      if (newStatus.rejected && currentStatus.pass) {
+        const passRef = firestore.collection('passes').doc(state.pass.passId)
+        batch.update(passRef, {
+          isContracted: false,
+          isValid: false,
+        })
+      }
+
+      // career更新 （ステータスが入社または不採用に変わるときに、延長しているインターンが終了になっていない場合は、終了にする）
+      if ((newStatus.hired || newStatus.rejected) && isInternExtended && !extendedInternEnd) {
+        const careerRef = firestore.collection('users').doc(user.uid)
+          .collection('career').doc(careerId)
+
+        var careerData = {
+          endedAt: new Date(),
+          extendedInternEnd: true,
         }
-      })
-      .catch((error) => {
-        console.error("Error adding document: ", error)
-      })
+        batch.update(careerRef, careerData)
+      }
+
+      // 候補者のデータを保存
+      var setData = false
+      let ref
+      if (newStatus.intern) {
+        setData = true
+        ref = firestore.collection('companies').doc(companyId)
+          .collection('interns').doc()
+      } else if (newStatus.pass) {
+        setData = true
+        ref = firestore.collection('companies').doc(companyId)
+          .collection('passedUsers').doc()
+      } else if (newStatus.hired) {
+        setData = true
+        ref = firestore.collection('companies').doc(companyId)
+          .collection('hiredUsers').doc()
+      }
+
+      if (setData) {
+        var data = {
+          user: user,
+          createdAt: new Date()
+        }
+        if (type != null) {
+          data.type = type
+        }
+        if (jobId != null) {
+          data.jobId = jobId
+        }
+        batch.set(ref, data)
+      }
+
+      batch.commit()
+        .then(() => {
+          commit('setError', null)
+          if (newStatus.pass) {
+            commit('setPass', pass)
+          }
+          if (newStatus.rejected || newStatus.hired) {
+            router.replace({path: '/recruiter/candidates'})
+          } else {
+            commit('setStatus', newStatus)
+          }
+        })
+        .catch((error) => {
+          commit('setError', 'エラーが発生しました')
+          console.error("Error", error)
+        })
+    }
   },
   sendReview({commit, state}, {params, companyId, type, pic, rating, content}) {
     const candidateId = params.id
@@ -601,6 +663,9 @@ export const actions = {
   resetUnsubscribe({commit}) {
     commit('updateUnsubscribe', null)
   },
+  resetError({commit}) {
+    commit('setError', '')
+  },
   resetState({commit}) {
     commit('setUser', null)
     commit('setStatus', null)
@@ -621,5 +686,6 @@ export const actions = {
     commit('updateIsInitialQuery', true)
     commit('updateIsMessagesLoading', false)
     commit('resetAllMessagesQueried')
+    commit('setError', '')
   }
 }

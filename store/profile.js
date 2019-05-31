@@ -41,6 +41,7 @@ export const state = () => ({
   isEditingUserInfo: false,
   acceptedOffers: [],
   isLoading: false,
+  unsubscribe: null,
 })
 
 export const mutations = {
@@ -157,6 +158,9 @@ export const mutations = {
   },
   updateIsLoading(state, isLoading) {
     state.isLoading = isLoading
+  },
+  setUnsubscribe(state, unsubscribe) {
+    state.unsubscribe = unsubscribe
   },
 }
 
@@ -700,6 +704,23 @@ export const actions = {
       .catch((error) => {
         console.error("Error adding document: ", error)
       })
+  },
+  // プランの変更に対応
+  setCompaniesListener({commit}, companyId) {
+    if (!state.unsubscribe) {
+      const listener = firestore.collection('companies')
+        .doc(companyId)
+        .onSnapshot(function(doc) {
+          commit('setPlan', doc.data()['plan'])
+        })
+      commit('setUnsubscribe', listener)
+    }
+  },
+  resetCompaniesListener({commit, state}) {
+    if (state.unsubscribe) {
+      state.unsubscribe()
+    }
+    commit('setUnsubscribe', null)
   },
   resetProfileState({commit}) {
     commit('updateImageFileSizeValid', true)
