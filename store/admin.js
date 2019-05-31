@@ -18,6 +18,7 @@ export const actions = {
       invoiceEmail: companyEmail,
       members: [member],
       isDeleted: false,
+      hiringPassCount: 0,
       points: 100,
       feedback: {
         all: 0,

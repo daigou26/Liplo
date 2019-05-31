@@ -864,6 +864,9 @@
               </div>
               <!-- reviews -->
               <div v-if="item.value == 'reviews'">
+                <div class="pl-3 pt-3 light-text-color">
+                  このレビューは候補者には表示されません。
+                </div>
                 <v-form v-model="reviewValid" class="pa-3">
                   <v-rating
                     v-model="rating"
