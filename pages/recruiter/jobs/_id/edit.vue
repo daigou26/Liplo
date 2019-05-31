@@ -145,6 +145,7 @@
           <v-layout row wrap pt-4>
             <v-flex sm3 class="pr-2">
               <v-text-field
+                v-if="tempWorktime"
                 v-model="tempWorktime.begin"
                 mask="time"
                 label="勤務可能時間（始め）"
@@ -155,6 +156,7 @@
             </v-flex>
             <v-flex sm3 class="pl-2">
               <v-text-field
+                v-if="tempWorktime"
                 v-model="tempWorktime.end"
                 mask="time"
                 label="勤務可能時間（終わり）"

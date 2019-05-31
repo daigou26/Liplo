@@ -135,7 +135,7 @@
           >
             <v-alert
               :value="true"
-              color="warning"
+              color="teal"
               outline
               class="mt-0"
             >
