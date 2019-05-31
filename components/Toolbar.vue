@@ -101,28 +101,24 @@
         <span class="font-weight-bold textColor">ユーザー検索</span>
       </v-btn>
       <!-- notifications -->
+      <v-btn flat class="hidden-xs-only" @click="notificationsButtonClicked">
+        <span v-if="!hasNewNotification" class="font-weight-bold textColor">通知</span>
+        <v-badge v-else overlap color="red">
+          <template v-slot:badge>
+            <span></span>
+          </template>
+          <span class="font-weight-bold textColor">通知</span>
+        </v-badge>
+      </v-btn>
       <v-menu
-        offset-y
-        min-width="350"
-        max-width="350"
-        style="right: 3px;"
-        :fullscreen="$vuetify.breakpoint.xsOnly"
+        v-if="breakpoint != 'xs'"
+        v-model="notificationsMenu"
+        :position-x="9000"
+        :position-y="70"
+        min-width="400"
+        max-width="400"
+        class="hidden-xs-only"
       >
-        <v-btn
-          flat
-          active-class
-          slot="activator"
-          @click="notificationsButtonClicked"
-          class="hidden-xs-only"
-        >
-          <span v-if="!hasNewNotification" class="font-weight-bold textColor">通知</span>
-          <v-badge v-else overlap color="red">
-            <template v-slot:badge>
-              <span></span>
-            </template>
-            <span class="font-weight-bold textColor">通知</span>
-          </v-badge>
-        </v-btn>
         <v-card>
           <v-toolbar flat height="48">
             <span class="font-weight-bold subheading">通知</span>
@@ -368,24 +364,24 @@
         </v-badge>
       </v-btn>
       <!-- notifications -->
+      <v-btn v-if="uid" flat class="hidden-xs-only" @click="notificationsButtonClicked">
+        <span v-if="!hasNewNotification" class="font-weight-bold textColor">通知</span>
+        <v-badge v-else overlap color="red">
+          <template v-slot:badge>
+            <span></span>
+          </template>
+          <span class="font-weight-bold textColor">通知</span>
+        </v-badge>
+      </v-btn>
       <v-menu
-        v-if="uid"
-        offset-y
-        offset-x
+        v-if="uid && breakpoint != 'xs'"
+        v-model="notificationsMenu"
+        :position-x="9000"
+        :position-y="70"
         min-width="400"
         max-width="400"
-        style="right: 3px;"
         class="hidden-xs-only"
       >
-        <v-btn flat slot="activator" @click="notificationsButtonClicked">
-          <span v-if="!hasNewNotification" class="font-weight-bold textColor">通知</span>
-          <v-badge v-else overlap color="red">
-            <template v-slot:badge>
-              <span></span>
-            </template>
-            <span class="font-weight-bold textColor">通知</span>
-          </v-badge>
-        </v-btn>
         <v-card>
           <v-toolbar flat height="48">
             <span class="font-weight-bold subheading">通知</span>
@@ -830,11 +826,11 @@ export default {
     FilterExtension
   },
   data: () => ({
-    isInitialNotificationQueried: false,
     dialog: false,
     signUpDialog: false,
     signUpForm: false,
     signInDialog: false,
+    notificationsMenu: false,
     dropdownMenu: false,
     signInValid: true,
     signUpValid: true,
@@ -908,7 +904,7 @@ export default {
       jobsToolbarExtension: state => state.jobs.toolbarExtension,
       usersToolbarExtension: state => state.users.toolbarExtension,
       notifications: state => state.notifications.latestNotifications,
-      isNotificationsLoading: state => state.notifications.isLoading,
+      isNotificationsLoading: state => state.notifications.isLatestNotificationsLoading,
       canReadAll: state => state.notifications.canReadAll,
       hasNewNotification: state => state.notifications.hasNewNotification,
       hasNewMessage: state => state.chats.hasNewMessage,
@@ -996,8 +992,10 @@ export default {
       this.$store.dispatch('signOut')
     },
     notificationsButtonClicked() {
-      if (!this.isInitialNotificationQueried){
-        this.isInitialNotificationQueried = true
+      if (this.notificationsMenu) {
+        this.notificationsMenu = false
+      } else {
+        this.notificationsMenu = true
         this.resetNotificationsState()
         this.updateIsNotificationsLoading(true)
         this.queryLatestNotifications(this.uid)
