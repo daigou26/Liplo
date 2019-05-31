@@ -113,8 +113,86 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
       from: `LightHouse <noreply@firebase.com>`,
       to: email,
     }
-    mailOptions.subject = `${userName}さんが${companyName}にあなたを招待しました。`
-    mailOptions.text = `${userName}さんが${companyName}にあなたを招待しました。${url}にアクセスして、サインアップしてください。`
+    mailOptions.subject = `[招待]${userName}さんが${companyName}にあなたを招待しました。`
+    mailOptions.html = `
+      <body>
+        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+          <tr>
+            <td align="center" style="margin: 40px 0;">
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                <tr>
+                  <td
+                    align="center"
+                    style="
+                      padding: 24px;
+                      font-size: 16px;
+                      line-height: 32px;
+                    "
+                  >
+                    <h1
+                      style="
+                        color: #555555;
+                        margin: 14px 12px 40px;
+                        font-size: 22px;
+                        font-weight: 400;
+                        line-height: 24px;
+                      "
+                    >
+                      ${userName}さんが${companyName}にあなたを招待しました。
+                    </h1>
+                    <div style="margin: 0 16px 60px; color: #555555">
+                      下のボタンからサインアップできます。
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td align="left" bgcolor="#ffffff">
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td align="center" bgcolor="#ffffff" style="padding: 20px;">
+                          <table border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
+                                <a
+                                  href="${url}"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style="
+                                    display: inline-block;
+                                    padding: 10px 50px;
+                                    font-size: 16px;
+                                    color: #ffffff;
+                                    text-decoration: none;
+                                    border-radius: 6px;
+                                  "
+                                >サインアップする</a>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    align="center"
+                    style="
+                      color: #777777;
+                      padding: 28px;
+                      font-size: 14px;
+                      line-height: 24px;
+                    "
+                  >
+                    <p style="margin: 0;"> LightHouse Inc.</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+    `
     return mailTransport.sendMail(mailOptions)
       .then(() => {
         console.log('sendMailToInvitedMember completed. sent to:', email)
@@ -724,8 +802,87 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
                       from: `LightHouse <noreply@firebase.com>`,
                       to: userDoc.data().email,
                     }
-                    mailOptions.subject = `${companyName}に${passTypeText}をもらいました！`
-                    mailOptions.text = `${companyName}に${passTypeText}をもらいました！　${appUrl}${passUrl}にアクセスしてご確認ください。`
+                    mailOptions.subject = `[パス]${companyName}から${passTypeText}が届きました！`
+                    mailOptions.html = `
+                      <body>
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                          <tr>
+                            <td align="center" style="margin: 40px 0;">
+                              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                                <tr>
+                                  <td
+                                    align="center"
+                                    style="
+                                      padding: 24px;
+                                      font-size: 16px;
+                                      line-height: 32px;
+                                    "
+                                  >
+                                    <h1
+                                      style="
+                                        color: #555555;
+                                        margin: 14px 12px 40px;
+                                        font-size: 22px;
+                                        font-weight: 400;
+                                        line-height: 24px;
+                                      "
+                                    >
+                                      <div>こんにちは ${user.name} さん</div>
+                                      <div style="padding-top: 6px">${companyName}から${passTypeText}が届いています！</div>
+                                    </h1>
+                                    <div style="margin: 0 16px 60px; color: #555555">
+                                      下のボタンからパスを確認できます。有効期限などが設定されているので、早めにご確認ください。
+                                    </div>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td align="left" bgcolor="#ffffff">
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                      <tr>
+                                        <td align="center" bgcolor="#ffffff" style="padding: 20px;">
+                                          <table border="0" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                              <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
+                                                <a
+                                                  href="${appUrl}${passUrl}"
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  style="
+                                                    display: inline-block;
+                                                    padding: 10px 50px;
+                                                    font-size: 16px;
+                                                    color: #ffffff;
+                                                    text-decoration: none;
+                                                    border-radius: 6px;
+                                                  "
+                                                >確認する</a>
+                                              </td>
+                                            </tr>
+                                          </table>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td
+                                    align="center"
+                                    style="
+                                      color: #777777;
+                                      padding: 28px;
+                                      font-size: 14px;
+                                      line-height: 24px;
+                                    "
+                                  >
+                                    <p style="margin: 0;"> LightHouse Inc.</p>
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                      </body>
+                    `
                     mailTransport.sendMail(mailOptions, (err, info) => {
                       if (err) {
                         console.log(err)
@@ -955,8 +1112,86 @@ exports.passHasChanged = functions.region('asia-northeast1')
                         from: `LightHouse <noreply@firebase.com>`,
                         to: member.email,
                       }
-                      mailOptions.subject = `${userName}さんが${typeText}を使用しました。`
-                      mailOptions.text = `${userName}さんが${typeText}を使用しました。　契約が済みましたら、${appUrl}${candidateUrl}からステータスを採用予定に変更してください。`
+                      mailOptions.subject = `[パス]${userName}さんが${typeText}を使用しました。`
+                      mailOptions.html = `
+                        <body>
+                          <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                              <td align="center" style="margin: 40px 0;">
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                                  <tr>
+                                    <td
+                                      align="center"
+                                      style="
+                                        padding: 24px;
+                                        font-size: 16px;
+                                        line-height: 32px;
+                                      "
+                                    >
+                                      <h1
+                                        style="
+                                          color: #555555;
+                                          margin: 14px 12px 40px;
+                                          font-size: 22px;
+                                          font-weight: 400;
+                                          line-height: 24px;
+                                        "
+                                      >
+                                        ${userName}さんが${typeText}を使用しました。
+                                      </h1>
+                                      <div style="margin: 0 16px 60px; color: #555555">
+                                        下のボタンから確認ができます。 契約が済みましたら、ステータスを採用予定に変更してください。
+                                      </div>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td align="left" bgcolor="#ffffff">
+                                      <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                        <tr>
+                                          <td align="center" bgcolor="#ffffff" style="padding: 20px;">
+                                            <table border="0" cellpadding="0" cellspacing="0">
+                                              <tr>
+                                                <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
+                                                  <a
+                                                    href="${appUrl}${candidateUrl}"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    style="
+                                                      display: inline-block;
+                                                      padding: 10px 50px;
+                                                      font-size: 16px;
+                                                      color: #ffffff;
+                                                      text-decoration: none;
+                                                      border-radius: 6px;
+                                                    "
+                                                  >確認する</a>
+                                                </td>
+                                              </tr>
+                                            </table>
+                                          </td>
+                                        </tr>
+                                      </table>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td
+                                      align="center"
+                                      style="
+                                        color: #777777;
+                                        padding: 28px;
+                                        font-size: 14px;
+                                        line-height: 24px;
+                                      "
+                                    >
+                                      <p style="margin: 0;"> LightHouse Inc.</p>
+                                    </td>
+                                  </tr>
+                                </table>
+                              </td>
+                            </tr>
+                          </table>
+                        </body>
+                      `
                       mailTransport.sendMail(mailOptions, (err, info) => {
                         if (err) {
                           console.log(err)
@@ -1254,13 +1489,91 @@ exports.scoutUser = functions.region('asia-northeast1')
                         if (userDoc.exists) {
                           if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.scout) {
                             // スカウトされたユーザーにメール送信
-                            console.log('scout', gmailEmail);
                             const mailOptions = {
                               from: `LightHouse <noreply@firebase.com>`,
                               to: userDoc.data().email,
                             }
-                            mailOptions.subject = `${companyName}にスカウトされました！`
-                            mailOptions.text = `${companyName}にスカウトされました！　${appUrl}${chatUrl}にアクセスして、メッセージをご確認ください。`
+                            mailOptions.subject = `[スカウト]${companyName}にスカウトされました！ 返事をして話を聞きに行ってみましょう！`
+                            mailOptions.html = `
+                              <body>
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                  <tr>
+                                    <td align="center" style="margin: 40px 0;">
+                                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                                        <tr>
+                                          <td
+                                            align="center"
+                                            style="
+                                              padding: 24px;
+                                              font-size: 16px;
+                                              line-height: 32px;
+                                            "
+                                          >
+                                            <h1
+                                              style="
+                                                color: #555555;
+                                                margin: 14px 12px 50px;
+                                                font-size: 22px;
+                                                font-weight: 400;
+                                                line-height: 24px;
+                                              "
+                                            >
+                                              <div>こんにちは ${user.name} さん</div>
+                                              <div style="padding-top: 10px">${companyName}からスカウトが届いています！</div>
+                                            </h1>
+                                            <div style="margin: 0 16px 60px; color: #555555">
+                                              下のボタンからメッセージを確認できます。興味がある場合は、メッセージに返信をしましょう。
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td align="left" bgcolor="#ffffff">
+                                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                              <tr>
+                                                <td align="center" bgcolor="#ffffff" style="padding: 20px;">
+                                                  <table border="0" cellpadding="0" cellspacing="0">
+                                                    <tr>
+                                                      <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
+                                                        <a
+                                                          href="${appUrl}${chatUrl}"
+                                                          target="_blank"
+                                                          rel="noopener noreferrer"
+                                                          style="
+                                                            display: inline-block;
+                                                            padding: 10px 50px;
+                                                            font-size: 16px;
+                                                            color: #ffffff;
+                                                            text-decoration: none;
+                                                            border-radius: 6px;
+                                                          "
+                                                        >確認する</a>
+                                                      </td>
+                                                    </tr>
+                                                  </table>
+                                                </td>
+                                              </tr>
+                                            </table>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td
+                                            align="center"
+                                            style="
+                                              color: #777777;
+                                              padding: 28px;
+                                              font-size: 14px;
+                                              line-height: 24px;
+                                            "
+                                          >
+                                            <p style="margin: 0;"> LightHouse Inc.</p>
+                                          </td>
+                                        </tr>
+                                      </table>
+                                    </td>
+                                  </tr>
+                                </table>
+                              </body>
+                            `
                             mailTransport.sendMail(mailOptions, (err, info) => {
                               if (err) {
                                 console.log(err)
@@ -1342,8 +1655,87 @@ exports.scoutUser = functions.region('asia-northeast1')
                           from: `LightHouse <noreply@firebase.com>`,
                           to: userDoc.data().email,
                         }
-                        mailOptions.subject = `${companyName}にスカウトされました！`
-                        mailOptions.text = `${companyName}にスカウトされました！　${appUrl}${chatUrl}にアクセスして、メッセージをご確認ください。`
+                        mailOptions.subject = `[スカウト]${companyName}にスカウトされました！ 返事をして話を聞きに行ってみましょう！`
+                        mailOptions.html = `
+                          <body>
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                              <tr>
+                                <td align="center" style="margin: 40px 0;">
+                                  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                                    <tr>
+                                      <td
+                                        align="center"
+                                        style="
+                                          padding: 24px;
+                                          font-size: 16px;
+                                          line-height: 32px;
+                                        "
+                                      >
+                                        <h1
+                                          style="
+                                            color: #555555;
+                                            margin: 14px 12px 50px;
+                                            font-size: 22px;
+                                            font-weight: 400;
+                                            line-height: 24px;
+                                          "
+                                        >
+                                          <div>こんにちは ${user.name} さん</div>
+                                          <div style="padding-top: 10px">${companyName}からスカウトが届いています！</div>
+                                        </h1>
+                                        <div style="margin: 0 16px 60px; color: #555555">
+                                          下のボタンからメッセージを確認できます。興味がある場合は、メッセージに返信をしましょう。
+                                        </div>
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td align="left" bgcolor="#ffffff">
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                          <tr>
+                                            <td align="center" bgcolor="#ffffff" style="padding: 20px;">
+                                              <table border="0" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                  <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
+                                                    <a
+                                                      href="${appUrl}${chatUrl}"
+                                                      target="_blank"
+                                                      rel="noopener noreferrer"
+                                                      style="
+                                                        display: inline-block;
+                                                        padding: 10px 50px;
+                                                        font-size: 16px;
+                                                        color: #ffffff;
+                                                        text-decoration: none;
+                                                        border-radius: 6px;
+                                                      "
+                                                    >確認する</a>
+                                                  </td>
+                                                </tr>
+                                              </table>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td
+                                        align="center"
+                                        style="
+                                          color: #777777;
+                                          padding: 28px;
+                                          font-size: 14px;
+                                          line-height: 24px;
+                                        "
+                                      >
+                                        <p style="margin: 0;"> LightHouse Inc.</p>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </body>
+                        `
                         mailTransport.sendMail(mailOptions, (err, info) => {
                           if (err) {
                             console.log(err)
@@ -1508,8 +1900,87 @@ exports.applyForJob = functions.region('asia-northeast1')
                           from: `LightHouse <noreply@firebase.com>`,
                           to: member.email,
                         }
-                        mailOptions.subject = `${user.name}さんから応募が来ました。`
-                        mailOptions.text = `${user.name}さんから応募が来ました。　${appUrl}${candidateUrl}からご確認ください。`
+                        mailOptions.subject = `[応募]${user.name}さんから応募が来ました。`
+                        mailOptions.html = `
+                          <body>
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                              <tr>
+                                <td align="center" style="margin: 40px 0;">
+                                  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                                    <tr>
+                                      <td
+                                        align="center"
+                                        style="
+                                          padding: 24px;
+                                          font-size: 16px;
+                                          line-height: 32px;
+                                        "
+                                      >
+                                        <h1
+                                          style="
+                                            color: #555555;
+                                            margin: 14px 12px 50px;
+                                            font-size: 22px;
+                                            font-weight: 400;
+                                            line-height: 24px;
+                                          "
+                                        >
+                                          ${user.name}さんから応募が届いています。
+                                        </h1>
+                                        <div style="margin: 0 16px 60px; color: #555555">
+                                          下のボタンから確認ができます。選考する場合は、候補者のステータスを選考中に変え、
+                                          メッセージにて候補者の方とご連絡をお取りください。
+                                        </div>
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td align="left" bgcolor="#ffffff">
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                          <tr>
+                                            <td align="center" bgcolor="#ffffff" style="padding: 20px;">
+                                              <table border="0" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                  <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
+                                                    <a
+                                                      href="${appUrl}${candidateUrl}"
+                                                      target="_blank"
+                                                      rel="noopener noreferrer"
+                                                      style="
+                                                        display: inline-block;
+                                                        padding: 10px 50px;
+                                                        font-size: 16px;
+                                                        color: #ffffff;
+                                                        text-decoration: none;
+                                                        border-radius: 6px;
+                                                      "
+                                                    >確認する</a>
+                                                  </td>
+                                                </tr>
+                                              </table>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td
+                                        align="center"
+                                        style="
+                                          color: #777777;
+                                          padding: 28px;
+                                          font-size: 14px;
+                                          line-height: 24px;
+                                        "
+                                      >
+                                        <p style="margin: 0;"> LightHouse Inc.</p>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </body>
+                        `
                         mailTransport.sendMail(mailOptions, (err, info) => {
                           if (err) {
                             console.log(err)
@@ -1560,8 +2031,87 @@ exports.applyForJob = functions.region('asia-northeast1')
                       from: `LightHouse <noreply@firebase.com>`,
                       to: member.email,
                     }
-                    mailOptions.subject = `${user.name}さんから応募が来ました。`
-                    mailOptions.text = `${user.name}さんから応募が来ました。　${appUrl}${candidateUrl}からご確認ください。`
+                    mailOptions.subject = `[応募]${user.name}さんから応募が来ました。`
+                    mailOptions.html = `
+                      <body>
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                          <tr>
+                            <td align="center" style="margin: 40px 0;">
+                              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                                <tr>
+                                  <td
+                                    align="center"
+                                    style="
+                                      padding: 24px;
+                                      font-size: 16px;
+                                      line-height: 32px;
+                                    "
+                                  >
+                                    <h1
+                                      style="
+                                        color: #555555;
+                                        margin: 14px 12px 50px;
+                                        font-size: 22px;
+                                        font-weight: 400;
+                                        line-height: 24px;
+                                      "
+                                    >
+                                      ${user.name}さんから応募が届いています。
+                                    </h1>
+                                    <div style="margin: 0 16px 60px; color: #555555">
+                                      下のボタンから確認ができます。選考する場合は、候補者のステータスを選考中に変え、
+                                      メッセージにて候補者の方とご連絡をお取りください。
+                                    </div>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td align="left" bgcolor="#ffffff">
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                      <tr>
+                                        <td align="center" bgcolor="#ffffff" style="padding: 20px;">
+                                          <table border="0" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                              <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
+                                                <a
+                                                  href="${appUrl}${candidateUrl}"
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  style="
+                                                    display: inline-block;
+                                                    padding: 10px 50px;
+                                                    font-size: 16px;
+                                                    color: #ffffff;
+                                                    text-decoration: none;
+                                                    border-radius: 6px;
+                                                  "
+                                                >確認する</a>
+                                              </td>
+                                            </tr>
+                                          </table>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td
+                                    align="center"
+                                    style="
+                                      color: #777777;
+                                      padding: 28px;
+                                      font-size: 14px;
+                                      line-height: 24px;
+                                    "
+                                  >
+                                    <p style="margin: 0;"> LightHouse Inc.</p>
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                      </body>
+                    `
                     mailTransport.sendMail(mailOptions, (err, info) => {
                       if (err) {
                         console.log(err)
@@ -2038,11 +2588,13 @@ exports.sendInquiryMail = functions
       to: 'go26dev@gmail.com',
     }
     mailOptions.subject = `${data.companyName}の${data.userName}様からのお問い合わせ`
-    mailOptions.text =
-      `${data.companyName}の${data.userName}様からお問い合わせを頂きました。\n\n
-      メールアドレス： ${data.email} \n\n
-      タイプ： ${type} \n\n
-      お問い合わせ内容：${data.content}`
+    mailOptions.html = `
+      <p><b>CompanyName: </b>${data.companyName}</p>
+      <p><b>Name: </b>${data.userName}</p>
+      <p><b>Email: </b>${data.email}</p>
+      <p><b>Type: </b>${type}</p>
+      <p><b>Content: </b>${data.content}</p>
+    `
     mailTransport.sendMail(mailOptions, (err, info) => {
       if (err) {
         console.log(err)
@@ -2628,11 +3180,15 @@ exports.sendContact = functions
   .https
   .onCall((data, context) => {
     const mailOptions = {
-      from: `${data.email}`,
+      from: `LightHouse <noreply@firebase.com>`,
       to: 'go26dev@gmail.com',
     }
-    mailOptions.subject = `${data.name}様からのお問い合わせ`
-    mailOptions.text = `${data.name}様からお問い合わせを頂きました。\n\n メールアドレス： ${data.email} \n\n お問い合わせ内容：${data.content}`
+    mailOptions.subject = `お問い合わせ`
+    mailOptions.html = `
+      <p><b>Name: </b>${data.name}</p>
+      <p><b>Email: </b>${data.email}</p>
+      <p><b>Content: </b>${data.content}</p>
+    `
     mailTransport.sendMail(mailOptions, (err, info) => {
       if (err) {
         console.log(err)
