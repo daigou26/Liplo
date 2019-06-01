@@ -22,8 +22,8 @@
       </v-btn>
     </v-snackbar>
     <v-flex xs12 sm8 md6 offset-sm2 offset-md3 pb-4>
-      <v-card>
-        <v-toolbar flat color="white">
+      <v-card :flat="breakpoint == 'xs'">
+        <v-toolbar flat color="white" class="hidden-xs-only">
           <span class="text-color font-weight-bold subheading">お問い合わせ</span>
         </v-toolbar>
         <v-flex
