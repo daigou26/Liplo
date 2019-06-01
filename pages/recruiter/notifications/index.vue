@@ -14,7 +14,7 @@
       </v-layout>
     </v-flex>
     <v-flex
-      v-else-if="uid"
+      v-else-if="uid && uid != ''"
       xs12
       sm10
       offset-sm1
@@ -154,7 +154,7 @@ export default {
   methods: {
     infiniteHandler($state) {
       if (!this.allNotificationsQueried) {
-        if (!this.isLoading && this.uid != null) {
+        if (!this.isLoading && this.uid != null && this.uid != '') {
           this.count += 1
           this.updateIsLoading(true)
           this.queryNotifications(this.uid)

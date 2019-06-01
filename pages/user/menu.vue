@@ -4,7 +4,12 @@
     row
     wrap
   >
-    <v-flex xs10 offset-xs1 v-if="uid">
+    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
+      <v-layout justify-center>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex xs10 offset-xs1 v-if="uid && uid != ''">
       <!-- user name, image -->
       <v-card flat class="py-3">
         <v-list-tile to="/user/profile">
@@ -76,11 +81,6 @@
         </template>
       </v-list>
     </v-flex>
-    <v-flex v-else xs12 :style="{ height: windowHeight + 'px' }">
-      <v-layout align-center justify-center column fill-height>
-        Now Loading...
-      </v-layout>
-    </v-flex>
   </v-layout>
 </template>
 
@@ -109,6 +109,7 @@ export default {
         { title: 'フィードバック', icon: 'chat_bubble_outline', url: '/user/feedbacks' },
         { title: 'アカウント設定', icon: 'settings', url: '/user/settings/account' },
         { title: '通知設定', icon: 'settings', url: '/user/settings/notifications' },
+        { title: 'サービスの使い方', icon: 'help_outline', url: '/how_to_use' },
         { title: 'フィードバックを送る', icon: 'send', url: '/feedback' },
         { title: 'ログアウト', icon: 'person_outline', url: null },
       ],
@@ -119,7 +120,7 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
-      isRefreshed: state => state.isRefreshed,
+      isRefreshing: state => state.isRefreshing,
       uid: state => state.uid,
       firstName: state => state.profile.firstName,
       lastName: state => state.profile.lastName,

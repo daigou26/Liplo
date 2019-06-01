@@ -9,18 +9,17 @@
       </v-container>
       <footer-content
         v-if="
-          breakpoint != 'xs' &&
-          (routeName == 'jobs-id' ||
+          routeName == 'jobs-id' ||
           routeName == 'companies-id' ||
           (path == '/user/profile' && uid) ||
-          (path.includes('/user/settings') && uid))
+          (path.includes('/user/settings') && uid)
         "
+        class="hidden-xs-only"
       ></footer-content>
       <v-footer
         v-if="
           uid &&
           type == 'user' &&
-          breakpoint == 'xs' &&
           (
             path == '/' ||
             path == '/user/notifications' ||
@@ -31,7 +30,7 @@
             path == '/user/menu/'
           )
         "
-        class="shadow-top"
+        class="shadow-top hidden-sm-and-up"
         fixed
         app
         color="white"

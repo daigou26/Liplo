@@ -15,7 +15,7 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex v-else-if="uid" xs12 class="py-3 break">
+    <v-flex v-else-if="uid && uid != ''" xs12 class="py-3 break">
       <!-- 企業ページ -->
       <v-btn class="ml-3 mt-3" outline color="teal" :to="'/admin/companies/' + companyId">企業ページ</v-btn>
       <!-- 企業の請求一覧 -->

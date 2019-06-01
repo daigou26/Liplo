@@ -16,7 +16,7 @@
       </v-layout>
     </v-flex>
     <v-flex
-      v-else-if="uid"
+      v-else-if="uid && uid != ''"
       xs12
       md10
       offset-md1
@@ -62,7 +62,7 @@
             >
               契約済みの企業
             </div>
-            <v-container v-if="contractedPasses && contractedPasses.length > 0" fluid grid-list-lg mb-4>
+            <v-container v-if="contractedPasses && contractedPasses.length > 0" fluid grid-list-lg px-0 mb-4>
               <v-layout row wrap>
                 <v-flex v-for="(pass, index) in contractedPasses" :key="pass.passId" xs6 md4>
                   <v-card
@@ -117,7 +117,7 @@
             >
               未契約の企業
             </div>
-            <v-container v-if="passes && passes.length > 0" fluid grid-list-lg>
+            <v-container v-if="passes && passes.length > 0" fluid grid-list-lg px-0>
               <v-layout row wrap>
                 <v-flex v-for="(pass, index) in passes" :key="pass.passId" xs6 md4>
                   <v-card

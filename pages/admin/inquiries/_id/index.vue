@@ -15,7 +15,7 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex v-else-if="uid" xs12 class="py-3 break">
+    <v-flex v-else-if="uid && uid != ''" xs12 class="py-3 break">
       <!-- 新規作成 -->
       <div class="pr-3 pt-3 text-xs-right">
         <v-btn @click="dialog = true">企業作成</v-btn>

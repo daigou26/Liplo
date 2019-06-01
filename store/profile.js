@@ -8,6 +8,7 @@ export const state = () => ({
   plan: null,
   type: null,
   points: 0,
+  completionPercentage: 0,
   position: null,
   isEditingPosition: false,
   companyId: null,
@@ -59,6 +60,9 @@ export const mutations = {
   },
   setPoints(state, points) {
     state.points = points
+  },
+  setCompletionPercentage(state, completionPercentage) {
+    state.completionPercentage = completionPercentage
   },
   setPosition(state, position) {
     state.position = position
@@ -215,6 +219,9 @@ export const actions = {
   },
   setType({commit}, type) {
     commit('setType', type)
+  },
+  setCompletionPercentage({commit}, completionPercentage) {
+    commit('setCompletionPercentage', completionPercentage)
   },
   setPoints({commit}, points) {
     commit('setPoints', points)
@@ -761,5 +768,6 @@ export const actions = {
     commit('setCompanyId', '')
     commit('setEmail', '')
     commit('setPoints', 0)
+    commit('setCompletionPercentage', 0)
   }
 }

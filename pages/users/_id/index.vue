@@ -14,7 +14,7 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex xs12 v-else-if="uid">
+    <v-flex xs12 v-else-if="uid && uid != ''">
       <v-flex xs12 class="break">
         <!-- snackbar -->
         <v-snackbar

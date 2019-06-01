@@ -497,7 +497,7 @@ export const actions = {
                 // 生年月日
                 if (typeof birthDate == 'string') {
                   var arr = birthDate.split('-')
-                  birthDate = new Date(arr[0], arr[1] - 1, arr[2]);
+                  birthDate = new Date(arr[0], arr[1] - 1, arr[2])
                 }
                 const profileRef = firestore.collection('users')
                   .doc(user.uid).collection('profile').doc(user.uid)
@@ -659,6 +659,7 @@ export const actions = {
         route.path !== '/inquiry_for_recruiter' &&
         route.path !== '/contact' &&
         route.path !== '/feedback' &&
+        route.path !== '/how_to_use' &&
         route.name !== 'jobs-id' &&
         route.name !== 'companies-id'
       ) {

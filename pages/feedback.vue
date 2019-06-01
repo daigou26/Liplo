@@ -29,7 +29,7 @@
     </v-flex>
     <v-flex v-else xs12 sm8 md6 offset-sm2 offset-md3 pb-4>
       <v-card :flat="$vuetify.breakpoint.xsOnly">
-        <v-toolbar flat color="white">
+        <v-toolbar flat color="white" class="hidden-xs-only">
           <span class="text-color font-weight-bold subheading">フィードバックを送る</span>
         </v-toolbar>
         <v-flex

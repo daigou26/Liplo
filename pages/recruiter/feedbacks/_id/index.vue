@@ -16,7 +16,7 @@
       </v-layout>
     </v-flex>
     <v-flex
-      v-else-if="uid"
+      v-else-if="uid && uid != ''"
       xs12
       md10
       offset-md1
@@ -31,7 +31,7 @@
         }"
         id="feedback-detail"
       >
-        <v-card v-if="uid" flat :to="'/users/' + uid">
+        <v-card v-if="uid && uid != ''" flat :to="'/users/' + uid">
           <v-card-actions class="px-0 pb-4">
             <v-list-tile>
               <v-list-tile-avatar color="grey darken-3">

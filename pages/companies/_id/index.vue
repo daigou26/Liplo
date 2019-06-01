@@ -228,7 +228,7 @@
               <div v-if="!uid" class="pt-3">
                 レビューを見るには、ログインする必要があります。
               </div>
-              <div v-if="uid && reviews" class="pt-3">
+              <div v-if="uid && uid != '' && reviews" class="pt-3">
                 <!-- chart (xs) -->
                 <v-flex xs12 hidden-sm-and-up>
                   <v-tooltip bottom>
@@ -419,7 +419,7 @@
                   </v-flex>
                 </div>
               </div>
-              <div v-if="uid && (reviews == null || reviews.length == 0)" class="pt-2">
+              <div v-if="uid && uid != '' && (reviews == null || reviews.length == 0)" class="pt-2">
                 まだレビューがありません
               </div>
             </div>
