@@ -49,7 +49,7 @@
                   ></v-img>
                 </v-list-tile-avatar>
                 <v-list-tile-content>
-                  <v-list-tile-title class="textColor font-weight-bold">
+                  <v-list-tile-title class="text-color font-weight-bold">
                     {{ user.name }}
                   </v-list-tile-title>
                   <v-list-tile-sub-title>
@@ -83,7 +83,7 @@
                   ></v-img>
                 </v-list-tile-avatar>
                 <v-list-tile-content>
-                  <v-list-tile-title class="textColor font-weight-bold">
+                  <v-list-tile-title class="text-color font-weight-bold">
                     {{ user.name }}
                   </v-list-tile-title>
                   <v-list-tile-sub-title>
@@ -106,7 +106,7 @@
           <!-- タグ -->
           <div>
             <v-flex class="px-3 pt-3 break text-xs-left">
-              <span class="textColor font-weight-bold">
+              <span class="text-color font-weight-bold">
                 タグ
               </span>
               <v-tooltip bottom max-width="180px">
@@ -122,12 +122,12 @@
                 @click="editTagsButtonClicked"
               >
                 <v-icon :size="14">edit</v-icon>
-                <span class="caption edit-text-color">編集する</span>
+                <span class="caption teal-text-color">編集する</span>
               </v-btn>
             </v-flex>
             <v-flex v-show="!isEditingTags" class="px-3 break text-xs-left">
               <v-chip v-if="tags" v-for="tag in tags" :key="tag">{{ tag }}</v-chip>
-              <div v-if="tags == null || tags.length == 0" class="textColor">
+              <div v-if="tags == null || tags.length == 0" class="text-color">
                 タグは設定されていません
               </div>
             </v-flex>
@@ -171,7 +171,7 @@
           <!-- pass -->
           <div v-if="pass && status && (status.pass || status.contracted || status.hired || status.rejected)">
             <v-flex class="px-3 pt-5 break text-xs-left">
-              <span class="textColor font-weight-bold">
+              <span class="text-color font-weight-bold">
                 パス
               </span>
               <v-btn
@@ -182,10 +182,10 @@
                 @click="editPassButtonClicked"
               >
                 <v-icon :size="14">edit</v-icon>
-                <span class="caption edit-text-color">編集する</span>
+                <span class="caption teal-text-color">編集する</span>
               </v-btn>
             </v-flex>
-            <v-flex v-show="!isEditingPass" class="px-3 break text-xs-left textColor">
+            <v-flex v-show="!isEditingPass" class="px-3 break text-xs-left text-color">
               <div class="pt-2 pb-3">
                 タイプ：　<span class="font-weight-bold light-text-color">{{ passTypeText }}</span>
                 <div>
@@ -296,7 +296,7 @@
           <!-- インターン延長 -->
           <div v-if="status && (status.pass || status.contracted || status.hired || status.rejected)">
             <v-flex class="px-3 pt-5 break text-xs-left">
-              <span class="textColor font-weight-bold">
+              <span class="text-color font-weight-bold">
                 インターン延長
               </span>
               <v-tooltip bottom max-width="180px">
@@ -313,10 +313,10 @@
                 @click="editExtendedInternButtonClicked"
               >
                 <v-icon :size="14">edit</v-icon>
-                <span class="caption edit-text-color">編集する</span>
+                <span class="caption teal-text-color">編集する</span>
               </v-btn>
             </v-flex>
-            <v-flex v-show="!isEditingExtendedIntern" class="px-3 break text-xs-left textColor">
+            <v-flex v-show="!isEditingExtendedIntern" class="px-3 break text-xs-left text-color">
               <div v-if="isInternExtended">
                 <div v-if="extendedInternEnd" class="pt-2">
                   終了しています
@@ -395,7 +395,7 @@
                 <!-- タグ -->
                 <div>
                   <v-flex class="px-3 break text-xs-left">
-                    <span class="textColor font-weight-bold">
+                    <span class="text-color font-weight-bold">
                       タグ
                     </span>
                     <v-tooltip bottom max-width="180px">
@@ -411,12 +411,12 @@
                       @click="editTagsButtonClicked"
                     >
                       <v-icon :size="14">edit</v-icon>
-                      <span class="caption edit-text-color">編集する</span>
+                      <span class="caption teal-text-color">編集する</span>
                     </v-btn>
                   </v-flex>
                   <v-flex v-show="!isEditingTags" class="px-3 break text-xs-left">
                     <v-chip v-if="tags && tags.length > 0" v-for="tag in tags" :key="tag">{{ tag }}</v-chip>
-                    <div v-if="tags == null || tags.length == 0" class="textColor">
+                    <div v-if="tags == null || tags.length == 0" class="text-color">
                       タグは設定されていません。
                     </div>
                   </v-flex>
@@ -460,7 +460,7 @@
                 <!-- pass -->
                 <div v-if="pass && status && (status.pass || status.contracted || status.hired || status.rejected)">
                   <v-flex class="px-3 pt-5 break text-xs-left">
-                    <span class="textColor font-weight-bold">
+                    <span class="text-color font-weight-bold">
                       パス
                     </span>
                     <v-btn
@@ -471,10 +471,10 @@
                       @click="editPassButtonClicked"
                     >
                       <v-icon :size="14">edit</v-icon>
-                      <span class="caption edit-text-color">編集する</span>
+                      <span class="caption teal-text-color">編集する</span>
                     </v-btn>
                   </v-flex>
-                  <v-flex v-show="!isEditingPass" class="px-3 break text-xs-left textColor">
+                  <v-flex v-show="!isEditingPass" class="px-3 break text-xs-left text-color">
                     <div class="pt-2 pb-3">
                       タイプ：　<span class="font-weight-bold light-text-color">{{ passTypeText }}</span>
                       <div>
@@ -585,7 +585,7 @@
                 <!-- インターン延長 -->
                 <div v-if="status && (status.pass || status.contracted || status.hired || status.rejected)">
                   <v-flex class="px-3 pt-5 break text-xs-left">
-                    <span class="textColor font-weight-bold">
+                    <span class="text-color font-weight-bold">
                       インターン延長
                     </span>
                     <v-tooltip bottom max-width="180px">
@@ -602,10 +602,10 @@
                       @click="editExtendedInternButtonClicked"
                     >
                       <v-icon :size="14">edit</v-icon>
-                      <span class="caption edit-text-color">編集する</span>
+                      <span class="caption teal-text-color">編集する</span>
                     </v-btn>
                   </v-flex>
-                  <v-flex v-show="!isEditingExtendedIntern" class="px-3 break text-xs-left textColor">
+                  <v-flex v-show="!isEditingExtendedIntern" class="px-3 break text-xs-left text-color">
                     <div v-if="isInternExtended">
                       <div v-if="extendedInternEnd" class="pt-2">
                         終了しています
@@ -709,7 +709,7 @@
                 <!-- pass -->
                 <div v-if="status.intern == true">
                   <div v-if="tempStatus == 'パス'" class="py-3">
-                    <div class="pt-3 pb-3 textColor subheading font-weight-bold">
+                    <div class="pt-3 pb-3 text-color subheading font-weight-bold">
                       パス
                     </div>
                     <div class="pb-3 caption light-text-color">
@@ -804,7 +804,7 @@
                 </div>
                 <!-- feedback -->
                 <div v-if="status.intern" class="py-3">
-                  <div class="pt-3 textColor subheading font-weight-bold">
+                  <div class="pt-3 text-color subheading font-weight-bold">
                     フィードバック
                   </div>
                   <v-form v-model="feedbackValid">
@@ -824,7 +824,7 @@
                       required
                     ></v-textarea>
                   </v-form>
-                  <div class="textColor">
+                  <div class="text-color">
                     フィードバックは後からでも入力することが出来ます。
                   </div>
                 </div>
@@ -903,7 +903,7 @@
                             ></v-img>
                           </v-list-tile-avatar>
                           <v-list-tile-content>
-                            <v-list-tile-title class="textColor font-weight-bold">
+                            <v-list-tile-title class="text-color font-weight-bold">
                               {{ comment.pic.name }}
                             </v-list-tile-title>
                             <v-list-tile-sub-title>
@@ -919,7 +919,7 @@
                           </v-list-tile-content>
                         </v-list-tile>
                       </v-list>
-                      <div class="pb-3 textColor" style="padding-left: 72px">
+                      <div class="pb-3 text-color" style="padding-left: 72px">
                         {{ comment.content }}
                       </div>
                     </v-card>
@@ -1024,7 +1024,7 @@
                 <v-icon>close</v-icon>
               </v-btn>
               <span
-                class="pl-3 textColor font-weight-bold"
+                class="pl-3 text-color font-weight-bold"
                 :class="{
                   'title': $vuetify.breakpoint.smAndUp,
                   'subheading': $vuetify.breakpoint.xsOnly

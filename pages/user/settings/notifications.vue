@@ -62,7 +62,7 @@
         >
           <v-flex xs10 offset-xs1>
             <!-- settings -->
-            <div class="title textColor pt-4">
+            <div class="title text-color pt-4">
               メール受信設定
             </div>
             <div v-if="type == 'user'" class="pt-5">

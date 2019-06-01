@@ -24,7 +24,7 @@
     <v-flex xs12 sm8 md6 offset-sm2 offset-md3 pb-4>
       <v-card>
         <v-toolbar flat color="white">
-          <span class="textColor font-weight-bold subheading">お問い合わせ</span>
+          <span class="text-color font-weight-bold subheading">お問い合わせ</span>
         </v-toolbar>
         <v-flex
           xs12

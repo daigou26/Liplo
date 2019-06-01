@@ -60,7 +60,7 @@
               }"
               :to="'/recruiter/passes/hiring'"
             >
-              <div class="font-weight-bold textColor">
+              <div class="font-weight-bold text-color">
                 入社パス
               </div>
               <div class="py-3 text-xs-center font-weight-bold light-text-color title">
@@ -90,13 +90,13 @@
                 </div>
                 <!-- 先着パスの上限 -->
                 <div class="pt-4">
-                  <span v-if="yearPass.limit == 0" class="textColor">
+                  <span v-if="yearPass.limit == 0" class="text-color">
                     先着パスの上限： <span class="font-weight-bold">0</span>
                   </span>
-                  <span v-else-if="yearPass.limit" class="textColor">
+                  <span v-else-if="yearPass.limit" class="text-color">
                     先着パスの上限： <span class="font-weight-bold">{{ yearPass.limit }}</span>
                   </span>
-                  <span v-else class="textColor">
+                  <span v-else class="text-color">
                     先着パスの上限： なし
                   </span>
                   <v-btn
@@ -128,7 +128,7 @@
                         }"
                         :to="'/recruiter/passes/' + yearPass.year + '?passType=hiring'"
                       >
-                        <div class="font-weight-bold textColor">
+                        <div class="font-weight-bold text-color">
                           入社パス
                         </div>
                         <div class="py-3 text-xs-center font-weight-bold light-text-color title">
@@ -158,7 +158,7 @@
                         }"
                         :to="'/recruiter/passes/' + yearPass.year + '?passType=offer'"
                       >
-                        <div class="font-weight-bold textColor">
+                        <div class="font-weight-bold text-color">
                           内定パス
                         </div>
                         <div class="py-3 text-xs-center font-weight-bold light-text-color title">
@@ -188,7 +188,7 @@
                         }"
                         :to="'/recruiter/passes/' + yearPass.year + '?passType=limited'"
                       >
-                        <div class="font-weight-bold textColor">
+                        <div class="font-weight-bold text-color">
                           先着パス
                         </div>
                         <div class="py-3 text-xs-center font-weight-bold light-text-color title">
@@ -220,7 +220,7 @@
       >
         <v-card class="px-3 py-4">
           <div class="text-xs-center">
-            <div class="textColor">
+            <div class="text-color">
               パスの発行数の確認や先着パスの上限を設定したい年度を追加してください
             </div>
             <v-btn
@@ -254,7 +254,7 @@
             <v-icon>close</v-icon>
           </v-btn>
           <span
-            class="pl-3 textColor font-weight-bold"
+            class="pl-3 text-color font-weight-bold"
             :class="{
               'title': $vuetify.breakpoint.smAndUp,
               'subheading': $vuetify.breakpoint.xsOnly
@@ -335,7 +335,7 @@
             <v-icon>close</v-icon>
           </v-btn>
           <span
-            class="pl-3 textColor font-weight-bold"
+            class="pl-3 text-color font-weight-bold"
             :class="{
               'title': $vuetify.breakpoint.smAndUp,
               'subheading': $vuetify.breakpoint.xsOnly
@@ -407,7 +407,7 @@
             <v-icon>close</v-icon>
           </v-btn>
           <span
-            class="pl-3 textColor font-weight-bold"
+            class="pl-3 text-color font-weight-bold"
             :class="{
               'title': $vuetify.breakpoint.smAndUp,
               'subheading': $vuetify.breakpoint.xsOnly

@@ -17,7 +17,7 @@
     </v-flex>
     <v-flex v-else-if="uid" xs12>
       <v-flex xs12 sm10 offset-sm1>
-        <div class="title textColor font-weight-bold py-3">
+        <div class="title text-color font-weight-bold py-3">
           求人を更新
         </div>
       </v-flex>
@@ -131,7 +131,7 @@
               type="number"
               required
             ></v-text-field>
-            <p class="textColor" style="font-size: 12px;">
+            <p class="text-color" style="font-size: 12px;">
               パスを出すまでの試用期間。期間は1ヶ月程度を推奨しています。試用期間が終わった後にインターンを延長することができます。
             </p>
           </v-flex>
@@ -659,11 +659,11 @@ export default {
       }
 
       var worktime = {
-        begin: Number(this.tempWorktime.begin),
-        end: Number(this.tempWorktime.end),
+        begin: this.tempWorktime.begin,
+        end: this.tempWorktime.end,
       }
 
-      const status = this.tempStatus == '公開中' ? 'published' : 'draft'
+      const status = this.tempStatus == '公開中' ? 'published' : 'private'
 
       this.updateJob({
         params: this.$route.params,

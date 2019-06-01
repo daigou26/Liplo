@@ -124,7 +124,7 @@ export const actions = {
                   .doc(chatId)
                   .update(data)
                   .catch(err => {
-                    console.log('Error getting document', err)
+                    console.log('Error updating document', err)
                   })
               }
 

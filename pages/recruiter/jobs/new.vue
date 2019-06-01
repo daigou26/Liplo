@@ -5,10 +5,10 @@
     wrap
   >
     <v-flex v-if="uid" xs12 sm10 offset-sm1 pb-3>
-      <div class="title textColor font-weight-bold py-3">
+      <div class="title text-color font-weight-bold py-3">
         求人を投稿
       </div>
-      <div class="textColor">
+      <div class="text-color">
         <div>
           このページで入力した情報に加えて、企業情報が募集ページに表示されます。
         </div>
@@ -124,7 +124,7 @@
             type="number"
             required
           ></v-text-field>
-          <p class="textColor pt-1" style="font-size: 12px;">
+          <p class="text-color pt-1" style="font-size: 12px;">
             パスを出すまでの試用期間。期間は1ヶ月から2ヶ月ほどを推奨しています。試用期間が終わった後にインターンを延長することができます。
           </p>
         </v-flex>
@@ -486,8 +486,8 @@ export default {
       }
 
       var worktime = {
-        begin: Number(this.worktime.begin),
-        end: Number(this.worktime.end),
+        begin: this.worktime.begin,
+        end: this.worktime.end,
       }
 
       const status = this.status == '公開' ? 'published' : 'draft'

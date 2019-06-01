@@ -17,20 +17,20 @@
       <v-layout row wrap pb-4>
         <v-flex md5 sm6>
           <div class="pb-2">
-            <nuxt-link to="/inquiry_for_recruiter" class="font-weight-bold textColor">採用担当者様はこちら</nuxt-link>
+            <nuxt-link to="/inquiry_for_recruiter" class="font-weight-bold text-color">採用担当者様はこちら</nuxt-link>
           </div>
           <div class="pb-2">
-            <nuxt-link to="/contact" class="font-weight-bold textColor">お問い合わせ</nuxt-link>
+            <nuxt-link to="/contact" class="font-weight-bold text-color">お問い合わせ</nuxt-link>
           </div>
           <div class="pb-2">
-            <nuxt-link to="/feedback" class="font-weight-bold textColor">フィードバックを送る</nuxt-link>
+            <nuxt-link to="/feedback" class="font-weight-bold text-color">フィードバックを送る</nuxt-link>
           </div>
           <div class="pb-2">
-            <nuxt-link to="/" class="font-weight-bold textColor">運営会社</nuxt-link>
+            <nuxt-link to="/" class="font-weight-bold text-color">運営会社</nuxt-link>
           </div>
         </v-flex>
         <v-flex md5 sm6>
-          <div class="pb-3 textColor">
+          <div class="pb-3 text-color">
             <v-btn flat small icon color="grey" class="ma-0 mr-3">
               <v-icon>fab fa-facebook</v-icon>
             </v-btn>
@@ -39,10 +39,10 @@
             </v-btn>
           </div>
           <div class="pb-2">
-            <nuxt-link to="/" class="font-weight-bold textColor">利用規約</nuxt-link>
+            <nuxt-link to="/" class="font-weight-bold text-color">利用規約</nuxt-link>
           </div>
           <div class="pb-2">
-            <nuxt-link to="/" class="font-weight-bold textColor">プライバシー</nuxt-link>
+            <nuxt-link to="/" class="font-weight-bold text-color">プライバシー</nuxt-link>
           </div>
         </v-flex>
       </v-layout>

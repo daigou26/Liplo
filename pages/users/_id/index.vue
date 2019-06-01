@@ -50,7 +50,7 @@
                 <img v-if="userImageUrl" :src="userImageUrl" alt="avatar">
                 <v-icon v-else :size="60">person</v-icon>
               </v-avatar>
-              <div class="title textColor font-weight-bold break pl-4 ">
+              <div class="title text-color font-weight-bold break pl-4 ">
                 {{ name }}
               </div>
             </v-flex>
@@ -73,7 +73,7 @@
                   'pl-5': $vuetify.breakpoint.smAndUp
                 }"
               >
-                <div class="textColor font-weight-bold">志望する職種</div>
+                <div class="text-color font-weight-bold">志望する職種</div>
               </v-flex>
               <v-flex
                 v-if="desiredOccupations"
@@ -96,7 +96,7 @@
               </v-flex>
             </v-layout>
             <div class="hidden-sm-and-up pl-4">
-              <div class="textColor font-weight-bold">志望する職種</div>
+              <div class="text-color font-weight-bold">志望する職種</div>
               <div>
                 <v-chip v-if="desiredOccupations.engineer">
                   <span>エンジニア</span>
@@ -183,14 +183,14 @@
                     </v-flex>
                     <v-flex xs8 sm9 lg10 class="pl-4 break">
                       <div class="font-weight-bold body-text">{{ item.title }}</div>
-                      <p　class="textColor return">{{ item.content }}</p>
+                      <p　class="text-color return">{{ item.content }}</p>
                       <a :href="item.url">{{ item.url }}</a>
                     </v-flex>
                   </div>
                   <div v-else class="pt-4">
                     <v-img :src="item.imageUrl" aspect-ratio="1.5" max-height="100" max-width="160"></v-img>
                     <div class="font-weight-bold body-text">{{ item.title }}</div>
-                    <div　class="textColor return pb-2">{{ item.content }}</div>
+                    <div　class="text-color return pb-2">{{ item.content }}</div>
                     <a :href="item.url">{{ item.url }}</a>
                   </div>
                 </template>
@@ -243,7 +243,7 @@
               <v-list class="pl-4">
                 <template v-for="(item, index) in links">
                   <div class="py-2">
-                    <div class="font-weight-bold body-2 textColor">
+                    <div class="font-weight-bold body-2 text-color">
                       {{ item.title }}
                     </div>
                     <a :href="item.url">{{ item.url }}</a>

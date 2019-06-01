@@ -18,6 +18,7 @@
       <v-data-table
         :headers="headers"
         :items="candidates"
+        :pagination.sync="pagination"
         class="elevation-1"
         hide-actions
         no-data-text="候補者がいません。"
@@ -109,6 +110,10 @@ export default {
         { text: 'タグ', value: 'tags', sortable: false},
         { text: '更新日', value: 'timestamp' },
       ],
+      pagination: {
+        sortBy: 'timestamp',
+        descending: true,
+      },
     }
   },
   computed: {

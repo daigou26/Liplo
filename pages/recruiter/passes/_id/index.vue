@@ -15,7 +15,7 @@
       </v-layout>
     </v-flex>
     <v-flex v-else-if="uid" xs12>
-      <div class="textColor title pa-3 font-weight-bold">
+      <div class="text-color title pa-3 font-weight-bold">
         <span v-if="paramsId != 'hiring'">{{ paramsId }}年度 </span>
         <span v-if="!passType && paramsId == 'hiring'">入社パス（未使用）</span>
         <span v-else-if="passType == 'hiring'">入社パス</span>
@@ -38,6 +38,7 @@
         id="candidates"
         :headers="headers"
         :items="passes"
+        :pagination.sync="pagination"
         class="elevation-1 mt-2"
         hide-actions
         no-data-text="候補者がいません。"
@@ -115,8 +116,12 @@ export default {
         { text: '職種', value: 'occupation', sortable: false },
         { text: '使用済みか', value: 'isAccepted', sortable: false },
         { text: '契約済みか', value: 'isContracted', sortable: false},
-        { text: '使用日', value: 'acceptedDate', sortable: false },
+        { text: '使用日', value: 'acceptedDate' },
       ],
+      pagination: {
+        sortBy: 'acceptedDate',
+        descending: true,
+      },
     }
   },
   computed: {

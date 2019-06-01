@@ -50,7 +50,7 @@
         </div>
         <!-- title -->
         <div
-          class="pt-1 font-weight-bold textColor"
+          class="pt-1 font-weight-bold text-color"
           :class="{
             'job-title': $vuetify.breakpoint.mdAndUp,
             'headline': $vuetify.breakpoint.smOnly,
@@ -61,7 +61,7 @@
         </div>
         <!-- タグ -->
         <div
-          class="pt-3 text-xs-left caption textColor font-weight-bold"
+          class="pt-3 text-xs-left caption text-color font-weight-bold"
         >
           <v-chip outline small color="teal">{{ occupationText(occupation) }}</v-chip>
           <template v-if="value" v-for="(value, feature, index) in features">
@@ -88,7 +88,7 @@
             <!-- mission -->
             <div v-if="mission" class="py-4">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -103,7 +103,7 @@
             <!-- vision -->
             <div v-if="vision" class="py-4">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -118,7 +118,7 @@
             <!-- value -->
             <div v-if="value" class="py-4">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -133,7 +133,7 @@
             <!-- culture -->
             <div v-if="culture" class="py-4">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -148,7 +148,7 @@
             <!-- what -->
             <div v-if="what" class="py-4">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -167,14 +167,14 @@
                         </v-flex>
                         <v-flex xs8 sm9 lg10 class="pl-4 break">
                           <div class="font-weight-bold body-text">{{ service.title }}</div>
-                          <p　class="textColor return">{{ service.content }}</p>
+                          <p　class="text-color return">{{ service.content }}</p>
                           <a :href="service.url">{{ service.url }}</a>
                         </v-flex>
                       </div>
                       <div v-else class="pt-4">
                         <v-img :src="service.imageUrl" aspect-ratio="1.5" max-height="100" max-width="160"></v-img>
                         <div class="font-weight-bold body-text">{{ service.title }}</div>
-                        <div　class="textColor return pb-2">{{ service.content }}</div>
+                        <div　class="text-color return pb-2">{{ service.content }}</div>
                         <a :href="service.url">{{ service.url }}</a>
                       </div>
                   </template>
@@ -184,7 +184,7 @@
             <!-- why -->
             <div v-if="why" class="py-4">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -199,7 +199,7 @@
             <!-- 福利厚生 -->
             <div v-if="welfare" class="py-4">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -214,7 +214,7 @@
             <!-- 仕事について -->
             <div class="py-4">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -227,7 +227,7 @@
               </div>
               <!-- 期間 -->
               <div v-if="period" class="py-3">
-                <p class="job-sub-title font-weight-bold textColor">
+                <p class="job-sub-title font-weight-bold text-color">
                   パスを出すまでのインターン期間
                 </p>
                 <div>
@@ -236,7 +236,7 @@
               </div>
               <!-- 勤務条件 -->
               <div v-if="workweek" class="py-3">
-                <p class="job-sub-title font-weight-bold textColor">
+                <p class="job-sub-title font-weight-bold text-color">
                   勤務条件
                 </p>
                 <div>
@@ -246,7 +246,7 @@
               </div>
               <!-- 勤務可能日 -->
               <div v-if="workday != null" class="py-3">
-                <p class="job-sub-title font-weight-bold textColor">
+                <p class="job-sub-title font-weight-bold text-color">
                   勤務可能日
                 </p>
                 <div>
@@ -255,7 +255,7 @@
               </div>
               <!-- 勤務可能時間 -->
               <div v-if="worktime" class="py-3">
-                <p class="job-sub-title font-weight-bold textColor">
+                <p class="job-sub-title font-weight-bold text-color">
                   勤務可能時間
                 </p>
                 <div>
@@ -264,7 +264,7 @@
               </div>
               <!-- 給与 -->
               <div v-if="wage" class="py-3">
-                <p class="job-sub-title font-weight-bold textColor">
+                <p class="job-sub-title font-weight-bold text-color">
                   給与
                 </p>
                 <div>
@@ -273,7 +273,7 @@
               </div>
               <!-- 必要スキル -->
               <div v-if="requiredSkills" class="py-3">
-                <p class="job-sub-title font-weight-bold textColor">
+                <p class="job-sub-title font-weight-bold text-color">
                   必要スキル
                 </p>
                 <div>
@@ -282,7 +282,7 @@
               </div>
               <!-- あると望ましいスキル -->
               <div v-if="idealSkills" class="py-3">
-                <p class="job-sub-title font-weight-bold textColor">
+                <p class="job-sub-title font-weight-bold text-color">
                   あると望ましいスキル
                 </p>
                 <div>
@@ -291,7 +291,7 @@
               </div>
               <!-- 開発環境 -->
               <div v-if="environment" class="py-3">
-                <p class="job-sub-title font-weight-bold textColor">
+                <p class="job-sub-title font-weight-bold text-color">
                   開発環境
                 </p>
                 <div>
@@ -302,7 +302,7 @@
             <!-- 求める人物像 -->
             <div v-if="idealCandidate" class="py-4">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -317,7 +317,7 @@
             <!-- review -->
             <div class="py-4 hidden-lg-and-up">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -526,7 +526,7 @@
             <!-- 企業情報 -->
             <div class="py-4 hidden-lg-and-up">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -569,7 +569,7 @@
           <v-flex xs4 pa-5 hidden-md-and-down>
             <!-- 企業情報 -->
             <div class="py-4">
-              <p class="title font-weight-bold textColor">
+              <p class="title font-weight-bold text-color">
                 企業情報
               </p>
               <div v-if="url || foundedDate || location || employeesCount">
@@ -604,7 +604,7 @@
             </div>
             <!-- review -->
             <div class="py-4">
-              <p class="title font-weight-bold textColor">
+              <p class="title font-weight-bold text-color">
                 レビュー
               </p>
               <div v-if="!uid">
@@ -754,7 +754,7 @@
                     ></v-img>
                   </v-list-tile-avatar>
                   <v-list-tile-content>
-                    <v-list-tile-title class="textColor font-weight-bold">
+                    <v-list-tile-title class="text-color font-weight-bold">
                       <span v-if="xsWidth" style="font-size:12px">{{ companyName }}</span>
                       <span v-else>{{ companyName }}</span>
                     </v-list-tile-title>
@@ -768,7 +768,7 @@
                           half-increments
                           readonly
                         />
-                        <span class="pl-1 textColor">{{ reviews.rating.count }}</span>
+                        <span class="pl-1 text-color">{{ reviews.rating.count }}</span>
                       </v-card-actions>
                     </v-list-tile-sub-title>
                   </v-list-tile-content>
@@ -793,7 +793,8 @@
               v-if="uid"
               large
               :disabled="isCandidate"
-              class="warning"
+              class="white--text"
+              color="orange lighten-1"
               id="job-apply"
               @click="applyButtonClicked"
             >
@@ -834,7 +835,7 @@
               >
                 <v-icon>close</v-icon>
               </v-toolbar-side-icon>
-              <v-toolbar-title class="font-weight-bold textColor">
+              <v-toolbar-title class="font-weight-bold text-color">
                 レビュー{{ reviews.rating.count }}件
               </v-toolbar-title>
             </v-toolbar>
@@ -906,7 +907,7 @@
                 <v-icon v-show="reviewsDialog">arrow_back</v-icon>
                 <v-icon v-show="!reviewsDialog">close</v-icon>
               </v-toolbar-side-icon>
-              <v-toolbar-title class="font-weight-bold textColor">
+              <v-toolbar-title class="font-weight-bold text-color">
                 このユーザーが記入したレビュー
               </v-toolbar-title>
             </v-toolbar>
@@ -948,7 +949,7 @@
                             readonly
                             class="pt-2"
                           />
-                          <p class="pt-3 caption textColor">
+                          <p class="pt-3 caption text-color">
                             職種：　{{ item.occupation }}
                           </p>
                           <p class="pb-3 body-text return">{{ item.content }}</p>

@@ -57,17 +57,17 @@
                       ></v-img>
                     </v-list-tile-avatar>
                     <v-list-tile-content>
-                      <v-list-tile-title class="textColor font-weight-bold return">{{ companyName }}</v-list-tile-title>
+                      <v-list-tile-title class="text-color font-weight-bold return">{{ companyName }}</v-list-tile-title>
                     </v-list-tile-content>
                   </v-list-tile>
                 </v-card-actions>
               </v-card>
               <div class="pt-3">
-                <span class="font-weight-bold textColor">良かった点</span>
+                <span class="font-weight-bold text-color">良かった点</span>
                 <p v-if="goodPoint" class="light-text-color body-text return">{{ goodPoint }}</p>
               </div>
               <div class="py-3">
-                <span class="font-weight-bold textColor">アドバイス</span>
+                <span class="font-weight-bold text-color">アドバイス</span>
                 <p v-if="advice" class="light-text-color body-text return">{{ advice }}</p>
               </div>
             </div>

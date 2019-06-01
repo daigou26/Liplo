@@ -40,23 +40,23 @@
                 ></v-img>
               </v-list-tile-avatar>
               <v-list-tile-content>
-                <v-list-tile-title class="textColor font-weight-bold return">{{ userName }}</v-list-tile-title>
+                <v-list-tile-title class="text-color font-weight-bold return">{{ userName }}</v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
           </v-card-actions>
         </v-card>
-        <div class="textColor pt-3">
+        <div class="text-color pt-3">
           職種：　{{ occupation }}
         </div>
-        <div class="pt-2 textColor">
+        <div class="pt-2 text-color">
           インターン終了時期：　{{ timestamp }}
         </div>
         <div class="pt-5">
-          <span class="font-weight-bold textColor">良かった点</span>
+          <span class="font-weight-bold text-color">良かった点</span>
           <p v-if="goodPoint" class="light-text-color body-text return">{{ goodPoint }}</p>
         </div>
         <div class="py-3">
-          <span class="font-weight-bold textColor">アドバイス</span>
+          <span class="font-weight-bold text-color">アドバイス</span>
           <p v-if="advice" class="light-text-color body-text return">{{ advice }}</p>
         </div>
       </div>

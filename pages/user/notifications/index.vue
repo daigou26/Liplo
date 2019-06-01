@@ -37,7 +37,7 @@
             'py-0': $vuetify.breakpoint.xsOnly,
           }"
         >
-          <div class="textColor title pb-4 hidden-xs-only">
+          <div class="text-color title pb-4 hidden-xs-only">
             通知
           </div>
           <div class="text-xs-right">
@@ -61,11 +61,11 @@
                 :to="notification.url ? notification.url : ''"
                 @click="updateIsUnread({uid: uid, notificationId: notification.notificationId})"
               >
-                <div class="textColor text-xs-right caption pr-2 pt-2">
+                <div class="text-color text-xs-right caption pr-2 pt-2">
                   {{ notification.isUnread ? '未読' : '既読' }}
                 </div>
-                <div class="textColor return px-3 py-2">{{ notification.content }}</div>
-                <div class="textColor caption text-xs-right pr-2 pb-2">
+                <div class="text-color return px-3 py-2">{{ notification.content }}</div>
+                <div class="text-color caption text-xs-right pr-2 pb-2">
                   {{ notification.timestamp }}
                 </div>
               </v-card>
@@ -83,7 +83,7 @@
             }"
           >
             <div class="text-xs-center">
-              <div class="headline textColor">通知がありません</div>
+              <div class="headline text-color">通知がありません</div>
               <div class="pt-3 light-text-color">
                 通知がある場合はこちらに表示されます
               </div>

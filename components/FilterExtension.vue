@@ -268,18 +268,18 @@ export default {
     jobsFilterTextColor: function() {
       return function(filterType) {
         if (filterType == 'occupation') {
-          return this.isJobsOccupationFilterActive ? 'whiteTextColor' : 'textColor'
+          return this.isJobsOccupationFilterActive ? 'white-text-color' : 'text-color'
         } else if (filterType == 'features') {
-          return this.isFeaturesFilterActive ? 'whiteTextColor' : 'textColor'
+          return this.isFeaturesFilterActive ? 'white-text-color' : 'text-color'
         } else if (filterType == 'workweek') {
-          return this.isWorkweekFilterActive ? 'whiteTextColor' : 'textColor'
+          return this.isWorkweekFilterActive ? 'white-text-color' : 'text-color'
         }
       }
     },
     usersFilterTextColor: function() {
       return function(filterType) {
         if (filterType == 'occupation') {
-          return this.isUsersOccupationFilterActive ? 'whiteTextColor' : 'textColor'
+          return this.isUsersOccupationFilterActive ? 'white-text-color' : 'text-color'
         }
       }
     },

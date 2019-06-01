@@ -5,7 +5,7 @@
     wrap
   >
     <v-flex v-if="uid" xs12 sm10 offset-sm1 class="py-4 px-4 break">
-      <div class="title textColor font-weight-bold py-3">
+      <div class="title text-color font-weight-bold py-3">
         企業を作成
       </div>
       <v-form v-model="valid" class="pb-5">

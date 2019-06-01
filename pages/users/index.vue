@@ -44,7 +44,7 @@
                   ></v-img>
                 </v-list-tile-avatar>
                 <v-list-tile-content>
-                  <v-list-tile-title class="pl-3 textColor font-weight-bold">
+                  <v-list-tile-title class="pl-3 text-color font-weight-bold">
                     {{ user.lastName + ' ' + user.firstName }}
                   </v-list-tile-title>
                 </v-list-tile-content>
@@ -109,7 +109,7 @@
                       <div >自己紹介</div>
                     </v-flex>
                     <v-flex v-if="user.selfIntro" xs8 offset-xs1 px-2 pt-4>
-                      <div class="textColor break">
+                      <div class="text-color break">
                         {{ user.selfIntro.substr(0, 100) }}
                         {{ user.selfIntro.length > 100 ? '...' : '' }}
                       </div>
@@ -141,7 +141,7 @@
       >
         <div class="text-xs-center">
           <div
-            class="textColor"
+            class="text-color"
             :class="{
               'title': $vuetify.breakpoint.xsOnly,
               'headline': $vuetify.breakpoint.smAndUp,

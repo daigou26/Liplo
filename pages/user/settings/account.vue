@@ -63,7 +63,7 @@
           <v-flex xs10 offset-xs1>
             <!-- スカウト設定 -->
             <div v-if="type == 'user'" class="pt-5">
-              <div class="title textColor pb-4">
+              <div class="title text-color pb-4">
                 スカウトについて
               </div>
               <v-checkbox
@@ -79,7 +79,7 @@
             </div>
 
             <!-- メアド変更 -->
-            <div class="title textColor pt-5">
+            <div class="title text-color pt-5">
               メールアドレスを変更する
             </div>
             <div class="pt-3">
@@ -91,7 +91,7 @@
               </v-btn>
             </div>
             <!-- アカウント削除 -->
-            <div class="title textColor pt-5">
+            <div class="title text-color pt-5">
               アカウントの削除
             </div>
             <div class="text-xs-left pt-4">
@@ -109,7 +109,7 @@
         >
           <v-card>
             <v-toolbar flat color="orange lighten-2">
-              <span class="textColor font-weight-bold subheading">メールアドレス変更</span>
+              <span class="text-color font-weight-bold subheading">メールアドレス変更</span>
             </v-toolbar>
             <div class="pa-4">
               <div class="pb-4">
@@ -180,7 +180,7 @@
         >
           <v-card>
             <v-toolbar flat color="orange lighten-2">
-              <span class="textColor font-weight-bold subheading">本当に削除しますか？</span>
+              <span class="text-color font-weight-bold subheading">本当に削除しますか？</span>
             </v-toolbar>
             <div class="pa-4">
               <div v-if="type == 'user'" class="pb-4">

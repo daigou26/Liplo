@@ -34,7 +34,7 @@
     >
       <v-card v-if="!recruiterSignUpDialog">
         <v-toolbar flat>
-          <span class="textColor font-weight-bold subheading">メールアドレスの確認をお願いします</span>
+          <span class="text-color font-weight-bold subheading">メールアドレスの確認をお願いします</span>
         </v-toolbar>
         <div class="pa-4">
           <div>
@@ -98,16 +98,16 @@
     <v-spacer></v-spacer>
     <v-toolbar-items>
       <v-btn flat active-class to="/users" class="hidden-xs-only">
-        <span class="font-weight-bold textColor">ユーザー検索</span>
+        <span class="font-weight-bold text-color">ユーザー検索</span>
       </v-btn>
       <!-- notifications -->
       <v-btn flat class="hidden-xs-only" @click="notificationsButtonClicked">
-        <span v-if="!hasNewNotification" class="font-weight-bold textColor">通知</span>
+        <span v-if="!hasNewNotification" class="font-weight-bold text-color">通知</span>
         <v-badge v-else overlap color="red">
           <template v-slot:badge>
             <span></span>
           </template>
-          <span class="font-weight-bold textColor">通知</span>
+          <span class="font-weight-bold text-color">通知</span>
         </v-badge>
       </v-btn>
       <v-menu
@@ -149,11 +149,11 @@
                 :to="notification.url ? notification.url : ''"
                 @click="updateIsUnread({uid: uid, notificationId: notification.notificationId})"
               >
-                <div class="textColor text-xs-right caption pr-2 pt-2">
+                <div class="text-color text-xs-right caption pr-2 pt-2">
                   {{ notification.isUnread ? '未読' : '既読' }}
                 </div>
-                <div class="textColor return px-3 py-2">{{ notification.content }}</div>
-                <div class="textColor text-xs-right caption pr-2 pb-2">
+                <div class="text-color return px-3 py-2">{{ notification.content }}</div>
+                <div class="text-color text-xs-right caption pr-2 pb-2">
                   {{ notification.timestamp }}
                 </div>
               </v-card>
@@ -258,7 +258,7 @@
                   @click="dropdownMenu=false"
                 >
                   <v-list-tile-content>
-                    <v-list-tile-title class="textColor">ホーム</v-list-tile-title>
+                    <v-list-tile-title class="text-color">ホーム</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
                 <!-- 登録 -->
@@ -268,7 +268,7 @@
                   @click="signUpButtonClicked"
                 >
                   <v-list-tile-content>
-                    <v-list-tile-title class="textColor">登録する</v-list-tile-title>
+                    <v-list-tile-title class="text-color">登録する</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
                 <!-- ログイン -->
@@ -278,7 +278,7 @@
                   @click="signInButtonClicked"
                 >
                   <v-list-tile-content>
-                    <v-list-tile-title class="textColor">ログイン</v-list-tile-title>
+                    <v-list-tile-title class="text-color">ログイン</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
                 <!-- 利用規約 -->
@@ -287,7 +287,7 @@
                   @click="dropdownMenu=false"
                 >
                   <v-list-tile-content>
-                    <v-list-tile-title class="textColor">利用規約</v-list-tile-title>
+                    <v-list-tile-title class="text-color">利用規約</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
                 <!-- プライバシー -->
@@ -296,7 +296,7 @@
                   @click="dropdownMenu=false"
                 >
                   <v-list-tile-content>
-                    <v-list-tile-title class="textColor">プライバシー</v-list-tile-title>
+                    <v-list-tile-title class="text-color">プライバシー</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
                 <!-- 運営会社 -->
@@ -305,7 +305,7 @@
                   @click="dropdownMenu=false"
                 >
                   <v-list-tile-content>
-                    <v-list-tile-title class="textColor">運営会社</v-list-tile-title>
+                    <v-list-tile-title class="text-color">運営会社</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
                 <!-- フィードバック -->
@@ -315,7 +315,7 @@
                   @click="dropdownMenu=false"
                 >
                   <v-list-tile-content>
-                    <v-list-tile-title class="textColor">フィードバックを送る</v-list-tile-title>
+                    <v-list-tile-title class="text-color">フィードバックを送る</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
               </v-list>
@@ -355,22 +355,22 @@
         active-class
         class="pr-4 hidden-xs-only"
       >
-        <span v-if="!hasNewMessage" class="font-weight-bold textColor">メッセージ</span>
+        <span v-if="!hasNewMessage" class="font-weight-bold text-color">メッセージ</span>
         <v-badge v-else overlap color="red">
           <template v-slot:badge>
             <span></span>
           </template>
-          <span class="font-weight-bold textColor">メッセージ</span>
+          <span class="font-weight-bold text-color">メッセージ</span>
         </v-badge>
       </v-btn>
       <!-- notifications -->
       <v-btn v-if="uid" flat class="hidden-xs-only" @click="notificationsButtonClicked">
-        <span v-if="!hasNewNotification" class="font-weight-bold textColor">通知</span>
+        <span v-if="!hasNewNotification" class="font-weight-bold text-color">通知</span>
         <v-badge v-else overlap color="red">
           <template v-slot:badge>
             <span></span>
           </template>
-          <span class="font-weight-bold textColor">通知</span>
+          <span class="font-weight-bold text-color">通知</span>
         </v-badge>
       </v-btn>
       <v-menu
@@ -397,11 +397,11 @@
                 :to="notification.url ? notification.url : ''"
                 @click="updateIsUnread({uid: uid, notificationId: notification.notificationId})"
               >
-                <div class="textColor text-xs-right caption pr-2 pt-2">
+                <div class="text-color text-xs-right caption pr-2 pt-2">
                   {{ notification.isUnread ? '未読' : '既読' }}
                 </div>
-                <div class="textColor return px-3 py-2">{{ notification.content }}</div>
-                <div class="textColor text-xs-right caption pr-2 pb-2">
+                <div class="text-color return px-3 py-2">{{ notification.content }}</div>
+                <div class="text-color text-xs-right caption pr-2 pb-2">
                   {{ notification.timestamp }}
                 </div>
               </v-card>
@@ -721,7 +721,7 @@
             <v-icon>close</v-icon>
           </v-btn>
           <span
-            class="pl-3 textColor font-weight-bold"
+            class="pl-3 text-color font-weight-bold"
             :class="{
               'title': $vuetify.breakpoint.smAndUp,
               'subheading': $vuetify.breakpoint.xsOnly

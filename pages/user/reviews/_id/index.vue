@@ -57,7 +57,7 @@
                       ></v-img>
                     </v-list-tile-avatar>
                     <v-list-tile-content>
-                      <v-list-tile-title class="textColor font-weight-bold return">{{ companyName }}</v-list-tile-title>
+                      <v-list-tile-title class="text-color font-weight-bold return">{{ companyName }}</v-list-tile-title>
                     </v-list-tile-content>
                   </v-list-tile>
                 </v-card-actions>
@@ -168,7 +168,7 @@
                 </v-flex>
               </div>
               <div class="py-5">
-                <span class="font-weight-bold textColor">コメント</span>
+                <span class="font-weight-bold text-color">コメント</span>
                 <p class="font-weight-medium body-text light-text-color return">{{ content }}</p>
               </div>
             </div>

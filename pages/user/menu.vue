@@ -17,11 +17,11 @@
           </v-list-tile-avatar>
           <v-list-tile-content>
             <v-list-tile-title
-              class="textColor font-weight-bold"
+              class="text-color font-weight-bold"
             >
               {{ lastName + ' ' + firstName }}
             </v-list-tile-title>
-            <v-list-tile-sub-title class="caption textColor">
+            <v-list-tile-sub-title class="caption text-color">
               プロフィールを確認＆編集
             </v-list-tile-sub-title>
           </v-list-tile-content>

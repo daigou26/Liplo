@@ -29,7 +29,7 @@
         <v-flex sm8 class="border">
           <v-card flat class="pa-3 border">
             <div class="text-xs-center">
-              <div class="headline textColor">メッセージがありません</div>
+              <div class="headline text-color">メッセージがありません</div>
               <div class="pt-3 light-text-color">
                 採用担当者から連絡がある場合はこちらに表示されます
               </div>

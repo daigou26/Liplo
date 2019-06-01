@@ -37,10 +37,10 @@
             現在、解約されているため、操作が制限されます
           </v-alert>
           <v-card :flat="flat">
-            <div class="title textColor font-weight-bold pa-4">
+            <div class="title text-color font-weight-bold pa-4">
               候補者
             </div>
-            <div v-if="!isCurrentCandidatesExist" class="textColor text-xs-center pb-4">
+            <div v-if="!isCurrentCandidatesExist" class="text-color text-xs-center pb-4">
               現在、候補者がいません
             </div>
             <bar-chart
@@ -101,7 +101,7 @@
                   :data="reviewsChartData"
                   :options="reviewsChartOptions"
                 />
-                <div v-else class="textColor">
+                <div v-else class="text-color">
                   まだデータがありません
                 </div>
               </div>
@@ -140,7 +140,7 @@
                   :data="feedbacksChartData"
                   :options="feedbacksChartOptions"
                 />
-                <div v-else class="textColor">
+                <div v-else class="text-color">
                   まだデータがありません
                 </div>
               </div>

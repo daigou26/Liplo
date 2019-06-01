@@ -43,7 +43,7 @@
             'px-3': $vuetify.breakpoint.mdOnly,
           }"
         >
-          <v-flex md10 sm8 xs10 offset-md1 offset-sm2 offset-xs1 class="textColor">
+          <v-flex md10 sm8 xs10 offset-md1 offset-sm2 offset-xs1 class="text-color">
             <!-- プラン変更 -->
             <div class="py-5">
               <div
@@ -94,7 +94,7 @@
         >
           <v-card>
             <v-toolbar flat color="orange lighten-2">
-              <span class="textColor font-weight-bold subheading">メールアドレス変更</span>
+              <span class="text-color font-weight-bold subheading">メールアドレス変更</span>
             </v-toolbar>
             <div class="pa-4">
               <div class="pb-4">

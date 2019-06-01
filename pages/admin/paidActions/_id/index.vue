@@ -23,13 +23,13 @@
       <div  class="pt-4" :class="{'px-5': $vuetify.breakpoint.smAndUp}">
         <div class="pt-4">
           <div>
-            <span class="textColor font-weight-bold">
+            <span class="text-color font-weight-bold">
               企業名:
             </span>
             <span class="light-text-color pl-3">{{ companyName }}</span>
           </div>
           <div>
-            <span class="textColor font-weight-bold">
+            <span class="text-color font-weight-bold">
               請求先メールアドレス:
             </span>
             <span class="light-text-color pl-3">{{ invoiceEmail }}</span>
@@ -37,25 +37,25 @@
         </div>
         <div class="pt-4">
           <div>
-            <span class="textColor font-weight-bold">
+            <span class="text-color font-weight-bold">
               日時:
             </span>
             <span class="light-text-color pl-3">{{ timestamp }}</span>
           </div>
           <div>
-            <span class="textColor font-weight-bold">
+            <span class="text-color font-weight-bold">
               type:
             </span>
             <span class="light-text-color pl-3">{{ type }}</span>
           </div>
           <div>
-            <span class="textColor font-weight-bold">
+            <span class="text-color font-weight-bold">
               無料枠:
             </span>
             <span class="light-text-color pl-3">{{ isFree }}</span>
           </div>
           <div>
-            <span class="textColor font-weight-bold">
+            <span class="text-color font-weight-bold">
               プラン:
             </span>
             <span class="light-text-color pl-3">{{ planText }}</span>
