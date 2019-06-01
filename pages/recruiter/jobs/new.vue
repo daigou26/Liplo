@@ -4,7 +4,7 @@
     white
     wrap
   >
-    <v-flex v-if="uid" xs12 sm10 offset-sm1 pb-3>
+    <v-flex v-if="uid && uid != ''" xs12 sm10 offset-sm1 pb-3>
       <div class="title text-color font-weight-bold py-3">
         求人を投稿
       </div>

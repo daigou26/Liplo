@@ -15,7 +15,7 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex v-else-if="uid" xs12>
+    <v-flex v-else-if="uid && uid != ''" xs12>
       <v-flex xs12 sm10 offset-sm1>
         <div class="title text-color font-weight-bold py-3">
           求人を更新

@@ -13,7 +13,7 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex xs12 v-else-if="uid">
+    <v-flex xs12 v-else-if="uid && uid != ''">
       <div
         v-if="yearPasses && yearPasses.length > 0"
         class="text-xs-right pa-3"

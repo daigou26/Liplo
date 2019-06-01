@@ -15,7 +15,7 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex v-else-if="uid" xs12>
+    <v-flex v-else-if="uid && uid != ''" xs12>
       <v-snackbar
        v-model="snackbar"
        color="teal lighten-1"

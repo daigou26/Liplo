@@ -15,7 +15,7 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex v-else-if="uid" xs12 class="py-3 break">
+    <v-flex v-else-if="uid && uid != ''" xs12 class="py-3 break">
       <!-- Profile画像 & UserName -->
       <div class="align-center">
         <v-card flat>

@@ -23,7 +23,7 @@
       </v-btn>
     </v-snackbar>
     <v-flex
-      v-if="uid"
+      v-if="uid && uid != ''"
       xs12
       md10
       offset-md1

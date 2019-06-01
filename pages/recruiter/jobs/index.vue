@@ -14,7 +14,7 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex v-else-if="uid" xs12>
+    <v-flex v-else-if="uid && uid != ''" xs12>
       <div class="text-xs-right">
         <v-btn :disabled="plan == null" to="/recruiter/jobs/new">新規作成</v-btn>
       </div>

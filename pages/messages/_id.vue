@@ -40,7 +40,7 @@
       </v-layout>
     </v-flex>
     <v-flex
-      v-else-if="uid"
+      v-else-if="uid && uid != ''"
       xs12
       lg10
       offset-lg1
@@ -560,7 +560,7 @@ export default {
   methods: {
     chatsInfiniteHandler($state) {
       if (!this.allChatsQueried) {
-        if (!this.isChatsLoading && this.uid != null) {
+        if (!this.isChatsLoading && this.uid != null && this.uid != '') {
           this.chatsCount += 1
           this.updateIsChatsLoading(true)
           this.queryChats({uid: this.uid, companyId: null, chats: this.chats})
@@ -577,7 +577,7 @@ export default {
     },
     messagesInfiniteHandler($state) {
       if (!this.allMessagesQueried) {
-        if (!this.isMessagesLoading && this.uid != null) {
+        if (!this.isMessagesLoading && this.uid != null && this.uid != '') {
           this.messagesCount += 1
           this.updateIsMessagesLoading(true)
           this.queryMessages({params: this.params, infiniteState: $state})

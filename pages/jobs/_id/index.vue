@@ -328,7 +328,7 @@
               <div v-if="!uid" class="pt-3">
                 レビューを見るには、ログインする必要があります。
               </div>
-              <div v-if="uid && reviews" class="pt-3">
+              <div v-if="uid && uid != '' && reviews" class="pt-3">
                 <!-- chart (xs) -->
                 <v-flex xs12 hidden-sm-and-up>
                   <v-tooltip bottom>
@@ -519,7 +519,7 @@
                   </v-flex>
                 </div>
               </div>
-              <div v-if="uid && (reviews == null || reviews.length == 0)" class="pt-2">
+              <div v-if="uid && uid != '' && (reviews == null || reviews.length == 0)" class="pt-2">
                 まだレビューがありません
               </div>
             </div>
@@ -610,7 +610,7 @@
               <div v-if="!uid">
                 レビューを見るには、ログインが必要です。
               </div>
-              <div v-if="uid && reviews">
+              <div v-if="uid && uid != '' && reviews">
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
                     <div v-on="on">
@@ -715,7 +715,7 @@
                   すべて見る
                 </div>
               </div>
-              <div v-if="uid && (reviews == null || reviews.length == 0)" class="pt-2">
+              <div v-if="uid && uid != '' && (reviews == null || reviews.length == 0)" class="pt-2">
                 まだレビューがありません
               </div>
             </div>
@@ -790,7 +790,7 @@
             }"
           >
             <v-btn
-              v-if="uid"
+              v-if="uid && uid != ''"
               large
               :disabled="isCandidate"
               class="white--text"
@@ -1186,7 +1186,7 @@ export default {
   },
   watch: {
     uid(uid) {
-      if (uid != '') {
+      if (uid && uid != '') {
         this.resetJobState()
         this.updateIsLoading(true)
         this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: uid})
@@ -1240,7 +1240,7 @@ export default {
       }
     },
     otherReviewsButtonClicked(uid) {
-      if (uid) {
+      if (uid && uid != '') {
         this.selectedUserId = uid
         this.otherReviewsDialog = true
         if (this.userReviews.length == 0) {

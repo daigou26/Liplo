@@ -29,7 +29,7 @@
       </v-layout>
     </v-flex>
     <v-flex
-      v-else-if="uid"
+      v-else-if="uid && uid != ''"
       xs12
       md10
       offset-md1
