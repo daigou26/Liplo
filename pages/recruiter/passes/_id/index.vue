@@ -15,7 +15,7 @@
       </v-layout>
     </v-flex>
     <v-flex v-else-if="uid" xs12>
-      <div class="textColor title pa-3 font-weight-bold">
+      <div class="text-color title pa-3 font-weight-bold">
         <span v-if="paramsId != 'hiring'">{{ paramsId }}年度 </span>
         <span v-if="!passType && paramsId == 'hiring'">入社パス（未使用）</span>
         <span v-else-if="passType == 'hiring'">入社パス</span>

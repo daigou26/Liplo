@@ -32,7 +32,7 @@
               <v-icon v-else >camera_alt</v-icon>
             </v-avatar>
             <div class="pt-2">
-              <div class="title textColor font-weight-bold break pl-4">
+              <div class="title text-color font-weight-bold break pl-4">
                 {{ name }}
               </div>
               <div>
@@ -42,7 +42,7 @@
                   @click="userNameClicked"
                 >
                   <v-icon :size="14">edit</v-icon>
-                  <span class="caption edit-text-color">編集する</span>
+                  <span class="caption teal-text-color">編集する</span>
                 </v-btn>
               </div>
             </div>
@@ -156,7 +156,7 @@
       <div :class="{'px-5': $vuetify.breakpoint.smAndUp}">
         <!-- 役職 -->
         <v-flex class="px-3 break text-xs-left">
-          <span class="textColor font-weight-bold">
+          <span class="text-color font-weight-bold">
             役職: {{ position }}
           </span>
           <v-btn
@@ -165,7 +165,7 @@
             @click="positionEditButtonClicked"
           >
             <v-icon :size="14">edit</v-icon>
-            <span class="caption edit-text-color">編集する</span>
+            <span class="caption teal-text-color">編集する</span>
           </v-btn>
         </v-flex>
         <!-- 役職編集 -->
@@ -236,7 +236,7 @@
                 @click="selfIntroEditButtonClicked"
               >
                 <v-icon :size="14">edit</v-icon>
-                <span class="caption edit-text-color">編集する</span>
+                <span class="caption teal-text-color">編集する</span>
               </v-btn>
             </div>
           </v-layout>

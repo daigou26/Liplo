@@ -30,7 +30,7 @@
     <v-flex v-else xs12 sm8 md6 offset-sm2 offset-md3 pb-4>
       <v-card :flat="$vuetify.breakpoint.xsOnly">
         <v-toolbar flat color="white">
-          <span class="textColor font-weight-bold subheading">フィードバックを送る</span>
+          <span class="text-color font-weight-bold subheading">フィードバックを送る</span>
         </v-toolbar>
         <v-flex
           xs12
@@ -41,7 +41,7 @@
             'px-3 mt-4': $vuetify.breakpoint.xsOnly
           }"
         >
-          <div class="textColor text-xs-left px-2">
+          <div class="text-color text-xs-left px-2">
             <div>
               サービスの質をより良くしていくため、利用していてお気づきになった良い点や改善すべき点について、ご意見をお聞かせください。
             </div>

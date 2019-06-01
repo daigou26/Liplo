@@ -61,7 +61,7 @@
                     <v-img :src="item.companyImageUrl"/>
                   </v-avatar>
                 </template>
-                <v-card class="py-3 textColor">
+                <v-card class="py-3 text-color">
                   <div class="mb-1 light-text-color">{{ item.startedAt }}</div>
                   <div class="title font-weight-bold mb-3">{{ item.companyName }}</div>
                   <div class="pb-1">職種:　{{ item.occupation }}</div>
@@ -93,7 +93,7 @@
             >
               <div class="text-xs-center">
                 <div
-                  class="textColor"
+                  class="text-color"
                   :class="{
                     'title': $vuetify.breakpoint.xsOnly,
                     'headline': $vuetify.breakpoint.smAndUp,

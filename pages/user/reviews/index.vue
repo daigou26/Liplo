@@ -42,7 +42,7 @@
           <v-flex sm10 xs12 offset-sm1>
             <!-- 記入可能なレビュー -->
             <div class="my-3">
-              <div class="font-weight-bold textColor subheading">
+              <div class="font-weight-bold text-color subheading">
                 記入待ちのレビュー
                 <div class="pt-2 body-2 light-text-color">
                   レビューを書くことでスコアが上がり、スカウトされやすくなります。
@@ -57,8 +57,8 @@
                       ></v-img>
                     </v-list-tile-avatar>
                     <v-list-tile-content>
-                      <v-list-tile-title class="textColor font-weight-bold">{{ item.companyName }}</v-list-tile-title>
-                      <v-list-tile-sub-title class="textColor caption">
+                      <v-list-tile-title class="text-color font-weight-bold">{{ item.companyName }}</v-list-tile-title>
+                      <v-list-tile-sub-title class="text-color caption">
                         {{ item.occupation }}
                       </v-list-tile-sub-title>
                     </v-list-tile-content>
@@ -79,7 +79,7 @@
 
             <!-- reviews -->
             <div class="my-4">
-              <div class="font-weight-bold textColor subheading">
+              <div class="font-weight-bold text-color subheading">
                 過去に書いたレビュー
               </div>
               <v-list v-if="userReviews && userReviews.length > 0" two-line>
@@ -91,7 +91,7 @@
                       ></v-img>
                     </v-list-tile-avatar>
                     <v-list-tile-content>
-                      <v-list-tile-title class="textColor font-weight-bold">{{ review.companyName }}</v-list-tile-title>
+                      <v-list-tile-title class="text-color font-weight-bold">{{ review.companyName }}</v-list-tile-title>
                       <v-list-tile-sub-title>
                         <v-rating
                           v-model="review.all"

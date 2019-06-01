@@ -24,13 +24,13 @@
         <!-- company -->
         <div class="pt-4">
           <div>
-            <span class="textColor font-weight-bold">
+            <span class="text-color font-weight-bold">
               企業名:
             </span>
             <span class="light-text-color pl-3">{{ companyName }}</span>
           </div>
           <div>
-            <span class="textColor font-weight-bold">
+            <span class="text-color font-weight-bold">
               企業メールアドレス:
             </span>
             <span class="light-text-color pl-3">{{ companyEmail }}</span>
@@ -39,19 +39,19 @@
         <!-- recruiter -->
         <div class="pt-4">
           <div>
-            <span class="textColor font-weight-bold">
+            <span class="text-color font-weight-bold">
               担当者名:
             </span>
             <span class="light-text-color pl-3">{{ userName }}</span>
           </div>
           <div>
-            <span class="textColor font-weight-bold">
+            <span class="text-color font-weight-bold">
               担当者メールアドレス:
             </span>
             <span class="light-text-color pl-3">{{ email }}</span>
           </div>
           <div>
-            <span class="textColor font-weight-bold">
+            <span class="text-color font-weight-bold">
               役職:
             </span>
             <span class="light-text-color pl-3">{{ position }}</span>
@@ -59,13 +59,13 @@
         </div>
         <!-- 問い合わせ -->
         <div class="pt-4">
-          <span class="textColor font-weight-bold pr-3">
+          <span class="text-color font-weight-bold pr-3">
             問い合わせ:
           </span>
           <span v-if="type == 0" class="teal--text font-weight-bold">資料請求</span>
           <span v-else-if="type == 1" class="green--text font-weight-bold">質問がしたい</span>
           <span v-else-if="type == 2" class="orange--text font-weight-bold">すぐに導入したい</span>
-          <div v-if="content" class="pt-3 font-weight-bold textColor">内容：</div>
+          <div v-if="content" class="pt-3 font-weight-bold text-color">内容：</div>
           <div v-if="content" class="return light-text-color">{{ content }}</div>
         </div>
       </div>
@@ -82,7 +82,7 @@
             <v-icon>close</v-icon>
           </v-btn>
           <span
-            class="pl-3 textColor font-weight-bold"
+            class="pl-3 text-color font-weight-bold"
             :class="{
               'title': $vuetify.breakpoint.smAndUp,
               'subheading': $vuetify.breakpoint.xsOnly

@@ -25,13 +25,13 @@
       }"
     >
       <div class="py-4">
-        <p class="title font-weight-bold textColor">
+        <p class="title font-weight-bold text-color">
           コメント
         </p>
-        <div class="py-3 textColor return break">{{ content }}</div>
+        <div class="py-3 text-color return break">{{ content }}</div>
       </div>
       <div class="pt-4">
-        <p class="title font-weight-bold textColor">
+        <p class="title font-weight-bold text-color">
           レビュー
         </p>
         <div>
@@ -155,58 +155,58 @@
             </v-card-actions>
             <v-card v-show="hover" flat class="caption pa-2">
               <div>
-                <div class="textColor">
+                <div class="text-color">
                   成長できるか：
                 </div>
-                <div class="textColor">
+                <div class="text-color">
                   インターンに行って成長できたかどうか
                 </div>
               </div>
               <div class="pt-3">
-                <div class="textColor">
+                <div class="text-color">
                   仕事内容：
                 </div>
-                <div class="textColor">
+                <div class="text-color">
                   募集に書かれていた内容と合っていたかどうか
                 </div>
               </div>
               <div class="pt-3">
-                <div class="textColor">
+                <div class="text-color">
                   裁量度：
                 </div>
-                <div class="textColor">
+                <div class="text-color">
                   インターン生にも裁量が与えられていたかどうか
                 </div>
               </div>
               <div class="pt-3">
-                <div class="textColor">
+                <div class="text-color">
                   勤務中の自由度：
                 </div>
-                <div class="textColor">
+                <div class="text-color">
                   休憩などが自由にできるかどうか
                 </div>
               </div>
               <div class="pt-3">
-                <div class="textColor">
+                <div class="text-color">
                   勤務時間の柔軟性：
                 </div>
-                <div class="textColor">
+                <div class="text-color">
                   勤務時間、日程を自由に決められるかどうか
                 </div>
               </div>
               <div class="pt-3">
-                <div class="textColor">
+                <div class="text-color">
                   メンター：
                 </div>
-                <div class="textColor">
+                <div class="text-color">
                   メンター（インターン生の担当者）の評価
                 </div>
               </div>
               <div class="pt-3">
-                <div class="textColor">
+                <div class="text-color">
                   雰囲気：
                 </div>
-                <div class="textColor">
+                <div class="text-color">
                   社内の雰囲気、人間関係などが良好かどうか
                 </div>
               </div>

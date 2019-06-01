@@ -20,7 +20,7 @@
           color="white"
           @click="footer = true"
         >
-          <span class="font-weight-bold textColor">企業情報、プライバシーなど</span>
+          <span class="font-weight-bold text-color">企業情報、プライバシーなど</span>
         </v-btn>
       </div>
       <!-- 並び替え -->
@@ -38,7 +38,7 @@
             <span
               :class="{
                 'teal--text text--darken-1 font-weight-bold': order == 'recent',
-                'textColor': order != 'recent',
+                'text-color': order != 'recent',
               }"
             >
               新着順
@@ -48,7 +48,7 @@
             <span
               :class="{
                 'teal--text text--darken-1 font-weight-bold': order == 'rating',
-                'textColor': order != 'recent',
+                'text-color': order != 'recent',
               }"
             >
               評価順
@@ -83,7 +83,7 @@
                         :aspect-ratio="imageRatio"
                       ></v-img>
                       <div
-                        class="pt-3 px-4 text-xs-left caption textColor font-weight-bold"
+                        class="pt-3 px-4 text-xs-left caption text-color font-weight-bold"
                       >
                         <v-chip outline small color="teal">{{ occupation(job.occupation) }}</v-chip>
                         <v-chip outline small color="blue-grey ">{{ job.period }}ヶ月</v-chip>
@@ -95,11 +95,11 @@
                               'headline': $vuetify.breakpoint.smAndUp,
                               'title': $vuetify.breakpoint.xsOnly,
                             }"
-                            class="textColor font-weight-bold break mb-0"
+                            class="text-color font-weight-bold break mb-0"
                           >
                             {{ job.title }}
                           </h3>
-                          <div class="textColor break pt-3">{{ job.content }}</div>
+                          <div class="text-color break pt-3">{{ job.content }}</div>
                         </div>
                       </v-card-title>
                     </v-card>
@@ -117,7 +117,7 @@
                               :class="{
                                 'caption': $vuetify.breakpoint.xsOnly,
                               }"
-                              class="textColor font-weight-bold"
+                              class="text-color font-weight-bold"
                             >
                               {{ job.companyName }}
                             </v-list-tile-title>
@@ -132,7 +132,7 @@
                                   half-increments
                                   readonly
                                 />
-                                <span v-if="job.rating" class="pl-1 pr-3 textColor">{{ job.rating.count }}</span>
+                                <span v-if="job.rating" class="pl-1 pr-3 text-color">{{ job.rating.count }}</span>
                                 <span v-show="hover" class="caption green--text">企業情報を確認する</span>
                               </v-card-actions>
                             </v-list-tile-sub-title>
@@ -162,7 +162,7 @@
             >
               <div class="text-xs-center">
                 <div
-                  class="textColor"
+                  class="text-color"
                   :class="{
                     'title': $vuetify.breakpoint.xsOnly,
                     'headline': $vuetify.breakpoint.smAndUp,
@@ -199,20 +199,20 @@
             <v-layout row wrap>
               <v-flex xs5>
                 <div class="pb-2">
-                  <nuxt-link to="/inquiry_for_recruiter" class="font-weight-bold textColor">採用担当者様はこちら</nuxt-link>
+                  <nuxt-link to="/inquiry_for_recruiter" class="font-weight-bold text-color">採用担当者様はこちら</nuxt-link>
                 </div>
                 <div class="pb-2">
-                  <nuxt-link to="/contact" class="font-weight-bold textColor">お問い合わせ</nuxt-link>
+                  <nuxt-link to="/contact" class="font-weight-bold text-color">お問い合わせ</nuxt-link>
                 </div>
                 <div class="pb-2">
-                  <nuxt-link to="/feedback" class="font-weight-bold textColor">フィードバックを送る</nuxt-link>
+                  <nuxt-link to="/feedback" class="font-weight-bold text-color">フィードバックを送る</nuxt-link>
                 </div>
                 <div class="pb-2">
-                  <nuxt-link to="/" class="font-weight-bold textColor">運営会社</nuxt-link>
+                  <nuxt-link to="/" class="font-weight-bold text-color">運営会社</nuxt-link>
                 </div>
               </v-flex>
               <v-flex xs5>
-                <div class="pb-3 textColor">
+                <div class="pb-3 text-color">
                   <v-btn flat small icon color="grey" class="ma-0 mr-3">
                     <v-icon>fab fa-facebook</v-icon>
                   </v-btn>
@@ -221,10 +221,10 @@
                   </v-btn>
                 </div>
                 <div class="pb-2">
-                  <nuxt-link to="/" class="font-weight-bold textColor">利用規約</nuxt-link>
+                  <nuxt-link to="/" class="font-weight-bold text-color">利用規約</nuxt-link>
                 </div>
                 <div class="pb-2">
-                  <nuxt-link to="/" class="font-weight-bold textColor">プライバシー</nuxt-link>
+                  <nuxt-link to="/" class="font-weight-bold text-color">プライバシー</nuxt-link>
                 </div>
               </v-flex>
             </v-layout>

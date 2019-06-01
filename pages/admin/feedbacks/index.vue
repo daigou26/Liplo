@@ -49,7 +49,7 @@
                   class="font-weight-bold grey--text"
                 >{{ props.item.type }}</span>
               </td>
-              <td class="text-xs-left textColor break" style="min-width: 250px">{{ props.item.content }}</td>
+              <td class="text-xs-left text-color break" style="min-width: 250px">{{ props.item.content }}</td>
               <td class="text-xs-left" style="min-width: 150px">{{ props.item.timestamp }}</td>
             </n-link>
           </template>

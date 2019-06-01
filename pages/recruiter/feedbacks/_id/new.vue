@@ -32,15 +32,15 @@
               ></v-img>
             </v-list-tile-avatar>
             <v-list-tile-content>
-              <v-list-tile-title class="textColor font-weight-bold return">{{ userName }}</v-list-tile-title>
+              <v-list-tile-title class="text-color font-weight-bold return">{{ userName }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
       </v-card>
-      <div class="textColor px-3 pt-4">
+      <div class="text-color px-3 pt-4">
         職種：　{{ occupation }}
       </div>
-      <div class="pt-2 textColor px-3">
+      <div class="pt-2 text-color px-3">
         インターン終了時期：　{{ timestamp }}
       </div>
       <div class="pt-5 px-3">

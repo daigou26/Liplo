@@ -113,7 +113,7 @@
                 <img v-if="companyImageUrl" :src="companyImageUrl">
               </v-avatar>
               <div class="pt-2">
-                <div class="title textColor font-weight-bold break pl-4">
+                <div class="title text-color font-weight-bold break pl-4">
                   {{ companyName }}
                 </div>
                 <div>
@@ -123,7 +123,7 @@
                     @click="editCompanyNameButtonClicked"
                   >
                     <v-icon :size="14">edit</v-icon>
-                    <span class="caption edit-text-color">編集する</span>
+                    <span class="caption teal-text-color">編集する</span>
                   </v-btn>
                 </div>
               </div>
@@ -229,7 +229,7 @@
         <!-- メンバー -->
         <div v-if="members" class="py-4">
           <p
-            class="font-weight-bold textColor"
+            class="font-weight-bold text-color"
             :class="{
               'title': $vuetify.breakpoint.smAndUp,
               'subheading': $vuetify.breakpoint.xsOnly
@@ -253,10 +253,10 @@
                       >
                         <img v-if="member.imageUrl" :src="member.imageUrl">
                       </v-avatar>
-                      <div class="sub-title1 py-2 font-weight-bold textColor">
+                      <div class="sub-title1 py-2 font-weight-bold text-color">
                         {{ member.name}}
                       </div>
-                      <div v-if="member.position" class="textColor">
+                      <div v-if="member.position" class="text-color">
                         {{ member.position}}
                       </div>
                     </div>
@@ -271,7 +271,7 @@
               small
               @click="addMemberButtonClicked"
             >
-              <span class="edit-text-color">メンバーを追加する</span>
+              <span class="teal-text-color">メンバーを追加する</span>
             </v-btn>
           </div>
           <v-dialog
@@ -353,7 +353,7 @@
                 @click="editMissionButtonClicked"
               >
                 <v-icon :size="14">edit</v-icon>
-                <span class="caption edit-text-color">編集する</span>
+                <span class="caption teal-text-color">編集する</span>
               </v-btn>
             </div>
           </v-layout>
@@ -412,7 +412,7 @@
                 @click="editVisionButtonClicked"
               >
                 <v-icon :size="14">edit</v-icon>
-                <span class="caption edit-text-color">編集する</span>
+                <span class="caption teal-text-color">編集する</span>
               </v-btn>
             </div>
           </v-layout>
@@ -471,7 +471,7 @@
                 @click="editValueButtonClicked"
               >
                 <v-icon :size="14">edit</v-icon>
-                <span class="caption edit-text-color">編集する</span>
+                <span class="caption teal-text-color">編集する</span>
               </v-btn>
             </div>
           </v-layout>
@@ -530,7 +530,7 @@
                 @click="editCultureButtonClicked"
               >
                 <v-icon :size="14">edit</v-icon>
-                <span class="caption edit-text-color">編集する</span>
+                <span class="caption teal-text-color">編集する</span>
               </v-btn>
             </div>
           </v-layout>
@@ -589,7 +589,7 @@
                 @click="editSystemButtonClicked"
               >
                 <v-icon :size="14">edit</v-icon>
-                <span class="caption edit-text-color">編集する</span>
+                <span class="caption teal-text-color">編集する</span>
               </v-btn>
             </div>
           </v-layout>
@@ -647,7 +647,7 @@
                 @click="editWhyButtonClicked"
               >
                 <v-icon :size="14">edit</v-icon>
-                <span class="caption edit-text-color">編集する</span>
+                <span class="caption teal-text-color">編集する</span>
               </v-btn>
             </div>
           </v-layout>
@@ -706,7 +706,7 @@
                 @click="editWhatButtonClicked"
               >
                 <v-icon :size="14">edit</v-icon>
-                <span class="caption edit-text-color">編集する</span>
+                <span class="caption teal-text-color">編集する</span>
               </v-btn>
             </div>
           </v-layout>
@@ -765,7 +765,7 @@
                 @click="editServicesButtonClicked(null)"
               >
                 <v-icon :size="14">edit</v-icon>
-                <span class="caption edit-text-color">追加する</span>
+                <span class="caption teal-text-color">追加する</span>
               </v-btn>
             </div>
           </v-layout>
@@ -796,34 +796,34 @@
                     }"
                   >
                     <div>
-                      <span class="font-weight-bold subheading textColor">{{ service.title }}</span>
+                      <span class="font-weight-bold subheading text-color">{{ service.title }}</span>
                       <v-btn
                         class="pa-0 ma-0"
                         flat
                         @click="editServicesButtonClicked(index)"
                       >
                         <v-icon :size="14">edit</v-icon>
-                        <span class="caption edit-text-color">編集する</span>
+                        <span class="caption teal-text-color">編集する</span>
                       </v-btn>
                     </div>
-                    <p　class="textColor return">{{ service.content }}</p>
+                    <p　class="text-color return">{{ service.content }}</p>
                     <a :href="service.url">{{ service.url }}</a>
                   </v-flex>
                 </v-layout>
                 <div v-else class="pt-4 pb-3">
                   <v-img :src="service.imageUrl" aspect-ratio="1.5" max-height="100" max-width="160"></v-img>
                   <div>
-                    <span class="font-weight-bold subheading textColor">{{ service.title }}</span>
+                    <span class="font-weight-bold subheading text-color">{{ service.title }}</span>
                     <v-btn
                       class="pa-0 ma-0"
                       flat
                       @click="editServicesButtonClicked(index)"
                     >
                       <v-icon :size="14">edit</v-icon>
-                      <span class="caption edit-text-color">編集する</span>
+                      <span class="caption teal-text-color">編集する</span>
                     </v-btn>
                   </div>
-                  <p　class="textColor return">{{ service.content }}</p>
+                  <p　class="text-color return">{{ service.content }}</p>
                   <a :href="service.url">{{ service.url }}</a>
                 </div>
               </template>
@@ -925,7 +925,7 @@
                 @click="editWelfareButtonClicked"
               >
                 <v-icon :size="14">edit</v-icon>
-                <span class="caption edit-text-color">編集する</span>
+                <span class="caption teal-text-color">編集する</span>
               </v-btn>
             </div>
           </v-layout>
@@ -984,7 +984,7 @@
               @click="editCompanyInfoButtonClicked"
             >
               <v-icon :size="14">edit</v-icon>
-              <span class="caption edit-text-color">編集する</span>
+              <span class="caption teal-text-color">編集する</span>
             </v-btn>
           </v-layout>
           <v-flex xs12 sm10>

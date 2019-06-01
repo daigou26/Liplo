@@ -33,7 +33,7 @@
               <img v-if="imageUrl" :src="imageUrl" alt="avatar">
             </v-avatar>
             <span
-              class="textColor font-weight-bold px-3 headline"
+              class="text-color font-weight-bold px-3 headline"
             >
               {{ companyName }}
             </span>
@@ -59,13 +59,13 @@
         <!-- email -->
         <div class="pt-4">
           <div>
-            <span class="textColor font-weight-bold">
+            <span class="text-color font-weight-bold">
               email:
             </span>
             <span class="light-text-color pl-3">{{ email }}</span>
           </div>
           <div v-if="email != invoiceEmail">
-            <span class="textColor font-weight-bold">
+            <span class="text-color font-weight-bold">
               invoiceEmail:
             </span>
             <span class="light-text-color pl-3">{{ invoiceEmail }}</span>
@@ -73,7 +73,7 @@
         </div>
         <!-- プラン -->
         <div class="pt-4">
-          <span class="textColor font-weight-bold pr-3">
+          <span class="text-color font-weight-bold pr-3">
             プラン:
           </span>
           <span v-if="plan == 0" class="teal--text font-weight-bold">成功報酬</span>

@@ -51,7 +51,7 @@
                     ></v-img>
                   </v-list-tile-avatar>
                   <v-list-tile-content>
-                    <v-list-tile-title class="textColor font-weight-bold">{{ feedback.companyName }}</v-list-tile-title>
+                    <v-list-tile-title class="text-color font-weight-bold">{{ feedback.companyName }}</v-list-tile-title>
                   </v-list-tile-content>
                   <v-list-tile-action class="caption font-weight-bold light-text-color ml-2">
                     <v-card-actions class="pa-0">
@@ -75,7 +75,7 @@
             >
               <div class="text-xs-center">
                 <div
-                  class="textColor"
+                  class="text-color"
                   :class="{
                     'title': $vuetify.breakpoint.xsOnly,
                     'headline': $vuetify.breakpoint.smAndUp,

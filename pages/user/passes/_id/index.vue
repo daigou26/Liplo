@@ -144,24 +144,24 @@
                       ></v-img>
                     </v-list-tile-avatar>
                     <v-list-tile-content>
-                      <v-list-tile-title class="textColor font-weight-bold return">{{ companyName }}</v-list-tile-title>
+                      <v-list-tile-title class="text-color font-weight-bold return">{{ companyName }}</v-list-tile-title>
                     </v-list-tile-content>
                   </v-list-tile>
                 </v-card-actions>
               </v-card>
               <div v-if="joiningYear" class="pb-2">
-                <span class="font-weight-bold textColor">入社年度：　{{ joiningYear }}年度</span>
+                <span class="font-weight-bold text-color">入社年度：　{{ joiningYear }}年度</span>
               </div>
               <div class="pb-4">
-                <span class="font-weight-bold textColor">職種：</span>
+                <span class="font-weight-bold text-color">職種：</span>
                 <span v-if="occupation" class="pt-2 font-weight-medium body-text">{{ occupation }}</span>
               </div>
               <div class="pb-3">
-                <span class="font-weight-bold textColor">担当者からのメッセージ：</span>
+                <span class="font-weight-bold text-color">担当者からのメッセージ：</span>
                 <p v-if="message" class="pt-2 body-text light-text-color return">{{ message }}</p>
               </div>
               <div class="pb-3">
-                <span class="font-weight-bold textColor">期限：　{{ expirationDateText }}</span>
+                <span class="font-weight-bold text-color">期限：　{{ expirationDateText }}</span>
               </div>
               <div
                 v-if="
@@ -174,7 +174,7 @@
               >
                 <div
                   v-if="type == 'limited'"
-                  class="pb-3 font-weight-bold textColor"
+                  class="pb-3 font-weight-bold text-color"
                 >
                   <span v-if="limit == null">採用枠： あり</span>
                   <span v-else>採用枠：　残り{{ limit - usedCount }}人</span>

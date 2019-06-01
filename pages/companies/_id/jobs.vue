@@ -21,7 +21,7 @@
             sm8
             text-xs-center
           >
-            <div class="text-xs-left headline textColor font-weight-bold pb-5 hidden-xs-only">
+            <div class="text-xs-left headline text-color font-weight-bold pb-5 hidden-xs-only">
               募集一覧
             </div>
             <!-- job lists -->
@@ -40,7 +40,7 @@
                         :aspect-ratio="imageRatio"
                       ></v-img>
                       <div
-                        class="pt-2 px-3 text-xs-left caption textColor font-weight-bold"
+                        class="pt-2 px-3 text-xs-left caption text-color font-weight-bold"
                       >
                         <v-chip outline small color="teal">{{ occupation(job.occupation) }}</v-chip>
                         <v-chip outline small color="grey-blue">{{ job.period }}ヶ月</v-chip>
@@ -52,11 +52,11 @@
                               'headline': $vuetify.breakpoint.smAndUp,
                               'title': $vuetify.breakpoint.xsOnly,
                             }"
-                            class="textColor font-weight-bold mb-0"
+                            class="text-color font-weight-bold mb-0"
                           >
                             {{ job.title }}
                           </h3>
-                          <div class="textColor pt-3">{{ job.content }}</div>
+                          <div class="text-color pt-3">{{ job.content }}</div>
                         </div>
                       </v-card-title>
                     </v-card>
@@ -87,7 +87,7 @@
             >
               <div class="text-xs-center">
                 <div
-                  class="textColor"
+                  class="text-color"
                   :class="{
                     'title': $vuetify.breakpoint.xsOnly,
                     'headline': $vuetify.breakpoint.smAndUp,

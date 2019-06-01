@@ -183,16 +183,16 @@ export default {
   font-size: 15px;
   font-weight: 400;
 }
-.textColor {
+.text-color {
   color: #555555;
 }
 .light-text-color {
   color: #777777;
 }
-.whiteTextColor {
+.white-text-color {
   color: #ffffff;
 }
-.edit-text-color {
+.teal-text-color {
   color: #00897B;
 }
 .warning-text-color {

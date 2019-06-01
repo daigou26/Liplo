@@ -26,14 +26,14 @@
         }"
         id="feedback-detail"
       >
-        <div class="textColor pt-3">
+        <div class="text-color pt-3">
           Type：　{{ type }}
         </div>
-        <div class="pt-2 textColor">
+        <div class="pt-2 text-color">
           Date：　{{ timestamp }}
         </div>
         <div class="pt-5">
-          <span class="font-weight-bold textColor">内容</span>
+          <span class="font-weight-bold text-color">内容</span>
           <p v-if="content" class="pt-3 light-text-color body-text return">{{ content }}</p>
         </div>
       </div>

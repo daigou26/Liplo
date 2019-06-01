@@ -54,7 +54,7 @@
             <!-- 契約済み -->
             <div
               v-if="contractedPasses && contractedPasses.length > 0"
-              class="textColor"
+              class="text-color"
               :class="{
                 'title': $vuetify.breakpoint.smAndUp,
                 'subheading': $vuetify.breakpoint.xsOnly,
@@ -76,7 +76,7 @@
                   >
                     <div
                       v-if="pass.type != 'hiring' && pass.joiningYear"
-                      class="pa-2 textColor font-weight-bold text-xs-left"
+                      class="pa-2 text-color font-weight-bold text-xs-left"
                     >
                       {{ pass.joiningYear }}年度
                     </div>
@@ -89,14 +89,14 @@
                       <img v-if="pass.companyImageUrl" :src="pass.companyImageUrl" alt="avatar">
                     </v-avatar>
                     <div
-                      class="pt-3 px-3 font-weight-bold textColor"
+                      class="pt-3 px-3 font-weight-bold text-color"
                       :class="{
                         'subheading': $vuetify.breakpoint.smAndUp,
                       }"
                     >
                       {{ pass.companyName }}
                     </div>
-                    <div class="pt-2 px-2 caption textColor font-weight-bold">
+                    <div class="pt-2 px-2 caption text-color font-weight-bold">
                       {{ pass.occupation }}
                     </div>
                     <div class="pt-1 px-1 caption light-text-color">
@@ -109,7 +109,7 @@
             <!-- 未契約 -->
             <div
               v-if="passes && passes.length > 0"
-              class="textColor"
+              class="text-color"
               :class="{
                 'title': $vuetify.breakpoint.smAndUp,
                 'subheading': $vuetify.breakpoint.xsOnly,
@@ -131,7 +131,7 @@
                   >
                     <div
                       v-if="pass.type != 'hiring' && pass.joiningYear"
-                      class="pa-2 textColor font-weight-bold text-xs-left"
+                      class="pa-2 text-color font-weight-bold text-xs-left"
                     >
                       {{ pass.joiningYear }}年度
                     </div>
@@ -144,7 +144,7 @@
                       <img v-if="pass.companyImageUrl" :src="pass.companyImageUrl" alt="avatar">
                     </v-avatar>
                     <div
-                      class="pt-3 px-3 font-weight-bold textColor"
+                      class="pt-3 px-3 font-weight-bold text-color"
                       :class="{
                         'subheading': $vuetify.breakpoint.smAndUp,
                         '': $vuetify.breakpoint.xsOnly,
@@ -152,7 +152,7 @@
                     >
                       {{ pass.companyName }}
                     </div>
-                    <div class="pt-2 px-2 caption textColor font-weight-bold">
+                    <div class="pt-2 px-2 caption text-color font-weight-bold">
                       {{ pass.occupation }}
                     </div>
                     <div class="pt-1 px-1 caption light-text-color">
@@ -176,7 +176,7 @@
             >
               <div class="text-xs-center">
                 <div
-                  class="textColor"
+                  class="text-color"
                   :class="{
                     'title': $vuetify.breakpoint.xsOnly,
                     'headline': $vuetify.breakpoint.smAndUp,
@@ -211,7 +211,7 @@
                 <v-icon>close</v-icon>
               </v-btn>
               <span
-                class="pl-3 textColor font-weight-bold"
+                class="pl-3 text-color font-weight-bold"
                 :class="{
                   'title': $vuetify.breakpoint.smAndUp,
                   'subheading': $vuetify.breakpoint.xsOnly

@@ -38,7 +38,7 @@
                     <v-icon v-else>camera_alt</v-icon>
                   </v-avatar>
                   <span
-                    class="textColor font-weight-bold px-3"
+                    class="text-color font-weight-bold px-3"
                     :class="{
                       'display-1 px-3': $vuetify.breakpoint.mdAndUp,
                       'headline': $vuetify.breakpoint.smAndDown,
@@ -54,7 +54,7 @@
                     @click="userNameClicked"
                   >
                     <v-icon :size="14">edit</v-icon>
-                    <span class="hidden-xs-only caption edit-text-color">編集する</span>
+                    <span class="hidden-xs-only caption teal-text-color">編集する</span>
                   </v-btn>
                 </v-card-actions>
                 <!-- ProfileImage編集 -->
@@ -203,7 +203,7 @@
                       style="border-radius: 10px"
                     >
                       <span class="light-text-color">プロフィール完成度: </span>
-                      <span class="font-weight-bold textColor">{{ completionPercentage }}%</span>
+                      <span class="font-weight-bold text-color">{{ completionPercentage }}%</span>
                       <div
                         v-if="completionPercentage != 100"
                         :class="{'mr-5': $vuetify.breakpoint.mdAndUp}"
@@ -277,7 +277,7 @@
                         @click="desiredOccupationsEditButtonClicked"
                       >
                         <v-icon :size="14">edit</v-icon>
-                        <span class="caption edit-text-color">編集する</span>
+                        <span class="caption teal-text-color">編集する</span>
                       </v-btn>
                     </v-flex>
                   </v-layout>
@@ -340,7 +340,7 @@
                         @click="selfIntroEditButtonClicked"
                       >
                         <v-icon :size="14">edit</v-icon>
-                        <span class="caption edit-text-color">編集する</span>
+                        <span class="caption teal-text-color">編集する</span>
                       </v-btn>
                     </v-flex>
                   </v-layout>
@@ -398,7 +398,7 @@
                         @click="whatWantToDoEditButtonClicked"
                       >
                         <v-icon :size="14">edit</v-icon>
-                        <span class="caption edit-text-color">編集する</span>
+                        <span class="caption teal-text-color">編集する</span>
                       </v-btn>
                     </v-flex>
                   </v-layout>
@@ -452,7 +452,7 @@
                         @click="portfolioEditButtonClicked(null)"
                       >
                         <v-icon :size="14">edit</v-icon>
-                        <span class="caption edit-text-color">追加する</span>
+                        <span class="caption teal-text-color">追加する</span>
                       </v-btn>
                     </v-flex>
                   </v-layout>
@@ -478,34 +478,34 @@
                             }"
                           >
                             <div>
-                              <span class="font-weight-bold subheading textColor">{{ item.title }}</span>
+                              <span class="font-weight-bold subheading text-color">{{ item.title }}</span>
                               <v-btn
                                 class="pa-0 ma-0"
                                 flat
                                 @click="portfolioEditButtonClicked(index)"
                               >
                                 <v-icon :size="14">edit</v-icon>
-                                <span class="caption edit-text-color">編集する</span>
+                                <span class="caption teal-text-color">編集する</span>
                               </v-btn>
                             </div>
-                            <p　class="textColor return">{{ item.content }}</p>
+                            <p　class="text-color return">{{ item.content }}</p>
                             <a :href="item.url">{{ item.url }}</a>
                           </v-flex>
                         </v-layout>
                         <div v-else class="pt-4 pb-3">
                           <v-img :src="item.imageUrl" aspect-ratio="1.5" max-height="100" max-width="160"></v-img>
                           <div>
-                            <span class="font-weight-bold subheading textColor">{{ item.title }}</span>
+                            <span class="font-weight-bold subheading text-color">{{ item.title }}</span>
                             <v-btn
                               class="pa-0 ma-0"
                               flat
                               @click="portfolioEditButtonClicked(index)"
                             >
                               <v-icon :size="14">edit</v-icon>
-                              <span class="caption edit-text-color">編集する</span>
+                              <span class="caption teal-text-color">編集する</span>
                             </v-btn>
                           </div>
-                          <p　class="textColor return">{{ item.content }}</p>
+                          <p　class="text-color return">{{ item.content }}</p>
                           <a :href="item.url">{{ item.url }}</a>
                         </div>
                       </template>
@@ -599,7 +599,7 @@
                         @click="skillsEditButtonClicked(null)"
                       >
                         <v-icon :size="14">edit</v-icon>
-                        <span class="caption edit-text-color">編集する</span>
+                        <span class="caption teal-text-color">編集する</span>
                       </v-btn>
                     </v-flex>
                   </v-layout>
@@ -680,7 +680,7 @@
                         @click="linksEditButtonClicked(null)"
                       >
                         <v-icon :size="14">edit</v-icon>
-                        <span class="caption edit-text-color">追加する</span>
+                        <span class="caption teal-text-color">追加する</span>
                       </v-btn>
                     </v-flex>
                   </v-layout>
@@ -692,7 +692,7 @@
                     <v-list v-if="!isEditingLinks && links != null" class="pl-4">
                       <template v-for="(item, index) in links">
                         <div class="py-2">
-                          <div class="font-weight-bold body-2 textColor">
+                          <div class="font-weight-bold body-2 text-color">
                             {{ item.title }}
                             <v-btn
                               class="pa-0 ma-0"
@@ -700,7 +700,7 @@
                               @click="linksEditButtonClicked(index)"
                             >
                               <v-icon :size="14">edit</v-icon>
-                              <span class="caption edit-text-color">編集する</span>
+                              <span class="caption teal-text-color">編集する</span>
                             </v-btn>
                           </div>
                           <p>
@@ -779,7 +779,7 @@
                         @click="userInfoEditButtonClicked"
                       >
                         <v-icon :size="14">edit</v-icon>
-                        <span class="caption edit-text-color">編集する</span>
+                        <span class="caption teal-text-color">編集する</span>
                       </v-btn>
                     </v-flex>
                   </v-layout>

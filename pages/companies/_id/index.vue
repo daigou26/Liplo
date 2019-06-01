@@ -43,7 +43,7 @@
                 >
                   <v-img :src="companyImageUrl" :size="40"></v-img>
                 </v-avatar>
-                <span class="title textColor font-weight-bold align-center px-3">
+                <span class="title text-color font-weight-bold align-center px-3">
                   {{ companyName }}
                 </span>
               </v-card-actions>
@@ -51,7 +51,7 @@
             <!-- members -->
             <div v-if="members" class="py-4">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -75,10 +75,10 @@
                           >
                             <img v-if="member.imageUrl" :src="member.imageUrl">
                           </v-avatar>
-                          <div class="sub-title1 py-2 font-weight-bold textColor">
+                          <div class="sub-title1 py-2 font-weight-bold text-color">
                             {{ member.name }}
                           </div>
-                          <div v-if="member.position" class="textColor">
+                          <div v-if="member.position" class="text-color">
                             {{ member.position }}
                           </div>
                         </div>
@@ -91,7 +91,7 @@
             <!-- mission -->
             <div v-if="mission" class="py-5">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -106,7 +106,7 @@
             <!-- vision -->
             <div v-if="vision" class="py-5">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -121,7 +121,7 @@
             <!-- value -->
             <div v-if="value" class="py-5">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -136,7 +136,7 @@
             <!-- culture -->
             <div v-if="culture" class="py-5">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -151,7 +151,7 @@
             <!-- what -->
             <div v-if="what" class="py-5">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -170,14 +170,14 @@
                         </v-flex>
                         <v-flex xs8 sm9 lg10 class="pl-4 break">
                           <div class="font-weight-bold body-text">{{ service.title }}</div>
-                          <p　class="textColor return">{{ service.content }}</p>
+                          <p　class="text-color return">{{ service.content }}</p>
                           <a :href="service.url">{{ service.url }}</a>
                         </v-flex>
                       </div>
                       <div v-else class="pt-4">
                         <v-img :src="service.imageUrl" aspect-ratio="1.5" max-height="100" max-width="160"></v-img>
                         <div class="font-weight-bold body-text">{{ service.title }}</div>
-                        <div　class="textColor return pb-2">{{ service.content }}</div>
+                        <div　class="text-color return pb-2">{{ service.content }}</div>
                         <a :href="service.url">{{ service.url }}</a>
                       </div>
                   </template>
@@ -187,7 +187,7 @@
             <!-- why -->
             <div v-if="why" class="py-5">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -202,7 +202,7 @@
             <!-- 福利厚生 -->
             <div v-if="welfare" class="py-5">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -217,7 +217,7 @@
             <!-- review -->
             <div class="py-5">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -426,7 +426,7 @@
             <!-- 募集 -->
             <div class="py-5">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -455,7 +455,7 @@
                         >
                           <span>{{ occupation(job.occupation) }}</span>
                         </div>
-                        <div class="sub-title1 font-weight-bold textColor">
+                        <div class="sub-title1 font-weight-bold text-color">
                           {{ job.title }}
                         </div>
                       </v-card>
@@ -477,7 +477,7 @@
             <!-- 企業情報 -->
             <div class="py-5">
               <p
-                class="font-weight-bold textColor"
+                class="font-weight-bold text-color"
                 :class="{
                   'headline': $vuetify.breakpoint.smAndUp,
                   'title': $vuetify.breakpoint.xsOnly
@@ -532,7 +532,7 @@
               >
                 <v-icon>close</v-icon>
               </v-toolbar-side-icon>
-              <v-toolbar-title v-if="reviews" class="font-weight-bold textColor">
+              <v-toolbar-title v-if="reviews" class="font-weight-bold text-color">
                 レビュー{{ reviews.rating.count }}件
               </v-toolbar-title>
             </v-toolbar>

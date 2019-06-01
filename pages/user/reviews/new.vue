@@ -77,22 +77,22 @@
                       ></v-img>
                     </v-list-tile-avatar>
                     <v-list-tile-content>
-                      <v-list-tile-title class="textColor font-weight-bold return">{{ notReviewedCompany.companyName }}</v-list-tile-title>
+                      <v-list-tile-title class="text-color font-weight-bold return">{{ notReviewedCompany.companyName }}</v-list-tile-title>
                     </v-list-tile-content>
                   </v-list-tile>
                 </v-card-actions>
               </v-card>
               <div v-if="notReviewedCompany.occupation">
-                <span class="font-weight-bold textColor">職種:
+                <span class="font-weight-bold text-color">職種:
                   <span class="light-text-color">{{ notReviewedCompany.occupation }}</span>
                 </span>
               </div>
               <div class="py-5">
-                <p class="pb-3 title font-weight-bold textColor">
+                <p class="pb-3 title font-weight-bold text-color">
                   レビュー
                 </p>
                 <div class="py-3">
-                  <p class="textColor">成長できる環境か</p>
+                  <p class="text-color">成長できる環境か</p>
                   <v-rating
                     v-model="growth"
                     hover
@@ -102,7 +102,7 @@
                   />
                 </div>
                 <div class="py-3">
-                  <p class="textColor">仕事内容が募集に書かれていたこととあっているか</p>
+                  <p class="text-color">仕事内容が募集に書かれていたこととあっているか</p>
                   <v-rating
                     v-model="job"
                     hover
@@ -112,7 +112,7 @@
                   />
                 </div>
                 <div class="py-3">
-                  <p class="textColor">インターン生に対して裁量が与えられているか</p>
+                  <p class="text-color">インターン生に対して裁量が与えられているか</p>
                   <v-rating
                     v-model="discretion"
                     hover
@@ -122,7 +122,7 @@
                   />
                 </div>
                 <div class="py-3">
-                  <p class="textColor">勤務時間を柔軟に決められるか</p>
+                  <p class="text-color">勤務時間を柔軟に決められるか</p>
                   <v-rating
                     v-model="flexibleSchedule"
                     hover
@@ -132,7 +132,7 @@
                   />
                 </div>
                 <div class="py-3">
-                  <p class="textColor">勤務中の自由度があるか（休憩などが自由にできるか）</p>
+                  <p class="text-color">勤務中の自由度があるか（休憩などが自由にできるか）</p>
                   <v-rating
                     v-model="flexibility"
                     hover
@@ -142,7 +142,7 @@
                   />
                 </div>
                 <div class="py-3">
-                  <p class="textColor">メンターの評価（自分の担当者の評価）</p>
+                  <p class="text-color">メンターの評価（自分の担当者の評価）</p>
                   <v-rating
                     v-model="mentor"
                     hover
@@ -152,7 +152,7 @@
                   />
                 </div>
                 <div class="py-3">
-                  <p class="textColor">社内の雰囲気が良かったかどうか</p>
+                  <p class="text-color">社内の雰囲気が良かったかどうか</p>
                   <v-rating
                     v-model="atmosphere"
                     hover
