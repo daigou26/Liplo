@@ -38,6 +38,7 @@
         id="candidates"
         :headers="headers"
         :items="passes"
+        :pagination.sync="pagination"
         class="elevation-1 mt-2"
         hide-actions
         no-data-text="候補者がいません。"
@@ -115,8 +116,12 @@ export default {
         { text: '職種', value: 'occupation', sortable: false },
         { text: '使用済みか', value: 'isAccepted', sortable: false },
         { text: '契約済みか', value: 'isContracted', sortable: false},
-        { text: '使用日', value: 'acceptedDate', sortable: false },
+        { text: '使用日', value: 'acceptedDate' },
       ],
+      pagination: {
+        sortBy: 'acceptedDate',
+        descending: true,
+      },
     }
   },
   computed: {

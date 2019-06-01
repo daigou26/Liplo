@@ -659,11 +659,11 @@ export default {
       }
 
       var worktime = {
-        begin: Number(this.tempWorktime.begin),
-        end: Number(this.tempWorktime.end),
+        begin: this.tempWorktime.begin,
+        end: this.tempWorktime.end,
       }
 
-      const status = this.tempStatus == '公開中' ? 'published' : 'draft'
+      const status = this.tempStatus == '公開中' ? 'published' : 'private'
 
       this.updateJob({
         params: this.$route.params,

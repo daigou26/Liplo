@@ -18,6 +18,7 @@
       <v-data-table
         :headers="headers"
         :items="reviews"
+        :pagination.sync="pagination"
         class="elevation-1"
         hide-actions
         no-data-text="レビューがありません。"
@@ -71,6 +72,10 @@ export default {
         { text: '評価', value: 'all' },
         { text: 'コメント', value: 'content', sortable: false },
       ],
+      pagination: {
+        sortBy: 'createdAt',
+        descending: true,
+      },
     }
   },
   computed: {

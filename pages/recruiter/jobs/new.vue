@@ -486,8 +486,8 @@ export default {
       }
 
       var worktime = {
-        begin: Number(this.worktime.begin),
-        end: Number(this.worktime.end),
+        begin: this.worktime.begin,
+        end: this.worktime.end,
       }
 
       const status = this.status == '公開' ? 'published' : 'draft'

@@ -21,6 +21,7 @@
       <v-data-table
         :headers="headers"
         :items="jobs"
+        :pagination.sync="pagination"
         class="elevation-1"
         hide-actions
         no-data-text="まだ募集を作成していません。"
@@ -102,6 +103,10 @@ export default {
         { text: '投稿日', value: 'timestamp' },
         { text: '編集', value: 'edit', sortable: false },
       ],
+      pagination: {
+        sortBy: 'timestamp',
+        descending: true,
+      },
     }
   },
   computed: {

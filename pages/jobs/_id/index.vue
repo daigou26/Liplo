@@ -793,7 +793,8 @@
               v-if="uid"
               large
               :disabled="isCandidate"
-              class="warning"
+              class="white--text"
+              color="orange lighten-1"
               id="job-apply"
               @click="applyButtonClicked"
             >

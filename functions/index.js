@@ -113,7 +113,7 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
       from: `LightHouse <noreply@firebase.com>`,
       to: email,
     }
-    mailOptions.subject = `[招待]${userName}さんが${companyName}にあなたを招待しました。`
+    mailOptions.subject = `[招待] ${userName}さんが${companyName}にあなたを招待しました。`
     mailOptions.html = `
       <body>
         <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -802,7 +802,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
                       from: `LightHouse <noreply@firebase.com>`,
                       to: userDoc.data().email,
                     }
-                    mailOptions.subject = `[パス]${companyName}から${passTypeText}が届きました！`
+                    mailOptions.subject = `[パス] ${companyName}から${passTypeText}が届きました！`
                     mailOptions.html = `
                       <body>
                         <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -1112,7 +1112,7 @@ exports.passHasChanged = functions.region('asia-northeast1')
                         from: `LightHouse <noreply@firebase.com>`,
                         to: member.email,
                       }
-                      mailOptions.subject = `[パス]${userName}さんが${typeText}を使用しました。`
+                      mailOptions.subject = `[パス] ${userName}さんが${typeText}を使用しました。`
                       mailOptions.html = `
                         <body>
                           <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -1493,7 +1493,7 @@ exports.scoutUser = functions.region('asia-northeast1')
                               from: `LightHouse <noreply@firebase.com>`,
                               to: userDoc.data().email,
                             }
-                            mailOptions.subject = `[スカウト]${companyName}にスカウトされました！ 返事をして話を聞きに行ってみましょう！`
+                            mailOptions.subject = `[スカウト] ${companyName}にスカウトされました！ 返事をして話を聞きに行ってみましょう！`
                             mailOptions.html = `
                               <body>
                                 <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -1655,7 +1655,7 @@ exports.scoutUser = functions.region('asia-northeast1')
                           from: `LightHouse <noreply@firebase.com>`,
                           to: userDoc.data().email,
                         }
-                        mailOptions.subject = `[スカウト]${companyName}にスカウトされました！ 返事をして話を聞きに行ってみましょう！`
+                        mailOptions.subject = `[スカウト] ${companyName}にスカウトされました！ 返事をして話を聞きに行ってみましょう！`
                         mailOptions.html = `
                           <body>
                             <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -1900,7 +1900,7 @@ exports.applyForJob = functions.region('asia-northeast1')
                           from: `LightHouse <noreply@firebase.com>`,
                           to: member.email,
                         }
-                        mailOptions.subject = `[応募]${user.name}さんから応募が来ました。`
+                        mailOptions.subject = `[応募] ${user.name}さんから応募が来ました。`
                         mailOptions.html = `
                           <body>
                             <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -2031,7 +2031,7 @@ exports.applyForJob = functions.region('asia-northeast1')
                       from: `LightHouse <noreply@firebase.com>`,
                       to: member.email,
                     }
-                    mailOptions.subject = `[応募]${user.name}さんから応募が来ました。`
+                    mailOptions.subject = `[応募] ${user.name}さんから応募が来ました。`
                     mailOptions.html = `
                       <body>
                         <table border="0" cellpadding="0" cellspacing="0" width="100%">
