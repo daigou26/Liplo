@@ -1,6 +1,6 @@
 <template>
   <!-- メールアドレスの確認が済んでいない場合は確認してもらう -->
-  <v-toolbar v-if="uid && !isVerified && type == 'user'" flat fixed app color="white" id="toolbar">
+  <v-toolbar v-if="uid && uid != '' && !isVerified && type == 'user'" flat fixed app color="white" id="toolbar">
     <v-toolbar-title v-if="(!path.includes('/recruiter') && !path.includes('/users')) || breakpoint == 'xs'">Application</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items>
@@ -180,11 +180,11 @@
           </div>
         </v-card>
       </v-menu>
+      <!-- Profile画像 -->
       <v-layout row wrap align-center class="pl-3">
         <v-flex class="text-xs-center">
           <div class="text-xs-left">
             <v-menu offset-y offset-x min-width="250">
-              <!-- Profile画像 -->
               <v-avatar
                 slot="activator"
                 :size="avatarSize"
@@ -349,7 +349,7 @@
     <v-toolbar-items>
       <!-- messages -->
       <v-btn
-        v-if="uid"
+        v-if="uid && uid != ''"
         flat
         to="/messages"
         active-class
@@ -364,7 +364,7 @@
         </v-badge>
       </v-btn>
       <!-- notifications -->
-      <v-btn v-if="uid" flat class="hidden-xs-only" @click="notificationsButtonClicked">
+      <v-btn v-if="uid && uid != ''" flat class="hidden-xs-only" @click="notificationsButtonClicked">
         <span v-if="!hasNewNotification" class="font-weight-bold text-color">通知</span>
         <v-badge v-else overlap color="red">
           <template v-slot:badge>
@@ -374,7 +374,7 @@
         </v-badge>
       </v-btn>
       <v-menu
-        v-if="uid && breakpoint != 'xs'"
+        v-if="uid && uid != '' && breakpoint != 'xs'"
         v-model="notificationsMenu"
         :position-x="9000"
         :position-y="70"
@@ -428,13 +428,129 @@
           </div>
         </v-card>
       </v-menu>
+      <!-- help -->
+      <v-btn v-if="uid && uid != ''"　flat class="hidden-xs-only" @click="helpMenu = true">
+        <span class="font-weight-bold text-color">ヘルプ</span>
+      </v-btn>
+      <v-menu
+        v-if="uid && uid != '' && breakpoint != 'xs'"
+        v-model="helpMenu"
+        :close-on-content-click="false"
+        :position-x="9000"
+        :position-y="0"
+        min-width="400"
+        max-width="400"
+        max-height="95%"
+        class="hidden-xs-only scroll-y"
+      >
+        <v-card class="pb-3">
+          <v-toolbar flat color="white" height="60">
+            <span class="font-weight-bold subheading">サービスの使い方</span>
+            <v-spacer></v-spacer>
+            <v-toolbar-items>
+              <v-btn flat icon @click="helpMenu = false">
+                <v-icon>close</v-icon>
+              </v-btn>
+            </v-toolbar-items>
+          </v-toolbar>
+          <v-timeline
+            align-top
+            dense
+            class="mt-3 mx-3"
+          >
+            <v-timeline-item
+              color="blue"
+              small
+            >
+              <v-layout pt-3>
+                <v-flex>
+                  <strong class="text-color">1. プロフィール</strong>
+                  <div class="pt-2 caption light-text-color">
+                    まず始めにプロフィールを完成させましょう！
+                    プロフィール完成度が高いとスカウトされやすくなります。
+                    （完成度が50%を超えていないと、検索に表示されず、スカウトされないのでご注意ください）
+                  </div>
+                </v-flex>
+              </v-layout>
+            </v-timeline-item>
+            <!-- インターン -->
+            <v-timeline-item
+              color="teal"
+              small
+            >
+              <v-layout pt-3>
+                <v-flex>
+                  <strong class="text-color">2. インターン</strong>
+                  <div class="pt-2 caption light-text-color">
+                    気になる企業に応募して、インターンに行きましょう！
+                    インターンに採用されると、ユーザーのスコアが上がります。
+                    スコアが上がるとスカウトされやすくなります。
+                  </div>
+                </v-flex>
+              </v-layout>
+            </v-timeline-item>
+            <!-- レビュー -->
+            <v-timeline-item
+              color="orange"
+              small
+            >
+              <v-layout pt-3>
+                <v-flex>
+                  <strong class="text-color">3. レビュー</strong>
+                  <div class="pt-2 caption light-text-color">
+                    インターンを終えたら、企業のレビューをしてください！
+                    レビューをすると、ユーザーのスコアが上がります。
+                    また、インターン後、企業からフィードバックが届くことがあります。
+                  </div>
+                </v-flex>
+              </v-layout>
+            </v-timeline-item>
+            <!-- パス -->
+            <v-timeline-item
+              color="red"
+              small
+            >
+              <v-layout pt-3>
+                <v-flex>
+                  <strong class="text-color">4. パス</strong>
+                  <div class="pt-2 caption light-text-color">
+                    インターン後、企業が採用したいと思った学生にパスを送ります。
+                    パスには、入社パス、内定パス、先着パスの３種類があり、有効期間内であればいつでも入社できる権利や
+                    内定を受けられる権利などが与えられます。そのため、いくつか気になる企業がある場合でも、
+                    実際にインターンとして働いてから比較することができます。入社する企業を決めたら、パスを使用しましょう！
+                    パスについては<nuxt-link color="teal" to="/user/passes" @click.native="helpMenu = false">マイページ</nuxt-link>から確認できます。
+                  </div>
+                </v-flex>
+              </v-layout>
+            </v-timeline-item>
+            <!-- 契約 -->
+            <v-timeline-item
+              color="pink"
+              small
+            >
+              <v-layout pt-3>
+                <v-flex>
+                  <strong class="text-color">5. 契約</strong>
+                  <div class="pt-2 caption light-text-color">
+                    パスを使用したら、企業の採用担当者から連絡が来ます。
+                    （来ない場合は、メッセージにて連絡を取ってください）
+                    <div>
+                      労働条件や入社日などを確認し、雇用契約を結んでください。
+                    </div>
+                  </div>
+                </v-flex>
+              </v-layout>
+            </v-timeline-item>
+          </v-timeline>
+        </v-card>
+      </v-menu>
+      <!-- Profile画像 -->
       <v-layout row wrap align-center class="pl-4">
         <v-flex class="text-xs-center">
           <!-- ログイン中に表示される -->
-          <div v-if="uid" class="align-center">
+          <div v-if="uid && uid != ''" class="align-center">
             <div class="text-xs-left">
               <v-menu offset-y offset-x min-width="250">
-                <!-- Profile画像 -->
                 <v-avatar
                   slot="activator"
                   :size="avatarSize"
@@ -830,6 +946,7 @@ export default {
     signUpDialog: false,
     signUpForm: false,
     signInDialog: false,
+    helpMenu: false,
     notificationsMenu: false,
     dropdownMenu: false,
     signInValid: true,
