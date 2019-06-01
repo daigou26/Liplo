@@ -467,7 +467,7 @@
         :position-x="9000"
         :position-y="0"
         min-width="400"
-        max-width="400"
+        max-width="450"
         max-height="95%"
         class="hidden-xs-only scroll-y"
       >
@@ -484,7 +484,7 @@
           <v-timeline
             align-top
             dense
-            class="mt-3 mx-3"
+            class="mt-3 ml-3 mr-4"
           >
             <v-timeline-item
               color="blue"
