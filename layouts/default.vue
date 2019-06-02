@@ -11,6 +11,9 @@
         v-if="
           routeName == 'jobs-id' ||
           routeName == 'companies-id' ||
+          path == '/inquiry_for_recruiter' ||
+          path == '/contact' ||
+          path == '/feedback' ||
           (path == '/user/profile' && uid) ||
           (path.includes('/user/settings') && uid)
         "
