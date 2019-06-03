@@ -204,11 +204,13 @@ export default {
   watchQuery: ['occupation'],
   fetch(context) {
     const store = context.store
-    store.dispatch('users/setFilter', context.query)
-    store.dispatch('users/resetState')
-    store.dispatch('users/updateIsInitialLoading', true)
-    store.dispatch('users/updateIsLoading', true)
-    store.dispatch('users/queryUsers', {queryParams: context.query, acceptScout: store.state.settings.acceptScout})
+    if (store.state.profile.companyId && store.state.profile.companyId != '') {
+      store.dispatch('users/setFilter', context.query)
+      store.dispatch('users/resetState')
+      store.dispatch('users/updateIsInitialLoading', true)
+      store.dispatch('users/updateIsLoading', true)
+      store.dispatch('users/queryUsers', {queryParams: context.query, acceptScout: store.state.settings.acceptScout})
+    }
   },
   watch: {
     companyId(companyId) {
@@ -224,7 +226,7 @@ export default {
   methods: {
     infiniteHandler($state) {
       if (!this.allUsersQueried) {
-        if (!this.isLoading && this.companyId != null) {
+        if (!this.isLoading && this.companyId != null && this.companyId != '') {
           this.count += 1
           this.updateIsLoading(true)
           this.queryUsers({queryParams: this.$route.query, acceptScout: this.acceptScout})

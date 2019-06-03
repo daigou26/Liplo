@@ -1,5 +1,6 @@
 export const strict = false
 import { firestore, functions } from '@/plugins/firebase'
+import { event } from 'vue-analytics'
 
 export const actions = {
   // 企業を追加
@@ -39,6 +40,8 @@ export const actions = {
     batch.commit()
       .then(() => {
         router.push('/admin/companies')
+        // analytics
+        event('company', 'signup')
       })
       .catch((error) => {
         console.error("Error", error)

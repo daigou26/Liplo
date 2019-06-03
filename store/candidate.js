@@ -1,5 +1,6 @@
 export const strict = false
 import { firestore, storageRef } from '@/plugins/firebase'
+import { event } from 'vue-analytics'
 
 export const state = () => ({
   user: null,
@@ -434,8 +435,29 @@ export const actions = {
       batch.commit()
         .then(() => {
           commit('setError', null)
+          if (newStatus.intern) {
+            // analytics
+            event({
+              eventCategory: 'user',
+              eventAction: 'hire',
+              eventLabel: 'intern'
+            })
+          } else if (newStatus.hired) {
+            // analytics
+            event({
+              eventCategory: 'user',
+              eventAction: 'hire',
+              eventLabel: 'employ'
+            })
+          }
           if (newStatus.pass) {
             commit('setPass', pass)
+            // analytics
+            event({
+              eventCategory: 'user',
+              eventAction: 'pass',
+              eventLabel: pass.type
+            })
           }
           if (newStatus.rejected || newStatus.hired) {
             router.replace({path: '/recruiter/candidates'})

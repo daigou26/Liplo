@@ -1,6 +1,6 @@
 export const strict = false
 import { firestore, storageRef } from '@/plugins/firebase'
-
+import { event } from 'vue-analytics'
 
 export const state = () => ({
   lastSignInDate: null,
@@ -707,6 +707,15 @@ export const actions = {
         commit('setDepartment', department)
         commit('setGraduationDate', graduationDate)
         commit('updateIsEditingUserInfo', false)
+
+        if (university && university != '') {
+          // analytics
+          event({
+            eventCategory: 'university',
+            eventAction: 'signup',
+            eventLabel: university
+          })
+        }
       })
       .catch((error) => {
         console.error("Error adding document: ", error)

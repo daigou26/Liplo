@@ -1,5 +1,6 @@
 export const strict = false
 import { firestore } from '@/plugins/firebase'
+import { event } from 'vue-analytics'
 
 export const state = () => ({
   companyId: null,
@@ -74,6 +75,14 @@ export const actions = {
     const reviewRef = firestore.collection('reviews').doc()
     batch.set(reviewRef, review)
     batch.commit()
+      .then(() => {
+        // analytics
+        event({
+          eventCategory: 'user',
+          eventAction: 'review',
+          eventValue: Number(review.all)
+        })
+      })
       .catch((error) => {
         console.error("Error", error)
       })

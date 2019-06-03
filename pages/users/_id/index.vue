@@ -458,7 +458,7 @@ export default {
     this.windowHeight = window.innerHeight - toolbarHeight - 48 - 30
     this.windowWidth = window.innerWidth
 
-    if (this.companyId != null && !this.isQueried) {
+    if (this.companyId != null && this.companyId != '' && !this.isQueried) {
       this.resetState()
       this.updateIsLoading(true)
       this.queryUser({nuxt: this.$nuxt, uid: this.params.id, companyId: this.companyId})

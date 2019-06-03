@@ -1,6 +1,7 @@
 export const strict = false
 import firebase from 'firebase'
 import { firestore, functions, auth, GoogleProvider } from '@/plugins/firebase'
+import { event } from 'vue-analytics'
 
 
 export const state = () => ({
@@ -52,6 +53,8 @@ export const actions = {
     auth.createUserWithEmailAndPassword(email, password)
       .then(function() {
         commit('resetLoading')
+        // analytics
+        event('user', 'signup')
       })
       .catch(function(error) {
         console.error("Error adding document: ", error)

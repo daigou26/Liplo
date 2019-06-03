@@ -58,7 +58,14 @@ module.exports = {
   */
   modules: [,
     '@nuxtjs/pwa',
+    '@nuxtjs/google-analytics',
   ],
+
+  // googleAnalytics
+  googleAnalytics: {
+    id: 'UA-127466651-3',
+    dev: false,
+  },
 
   /*
   ** Build configuration
