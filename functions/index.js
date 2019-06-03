@@ -945,6 +945,8 @@ exports.updateCompanyFeedbackCount = functions.region('asia-northeast1')
       }).catch(error => {
         console.error(error)
       })
+    } else {
+      return 0
     }
   })
 

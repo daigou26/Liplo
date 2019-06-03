@@ -1,5 +1,6 @@
 export const strict = false
 import { firestore } from '@/plugins/firebase'
+import { event } from 'vue-analytics'
 
 export const state = () => ({
   uid: null,
@@ -140,6 +141,8 @@ export const actions = {
     batch.commit()
       .then(() => {
         router.replace({path: '/recruiter/feedbacks'})
+        // analytics
+        event('user', 'feedback')
       })
       .catch((error) => {
         console.error("Error adding document: ", error)

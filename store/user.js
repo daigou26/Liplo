@@ -1,5 +1,6 @@
 export const strict = false
 import { firestore, storageRef } from '@/plugins/firebase'
+import { event } from 'vue-analytics'
 
 export const state = () => ({
   imageUrl: '',
@@ -175,6 +176,8 @@ export const actions = {
       })
       .then(() => {
         commit('updateIsCandidate', true)
+        // analytics
+        event('user', 'scout')
       })
       .catch((error) => {
         console.error("Error adding document: ", error)
