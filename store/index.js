@@ -657,16 +657,18 @@ export const actions = {
     } else {
       commit('updateIsRefreshing', false)
       commit('setUid', null)
+
       if (route.path !== '/' &&
-        route.path !== '/signup' &&
-        route.path !== '/inquiry_for_recruiter' &&
-        route.path !== '/contact' &&
-        route.path !== '/feedback' &&
-        route.path !== '/how_to_use' &&
+        route.name !== 'inquiry_for_recruiter' &&
+        route.name !== 'contact' &&
+        route.name !== 'feedback' &&
+        route.name !== 'how_to_use' &&
         route.name !== 'jobs-id' &&
-        route.name !== 'companies-id'
+        route.name !== 'companies-id' &&
+        route.name !== 'companies-id-jobs' &&
+        route.name != null
       ) {
-        router.push('/')
+        router.replace('/')
       }
     }
   },
@@ -683,8 +685,6 @@ export const actions = {
       name: name,
       email: email,
       content: content
-    }).then(function(result) {
-      console.log('contact completed.');
     })
   },
   resetState({commit}) {

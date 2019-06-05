@@ -312,17 +312,17 @@ export default {
     this.footerButtonTop = window.innerHeight - toolbarHeight - 20
   },
   watchQuery: ['occupation', 'features', 'workweek', 'order'],
-  fetch(context) {
+  async fetch(context) {
     const store = context.store
-    store.dispatch('jobs/resetState')
-    store.dispatch('jobs/updateIsInitialLoading', true)
-    store.dispatch('jobs/updateIsLoading', true)
+    await store.dispatch('jobs/resetState')
+    await store.dispatch('jobs/updateIsInitialLoading', true)
+    await store.dispatch('jobs/updateIsLoading', true)
     // filter set
-    store.dispatch('jobs/setFilter', context.query)
+    await store.dispatch('jobs/setFilter', context.query)
     // order set
-    store.dispatch('jobs/setOrder', context.query)
+    await store.dispatch('jobs/setOrder', context.query)
     // query jobs
-    store.dispatch('jobs/queryJobs', context.query)
+    await store.dispatch('jobs/queryJobs', context.query)
   },
   watch: {
     isRefreshed(isRefreshed) {

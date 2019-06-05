@@ -38,7 +38,7 @@
       <div class="font-weight-bold">
         エラーコード： {{ error.statusCode }}
       </div>
-      <v-btn class="mt-3" outline color="teal">HOME</v-btn>
+      <v-btn class="mt-3" outline color="teal" to="/">HOME</v-btn>
       <div class="pt-4">
         <nuxt-link to="/contact" class="link-text textColor">お問い合わせ</nuxt-link>
         <span class="light-text-color">/</span>

@@ -67,7 +67,15 @@
   <!-- recruiter -->
   <v-toolbar v-else-if="uid && uid != '' && type == 'recruiter'" flat fixed app color="white" id="toolbar">
     <!-- filter extension -->
-    <v-flex xs12 slot="extension" v-if="(usersToolbarExtension || jobsToolbarExtension) && !isJobsLoading">
+    <v-flex
+      xs12
+      slot="extension"
+      v-if="
+        (usersToolbarExtension || jobsToolbarExtension) &&
+        !isJobsLoading &&
+        (path == '/' || path == '/users')
+      "
+    >
       <filter-extension></filter-extension>
     </v-flex>
     <v-toolbar-title class="font-weight-bold">
@@ -348,7 +356,7 @@
       </v-dialog>
     </div>
     <!-- filter extension -->
-    <v-flex xs12 slot="extension" v-if="jobsToolbarExtension && !isJobsLoading">
+    <v-flex xs12 slot="extension" v-if="jobsToolbarExtension && !isJobsLoading && path == '/'">
       <filter-extension></filter-extension>
     </v-flex>
     <v-toolbar-title class="font-weight-bold ml-0">

@@ -9,7 +9,12 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex xs12 v-else-if="!isLoading">
+    <v-flex v-else-if="isLoading" xs12 :style="{ height: windowHeight + 'px' }">
+      <v-layout align-center justify-center column fill-height>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex xs12 v-else>
       <!-- snackbar -->
       <v-snackbar
         v-model="snackbar"
@@ -971,11 +976,7 @@
         </v-dialog>
       </div>
     </v-flex>
-    <v-flex v-else xs12 :style="{ height: windowHeight + 'px' }">
-      <v-layout align-center justify-center column fill-height>
-        Now Loading...
-      </v-layout>
-    </v-flex>
+
   </v-layout>
 </template>
 
@@ -1015,15 +1016,17 @@ export default {
   computed: {
     worktimeText: function() {
       return function(worktime) {
-        var begin =
-          String(worktime.begin).substr(0,2)
-          + ':'
-          + String(worktime.begin).substr(2,2)
-        var end =
-          String(worktime.end).substr(0,2)
-          + ':'
-          + String(worktime.end).substr(2,2)
-        return begin + '〜' + end
+        if (worktime) {
+          var begin =
+            String(worktime.begin).substr(0,2)
+            + ':'
+            + String(worktime.begin).substr(2,2)
+          var end =
+            String(worktime.end).substr(0,2)
+            + ':'
+            + String(worktime.end).substr(2,2)
+          return begin + '〜' + end
+        }
       }
     },
     workdayText: function() {
@@ -1041,29 +1044,33 @@ export default {
     },
     workweekDays: function() {
       return function(days) {
-        if (days.one) {
-          return 1
-        } else if (days.two) {
-          return 2
-        } else if (days.three) {
-          return 3
-        } else if (days.four) {
-          return 4
-        } else if (days.five) {
-          return 5
+        if (days) {
+          if (days.one) {
+            return 1
+          } else if (days.two) {
+            return 2
+          } else if (days.three) {
+            return 3
+          } else if (days.four) {
+            return 4
+          } else if (days.five) {
+            return 5
+          }
         }
       }
     },
     occupationIcon: function() {
       return function(occupation) {
-        if (occupation.engineer == true) {
-          return 'fas fa-code'
-        } else if (occupation.designer == true) {
-          return 'fas fa-palette'
-        } else if (occupation.sales == true) {
-          return 'fas fa-user-tie'
-        } else if (occupation.others == true) {
-          return 'その他'
+        if (occupation) {
+          if (occupation.engineer == true) {
+            return 'fas fa-code'
+          } else if (occupation.designer == true) {
+            return 'fas fa-palette'
+          } else if (occupation.sales == true) {
+            return 'fas fa-user-tie'
+          } else if (occupation.others == true) {
+            return 'その他'
+          }
         }
       }
     },
@@ -1088,14 +1095,16 @@ export default {
     },
     occupationText: function() {
       return function(occupation) {
-        if (occupation.engineer == true) {
-          return 'エンジニア'
-        } else if (occupation.designer == true) {
-          return 'デザイナー'
-        } else if (occupation.sales == true) {
-          return '営業'
-        } else if (occupation.others == true) {
-          return 'その他'
+        if (occupation) {
+          if (occupation.engineer == true) {
+            return 'エンジニア'
+          } else if (occupation.designer == true) {
+            return 'デザイナー'
+          } else if (occupation.sales == true) {
+            return '営業'
+          } else if (occupation.others == true) {
+            return 'その他'
+          }
         }
       }
     },
@@ -1177,21 +1186,26 @@ export default {
     this.windowHeight = window.innerHeight - toolbarHeight - 30
     this.windowWidth = window.innerWidth
   },
-  fetch(context) {
+  async fetch(context) {
     const store = context.store
-    store.dispatch('job/resetState')
-    store.dispatch('job/updateIsLoading', true)
+    await store.dispatch('job/resetState')
+    await store.dispatch('job/updateIsLoading', true)
     // query job
-    store.dispatch('job/queryJobDetail', {nuxt: context, params: context.params, uid: store.state.uid})
+    await store.dispatch('job/queryJobDetail', {nuxt: context, params: context.params, uid: store.state.uid})
   },
   watch: {
-    uid(uid) {
-      if (uid && uid != '') {
-        this.resetJobState()
-        this.updateIsLoading(true)
-        this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: uid})
-      }
-    },
+    // uid(uid) {
+    //   console.log('watch');
+    //   if (uid && uid != '') {
+    //     this.resetJobState()
+    //     this.updateIsLoading(true)
+    //     this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: uid})
+    //   } else if (uid == null) {
+    //     this.resetJobState()
+    //     this.updateIsLoading(true)
+    //     this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: null})
+    //   }
+    // },
     windowWidth(width) {
       if (width < 450) {
         this.xsWidth = true

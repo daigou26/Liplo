@@ -21,7 +21,12 @@
         Close
       </v-btn>
     </v-snackbar>
-    <v-flex xs12 sm8 md6 offset-sm2 offset-md3 pb-4>
+    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
+      <v-layout justify-center>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex v-else xs12 sm8 md6 offset-sm2 offset-md3 pb-4>
       <v-card :flat="breakpoint == 'xs'">
         <v-toolbar flat color="white" class="hidden-xs-only">
           <span class="text-color font-weight-bold subheading">お問い合わせ</span>
@@ -120,6 +125,9 @@ export default {
     breakpoint() {
       return this.$vuetify.breakpoint.name
     },
+    ...mapState({
+      isRefreshing: state => state.isRefreshing,
+    })
   },
   methods: {
     sendButtonClicked() {

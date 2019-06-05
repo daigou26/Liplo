@@ -1,5 +1,6 @@
 <template>
   <v-flex
+    v-if="!isRefreshing"
     xs12
     pt-5
   >
@@ -55,6 +56,8 @@
 </template>
 
 <script>
+import { mapActions, mapState, mapGetters } from 'vuex'
+
 export default {
   computed: {
     path() {
@@ -63,6 +66,9 @@ export default {
     breakpoint() {
       return this.$vuetify.breakpoint.name
     },
+    ...mapState({
+      isRefreshing: state => state.isRefreshing,
+    }),
   },
 }
 </script>
