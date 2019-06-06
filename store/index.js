@@ -53,11 +53,12 @@ export const actions = {
     auth.createUserWithEmailAndPassword(email, password)
       .then(function() {
         commit('resetLoading')
+        commit('setAuthError', '')
         // analytics
         event('user', 'signup')
       })
       .catch(function(error) {
-        console.error("Error adding document: ", error)
+        console.error("Error", error)
         var errorCode = error.code
         switch (errorCode) {
           case 'auth/email-already-in-use':
@@ -87,9 +88,10 @@ export const actions = {
             auth.createUserWithEmailAndPassword(email, password)
               .then(function() {
                 commit('resetLoading')
+                commit('setAuthError', '')
               })
               .catch(function(error) {
-                console.error("Error adding document: ", error)
+                console.error("Error", error)
                 var errorCode = error.code
                 switch (errorCode) {
                   case 'auth/email-already-in-use':
@@ -121,9 +123,10 @@ export const actions = {
                 auth.createUserWithEmailAndPassword(email, password)
                   .then(function() {
                     commit('resetLoading')
+                    commit('setAuthError', '')
                   })
                   .catch(function(error) {
-                    console.error("Error adding document: ", error)
+                    console.error("Error", error)
                     var errorCode = error.code
                     switch (errorCode) {
                       case 'auth/email-already-in-use':
@@ -157,9 +160,10 @@ export const actions = {
     auth.signInWithEmailAndPassword(email, password)
       .then(function() {
         commit('resetLoading')
+        commit('setAuthError', '')
       })
       .catch(function(error) {
-        console.error("Error adding document: ", error)
+        console.error("Error", error)
         var errorCode = error.code
         switch (errorCode) {
           case 'auth/user-disabled':
@@ -183,7 +187,6 @@ export const actions = {
   },
   async signOut({dispatch, commit}) {
     auth.signOut()
-    dispatch('jobs/resetFilterState')
     dispatch('job/resetState')
     dispatch('company/resetState')
     dispatch('chats/resetMessagesListener')
