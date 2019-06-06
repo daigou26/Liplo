@@ -807,7 +807,7 @@
                       </v-btn>
                     </div>
                     <p　class="text-color return">{{ service.content }}</p>
-                    <a :href="service.url">{{ service.url }}</a>
+                    <a :href="service.url" target="_blank">{{ service.url }}</a>
                   </v-flex>
                 </v-layout>
                 <div v-else class="pt-4 pb-3">
@@ -824,7 +824,7 @@
                     </v-btn>
                   </div>
                   <p　class="text-color return">{{ service.content }}</p>
-                  <a :href="service.url">{{ service.url }}</a>
+                  <a :href="service.url" target="_blank">{{ service.url }}</a>
                 </div>
               </template>
             </v-list>

@@ -173,14 +173,14 @@
                         <v-flex xs8 sm9 lg10 class="pl-4 break">
                           <div class="font-weight-bold body-text">{{ service.title }}</div>
                           <p　class="text-color return">{{ service.content }}</p>
-                          <a :href="service.url">{{ service.url }}</a>
+                          <a :href="service.url" target="_blank">{{ service.url }}</a>
                         </v-flex>
                       </div>
                       <div v-else class="pt-4">
                         <v-img :src="service.imageUrl" aspect-ratio="1.5" max-height="100" max-width="160"></v-img>
                         <div class="font-weight-bold body-text">{{ service.title }}</div>
                         <div　class="text-color return pb-2">{{ service.content }}</div>
-                        <a :href="service.url">{{ service.url }}</a>
+                        <a :href="service.url" target="_blank">{{ service.url }}</a>
                       </div>
                   </template>
                 </v-list>
@@ -543,7 +543,7 @@
                 <div v-if="url" class="pb-2">
                   <v-card-actions class="pa-0">
                     <v-icon style="font-size: 18px">link</v-icon>
-                    <a :href="url" class="pl-2">{{ url }}</a>
+                    <a :href="url" target="_blank" class="pl-2">{{ url }}</a>
                   </v-card-actions>
                 </div>
                 <div v-if="foundedDate" class="pb-2">
@@ -581,7 +581,7 @@
                 <div v-if="url" class="pb-2">
                   <v-card-actions class="pa-0">
                     <v-icon style="font-size: 18px">link</v-icon>
-                    <a :href="url" class="pl-2">{{ url }}</a>
+                    <a :href="url" target="_blank" class="pl-2">{{ url }}</a>
                   </v-card-actions>
                 </div>
                 <div v-if="foundedDate" class="pb-2">
