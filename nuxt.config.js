@@ -7,7 +7,7 @@ module.exports = {
   mode: 'universal',
 
   generate: {
-    fallback: "404.html",
+    fallback: true,
   },
   /*
   ** Headers of the page

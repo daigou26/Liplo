@@ -26,8 +26,9 @@
       <!-- 並び替え -->
       <v-flex
         xs12
+        style="padding-right: 10px"
         :class="{
-          'pr-5': $vuetify.breakpoint.smAndUp,
+          'pr-4': $vuetify.breakpoint.smAndUp,
         }"
         id="sort"
       >
@@ -313,29 +314,33 @@ export default {
   },
   watchQuery: ['occupation', 'features', 'workweek', 'order'],
   async fetch(context) {
-    const store = context.store
-    await store.dispatch('jobs/resetState')
-    await store.dispatch('jobs/updateIsInitialLoading', true)
-    await store.dispatch('jobs/updateIsLoading', true)
-    // filter set
-    await store.dispatch('jobs/setFilter', context.query)
-    // order set
-    await store.dispatch('jobs/setOrder', context.query)
-    // query jobs
-    await store.dispatch('jobs/queryJobs', context.query)
+    if (context.route.path == '/') {
+      const store = context.store
+      await store.dispatch('jobs/resetState')
+      await store.dispatch('jobs/updateIsInitialLoading', true)
+      await store.dispatch('jobs/updateIsLoading', true)
+      // filter set
+      await store.dispatch('jobs/setFilter', context.query)
+      // order set
+      await store.dispatch('jobs/setOrder', context.query)
+      // query jobs
+      await store.dispatch('jobs/queryJobs', context.query)
+    }
   },
   watch: {
     isRefreshed(isRefreshed) {
       if (isRefreshed == true) {
-        this.resetState()
-        this.updateIsInitialLoading(true)
-        this.updateIsLoading(true)
-        // filter set
-        this.setFilter(this.$route.query)
-        // order set
-        this.setOrder(this.$route.query)
-        // query jobs
-        this.queryJobs(this.$route.query)
+        if (this.$route.path == '/') {
+          this.resetState()
+          this.updateIsInitialLoading(true)
+          this.updateIsLoading(true)
+          // filter set
+          this.setFilter(this.$route.query)
+          // order set
+          this.setOrder(this.$route.query)
+          // query jobs
+          this.queryJobs(this.$route.query)
+        }
       }
     },
   },

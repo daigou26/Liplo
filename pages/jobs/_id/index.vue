@@ -1194,18 +1194,17 @@ export default {
     await store.dispatch('job/queryJobDetail', {nuxt: context, params: context.params, uid: store.state.uid})
   },
   watch: {
-    // uid(uid) {
-    //   console.log('watch');
-    //   if (uid && uid != '') {
-    //     this.resetJobState()
-    //     this.updateIsLoading(true)
-    //     this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: uid})
-    //   } else if (uid == null) {
-    //     this.resetJobState()
-    //     this.updateIsLoading(true)
-    //     this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: null})
-    //   }
-    // },
+    uid(uid) {
+      if (uid && uid != '') {
+        this.resetJobState()
+        this.updateIsLoading(true)
+        this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: uid})
+      } else if (uid == null) {
+        this.resetJobState()
+        this.updateIsLoading(true)
+        this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: null})
+      }
+    },
     windowWidth(width) {
       if (width < 450) {
         this.xsWidth = true
