@@ -6,6 +6,9 @@ const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
 module.exports = {
   mode: 'universal',
 
+  generate: {
+    fallback: true,
+  },
   /*
   ** Headers of the page
   */
@@ -29,6 +32,7 @@ module.exports = {
   router: {
         middleware: [
           'toolbar',
+          'auth'
         ]
     },
   /*

@@ -53,11 +53,12 @@ export const actions = {
     auth.createUserWithEmailAndPassword(email, password)
       .then(function() {
         commit('resetLoading')
+        commit('setAuthError', '')
         // analytics
         event('user', 'signup')
       })
       .catch(function(error) {
-        console.error("Error adding document: ", error)
+        console.error("Error", error)
         var errorCode = error.code
         switch (errorCode) {
           case 'auth/email-already-in-use':
@@ -87,9 +88,10 @@ export const actions = {
             auth.createUserWithEmailAndPassword(email, password)
               .then(function() {
                 commit('resetLoading')
+                commit('setAuthError', '')
               })
               .catch(function(error) {
-                console.error("Error adding document: ", error)
+                console.error("Error", error)
                 var errorCode = error.code
                 switch (errorCode) {
                   case 'auth/email-already-in-use':
@@ -121,9 +123,10 @@ export const actions = {
                 auth.createUserWithEmailAndPassword(email, password)
                   .then(function() {
                     commit('resetLoading')
+                    commit('setAuthError', '')
                   })
                   .catch(function(error) {
-                    console.error("Error adding document: ", error)
+                    console.error("Error", error)
                     var errorCode = error.code
                     switch (errorCode) {
                       case 'auth/email-already-in-use':
@@ -157,9 +160,10 @@ export const actions = {
     auth.signInWithEmailAndPassword(email, password)
       .then(function() {
         commit('resetLoading')
+        commit('setAuthError', '')
       })
       .catch(function(error) {
-        console.error("Error adding document: ", error)
+        console.error("Error", error)
         var errorCode = error.code
         switch (errorCode) {
           case 'auth/user-disabled':
@@ -183,7 +187,6 @@ export const actions = {
   },
   async signOut({dispatch, commit}) {
     auth.signOut()
-    dispatch('jobs/resetFilterState')
     dispatch('job/resetState')
     dispatch('company/resetState')
     dispatch('chats/resetMessagesListener')
@@ -657,16 +660,18 @@ export const actions = {
     } else {
       commit('updateIsRefreshing', false)
       commit('setUid', null)
+
       if (route.path !== '/' &&
-        route.path !== '/signup' &&
-        route.path !== '/inquiry_for_recruiter' &&
-        route.path !== '/contact' &&
-        route.path !== '/feedback' &&
-        route.path !== '/how_to_use' &&
+        route.name !== 'inquiry_for_recruiter' &&
+        route.name !== 'contact' &&
+        route.name !== 'feedback' &&
+        route.name !== 'how_to_use' &&
         route.name !== 'jobs-id' &&
-        route.name !== 'companies-id'
+        route.name !== 'companies-id' &&
+        route.name !== 'companies-id-jobs' &&
+        route.name != null
       ) {
-        router.push('/')
+        router.replace('/')
       }
     }
   },
@@ -683,8 +688,6 @@ export const actions = {
       name: name,
       email: email,
       content: content
-    }).then(function(result) {
-      console.log('contact completed.');
     })
   },
   resetState({commit}) {

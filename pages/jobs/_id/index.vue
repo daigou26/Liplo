@@ -9,7 +9,12 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex xs12 v-else-if="!isLoading">
+    <v-flex v-else-if="isLoading" xs12 :style="{ height: windowHeight + 'px' }">
+      <v-layout align-center justify-center column fill-height>
+        Now Loading...
+      </v-layout>
+    </v-flex>
+    <v-flex xs12 v-else>
       <!-- snackbar -->
       <v-snackbar
         v-model="snackbar"
@@ -168,14 +173,14 @@
                         <v-flex xs8 sm9 lg10 class="pl-4 break">
                           <div class="font-weight-bold body-text">{{ service.title }}</div>
                           <p　class="text-color return">{{ service.content }}</p>
-                          <a :href="service.url">{{ service.url }}</a>
+                          <a :href="service.url" target="_blank">{{ service.url }}</a>
                         </v-flex>
                       </div>
                       <div v-else class="pt-4">
                         <v-img :src="service.imageUrl" aspect-ratio="1.5" max-height="100" max-width="160"></v-img>
                         <div class="font-weight-bold body-text">{{ service.title }}</div>
                         <div　class="text-color return pb-2">{{ service.content }}</div>
-                        <a :href="service.url">{{ service.url }}</a>
+                        <a :href="service.url" target="_blank">{{ service.url }}</a>
                       </div>
                   </template>
                 </v-list>
@@ -413,7 +418,14 @@
                     <v-list>
                       <template v-for="(item, index) in reviews.comments">
                         <v-hover>
-                          <div slot-scope="{ hover }" ontouchstart="" class="pt-2">
+                          <div
+                            slot-scope="{ hover }"
+                            ontouchstart=""
+                            class="pt-2"
+                            :class="{
+                              'pt-3': $vuetify.breakpoint.xsOnly
+                            }"
+                          >
                             <div class="font-weight-bold body-text">
                               <v-avatar
                                 class="grey lighten-3"
@@ -423,18 +435,30 @@
                               </v-avatar>
                               {{ item.occupation }}
                             </div>
-                            <div class="pt-3 body-text return">{{ item.content }}</div>
-                            <div :style="{ visibility: hover ? 'visible' : 'hidden' }">
+                            <div class="pt-3 pl-2 body-text return">{{ item.content }}</div>
+                            <div
+                              class="hidden-xs-only"
+                              :style="{ visibility: hover ? 'visible' : 'hidden' }"
+                            >
                               <v-btn
                                 small
                                 flat
                                 class="caption teal--text text--lighten-1 mx-0"
-                                style="text-decoration: none"
+                                style="text-decoration: none;"
                                 @click="otherReviewsButtonClicked(item.uid)"
                               >
                                 この人が書いた他のレビューを見る
                               </v-btn>
                             </div>
+                            <v-btn
+                              small
+                              flat
+                              class="hidden-sm-and-up caption teal--text text--lighten-1 mt-0 mx-0"
+                              style="text-decoration: none;"
+                              @click="otherReviewsButtonClicked(item.uid)"
+                            >
+                              この人が書いた他のレビューを見る
+                            </v-btn>
                           </div>
                         </v-hover>
                       </template>
@@ -442,6 +466,9 @@
                     <div
                       v-if="reviews.rating.count > 3"
                       class="d-inline-flex teal--text font-weight-bold clickable"
+                      :class="{
+                        'pt-2': $vuetify.breakpoint.xsOnly
+                      }"
                       @click="reviewsButtonClicked"
                     >
                       レビューをすべて見る
@@ -538,7 +565,7 @@
                 <div v-if="url" class="pb-2">
                   <v-card-actions class="pa-0">
                     <v-icon style="font-size: 18px">link</v-icon>
-                    <a :href="url" class="pl-2">{{ url }}</a>
+                    <a :href="url" target="_blank" class="pl-2">{{ url }}</a>
                   </v-card-actions>
                 </div>
                 <div v-if="foundedDate" class="pb-2">
@@ -576,7 +603,7 @@
                 <div v-if="url" class="pb-2">
                   <v-card-actions class="pa-0">
                     <v-icon style="font-size: 18px">link</v-icon>
-                    <a :href="url" class="pl-2">{{ url }}</a>
+                    <a :href="url" target="_blank" class="pl-2">{{ url }}</a>
                   </v-card-actions>
                 </div>
                 <div v-if="foundedDate" class="pb-2">
@@ -692,12 +719,14 @@
                           {{ item.occupation }}
                         </div>
                         <div class="pt-3 body-text return">{{ item.content }}</div>
-                        <div :style="{ visibility: hover ? 'visible' : 'hidden' }">
+                        <div
+                          :style="{ visibility: hover ? 'visible' : 'hidden' }"
+                        >
                           <v-btn
                             small
                             flat
                             class="caption teal--text text--lighten-1 mx-0"
-                            style="text-decoration: none"
+                            style="text-decoration: none;"
                             @click="otherReviewsButtonClicked(item.uid)"
                           >
                             この人が書いた他のレビューを見る
@@ -831,17 +860,22 @@
             <v-toolbar flat color="white">
               <v-toolbar-side-icon
                 @click="reviewsDialog=false"
-                class="ml-2"
+                class="ma-0"
               >
-                <v-icon>close</v-icon>
+                <v-icon style="font-size: 20px">close</v-icon>
               </v-toolbar-side-icon>
-              <v-toolbar-title class="font-weight-bold text-color">
-                レビュー{{ reviews.rating.count }}件
+              <v-toolbar-title class="font-weight-bold ml-0">
+                <span
+                  :class="{
+                    'toolbar-title': $vuetify.breakpoint.smAndUp,
+                    'toolbar-title-small': $vuetify.breakpoint.xsOnly
+                  }"
+                >レビュー{{ reviews.rating.count }}件</span>
               </v-toolbar-title>
             </v-toolbar>
             <v-flex
               xs12
-              :class="{'px-2': $vuetify.breakpoint.smAndUp, 'mt-4': $vuetify.breakpoint.xsOnly}"
+              :class="{'px-2': $vuetify.breakpoint.smAndUp, 'mt-3': $vuetify.breakpoint.xsOnly}"
             >
               <v-container>
                 <v-layout
@@ -852,7 +886,7 @@
                     <v-list class="px-2">
                       <template v-for="(item, index) in allReviews">
                         <v-hover>
-                          <div slot-scope="{ hover }" ontouchstart="" class="pt-2">
+                          <div slot-scope="{ hover }" ontouchstart="" class="pt-3">
                             <div class="font-weight-bold body-text">
                               <v-avatar
                                 :size="25"
@@ -868,10 +902,13 @@
                               small
                               half-increments
                               readonly
-                              class="pt-2"
+                              class="pt-3 pl-2"
                             />
-                            <div class="pt-3 body-text return">{{ item.content }}</div>
-                            <div :style="{ visibility: hover ? 'visible' : 'hidden' }">
+                            <div class="pt-3 pl-2 body-text return">{{ item.content }}</div>
+                            <div
+                              class="hidden-xs-only"
+                              :style="{ visibility: hover ? 'visible' : 'hidden' }"
+                            >
                               <v-btn
                                 small
                                 flat
@@ -882,8 +919,18 @@
                                 この人が書いた他のレビューを見る
                               </v-btn>
                             </div>
+                            <v-btn
+                              small
+                              flat
+                              class="hidden-sm-and-up caption teal--text text--lighten-1 mt-0 mx-0"
+                              style="text-decoration: none;"
+                              @click="otherReviewsButtonClicked(item.uid)"
+                            >
+                              この人が書いた他のレビューを見る
+                            </v-btn>
                           </div>
                         </v-hover>
+                        <v-divider v-if="allReviews.length != index + 1"></v-divider>
                       </template>
                     </v-list>
                     <infinite-loading
@@ -902,18 +949,23 @@
             <v-toolbar flat color="white">
               <v-toolbar-side-icon
                 @click="otherReviewsDialog=false"
-                class="ml-2"
+                class="ma-0"
               >
-                <v-icon v-show="reviewsDialog">arrow_back</v-icon>
-                <v-icon v-show="!reviewsDialog">close</v-icon>
+                <v-icon v-show="reviewsDialog" style="font-size: 20px">arrow_back</v-icon>
+                <v-icon v-show="!reviewsDialog" style="font-size: 20px">close</v-icon>
               </v-toolbar-side-icon>
-              <v-toolbar-title class="font-weight-bold text-color">
-                このユーザーが記入したレビュー
+              <v-toolbar-title class="font-weight-bold ml-0">
+                <span
+                  :class="{
+                    'toolbar-title': $vuetify.breakpoint.smAndUp,
+                    'toolbar-title-small': $vuetify.breakpoint.xsOnly
+                  }"
+                >このユーザーが記入したレビュー</span>
               </v-toolbar-title>
             </v-toolbar>
             <v-flex
               xs12
-              :class="{'px-2': $vuetify.breakpoint.smAndUp, 'mt-4': $vuetify.breakpoint.xsOnly}"
+              :class="{'px-2': $vuetify.breakpoint.smAndUp, 'mt-3': $vuetify.breakpoint.xsOnly}"
             >
               <v-container>
                 <v-layout
@@ -923,7 +975,7 @@
                   <div>
                     <v-list class="px-2">
                       <template v-for="(item, index) in userReviews">
-                        <div class="py-2">
+                        <div class="pt-3">
                           <v-card
                             flat
                             class="font-weight-bold body-text"
@@ -947,13 +999,14 @@
                             small
                             half-increments
                             readonly
-                            class="pt-2"
+                            class="pt-3"
                           />
                           <p class="pt-3 caption text-color">
                             職種：　{{ item.occupation }}
                           </p>
-                          <p class="pb-3 body-text return">{{ item.content }}</p>
+                          <div class="pb-3 body-text return">{{ item.content }}</div>
                         </div>
+                        <v-divider v-if="userReviews.length != index + 1"></v-divider>
                       </template>
                     </v-list>
                     <infinite-loading
@@ -971,11 +1024,7 @@
         </v-dialog>
       </div>
     </v-flex>
-    <v-flex v-else xs12 :style="{ height: windowHeight + 'px' }">
-      <v-layout align-center justify-center column fill-height>
-        Now Loading...
-      </v-layout>
-    </v-flex>
+
   </v-layout>
 </template>
 
@@ -1015,15 +1064,17 @@ export default {
   computed: {
     worktimeText: function() {
       return function(worktime) {
-        var begin =
-          String(worktime.begin).substr(0,2)
-          + ':'
-          + String(worktime.begin).substr(2,2)
-        var end =
-          String(worktime.end).substr(0,2)
-          + ':'
-          + String(worktime.end).substr(2,2)
-        return begin + '〜' + end
+        if (worktime) {
+          var begin =
+            String(worktime.begin).substr(0,2)
+            + ':'
+            + String(worktime.begin).substr(2,2)
+          var end =
+            String(worktime.end).substr(0,2)
+            + ':'
+            + String(worktime.end).substr(2,2)
+          return begin + '〜' + end
+        }
       }
     },
     workdayText: function() {
@@ -1041,29 +1092,33 @@ export default {
     },
     workweekDays: function() {
       return function(days) {
-        if (days.one) {
-          return 1
-        } else if (days.two) {
-          return 2
-        } else if (days.three) {
-          return 3
-        } else if (days.four) {
-          return 4
-        } else if (days.five) {
-          return 5
+        if (days) {
+          if (days.one) {
+            return 1
+          } else if (days.two) {
+            return 2
+          } else if (days.three) {
+            return 3
+          } else if (days.four) {
+            return 4
+          } else if (days.five) {
+            return 5
+          }
         }
       }
     },
     occupationIcon: function() {
       return function(occupation) {
-        if (occupation.engineer == true) {
-          return 'fas fa-code'
-        } else if (occupation.designer == true) {
-          return 'fas fa-palette'
-        } else if (occupation.sales == true) {
-          return 'fas fa-user-tie'
-        } else if (occupation.others == true) {
-          return 'その他'
+        if (occupation) {
+          if (occupation.engineer == true) {
+            return 'fas fa-code'
+          } else if (occupation.designer == true) {
+            return 'fas fa-palette'
+          } else if (occupation.sales == true) {
+            return 'fas fa-user-tie'
+          } else if (occupation.others == true) {
+            return 'その他'
+          }
         }
       }
     },
@@ -1088,14 +1143,16 @@ export default {
     },
     occupationText: function() {
       return function(occupation) {
-        if (occupation.engineer == true) {
-          return 'エンジニア'
-        } else if (occupation.designer == true) {
-          return 'デザイナー'
-        } else if (occupation.sales == true) {
-          return '営業'
-        } else if (occupation.others == true) {
-          return 'その他'
+        if (occupation) {
+          if (occupation.engineer == true) {
+            return 'エンジニア'
+          } else if (occupation.designer == true) {
+            return 'デザイナー'
+          } else if (occupation.sales == true) {
+            return '営業'
+          } else if (occupation.others == true) {
+            return 'その他'
+          }
         }
       }
     },
@@ -1177,12 +1234,12 @@ export default {
     this.windowHeight = window.innerHeight - toolbarHeight - 30
     this.windowWidth = window.innerWidth
   },
-  fetch(context) {
+  async fetch(context) {
     const store = context.store
-    store.dispatch('job/resetState')
-    store.dispatch('job/updateIsLoading', true)
+    await store.dispatch('job/resetState')
+    await store.dispatch('job/updateIsLoading', true)
     // query job
-    store.dispatch('job/queryJobDetail', {nuxt: context, params: context.params, uid: store.state.uid})
+    await store.dispatch('job/queryJobDetail', {nuxt: context, params: context.params, uid: store.state.uid})
   },
   watch: {
     uid(uid) {
@@ -1190,6 +1247,10 @@ export default {
         this.resetJobState()
         this.updateIsLoading(true)
         this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: uid})
+      } else if (uid == null) {
+        this.resetJobState()
+        this.updateIsLoading(true)
+        this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: null})
       }
     },
     windowWidth(width) {

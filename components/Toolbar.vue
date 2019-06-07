@@ -67,7 +67,15 @@
   <!-- recruiter -->
   <v-toolbar v-else-if="uid && uid != '' && type == 'recruiter'" flat fixed app color="white" id="toolbar">
     <!-- filter extension -->
-    <v-flex xs12 slot="extension" v-if="(usersToolbarExtension || jobsToolbarExtension) && !isJobsLoading">
+    <v-flex
+      xs12
+      slot="extension"
+      v-if="
+        (usersToolbarExtension || jobsToolbarExtension) &&
+        !isJobsLoading &&
+        (path == '/' || path == '/users')
+      "
+    >
       <filter-extension></filter-extension>
     </v-flex>
     <v-toolbar-title class="font-weight-bold">
@@ -80,20 +88,20 @@
           Home
         </nuxt-link>
         <div class="hidden-sm-and-up">
-          <span v-if="breakpoint == 'xs' && path == '/'"　class="toolbar-title">募集</span>
-          <span v-else-if="breakpoint == 'xs' && path == '/recruiter/dashboard'"　class="toolbar-title">ダッシュボード</span>
-          <span v-else-if="breakpoint == 'xs' && path == '/recruiter/company'"　class="toolbar-title">企業情報</span>
-          <span v-else-if="breakpoint == 'xs' && path.includes('/recruiter/jobs')"　class="toolbar-title">募集管理</span>
-          <span v-else-if="breakpoint == 'xs' && path.includes('/recruiter/candidates')"　class="toolbar-title">候補者管理</span>
-          <span v-else-if="breakpoint == 'xs' && path.includes('/recruiter/messages')"　class="toolbar-title">メッセージ</span>
-          <span v-else-if="breakpoint == 'xs' && path.includes('/recruiter/feedbacks')"　class="toolbar-title">フィードバック</span>
-          <span v-else-if="breakpoint == 'xs' && path.includes('/recruiter/reviews')"　class="toolbar-title">レビュー</span>
-          <span v-else-if="breakpoint == 'xs' && path == '/recruiter/company_settings'" class="toolbar-title">設定</span>
-          <span v-else-if="breakpoint == 'xs' && path == '/user/settings/account'" class="toolbar-title">アカウント設定</span>
-          <span v-else-if="breakpoint == 'xs' && path == '/user/settings/notifications'" class="toolbar-title">通知設定</span>
-          <span v-else-if="breakpoint == 'xs' && path == '/users'" class="toolbar-title">ユーザー検索</span>
-          <span v-else-if="breakpoint == 'xs' && path == '/recruiter/profile'" class="toolbar-title">プロフィール</span>
-          <span v-else-if="breakpoint == 'xs' && path == '/recruiter/notifications'" class="toolbar-title">通知</span>
+          <span v-if="breakpoint == 'xs' && path == '/'"　class="toolbar-title-small">募集</span>
+          <span v-else-if="breakpoint == 'xs' && path == '/recruiter/dashboard'"　class="toolbar-title-small">ダッシュボード</span>
+          <span v-else-if="breakpoint == 'xs' && path == '/recruiter/company'"　class="toolbar-title-small">企業情報</span>
+          <span v-else-if="breakpoint == 'xs' && path.includes('/recruiter/jobs')"　class="toolbar-title-small">募集管理</span>
+          <span v-else-if="breakpoint == 'xs' && path.includes('/recruiter/candidates')"　class="toolbar-title-small">候補者管理</span>
+          <span v-else-if="breakpoint == 'xs' && path.includes('/recruiter/messages')"　class="toolbar-title-small">メッセージ</span>
+          <span v-else-if="breakpoint == 'xs' && path.includes('/recruiter/feedbacks')"　class="toolbar-title-small">フィードバック</span>
+          <span v-else-if="breakpoint == 'xs' && path.includes('/recruiter/reviews')"　class="toolbar-title-small">レビュー</span>
+          <span v-else-if="breakpoint == 'xs' && path == '/recruiter/company_settings'" class="toolbar-title-small">設定</span>
+          <span v-else-if="breakpoint == 'xs' && path == '/user/settings/account'" class="toolbar-title-small">アカウント設定</span>
+          <span v-else-if="breakpoint == 'xs' && path == '/user/settings/notifications'" class="toolbar-title-small">通知設定</span>
+          <span v-else-if="breakpoint == 'xs' && path == '/users'" class="toolbar-title-small">ユーザー検索</span>
+          <span v-else-if="breakpoint == 'xs' && path == '/recruiter/profile'" class="toolbar-title-small">プロフィール</span>
+          <span v-else-if="breakpoint == 'xs' && path == '/recruiter/notifications'" class="toolbar-title-small">通知</span>
         </div>
       </no-ssr>
     </v-toolbar-title>
@@ -234,7 +242,28 @@
   </v-toolbar>
   <!-- user & 未ログイン -->
   <v-toolbar v-else-if="path != '/user/menu'" flat color="white" class="toolbar-fixed border-bottom" id="toolbar">
-    <v-toolbar-side-icon @click="iconClicked" class="hidden-sm-and-up"></v-toolbar-side-icon>
+    <v-toolbar-side-icon
+      v-if="uid == null && path == '/'"
+      @click="iconClicked"
+      class="toolbar-side-icon hidden-sm-and-up"
+    >
+      <v-icon style="font-size: 18px">menu</v-icon>
+    </v-toolbar-side-icon>
+    <v-toolbar-side-icon
+      v-if="
+        this.routeName != null &&
+        this.path != '/' &&
+        this.path != '/user/notifications' &&
+        this.path != '/messages' &&
+        this.path != '/user/menu'
+      "
+      @click="iconClicked"
+      class="toolbar-side-icon hidden-sm-and-up"
+    >
+      <v-icon style="font-size: 20px">
+        arrow_back
+      </v-icon>
+    </v-toolbar-side-icon>
     <!-- menu (xs) -->
     <div class="text-xs-center hidden-sm-and-up">
       <v-dialog
@@ -262,7 +291,7 @@
                     <v-list-tile-title class="text-color">ホーム</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
-                <v-divider class="py-1 mx-4"></v-divider>
+                <v-divider class="my-1 mx-4"></v-divider>
                 <!-- 登録 -->
                 <v-list-tile
                   v-if="!uid"
@@ -283,7 +312,7 @@
                     <v-list-tile-title class="text-color">ログイン</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
-                <v-divider v-if="!uid" class="py-1 mx-4"></v-divider>
+                <v-divider v-if="!uid" class="my-1 mx-4"></v-divider>
                 <!-- サービスの使い方 -->
                 <v-list-tile
                   class="px-3"
@@ -348,28 +377,29 @@
       </v-dialog>
     </div>
     <!-- filter extension -->
-    <v-flex xs12 slot="extension" v-if="jobsToolbarExtension && !isJobsLoading">
+    <v-flex xs12 slot="extension" v-if="jobsToolbarExtension && !isJobsLoading && path == '/'">
       <filter-extension></filter-extension>
     </v-flex>
     <v-toolbar-title class="font-weight-bold ml-0">
       <no-ssr>
         <nuxt-link to="/" class="toolbar-title hidden-xs-only">Home</nuxt-link>
         <div class="hidden-sm-and-up">
-          <span v-if="path == '/'"　class="toolbar-title">募集</span>
-          <span v-else-if="routeName == 'jobs-id' || routeName == 'companies-id'"　class="toolbar-title"></span>
-          <span v-else-if="routeName == 'companies-id-jobs'"　class="toolbar-title">募集一覧</span>
-          <span v-else-if="path.includes('/user/notifications')"　class="toolbar-title">通知</span>
-          <span v-else-if="path.includes('/messages')"　class="toolbar-title">メッセージ</span>
-          <span v-else-if="path.includes('/passes')" class="toolbar-title">パス</span>
-          <span v-else-if="path.includes('/career')" class="toolbar-title">キャリア</span>
-          <span v-else-if="path.includes('/feedbacks')" class="toolbar-title">フィードバック</span>
-          <span v-else-if="path.includes('/reviews')" class="toolbar-title">レビュー</span>
-          <span v-else-if="path == '/user/settings/account'" class="toolbar-title">アカウント設定</span>
-          <span v-else-if="path == '/user/settings/notifications'" class="toolbar-title">通知設定</span>
-          <span v-else-if="path == '/contact'" class="toolbar-title">お問い合わせ</span>
-          <span v-else-if="path == '/feedback'" class="toolbar-title">フィードバックを送る</span>
-          <span v-else-if="path == '/how_to_use'" class="toolbar-title">サービスの使い方</span>
-          <span v-else class="toolbar-title">Home</span>
+          <span v-if="path == '/'"　class="toolbar-title-small">募集</span>
+          <span v-else-if="routeName == 'jobs-id' || routeName == 'companies-id'"　class="toolbar-title-small"></span>
+          <span v-else-if="routeName == 'companies-id-jobs'"　class="toolbar-title-small">募集一覧</span>
+          <span v-else-if="path == '/user/profile'" class="toolbar-title-small">プロフィール</span>
+          <span v-else-if="path.includes('/user/notifications')"　class="toolbar-title-small">通知</span>
+          <span v-else-if="path.includes('/messages')"　class="toolbar-title-small">メッセージ</span>
+          <span v-else-if="path.includes('/passes')" class="toolbar-title-small">パス</span>
+          <span v-else-if="path.includes('/career')" class="toolbar-title-small">キャリア</span>
+          <span v-else-if="path.includes('/feedbacks')" class="toolbar-title-small">フィードバック</span>
+          <span v-else-if="path.includes('/reviews')" class="toolbar-title-small">レビュー</span>
+          <span v-else-if="path == '/user/settings/account'" class="toolbar-title-small">アカウント設定</span>
+          <span v-else-if="path == '/user/settings/notifications'" class="toolbar-title-small">通知設定</span>
+          <span v-else-if="path == '/contact'" class="toolbar-title-small">お問い合わせ</span>
+          <span v-else-if="path == '/feedback'" class="toolbar-title-small">フィードバックを送る</span>
+          <span v-else-if="path == '/how_to_use'" class="toolbar-title-small">サービスの使い方</span>
+          <span v-else class="toolbar-title-small">Home</span>
         </div>
       </no-ssr>
     </v-toolbar-title>
@@ -457,11 +487,10 @@
         </v-card>
       </v-menu>
       <!-- help -->
-      <v-btn v-if="uid && uid != ''"　flat class="hidden-xs-only" @click="helpMenu = true">
+      <v-btn flat class="hidden-xs-only" @click="helpMenu = true">
         <span class="font-weight-bold text-color">ヘルプ</span>
       </v-btn>
       <v-menu
-        v-if="uid && uid != ''"
         v-model="helpMenu"
         :close-on-content-click="false"
         :position-x="9000"
@@ -584,14 +613,36 @@
           </v-timeline>
         </v-card>
       </v-menu>
+      <!-- 未ログイン時に表示 -->
+      <v-btn
+        v-if="uid == null"
+        flat
+        @click="signUpButtonClicked"
+        :class="{
+          'small-button': $vuetify.breakpoint.xsOnly
+        }"
+      >
+        <span class="font-weight-bold" style="color: #555555">登録する</span>
+      </v-btn>
+      <v-btn
+        v-if="uid == null"
+        flat
+        @click="signInButtonClicked"
+        :class="{
+          'small-button': $vuetify.breakpoint.xsOnly
+        }"
+      >
+        <span class="font-weight-bold" style="color: #555555">ログイン</span>
+      </v-btn>
       <!-- Profile画像 -->
-      <v-layout row wrap align-center class="pl-4">
+      <v-layout v-if="uid && uid != ''" row wrap align-center ml-3>
         <v-flex class="text-xs-center">
           <!-- ログイン中に表示される -->
-          <div v-if="uid && uid != ''" class="align-center">
+          <div class="align-center">
             <div class="text-xs-left">
               <v-menu offset-y offset-x min-width="250">
                 <v-avatar
+                  class="clickable"
                   slot="activator"
                   :size="avatarSize"
                 >
@@ -634,238 +685,227 @@
               </v-menu>
             </div>
           </div>
-          <!-- ログインしていない場合に表示される -->
-          <div v-else class="hidden-xs-only">
-            <v-btn flat @click="signUpButtonClicked">
-              <span class="font-weight-bold" style="color: #555555">登録する</span>
-            </v-btn>
-            <v-btn flat @click="signInButtonClicked">
-              <span class="font-weight-bold" style="color: #555555">ログイン</span>
-            </v-btn>
-            <!-- Auth Dialog -->
-            <div class="text-xs-center">
-              <v-dialog
-                v-model="dialog"
-                :fullscreen="$vuetify.breakpoint.xsOnly"
-                width="500"
-              >
-                <v-card class="pt-5 pb-3 px-3">
-                  <v-toolbar flat color="white hidden-sm-and-up">
-                    <v-btn icon @click="dialog=false">
-                      <v-icon>close</v-icon>
-                    </v-btn>
-                  </v-toolbar>
-                  <v-flex
-                    xs12
-                    class="text-xs-center"
-                    :class="{'px-2': $vuetify.breakpoint.smAndUp, 'px-3 mt-4': $vuetify.breakpoint.xsOnly}"
-                  >
-                    <!-- ログインフォーム -->
-                    <div v-show="signInDialog">
-                      <v-form v-model="signInValid">
-                        <v-container>
-                          <v-layout
-                            column
-                            justify-center
-                          >
-                            <v-flex xs12>
-                              <!-- Error Message -->
-                              <v-alert
-                                :value="authError != null"
-                                type="error"
-                                class="mb-5"
-                                outline
-                              >
-                                {{ authError }}
-                              </v-alert>
-                              <!-- メールアドレス -->
-                              <v-text-field
-                                v-model="email"
-                                :rules="emailRules"
-                                label="メールアドレス"
-                                append-icon="mail_outline"
-                                solo
-                                required
-                              ></v-text-field>
-                              <!-- パスワード -->
-                              <v-text-field
-                                v-model="password"
-                                :append-icon="passwordShow ? 'visibility_off' : 'visibility'"
-                                :rules="passwordRules"
-                                :type="passwordShow ? 'text' : 'password'"
-                                label="パスワード"
-                                solo
-                                required
-                                @click:append="passwordShow = !passwordShow"
-                              ></v-text-field>
-                            </v-flex>
-                            <!-- ログインボタン -->
-                            <v-btn
-                              :disabled="!signInValid || loading"
-                              class="orange darken-1"
-                              @click="signIn"
-                            >
-                              <span
-                                class="font-weight-bold body-1"
-                                style="color: #ffffff;"
-                              >
-                                ログイン
-                              </span>
-                            </v-btn>
-                          </v-layout>
-                        </v-container>
-                      </v-form>
-                    </div>
-                    <!-- 登録フォーム -->
-                    <div v-show="!signInDialog && signUpForm">
-                      <v-form v-model="signUpValid">
-                        <v-container>
-                          <v-layout
-                            column
-                            justify-center
-                          >
-                            <v-flex xs12>
-                              <!-- Error Message -->
-                              <v-alert
-                                :value="authError != null"
-                                type="error"
-                                class="mb-5"
-                                outline
-                              >
-                                {{ authError }}
-                              </v-alert>
-                              <!-- メールアドレス -->
-                              <v-text-field
-                                v-model="email"
-                                :rules="emailRules"
-                                label="メールアドレス"
-                                append-icon="mail_outline"
-                                solo
-                                required
-                              ></v-text-field>
-                              <!-- 苗字 -->
-                              <v-text-field
-                                v-model="lastName"
-                                :rules="lastNameRules"
-                                label="姓"
-                                append-icon="person"
-                                solo
-                                required
-                              ></v-text-field>
-                              <!-- 名前 -->
-                              <v-text-field
-                                v-model="firstName"
-                                :rules="firstNameRules"
-                                label="名"
-                                append-icon="person"
-                                solo
-                                required
-                              ></v-text-field>
-                              <!-- 生年月日 -->
-                              <v-menu
-                                ref="birthDateMenu"
-                                v-model="birthDateMenu"
-                                :close-on-content-click="false"
-                                :nudge-right="40"
-                                :return-value.sync="birthDate"
-                                lazy
-                                transition="scale-transition"
-                                offset-y
-                                full-width
-                                min-width="290px"
-                              >
-                                <template v-slot:activator="{ on }">
-                                  <v-text-field
-                                    v-model="birthDate"
-                                    label="生年月日"
-                                    append-icon="event"
-                                    solo
-                                    readonly
-                                    v-on="on"
-                                  ></v-text-field>
-                                </template>
-                                <v-date-picker v-model="birthDate" color="teal" locale="ja">
-                                  <v-spacer></v-spacer>
-                                  <v-btn flat color="teal" @click="birthDateMenu = false">Cancel</v-btn>
-                                  <v-btn flat color="teal" @click="$refs.birthDateMenu.save(birthDate)">OK</v-btn>
-                                </v-date-picker>
-                              </v-menu>
-                              <!-- パスワード -->
-                              <v-text-field
-                                v-model="password"
-                                :append-icon="passwordShow ? 'visibility_off' : 'visibility'"
-                                :rules="passwordRules"
-                                :type="passwordShow ? 'text' : 'password'"
-                                label="パスワード"
-                                solo
-                                required
-                                @click:append="passwordShow = !passwordShow"
-                              ></v-text-field>
-                            </v-flex>
-                            <!-- 登録ボタン -->
-                            <v-btn
-                              :disabled="!signUpValid || loading || birthDate == null"
-                              class="orange darken-1"
-                              @click="signUp"
-                            >
-                              <span
-                                class="font-weight-bold body-1"
-                                style="color: #ffffff;"
-                              >
-                                登録する
-                              </span>
-                            </v-btn>
-                          </v-layout>
-                        </v-container>
-                      </v-form>
-                    </div>
-                    <!-- 登録方法 -->
-                    <div v-show="!signInDialog && !signUpForm">
-                      <!-- メールアドレス登録 -->
-                      <v-btn
-                        block
-                        color="teal"
-                        class="my-3 mb-5"
-                        style="color: white;"
-                        @click="signUpForm=true"
-                      >
-                        <v-icon>mail_outline</v-icon>
-                        <span class="font-weight-bold body-1 ml-2">メールアドレスで登録</span>
-                      </v-btn>
-                    </div>
-                  </v-flex>
-
-                  <v-divider class="mt-4"></v-divider>
-                  <!-- アカウントを持っている場合はログイン画面へ -->
-                  <v-flex xs12 class="text-xs-center px-2">
-                    <div v-show="signInDialog">
-                      <span>アカウントをお持ちでない方は</span>
-                      <v-btn
-                        flat
-                        color="teal"
-                        @click="signUpButtonClicked"
-                      >
-                        <span>登録</span>
-                      </v-btn>
-                    </div>
-                    <div v-show="!signInDialog">
-                      <span>アカウントをお持ちの方は</span>
-                      <v-btn
-                        flat
-                        color="teal"
-                        @click="signInButtonClicked"
-                      >
-                        <span>ログイン</span>
-                      </v-btn>
-                    </div>
-                  </v-flex>
-                </v-card>
-              </v-dialog>
-            </div>
-          </div>
         </v-flex>
       </v-layout>
     </v-toolbar-items>
+    <!-- Auth Dialog -->
+    <v-dialog
+      v-model="dialog"
+      :fullscreen="$vuetify.breakpoint.xsOnly"
+      width="500"
+    >
+      <v-card class="pt-5 pb-3 px-3">
+        <v-toolbar flat color="white hidden-sm-and-up">
+          <v-btn icon @click="dialog=false">
+            <v-icon>close</v-icon>
+          </v-btn>
+        </v-toolbar>
+        <v-flex
+          xs12
+          class="text-xs-center"
+          :class="{'px-2': $vuetify.breakpoint.smAndUp, 'px-3 mt-4': $vuetify.breakpoint.xsOnly}"
+        >
+          <!-- ログインフォーム -->
+          <div v-show="signInDialog">
+            <v-form v-model="signInValid">
+              <v-container>
+                <v-layout
+                  column
+                  justify-center
+                >
+                  <v-flex xs12>
+                    <!-- Error Message -->
+                    <v-alert
+                      :value="authError && authError != ''"
+                      type="error"
+                      class="mb-5"
+                      outline
+                    >
+                      {{ authError }}
+                    </v-alert>
+                    <!-- メールアドレス -->
+                    <v-text-field
+                      v-model="email"
+                      :rules="emailRules"
+                      label="メールアドレス"
+                      append-icon="mail_outline"
+                      solo
+                      required
+                    ></v-text-field>
+                    <!-- パスワード -->
+                    <v-text-field
+                      v-model="password"
+                      :append-icon="passwordShow ? 'visibility_off' : 'visibility'"
+                      :rules="passwordRules"
+                      :type="passwordShow ? 'text' : 'password'"
+                      label="パスワード"
+                      solo
+                      required
+                      @click:append="passwordShow = !passwordShow"
+                    ></v-text-field>
+                  </v-flex>
+                  <!-- ログインボタン -->
+                  <v-btn
+                    :disabled="!signInValid || loading"
+                    class="orange darken-1"
+                    @click="signIn"
+                  >
+                    <span
+                      class="font-weight-bold body-1"
+                      style="color: #ffffff;"
+                    >
+                      ログイン
+                    </span>
+                  </v-btn>
+                </v-layout>
+              </v-container>
+            </v-form>
+          </div>
+          <!-- 登録フォーム -->
+          <div v-show="!signInDialog && signUpForm">
+            <v-form v-model="signUpValid">
+              <v-container>
+                <v-layout
+                  column
+                  justify-center
+                >
+                  <v-flex xs12>
+                    <!-- Error Message -->
+                    <v-alert
+                      :value="authError && authError != ''"
+                      type="error"
+                      class="mb-5"
+                      outline
+                    >
+                      {{ authError }}
+                    </v-alert>
+                    <!-- メールアドレス -->
+                    <v-text-field
+                      v-model="email"
+                      :rules="emailRules"
+                      label="メールアドレス"
+                      append-icon="mail_outline"
+                      solo
+                      required
+                    ></v-text-field>
+                    <!-- 苗字 -->
+                    <v-text-field
+                      v-model="lastName"
+                      :rules="lastNameRules"
+                      label="姓"
+                      append-icon="person"
+                      solo
+                      required
+                    ></v-text-field>
+                    <!-- 名前 -->
+                    <v-text-field
+                      v-model="firstName"
+                      :rules="firstNameRules"
+                      label="名"
+                      append-icon="person"
+                      solo
+                      required
+                    ></v-text-field>
+                    <!-- 生年月日 -->
+                    <v-menu
+                      ref="birthDateMenu"
+                      v-model="birthDateMenu"
+                      :close-on-content-click="false"
+                      :nudge-right="40"
+                      :return-value.sync="birthDate"
+                      lazy
+                      transition="scale-transition"
+                      offset-y
+                      full-width
+                      min-width="290px"
+                    >
+                      <template v-slot:activator="{ on }">
+                        <v-text-field
+                          v-model="birthDate"
+                          label="生年月日"
+                          append-icon="event"
+                          solo
+                          readonly
+                          v-on="on"
+                        ></v-text-field>
+                      </template>
+                      <v-date-picker v-model="birthDate" color="teal" locale="ja">
+                        <v-spacer></v-spacer>
+                        <v-btn flat color="teal" @click="birthDateMenu = false">Cancel</v-btn>
+                        <v-btn flat color="teal" @click="$refs.birthDateMenu.save(birthDate)">OK</v-btn>
+                      </v-date-picker>
+                    </v-menu>
+                    <!-- パスワード -->
+                    <v-text-field
+                      v-model="password"
+                      :append-icon="passwordShow ? 'visibility_off' : 'visibility'"
+                      :rules="passwordRules"
+                      :type="passwordShow ? 'text' : 'password'"
+                      label="パスワード"
+                      solo
+                      required
+                      @click:append="passwordShow = !passwordShow"
+                    ></v-text-field>
+                  </v-flex>
+                  <!-- 登録ボタン -->
+                  <v-btn
+                    :disabled="!signUpValid || loading || birthDate == null"
+                    class="orange darken-1"
+                    @click="signUp"
+                  >
+                    <span
+                      class="font-weight-bold body-1"
+                      style="color: #ffffff;"
+                    >
+                      登録する
+                    </span>
+                  </v-btn>
+                </v-layout>
+              </v-container>
+            </v-form>
+          </div>
+          <!-- 登録方法 -->
+          <div v-show="!signInDialog && !signUpForm">
+            <!-- メールアドレス登録 -->
+            <v-btn
+              block
+              color="teal"
+              class="my-3 mb-5"
+              style="color: white;"
+              @click="signUpForm=true"
+            >
+              <v-icon>mail_outline</v-icon>
+              <span class="font-weight-bold body-1 ml-2">メールアドレスで登録</span>
+            </v-btn>
+          </div>
+        </v-flex>
+
+        <v-divider class="mt-4"></v-divider>
+        <!-- アカウントを持っている場合はログイン画面へ -->
+        <v-flex xs12 class="text-xs-center px-2">
+          <div v-show="signInDialog">
+            <span>アカウントをお持ちでない方は</span>
+            <v-btn
+              flat
+              color="teal"
+              @click="signUpButtonClicked"
+            >
+              <span>登録</span>
+            </v-btn>
+          </div>
+          <div v-show="!signInDialog">
+            <span>アカウントをお持ちの方は</span>
+            <v-btn
+              flat
+              color="teal"
+              @click="signInButtonClicked"
+            >
+              <span>ログイン</span>
+            </v-btn>
+          </div>
+        </v-flex>
+      </v-card>
+    </v-dialog>
     <v-dialog
       v-model="recruiterSignUpDialog"
       :fullscreen="$vuetify.breakpoint.xsOnly"
@@ -903,7 +943,7 @@
                   <v-flex xs12>
                     <!-- Error Message -->
                     <v-alert
-                      :value="authError != null"
+                      :value="authError && authError != ''"
                       type="error"
                       class="mb-5"
                       outline
@@ -1104,11 +1144,33 @@ export default {
         this.resetData()
       }
     },
+    authError(authError) {
+      if (authError && authError != '') {
+        this.signInValid = true
+        this.signUpValid = true
+        this.recruiterSignUpValid = true
+      } else if (authError == '') {
+        this.dropdownMenu = false
+        this.dialog = false
+        this.signUpDialog = false
+        this.signInDialog = false
+        this.recruiterSignUpDialog = false
+      }
+    }
   },
   methods: {
     iconClicked() {
       if (this.$vuetify.breakpoint.name == 'xs') {
-        this.dropdownMenu = !this.dropdownMenu
+        if (this.path == '/') {
+          this.dropdownMenu = !this.dropdownMenu
+        } else if (
+          this.routeName != null &&
+          this.path != '/user/notifications' &&
+          this.path != '/messages' &&
+          this.path != '/user/menu'
+        ) {
+          this.$router.back()
+        }
       }
     },
     signUpButtonClicked() {
@@ -1121,7 +1183,7 @@ export default {
       this.$store.dispatch('setLoading')
       this.$store.dispatch('resetAuthError')
       this.$store.dispatch('signUp', {email: this.email, password: this.password})
-      this.dropdownMenu = false
+      this.signUpValid = false
     },
     recruiterSignUpClicked() {
       this.setLoading()
@@ -1132,6 +1194,7 @@ export default {
         email: this.email,
         password: this.password
       })
+      this.recruiterSignUpValid = false
     },
     signInButtonClicked() {
       this.dialog = true
@@ -1143,7 +1206,7 @@ export default {
       this.$store.dispatch('setLoading')
       this.$store.dispatch('resetAuthError')
       this.$store.dispatch('signIn', {email: this.email, password: this.password})
-      this.dropdownMenu = false
+      this.signInValid = false
     },
     signOut() {
       this.$store.dispatch('signOut')
@@ -1188,3 +1251,15 @@ export default {
   }
 }
 </script>
+<style>
+.small-button.v-btn {
+  font-size: 13px;
+  min-width: 0;
+  padding: 0 8px;
+}
+.toolbar-side-icon.v-btn {
+  min-width: 0;
+  width: 20px;
+  font-size: 14px !important;
+}
+</style>

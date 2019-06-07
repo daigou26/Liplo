@@ -13,6 +13,7 @@ const mailTransport = nodemailer.createTransport({
 const rp = require('request-promise')
 const slack_url = functions.config().slack.webhook_url
 const admin = require('firebase-admin')
+
 admin.initializeApp()
 
 // フィードバックをローカルにdownload

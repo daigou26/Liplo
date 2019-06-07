@@ -12,6 +12,7 @@
           routeName == 'jobs-id' ||
           routeName == 'companies-id' ||
           path == '/inquiry_for_recruiter' ||
+          path == '/how_to_use' ||
           path == '/contact' ||
           path == '/feedback' ||
           (path == '/user/profile' && uid) ||
@@ -173,6 +174,11 @@ export default {
   color: #555555;
   text-decoration: inherit;
   font-size: 16px;
+}
+.toolbar-title-small {
+  color: #555555;
+  text-decoration: inherit;
+  font-size: 14px;
 }
 .job-title {
   font-size: 30px;

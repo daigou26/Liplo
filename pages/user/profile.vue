@@ -489,7 +489,7 @@
                               </v-btn>
                             </div>
                             <p　class="text-color return">{{ item.content }}</p>
-                            <a :href="item.url">{{ item.url }}</a>
+                            <a :href="item.url" target="_blank">{{ item.url }}</a>
                           </v-flex>
                         </v-layout>
                         <div v-else class="pt-4 pb-3">
@@ -506,7 +506,7 @@
                             </v-btn>
                           </div>
                           <p　class="text-color return">{{ item.content }}</p>
-                          <a :href="item.url">{{ item.url }}</a>
+                          <a :href="item.url" target="_blank">{{ item.url }}</a>
                         </div>
                       </template>
                     </v-list>
