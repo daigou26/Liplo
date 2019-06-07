@@ -418,7 +418,14 @@
                     <v-list>
                       <template v-for="(item, index) in reviews.comments">
                         <v-hover>
-                          <div slot-scope="{ hover }" ontouchstart="" class="pt-2">
+                          <div
+                            slot-scope="{ hover }"
+                            ontouchstart=""
+                            class="pt-2"
+                            :class="{
+                              'pt-3': $vuetify.breakpoint.xsOnly
+                            }"
+                          >
                             <div class="font-weight-bold body-text">
                               <v-avatar
                                 class="grey lighten-3"
@@ -428,18 +435,30 @@
                               </v-avatar>
                               {{ item.occupation }}
                             </div>
-                            <div class="pt-3 body-text return">{{ item.content }}</div>
-                            <div :style="{ visibility: hover ? 'visible' : 'hidden' }">
+                            <div class="pt-3 pl-2 body-text return">{{ item.content }}</div>
+                            <div
+                              class="hidden-xs-only"
+                              :style="{ visibility: hover ? 'visible' : 'hidden' }"
+                            >
                               <v-btn
                                 small
                                 flat
                                 class="caption teal--text text--lighten-1 mx-0"
-                                style="text-decoration: none"
+                                style="text-decoration: none;"
                                 @click="otherReviewsButtonClicked(item.uid)"
                               >
                                 この人が書いた他のレビューを見る
                               </v-btn>
                             </div>
+                            <v-btn
+                              small
+                              flat
+                              class="hidden-sm-and-up caption teal--text text--lighten-1 mt-0 mx-0"
+                              style="text-decoration: none;"
+                              @click="otherReviewsButtonClicked(item.uid)"
+                            >
+                              この人が書いた他のレビューを見る
+                            </v-btn>
                           </div>
                         </v-hover>
                       </template>
@@ -447,6 +466,9 @@
                     <div
                       v-if="reviews.rating.count > 3"
                       class="d-inline-flex teal--text font-weight-bold clickable"
+                      :class="{
+                        'pt-2': $vuetify.breakpoint.xsOnly
+                      }"
                       @click="reviewsButtonClicked"
                     >
                       レビューをすべて見る
@@ -697,12 +719,14 @@
                           {{ item.occupation }}
                         </div>
                         <div class="pt-3 body-text return">{{ item.content }}</div>
-                        <div :style="{ visibility: hover ? 'visible' : 'hidden' }">
+                        <div
+                          :style="{ visibility: hover ? 'visible' : 'hidden' }"
+                        >
                           <v-btn
                             small
                             flat
                             class="caption teal--text text--lighten-1 mx-0"
-                            style="text-decoration: none"
+                            style="text-decoration: none;"
                             @click="otherReviewsButtonClicked(item.uid)"
                           >
                             この人が書いた他のレビューを見る
@@ -836,17 +860,22 @@
             <v-toolbar flat color="white">
               <v-toolbar-side-icon
                 @click="reviewsDialog=false"
-                class="ml-2"
+                class="ma-0"
               >
-                <v-icon>close</v-icon>
+                <v-icon style="font-size: 20px">close</v-icon>
               </v-toolbar-side-icon>
-              <v-toolbar-title class="font-weight-bold text-color">
-                レビュー{{ reviews.rating.count }}件
+              <v-toolbar-title class="font-weight-bold ml-0">
+                <span
+                  :class="{
+                    'toolbar-title': $vuetify.breakpoint.smAndUp,
+                    'toolbar-title-small': $vuetify.breakpoint.xsOnly
+                  }"
+                >レビュー{{ reviews.rating.count }}件</span>
               </v-toolbar-title>
             </v-toolbar>
             <v-flex
               xs12
-              :class="{'px-2': $vuetify.breakpoint.smAndUp, 'mt-4': $vuetify.breakpoint.xsOnly}"
+              :class="{'px-2': $vuetify.breakpoint.smAndUp, 'mt-3': $vuetify.breakpoint.xsOnly}"
             >
               <v-container>
                 <v-layout
@@ -857,7 +886,7 @@
                     <v-list class="px-2">
                       <template v-for="(item, index) in allReviews">
                         <v-hover>
-                          <div slot-scope="{ hover }" ontouchstart="" class="pt-2">
+                          <div slot-scope="{ hover }" ontouchstart="" class="pt-3">
                             <div class="font-weight-bold body-text">
                               <v-avatar
                                 :size="25"
@@ -873,10 +902,13 @@
                               small
                               half-increments
                               readonly
-                              class="pt-2"
+                              class="pt-3 pl-2"
                             />
-                            <div class="pt-3 body-text return">{{ item.content }}</div>
-                            <div :style="{ visibility: hover ? 'visible' : 'hidden' }">
+                            <div class="pt-3 pl-2 body-text return">{{ item.content }}</div>
+                            <div
+                              class="hidden-xs-only"
+                              :style="{ visibility: hover ? 'visible' : 'hidden' }"
+                            >
                               <v-btn
                                 small
                                 flat
@@ -887,8 +919,18 @@
                                 この人が書いた他のレビューを見る
                               </v-btn>
                             </div>
+                            <v-btn
+                              small
+                              flat
+                              class="hidden-sm-and-up caption teal--text text--lighten-1 mt-0 mx-0"
+                              style="text-decoration: none;"
+                              @click="otherReviewsButtonClicked(item.uid)"
+                            >
+                              この人が書いた他のレビューを見る
+                            </v-btn>
                           </div>
                         </v-hover>
+                        <v-divider v-if="allReviews.length != index + 1"></v-divider>
                       </template>
                     </v-list>
                     <infinite-loading
@@ -907,18 +949,23 @@
             <v-toolbar flat color="white">
               <v-toolbar-side-icon
                 @click="otherReviewsDialog=false"
-                class="ml-2"
+                class="ma-0"
               >
-                <v-icon v-show="reviewsDialog">arrow_back</v-icon>
-                <v-icon v-show="!reviewsDialog">close</v-icon>
+                <v-icon v-show="reviewsDialog" style="font-size: 20px">arrow_back</v-icon>
+                <v-icon v-show="!reviewsDialog" style="font-size: 20px">close</v-icon>
               </v-toolbar-side-icon>
-              <v-toolbar-title class="font-weight-bold text-color">
-                このユーザーが記入したレビュー
+              <v-toolbar-title class="font-weight-bold ml-0">
+                <span
+                  :class="{
+                    'toolbar-title': $vuetify.breakpoint.smAndUp,
+                    'toolbar-title-small': $vuetify.breakpoint.xsOnly
+                  }"
+                >このユーザーが記入したレビュー</span>
               </v-toolbar-title>
             </v-toolbar>
             <v-flex
               xs12
-              :class="{'px-2': $vuetify.breakpoint.smAndUp, 'mt-4': $vuetify.breakpoint.xsOnly}"
+              :class="{'px-2': $vuetify.breakpoint.smAndUp, 'mt-3': $vuetify.breakpoint.xsOnly}"
             >
               <v-container>
                 <v-layout
@@ -928,7 +975,7 @@
                   <div>
                     <v-list class="px-2">
                       <template v-for="(item, index) in userReviews">
-                        <div class="py-2">
+                        <div class="pt-3">
                           <v-card
                             flat
                             class="font-weight-bold body-text"
@@ -952,13 +999,14 @@
                             small
                             half-increments
                             readonly
-                            class="pt-2"
+                            class="pt-3"
                           />
                           <p class="pt-3 caption text-color">
                             職種：　{{ item.occupation }}
                           </p>
-                          <p class="pb-3 body-text return">{{ item.content }}</p>
+                          <div class="pb-3 body-text return">{{ item.content }}</div>
                         </div>
+                        <v-divider v-if="userReviews.length != index + 1"></v-divider>
                       </template>
                     </v-list>
                     <infinite-loading
