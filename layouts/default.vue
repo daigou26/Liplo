@@ -191,6 +191,9 @@ export default {
   font-size: 15px;
   font-weight: 400;
 }
+.caption-2 {
+  font-size: 13px;
+}
 .text-color {
   color: #555555;
 }
