@@ -799,6 +799,9 @@
                         :rules="messageRules"
                         required
                       ></v-textarea>
+                      <div class="caption-2 font-weight-bold light-text-color py-2">
+                        ※ 入社に際しての労働条件などは、候補者とのメッセージにてお伝えください。
+                      </div>
                     </v-form>
                   </div>
                 </div>
