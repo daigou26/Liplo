@@ -28,7 +28,7 @@
               <v-layout pt-3>
                 <v-flex>
                   <strong class="text-color">1. プロフィール</strong>
-                  <div class="pt-2 caption light-text-color">
+                  <div class="pt-2 caption-2 light-text-color">
                     まず始めにプロフィールを完成させましょう！
                     プロフィール完成度が高いとスカウトされやすくなります。
                     （完成度が50%を超えていないと、検索に表示されず、スカウトされないのでご注意ください）
@@ -44,10 +44,15 @@
               <v-layout pt-3>
                 <v-flex>
                   <strong class="text-color">2. インターン</strong>
-                  <div class="pt-2 caption light-text-color">
+                  <div class="pt-2 caption-2 light-text-color">
                     気になる企業に応募して、インターンに行きましょう！
                     インターンに採用されると、ユーザーのスコアが上がります。
                     スコアが上がるとスカウトされやすくなります。
+                    <div class="pt-2 font-weight-bold">
+                      ※ 募集に記載されていた期間が終わると、基本的にはインターンは終了になりますが、
+                      企業の合意が得られれば、インターンを続行することが出来ます。インターンを延長したい場合は、
+                      担当者の方と連絡をとってください。
+                    </div>
                   </div>
                 </v-flex>
               </v-layout>
@@ -60,7 +65,7 @@
               <v-layout pt-3>
                 <v-flex>
                   <strong class="text-color">3. レビュー</strong>
-                  <div class="pt-2 caption light-text-color">
+                  <div class="pt-2 caption-2 light-text-color">
                     インターンを終えたら、企業のレビューをしてください！
                     レビューをすると、ユーザーのスコアが上がります。
                     また、インターン後、企業からフィードバックが届くことがあります。
@@ -76,11 +81,13 @@
               <v-layout pt-3>
                 <v-flex>
                   <strong class="text-color">4. パス</strong>
-                  <div class="pt-2 caption light-text-color">
+                  <div class="pt-2 caption-2 light-text-color">
                     インターン後、企業が採用したいと思った学生にパスを送ります。
-                    パスには、入社パス、内定パス、先着パスの３種類があり、有効期間内であればいつでも入社できる権利や
-                    内定を受けられる権利などが与えられます。そのため、いくつか気になる企業がある場合でも、
-                    実際にインターンとして働いてから比較することができます。入社する企業を決めたら、パスを使用しましょう！
+                    パスには、入社パス、内定パス、先着パスの３種類があり、
+                    有効期間内であればいつでも入社できる権利や内定を受けられる権利などが与えられます。
+                    そのため、いくつか気になる企業がある場合でも、
+                    実際にインターンとして働いてから比較することができます。
+                    入社する企業を決めたら、パスを使用しましょう！
                     <span v-if="uid && uid != ''">
                       パスについては
                       <no-ssr>
@@ -94,6 +101,10 @@
                       </no-ssr>
                       から確認できます。
                     </span>
+                    <div class="pt-2 font-weight-bold">
+                      ※ 労働条件など、入社に際して知りたいことがある場合は、
+                      パスを使用する前に、担当者とのメッセージなどでご確認をお願いします。
+                    </div>
                   </div>
                 </v-flex>
               </v-layout>
@@ -105,8 +116,8 @@
             >
               <v-layout pt-3>
                 <v-flex>
-                  <strong class="text-color">5. 契約</strong>
-                  <div class="pt-2 caption light-text-color">
+                  <strong class="text-color">5. 契約、入社</strong>
+                  <div class="pt-2 caption-2 light-text-color">
                     パスを使用したら、企業の採用担当者から連絡が来ます。
                     （来ない場合は、メッセージにて連絡を取ってください）
                     <div>

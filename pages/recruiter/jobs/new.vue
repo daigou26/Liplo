@@ -19,6 +19,9 @@
     </v-flex>
     <!-- Top Image -->
     <v-flex xs12 sm10 offset-sm1 class="py-3">
+      <div class="pb-2 light-text-color">
+        トップ画像
+      </div>
       <v-img
         v-if="selectedImage"
         :src="selectedImage"
@@ -57,7 +60,7 @@
           v-model="description"
           :rules="descriptionRules"
           label="仕事内容（必須）"
-          placeholder="仕事内容について"
+          placeholder="仕事内容について、記載できる範囲で、出来るだけ詳しくご記入ください。"
           required
         ></v-textarea>
         <v-textarea
@@ -65,7 +68,7 @@
           v-model="wage"
           :rules="wageRules"
           label="給料（必須）"
-          placeholder="給料について"
+          placeholder="給料について（時給や交通費を含むかどうかなど）"
           required
         ></v-textarea>
         <v-textarea
@@ -125,7 +128,7 @@
             required
           ></v-text-field>
           <p class="text-color pt-1" style="font-size: 12px;">
-            パスを出すまでの試用期間。期間は1ヶ月から2ヶ月ほどを推奨しています。試用期間が終わった後にインターンを延長することができます。
+            パスを出すまでのインターン期間。期間は1ヶ月から3ヶ月ほどを推奨しています。試用期間が終わった後にインターンを延長することができます。
           </p>
         </v-flex>
         <v-flex sm6 pt-4>
