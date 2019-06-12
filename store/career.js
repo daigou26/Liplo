@@ -8,6 +8,16 @@ export const state = () => ({
   isLoading: false,
   isNotReviewedListsLoading: false,
   isNotReviewedCompanyLoading: false,
+  occupation: '',
+  jobDescription: '',
+  companyId: '',
+  companyName: '',
+  companyImageUrl: '',
+  startedAt: null,
+  end: null,
+  endedAt: null,
+  isInternExtended: null,
+  extendedInternEnd: null,
 })
 
 export const mutations = {
@@ -28,6 +38,36 @@ export const mutations = {
   },
   updateIsNotReviewedCompanyLoading(state, isLoading) {
     state.isNotReviewedCompanyLoading = isLoading
+  },
+  setOccupation(state, occupation) {
+    state.occupation = occupation
+  },
+  setJobDescription(state, jobDescription) {
+    state.jobDescription = jobDescription
+  },
+  setCompanyId(state, companyId) {
+    state.companyId = companyId
+  },
+  setCompanyName(state, name) {
+    state.companyName = name
+  },
+  setCompanyImageUrl(state, imageUrl) {
+    state.companyImageUrl = imageUrl
+  },
+  setStartedAt(state, startedAt) {
+    state.startedAt = startedAt
+  },
+  setEnd(state, end) {
+    state.end = end
+  },
+  setEndedAt(state, endedAt) {
+    state.endedAt = endedAt
+  },
+  setIsInternExtended(state, isInternExtended) {
+    state.isInternExtended = isInternExtended
+  },
+  setExtendedInternEnd(state, extendedInternEnd) {
+    state.extendedInternEnd = extendedInternEnd
   },
 }
 
@@ -119,6 +159,7 @@ export const actions = {
           const job = {
             careerId: doc.id,
             occupation: doc.data()['occupation'],
+            jobDescription: doc.data()['jobDescription'],
             companyId: doc.data()['companyId'],
             companyImageUrl: doc.data()['companyImageUrl'],
             companyName: doc.data()['companyName'],
@@ -135,7 +176,7 @@ export const actions = {
       })
       .catch(function(error) {
         commit('updateIsLoading', false)
-        console.log("Error getting document:", error)
+        console.log("Error getting document", error)
       })
   },
   updateIsLoading({commit}, isLoading) {
@@ -147,6 +188,60 @@ export const actions = {
   updateIsNotReviewedCompanyLoading({commit}, isLoading) {
     commit('updateIsNotReviewedCompanyLoading', isLoading)
   },
+  // /user/career/:id/edit で呼び出し
+  queryCareerDetail({commit}, {uid, careerId}) {
+    firestore.collection('users')
+      .doc(uid)
+      .collection('career')
+      .doc(careerId)
+      .get()
+      .then(doc => {
+        let startedAt = doc.data()['startedAt']
+        if (startedAt) {
+          let date = new Date( startedAt.seconds * 1000 )
+          let year  = date.getFullYear()
+          let month = date.getMonth() + 1
+          let day  = date.getDate()
+          startedAt = `${year}/${month}/${day}`
+        }
+        let endedAt = doc.data()['endedAt']
+        if (endedAt) {
+          endedAt = new Date( endedAt.seconds * 1000 )
+          endedAt =
+            String(endedAt.getFullYear()) + '-' +
+            String(endedAt.getMonth() + 1) + '-' +
+            String(endedAt.getDate())
+        }
+        commit('setOccupation', doc.data()['occupation'])
+        commit('setJobDescription', doc.data()['jobDescription'])
+        commit('setCompanyId', doc.data()['companyId'])
+        commit('setCompanyName', doc.data()['companyName'])
+        commit('setCompanyImageUrl', doc.data()['companyImageUrl'])
+        commit('setStartedAt', startedAt)
+        commit('setEnd', doc.data()['end'])
+        commit('setEndedAt', endedAt)
+        commit('setIsInternExtended', doc.data()['isInternExtended'])
+        commit('setExtendedInternEnd', doc.data()['extendedInternEnd'])
+        commit('updateIsLoading', false)
+      })
+      .catch(error => {
+        console.log("Error getting document", error)
+        commit('updateIsLoading', false)
+      })
+  },
+  updateCareer({commit}, {router, uid, careerId, newData}) {
+    firestore.collection('users')
+      .doc(uid)
+      .collection('career')
+      .doc(careerId)
+      .update(newData)
+      .then(() => {
+        router.push('/user/career')
+      })
+      .catch(error => {
+        console.log("Error updating document", error)
+      })
+  },
   resetState({commit}) {
     commit('setCareer', [])
     commit('setNotReviewedLists', null)
@@ -154,5 +249,14 @@ export const actions = {
     commit('updateIsLoading', false)
     commit('updateIsNotReviewedListsLoading', false)
     commit('updateIsNotReviewedCompanyLoading', false)
+    commit('setOccupation', '')
+    commit('setJobDescription', '')
+    commit('setCompanyName', '')
+    commit('setCompanyImageUrl', '')
+    commit('setStartedAt', null)
+    commit('setEnd', null)
+    commit('setEndedAt', null)
+    commit('setIsInternExtended', null)
+    commit('setExtendedInternEnd', null)
   },
 }
