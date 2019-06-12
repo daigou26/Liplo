@@ -158,6 +158,7 @@ export const actions = {
           }
           const job = {
             careerId: doc.id,
+            type: doc.data()['type'],
             occupation: doc.data()['occupation'],
             jobDescription: doc.data()['jobDescription'],
             companyId: doc.data()['companyId'],

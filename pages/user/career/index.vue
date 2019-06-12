@@ -43,9 +43,9 @@
             sm10
             xs12
             offset-sm1
-            class="text-xs-center pr-4"
+            class="text-xs-center"
             :class="{
-              'pl-5': $vuetify.breakpoint.smAndUp,
+              'pl-4': $vuetify.breakpoint.smAndUp,
             }"
           >
             <div class="text-xs-left light-text-color pb-5">
@@ -73,8 +73,35 @@
                     <span class="caption teal-text-color">編集する</span>
                   </v-btn>
                 </div>
-                <v-card class="px-4 py-3 text-color text-xs-left">
-                  <div class="mb-1 light-text-color">{{ item.startedAt }}</div>
+                <v-card
+                  class="py-3 text-color text-xs-left"
+                  :class="{
+                    'px-4': $vuetify.breakpoint.smAndUp,
+                    'px-3': $vuetify.breakpoint.xsOnly,
+                  }"
+                >
+                  <div class="mb-2">
+                    <span
+                      v-if="item.type == 'intern'"
+                      class="font-weight-bold caption teal--text"
+                    >
+                      インターン
+                    </span>
+                    <span
+                      v-if="item.type == 'hired'"
+                      class="font-weight-bold caption pink--text"
+                    >
+                      入社
+                    </span>
+                  </div>
+                  <div class="mb-1 light-text-color">
+                    {{ item.startedAt }} ~ 
+                    <span
+                      v-if="
+                        item.end &&
+                        ((item.isInternExtended && item.extendedInternEnd) || !item.isInternExtended)
+                      ">{{ item.endedAt }}</span>
+                  </div>
                   <div class="title font-weight-bold mb-3">{{ item.companyName }}</div>
                   <div class="pb-1">
                     職種:
@@ -84,17 +111,9 @@
                     勤務中
                   </div>
                   <div v-else-if="item.isInternExtended">
-                    <div v-if="item.extendedInternEnd">
-                      終了日:　
-                      <span class="text-color">{{ item.endedAt }}</span>
-                    </div>
-                    <div v-else class="text-color">
+                    <div v-if="!item.extendedInternEnd" class="text-color">
                       インターン延長中
                     </div>
-                  </div>
-                  <div v-else>
-                    終了日:
-                    <span class="text-color">{{ item.endedAt }}</span>
                   </div>
                   <div v-if="item.jobDescription" class="pt-3">
                     仕事内容:
