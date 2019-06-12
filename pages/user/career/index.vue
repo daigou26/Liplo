@@ -95,7 +95,7 @@
                     </span>
                   </div>
                   <div class="mb-1 light-text-color">
-                    {{ item.startedAt }} ~ 
+                    {{ item.startedAt }} ~
                     <span
                       v-if="
                         item.end &&
@@ -103,19 +103,19 @@
                       ">{{ item.endedAt }}</span>
                   </div>
                   <div class="title font-weight-bold mb-3">{{ item.companyName }}</div>
-                  <div class="pb-1">
-                    職種:
-                    <span class="text-color">{{ item.occupation }}</span>
-                  </div>
-                  <div v-if="!item.end" class="text-color">
+                  <div v-if="!item.end" class="text-color pb-3">
                     勤務中
                   </div>
                   <div v-else-if="item.isInternExtended">
-                    <div v-if="!item.extendedInternEnd" class="text-color">
+                    <div v-if="!item.extendedInternEnd" class="text-color pb-3">
                       インターン延長中
                     </div>
                   </div>
-                  <div v-if="item.jobDescription" class="pt-3">
+                  <div class="pb-3">
+                    職種:
+                    <span class="text-color">{{ item.occupation }}</span>
+                  </div>
+                  <div v-if="item.jobDescription">
                     仕事内容:
                     <div class="text-color">
                       {{ item.jobDescription }}

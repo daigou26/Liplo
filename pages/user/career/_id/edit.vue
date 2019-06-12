@@ -200,7 +200,11 @@ export default {
       this.tempEndedAt = endedAt
     },
     jobDescription(jobDescription) {
-      this.tempJobDescription = jobDescription
+      if (jobDescription) {
+        this.tempJobDescription = jobDescription
+      } else {
+        this.tempJobDescription = ''
+      }
     },
   },
   methods: {
@@ -208,13 +212,11 @@ export default {
       let newData = {
         jobDescription: this.tempJobDescription,
       }
-      let endedAt
       if (this.tempEndedAt) {
         var endedAtArr = this.tempEndedAt.split('-')
-        endedAt = new Date(endedAtArr[0], endedAtArr[1] - 1, endedAtArr[2])
+        newData.endedAt = new Date(endedAtArr[0], endedAtArr[1] - 1, endedAtArr[2])
+        newData.end = true
       }
-      newData.endedAt = endedAt
-      newData.end = true
 
       this.updateCareer({
         router: this.$router,
