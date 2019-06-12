@@ -391,6 +391,7 @@
           <span v-else-if="path.includes('/user/notifications')"　class="toolbar-title-small">通知</span>
           <span v-else-if="path.includes('/messages')"　class="toolbar-title-small">メッセージ</span>
           <span v-else-if="path.includes('/passes')" class="toolbar-title-small">パス</span>
+          <span v-else-if="routeName == 'user-career-id-edit'" class="toolbar-title-small">キャリア編集</span>
           <span v-else-if="path.includes('/career')" class="toolbar-title-small">キャリア</span>
           <span v-else-if="path.includes('/feedbacks')" class="toolbar-title-small">フィードバック</span>
           <span v-else-if="path.includes('/reviews')" class="toolbar-title-small">レビュー</span>

@@ -66,19 +66,6 @@
                       </template>
                       <span>ポートフォリオあり</span>
                     </v-tooltip>
-                    <v-tooltip bottom>
-                      <template v-slot:activator="{ on }">
-                        <v-avatar
-                          v-if="user.completionPercentage"
-                          v-on="on"
-                          size="24"
-                          color="orange"
-                        >
-                          <span class="white--text" style="font-size: 12px">{{ user.completionPercentage }}</span>
-                        </v-avatar>
-                      </template>
-                      <span>プロフィール完成度（%）</span>
-                    </v-tooltip>
                   </v-card-actions>
                 </v-list-tile-action>
               </v-list-tile>

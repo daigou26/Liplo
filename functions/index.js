@@ -403,6 +403,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
           const careerRef = admin.firestore().collection('users').doc(user.uid)
             .collection('career').doc(careerId)
           var careerData = {
+            type: 'intern',
             occupation: occupation,
             companyId: companyId,
             companyName: companyName,
@@ -518,7 +519,10 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
               console.error("Error", error)
             })
         } else if (newStatus.hired) {
-          // paidActions 追加
+          const batch = admin.firestore().batch()
+
+          // paidActions に追加
+          const paidActionRef = admin.firestore().collection('paidActions').doc()
           let paidActionData = {
             companyId: companyId,
             companyName: companyName,
@@ -533,15 +537,32 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
           if (companyImageUrl) {
             paidActionData.companyImageUrl = companyImageUrl
           }
+          batch.set(paidActionRef, paidActionData)
 
-          admin.firestore()
-            .collection('paidActions')
-            .add(paidActionData)
+          // キャリア更新
+          const careerId = admin.firestore().collection('users').doc(user.uid)
+            .collection('career').doc().id
+          const careerRef = admin.firestore().collection('users').doc(user.uid)
+            .collection('career').doc(careerId)
+          var careerData = {
+            type: 'hired',
+            occupation: occupation,
+            companyId: companyId,
+            companyName: companyName,
+            startedAt: createdAt,
+            end: false,
+          }
+          if (companyImageUrl) {
+            careerData.companyImageUrl = companyImageUrl
+          }
+          batch.set(careerRef, careerData)
+
+          batch.commit()
             .then(() => {
-              console.log('update paidActions completed.')
+              console.log('update paidActions & set career completed.')
             })
             .catch((error) => {
-              console.error("Error adding document", error)
+              console.error("Error", error)
             })
         }
       }).catch(error => {

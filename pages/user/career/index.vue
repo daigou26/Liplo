@@ -43,11 +43,18 @@
             sm10
             xs12
             offset-sm1
-            class="text-xs-center pr-4"
+            class="text-xs-center"
             :class="{
-              'pl-5': $vuetify.breakpoint.smAndUp,
+              'pl-4': $vuetify.breakpoint.smAndUp,
             }"
           >
+            <div class="text-xs-left light-text-color pb-5">
+              キャリアは、このサービスを通して行ったインターンや入社した企業が表示されます。
+              <div>
+                企業の方に公開されるため、仕事内容などを出来るだけ詳しく入力しましょう。
+                （雇用契約に機密保持の項目がある場合は、注意してお書きください）
+              </div>
+            </div>
             <!-- career timeline -->
             <v-timeline v-if="career && career.length > 0" dense>
               <v-timeline-item
@@ -61,23 +68,58 @@
                     <v-img :src="item.companyImageUrl"/>
                   </v-avatar>
                 </template>
-                <v-card class="py-3 text-color">
-                  <div class="mb-1 light-text-color">{{ item.startedAt }}</div>
+                <div class="text-xs-right">
+                  <v-btn flat small :to="'/user/career/' + item.careerId + '/edit'">
+                    <span class="caption teal-text-color">編集する</span>
+                  </v-btn>
+                </div>
+                <v-card
+                  class="py-3 text-color text-xs-left"
+                  :class="{
+                    'px-4': $vuetify.breakpoint.smAndUp,
+                    'px-3': $vuetify.breakpoint.xsOnly,
+                  }"
+                >
+                  <div class="mb-2">
+                    <span
+                      v-if="item.type == 'intern'"
+                      class="font-weight-bold caption teal--text"
+                    >
+                      インターン
+                    </span>
+                    <span
+                      v-if="item.type == 'hired'"
+                      class="font-weight-bold caption pink--text"
+                    >
+                      入社
+                    </span>
+                  </div>
+                  <div class="mb-1 light-text-color">
+                    {{ item.startedAt }} ~
+                    <span
+                      v-if="
+                        item.end &&
+                        ((item.isInternExtended && item.extendedInternEnd) || !item.isInternExtended)
+                      ">{{ item.endedAt }}</span>
+                  </div>
                   <div class="title font-weight-bold mb-3">{{ item.companyName }}</div>
-                  <div class="pb-1">職種:　{{ item.occupation }}</div>
-                  <div v-if="!item.end">
+                  <div v-if="!item.end" class="text-color pb-3">
                     勤務中
                   </div>
                   <div v-else-if="item.isInternExtended">
-                    <div v-if="item.extendedInternEnd">
-                      終了日:　{{ item.endedAt }}
-                    </div>
-                    <div v-else>
+                    <div v-if="!item.extendedInternEnd" class="text-color pb-3">
                       インターン延長中
                     </div>
                   </div>
-                  <div v-else>
-                    終了日:　{{ item.endedAt }}
+                  <div class="pb-3">
+                    職種:
+                    <span class="text-color">{{ item.occupation }}</span>
+                  </div>
+                  <div v-if="item.jobDescription">
+                    仕事内容:
+                    <div class="text-color">
+                      {{ item.jobDescription }}
+                    </div>
                   </div>
                 </v-card>
               </v-timeline-item>
