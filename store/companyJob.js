@@ -18,6 +18,7 @@ export const state = () => ({
   occupation: '',
   features: '',
   industry: '',
+  nearestStation: '',
   field: '',
   createdAt: '',
   status: '',
@@ -73,6 +74,9 @@ export const mutations = {
   setIndustry(state, industry) {
     state.industry = industry
   },
+  setNearestStation(state, nearestStation) {
+    state.nearestStation = nearestStation
+  },
   setCreatedAt(state, createdAt) {
     state.createdAt = createdAt
   },
@@ -111,6 +115,7 @@ export const actions = {
           commit('setOccupation', doc.data()['occupation'])
           commit('setFeatures', doc.data()['features'])
           commit('setIndustry', doc.data()['industry'])
+          commit('setNearestStation', doc.data()['nearestStation'])
           commit('setStatus', doc.data()['status'])
           commit('setCreatedAt', doc.data()['createdAt'])
         }
@@ -140,6 +145,7 @@ export const actions = {
     occupation,
     features,
     industry,
+    nearestStation,
     environment,
     status
   }) {
@@ -156,6 +162,7 @@ export const actions = {
       occupation: occupation,
       features: features,
       industry: industry,
+      nearestStation: nearestStation,
       environment: environment,
       status: status,
       createdAt: updatedAt
@@ -175,6 +182,7 @@ export const actions = {
       occupation: occupation,
       features: features,
       industry: industry,
+      nearestStation: nearestStation,
       environment: environment,
       status: status,
       createdAt: updatedAt
@@ -250,6 +258,7 @@ export const actions = {
     occupation,
     features,
     industry,
+    nearestStation,
     environment,
     status
   }) {
@@ -278,6 +287,7 @@ export const actions = {
           occupation: occupation,
           features: features,
           industry: industry,
+          nearestStation: nearestStation,
           createdAt: createdAt,
           status: 'creating',
         }
@@ -298,6 +308,7 @@ export const actions = {
           occupation: occupation,
           features: features,
           industry: industry,
+          nearestStation: nearestStation,
           environment: environment,
           createdAt: createdAt,
           initialStatus: status,
@@ -341,6 +352,7 @@ export const actions = {
     commit('setOccupation', '')
     commit('setFeatures', '')
     commit('setIndustry', '')
+    commit('setNearestStation', '')
     commit('setStatus', '')
     commit('updateIsLoading', false)
   },

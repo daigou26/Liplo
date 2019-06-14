@@ -549,7 +549,7 @@
               >
                 企業情報
               </p>
-              <div v-if="url || foundedDate || location || employeesCount">
+              <div v-if="nearestStation || url || foundedDate || location || employeesCount" class="pt-3">
                 <div v-if="url" class="pb-2">
                   <v-card-actions class="pa-0">
                     <v-icon style="font-size: 18px">link</v-icon>
@@ -566,6 +566,12 @@
                   <v-card-actions class="pa-0">
                     <v-icon style="font-size: 18px">place</v-icon>
                     <span class="pl-2">{{ location }}</span>
+                  </v-card-actions>
+                </div>
+                <div v-if="nearestStation" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">place</v-icon>
+                    <span class="pl-2">{{ nearestStation }}</span>
                   </v-card-actions>
                 </div>
                 <div v-if="employeesCount" class="pb-2">
@@ -587,7 +593,7 @@
               <p class="title font-weight-bold text-color">
                 企業情報
               </p>
-              <div v-if="url || foundedDate || location || employeesCount">
+              <div v-if="nearestStation || url || foundedDate || location || employeesCount" class="pt-3">
                 <div v-if="url" class="pb-2">
                   <v-card-actions class="pa-0">
                     <v-icon style="font-size: 18px">link</v-icon>
@@ -606,6 +612,12 @@
                     <span class="pl-2">{{ location }}</span>
                   </v-card-actions>
                 </div>
+                <div v-if="nearestStation" class="pb-2">
+                  <v-card-actions class="pa-0">
+                    <v-icon style="font-size: 18px">place</v-icon>
+                    <span class="pl-2">{{ nearestStation }}</span>
+                  </v-card-actions>
+                </div>
                 <div v-if="employeesCount" class="pb-2">
                   <v-card-actions class="pa-0">
                     <v-icon style="font-size: 18px">group</v-icon>
@@ -618,7 +630,7 @@
               </div>
             </div>
             <!-- review -->
-            <div class="py-4">
+            <div class="py-5">
               <p class="title font-weight-bold text-color">
                 レビュー
               </p>
@@ -1207,6 +1219,7 @@ export default {
       occupation: state => state.job.occupation,
       features: state => state.job.features,
       createdAt: state => state.job.createdAt,
+      nearestStation: state => state.job.nearestStation,
       url: state => state.job.url,
       location: state => state.job.location,
       foundedDate: state => state.job.foundedDate,

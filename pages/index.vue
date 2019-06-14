@@ -104,10 +104,17 @@
                           <!-- 概要 -->
                           <div class="text-color break pt-3">{{ job.content }}</div>
                           <!-- シフト -->
-                          <v-list-tile-action class="pt-4 light-text-color caption">
+                          <v-list-tile-action v-if="job.workweek && job.workday != null" class="pt-4 light-text-color caption">
                             <v-card-actions class="pa-0">
-                              <v-icon class="mr-2 hidden-xs-only" style="font-size: 18px;">date_range</v-icon>
+                              <v-icon class="mr-2" style="font-size: 18px;">date_range</v-icon>
                               週{{ workweekDaysText(job.workweek.days) }}日〜 （{{workdayText(job.workday)}}）
+                            </v-card-actions>
+                          </v-list-tile-action>
+                          <!-- 最寄り -->
+                          <v-list-tile-action v-if="job.nearestStation" class="pt-2 light-text-color caption">
+                            <v-card-actions class="pa-0">
+                              <v-icon class="mr-2" style="font-size: 18px;">place</v-icon>
+                              {{ job.nearestStation }}
                             </v-card-actions>
                           </v-list-tile-action>
                         </div>

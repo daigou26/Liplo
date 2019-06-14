@@ -254,6 +254,7 @@ export const actions = {
               workday: doc.data()['workday'],
               workweek: doc.data()['workweek'],
               rating: doc.data()['rating'],
+              nearestStation: doc.data()['nearestStation'],
               createdAt: doc.data()['createdAt'],
               timestamp: timestamp
             }
@@ -319,6 +320,7 @@ export const actions = {
               workday: doc.data()['workday'],
               workweek: doc.data()['workweek'],
               rating: doc.data()['rating'],
+              nearestStation: doc.data()['nearestStation'],
               createdAt: doc.data()['createdAt'],
               timestamp: timestamp,
             }
@@ -385,6 +387,7 @@ export const actions = {
               period: doc.data()['period'],
               workday: doc.data()['workday'],
               workweek: doc.data()['workweek'],
+              nearestStation: doc.data()['nearestStation'],
               createdAt: doc.data()['createdAt'],
               timestamp: timestamp
             }
@@ -452,6 +455,7 @@ export const actions = {
               period: doc.data()['period'],
               workday: doc.data()['workday'],
               workweek: doc.data()['workweek'],
+              nearestStation: doc.data()['nearestStation'],
               createdAt: doc.data()['createdAt'],
               timestamp: timestamp,
             }

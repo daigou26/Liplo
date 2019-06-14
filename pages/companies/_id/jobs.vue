@@ -47,6 +47,7 @@
                       </div>
                       <v-card-title primary-title class="px-4 pt-3 pb-0">
                         <div class="text-xs-left">
+                          <!-- タイトル -->
                           <h3
                             :class="{
                               'headline': $vuetify.breakpoint.smAndUp,
@@ -56,7 +57,22 @@
                           >
                             {{ job.title }}
                           </h3>
-                          <div class="text-color pt-3">{{ job.content }}</div>
+                          <!-- 概要 -->
+                          <div class="text-color break pt-3">{{ job.content }}</div>
+                          <!-- シフト -->
+                          <v-list-tile-action v-if="job.workweek && job.workday != null" class="pt-4 light-text-color caption">
+                            <v-card-actions class="pa-0">
+                              <v-icon class="mr-2" style="font-size: 18px;">date_range</v-icon>
+                              週{{ workweekDaysText(job.workweek.days) }}日〜 （{{workdayText(job.workday)}}）
+                            </v-card-actions>
+                          </v-list-tile-action>
+                          <!-- 最寄り -->
+                          <v-list-tile-action v-if="job.nearestStation" class="pt-2 light-text-color caption">
+                            <v-card-actions class="pa-0">
+                              <v-icon class="mr-2" style="font-size: 18px;">place</v-icon>
+                              {{ job.nearestStation }}
+                            </v-card-actions>
+                          </v-list-tile-action>
                         </div>
                       </v-card-title>
                     </v-card>
@@ -156,6 +172,36 @@ export default {
           return 'ライター'
         } else if (occupation.others == true) {
           return 'その他'
+        }
+      }
+    },
+    workweekDaysText: function() {
+      return function(days) {
+        if (days) {
+          if (days.one) {
+            return 1
+          } else if (days.two) {
+            return 2
+          } else if (days.three) {
+            return 3
+          } else if (days.four) {
+            return 4
+          } else if (days.five) {
+            return 5
+          }
+        }
+      }
+    },
+    workdayText: function() {
+      return function(workday) {
+        if (workday == 0) {
+          return '平日のみ'
+        } else if (workday == 1) {
+          return '土曜可'
+        } else if (workday == 2) {
+          return '日曜可'
+        } else if (workday == 3) {
+          return '土日可'
         }
       }
     },
