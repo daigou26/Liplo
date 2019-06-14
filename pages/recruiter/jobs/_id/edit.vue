@@ -197,6 +197,14 @@
             :items="industryItems"
             label="業界（必須）"
           ></v-select>
+          <v-text-field
+          class="pt-5"
+            v-model="tempNearestStation"
+            :rules="nearestStationRules"
+            label="最寄りの駅"
+            placeholder="例：　JR新宿駅 / 徒歩10分"
+            required
+          ></v-text-field>
           <div class="text-xs-right py-3">
             <v-flex xs6 sm4 offset-xs6 offset-sm8>
               <v-select
@@ -335,6 +343,10 @@ export default {
       'ファッション',
       'その他'
     ],
+    tempNearestStation: '',
+    nearestStationRules: [
+      v => (v.length <= 100) || '100字以内で入力してください'
+    ],
     tempEnvironment: '',
     environmentRules: [
       v => (v.length <= 2000) || '2000字以内で入力してください'
@@ -387,6 +399,7 @@ export default {
       occupation: state => state.companyJob.occupation,
       features: state => state.companyJob.features,
       industry: state => state.companyJob.industry,
+      nearestStation: state => state.companyJob.nearestStation,
       status: state => state.companyJob.status,
       isLoading: state => state.companyJob.isLoading,
     }),
@@ -422,6 +435,9 @@ export default {
     },
     idealSkills(idealSkills) {
       this.tempIdealSkills = idealSkills
+    },
+    nearestStation(nearestStation) {
+      this.tempNearestStation = nearestStation
     },
     environment(environment) {
       if (environment == null) {
@@ -718,6 +734,7 @@ export default {
         occupation: occupation,
         features: features,
         industry: industry,
+        nearestStation: this.tempNearestStation,
         environment: this.tempEnvironment,
         status: status,
       })

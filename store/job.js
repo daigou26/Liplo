@@ -29,6 +29,7 @@ export const state = () => ({
   idealCandidate: '',
   occupation: null,
   features: null,
+  nearestStation: '',
   field: '',
   createdAt: '',
   url :'',
@@ -123,6 +124,9 @@ export const mutations = {
   },
   setFeatures(state, features) {
     state.features = features
+  },
+  setNearestStation(state, nearestStation) {
+    state.nearestStation = nearestStation
   },
   setCreatedAt(state, createdAt) {
     state.createdAt = createdAt
@@ -222,6 +226,7 @@ export const actions = {
             commit('setIdealCandidate', doc.data()['idealCandidate'])
             commit('setOccupation', doc.data()['occupation'])
             commit('setFeatures', doc.data()['features'])
+            commit('setNearestStation', doc.data()['nearestStation'])
             commit('setUrl', doc.data()['url'])
             commit('setLocation', doc.data()['location'])
             commit('setEmployeesCount', doc.data()['employeesCount'])
@@ -406,6 +411,7 @@ export const actions = {
     commit('setIdealCandidate', '')
     commit('setOccupation', null)
     commit('setFeatures', null)
+    commit('setNearestStation', '')
     commit('setCreatedAt', '')
     commit('setFeedback', null)
     commit('setReviews', null)

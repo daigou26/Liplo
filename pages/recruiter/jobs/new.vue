@@ -38,7 +38,6 @@
     </v-flex>
     <v-flex xs12 sm10 offset-sm1 class="py-4 px-4 break">
       <v-form v-model="valid" class="pb-5">
-        <!-- Title -->
         <v-text-field
           class="pt-4"
           v-model="title"
@@ -192,6 +191,14 @@
           :items="industryItems"
           label="業界（必須）"
         ></v-select>
+        <v-text-field
+          class="pt-5"
+          v-model="nearestStation"
+          :rules="nearestStationRules"
+          label="最寄りの駅"
+          placeholder="例：　JR新宿駅 / 徒歩10分"
+          required
+        ></v-text-field>
         <div class="text-xs-right py-3">
           <v-flex xs6 sm4 offset-xs6 offset-sm8>
             <v-select
@@ -295,6 +302,10 @@ export default {
       '土曜可',
       '日曜可',
       '土日可',
+    ],
+    nearestStation: '',
+    nearestStationRules: [
+      v => (v.length <= 100) || '100字以内で入力してください'
     ],
     occupation: null,
     occupationItems: [
@@ -535,6 +546,7 @@ export default {
         occupation: occupation,
         features: features,
         industry: industry,
+        nearestStation: this.nearestStation,
         environment: this.environment,
         status: status,
       })
