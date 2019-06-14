@@ -99,45 +99,62 @@
         >
           <span :class="jobsFilterTextColor('features')">{{ featuresFilterText }}</span>
         </v-btn>
-        <v-card>
-          <v-list>
-            <!-- 未経験ok -->
-            <v-list-tile @click="tempExperience=!tempExperience">
-              <v-checkbox v-model="tempExperience" readonly color="teal"></v-checkbox>
-              <v-list-tile-title class="pl-3">未経験歓迎</v-list-tile-title>
-            </v-list-tile>
-            <!-- 資金調達あり -->
-            <v-list-tile @click="tempFunding=!tempFunding">
-              <v-checkbox v-model="tempFunding" readonly color="teal"></v-checkbox>
-              <v-list-tile-title class="pl-3">資金調達をしている</v-list-tile-title>
-            </v-list-tile>
-            <!-- 創業者20代 -->
-            <v-list-tile @click="tempFounder20s=!tempFounder20s">
-              <v-checkbox v-model="tempFounder20s" readonly color="teal"></v-checkbox>
-              <v-list-tile-title class="pl-3">創業者が20代</v-list-tile-title>
-            </v-list-tile>
-            <!-- メディア掲載 -->
-            <v-list-tile @click="tempMedia=!tempMedia">
-              <v-checkbox v-model="tempMedia" readonly color="teal"></v-checkbox>
-              <v-list-tile-title class="pl-3">メディアに掲載されたことがある</v-list-tile-title>
-            </v-list-tile>
-            <!-- 海外進出 -->
-            <v-list-tile @click="tempOverseas=!tempOverseas">
-              <v-checkbox v-model="tempOverseas" readonly color="teal"></v-checkbox>
-              <v-list-tile-title class="pl-3">海外進出している</v-list-tile-title>
-            </v-list-tile>
-            <!-- 友人と応募ok -->
-            <v-list-tile @click="tempFriend=!tempFriend">
-              <v-checkbox v-model="tempFriend" readonly color="teal"></v-checkbox>
-              <v-list-tile-title class="pl-3">友人と応募OK</v-list-tile-title>
-            </v-list-tile>
-            <!-- 土日ok -->
-            <v-list-tile @click="tempWeekend=!tempWeekend">
-              <v-checkbox v-model="tempWeekend" readonly color="teal"></v-checkbox>
-              <v-list-tile-title class="pl-3">土日OK</v-list-tile-title>
-            </v-list-tile>
-          </v-list>
-
+        <v-card :width="featuresMenuWidth" class="pt-2">
+          <v-layout row wrap>
+            <v-flex sm6 xs12>
+              <v-list class="py-0">
+                <!-- 未経験ok -->
+                <v-list-tile @click="tempExperience=!tempExperience">
+                  <v-checkbox v-model="tempExperience" readonly color="teal"></v-checkbox>
+                  <v-list-tile-title class="pl-3">未経験歓迎</v-list-tile-title>
+                </v-list-tile>
+                <!-- 資金調達あり -->
+                <v-list-tile @click="tempFunding=!tempFunding">
+                  <v-checkbox v-model="tempFunding" readonly color="teal"></v-checkbox>
+                  <v-list-tile-title class="pl-3">資金調達をしている</v-list-tile-title>
+                </v-list-tile>
+                <!-- メディア掲載 -->
+                <v-list-tile @click="tempMedia=!tempMedia">
+                  <v-checkbox v-model="tempMedia" readonly color="teal"></v-checkbox>
+                  <v-list-tile-title class="pl-3">メディア掲載実績あり</v-list-tile-title>
+                </v-list-tile>
+                <!-- 海外進出 -->
+                <v-list-tile @click="tempOverseas=!tempOverseas">
+                  <v-checkbox v-model="tempOverseas" readonly color="teal"></v-checkbox>
+                  <v-list-tile-title class="pl-3">海外進出している</v-list-tile-title>
+                </v-list-tile>
+                <!-- 友人と応募ok -->
+                <v-list-tile @click="tempFriend=!tempFriend">
+                  <v-checkbox v-model="tempFriend" readonly color="teal"></v-checkbox>
+                  <v-list-tile-title class="pl-3">友人と応募OK</v-list-tile-title>
+                </v-list-tile>
+              </v-list>
+            </v-flex>
+            <v-flex sm6 xs12>
+              <v-list class="py-0">
+                <!-- 土日ok -->
+                <v-list-tile @click="tempWeekend=!tempWeekend">
+                  <v-checkbox v-model="tempWeekend" readonly color="teal"></v-checkbox>
+                  <v-list-tile-title class="pl-3">土日OK</v-list-tile-title>
+                </v-list-tile>
+                <!-- シフト自由 -->
+                <v-list-tile @click="tempShift=!tempShift">
+                  <v-checkbox v-model="tempShift" readonly color="teal"></v-checkbox>
+                  <v-list-tile-title class="pl-3">シフト自由</v-list-tile-title>
+                </v-list-tile>
+                <!-- 平均年齢20代 -->
+                <v-list-tile @click="tempAverage20s=!tempAverage20s">
+                  <v-checkbox v-model="tempAverage20s" readonly color="teal"></v-checkbox>
+                  <v-list-tile-title class="pl-3">平均年齢が20代</v-list-tile-title>
+                </v-list-tile>
+                <!-- 19時以降勤務可能 -->
+                <v-list-tile @click="tempWorktime=!tempWorktime">
+                  <v-checkbox v-model="tempWorktime" readonly color="teal"></v-checkbox>
+                  <v-list-tile-title class="pl-3">19時以降勤務可能</v-list-tile-title>
+                </v-list-tile>
+              </v-list>
+            </v-flex>
+          </v-layout>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn flat @click="featuresMenu = false">キャンセル</v-btn>
@@ -284,11 +301,13 @@ export default {
     featuresMenu: false,
     tempExperience: false,
     tempFunding: false,
-    tempFounder20s: false,
     tempMedia: false,
     tempOverseas: false,
     tempFriend: false,
     tempWeekend: false,
+    tempShift: false,
+    tempAverage20s: false,
+    tempWorktime: false,
     // 勤務日数
     workweekMenu: false,
     tempWorkweek: '指定なし',
@@ -301,6 +320,12 @@ export default {
       switch (this.$vuetify.breakpoint.name) {
         case 'xs': return 250
         default: return 400
+      }
+    },
+    featuresMenuWidth() {
+      switch (this.$vuetify.breakpoint.name) {
+        case 'xs': return 320
+        default: return 600
       }
     },
     jobsFilterButtonColor: function() {
@@ -387,9 +412,6 @@ export default {
           case 'funding':
             text = '資金調達済み'
             break
-          case 'founder20s':
-            text = '創業者が20代'
-            break
           case 'media':
             text = 'メディア掲載あり'
             break
@@ -401,6 +423,15 @@ export default {
             break
           case 'weekend':
             text = '土日OK'
+            break
+          case 'shift':
+            text = 'シフト自由'
+            break
+          case 'average20s':
+            text = '平均年齢が20代'
+            break
+          case 'worktime':
+            text = '19時以降勤務可能'
             break
         }
         return text
@@ -438,7 +469,17 @@ export default {
       )
     },
     isFeaturesFilterActive: function() {
-      return (this.experience || this.funding || this.founder20s || this.media || this.friend || this.overseas)
+      return (
+        this.experience ||
+        this.funding ||
+        this.media ||
+        this.friend ||
+        this.overseas ||
+        this.shift ||
+        this.average20s ||
+        this.weekend ||
+        this.worktime
+      )
     },
     isWorkweekFilterActive: function() {
       return this.workweek != null
@@ -460,11 +501,13 @@ export default {
       usersOthersFilter: state => state.users.others,
       experience: state => state.jobs.experience,
       funding: state => state.jobs.funding,
-      founder20s: state => state.jobs.founder20s,
       media: state => state.jobs.media,
       friend: state => state.jobs.friend,
       overseas: state => state.jobs.overseas,
       weekend: state => state.jobs.weekend,
+      shift: state => state.jobs.shift,
+      average20s: state => state.jobs.average20s,
+      worktime: state => state.jobs.worktime,
       workweek: state => state.jobs.workweek,
     })
   },
@@ -554,11 +597,13 @@ export default {
     featuresFilterButtonClicked: function() {
       this.tempExperience = this.experience
       this.tempFunding = this.funding
-      this.tempFounder20s = this.founder20s
       this.tempMedia = this.media
       this.tempFriend = this.friend
       this.tempOverseas = this.overseas
       this.tempWeekend = this.weekend
+      this.tempShift = this.shift
+      this.tempAverage20s = this.average20s
+      this.tempWorktime = this.worktime
     },
     workweekFilterButtonClicked: function() {
       if (this.workweek == null) {
@@ -638,9 +683,6 @@ export default {
       if (this.tempFunding) {
         queryParams.push('funding')
       }
-      if (this.tempFounder20s) {
-        queryParams.push('founder20s')
-      }
       if (this.tempMedia) {
         queryParams.push('media')
       }
@@ -652,6 +694,15 @@ export default {
       }
       if (this.tempWeekend) {
         queryParams.push('weekend')
+      }
+      if (this.tempShift) {
+        queryParams.push('shift')
+      }
+      if (this.tempAverage20s) {
+        queryParams.push('average20s')
+      }
+      if (this.tempWorktime) {
+        queryParams.push('worktime')
       }
       this.$router.replace({
         path: '/',

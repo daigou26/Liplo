@@ -314,11 +314,13 @@ export default {
     featureItems: [
       '未経験OK',
       'メディア掲載実績あり',
-      '創業者が20代',
       '資金調達済み',
       '海外進出中',
       '友人と応募OK',
-      '土日OK'
+      '土日OK',
+      'シフト自由',
+      '平均年齢が20代',
+      '19時以降勤務可能'
     ],
     industry: null,
     industryItems: [
@@ -420,11 +422,13 @@ export default {
       let features = {
         experience: false,
         media: false,
-        founder20s: false,
         funding: false,
         overseas: false,
         friend: false,
         weekend: false,
+        shift: false,
+        average20s: false,
+        worktime: false
       }
       if (this.features) {
         if (this.features.includes('未経験OK')) {
@@ -432,9 +436,6 @@ export default {
         }
         if (this.features.includes('メディア掲載実績あり')) {
           features.media = true
-        }
-        if (this.features.includes('創業者が20代')) {
-          features.founder20s = true
         }
         if (this.features.includes('資金調達済み')) {
           features.funding = true
@@ -447,6 +448,15 @@ export default {
         }
         if (this.features.includes('土日OK')) {
           features.weekend = true
+        }
+        if (this.features.includes('シフト自由')) {
+          features.shift = true
+        }
+        if (this.features.includes('平均年齢が20代')) {
+          features.average20s = true
+        }
+        if (this.features.includes('19時以降勤務可能')) {
+          features.worktime = true
         }
       }
 

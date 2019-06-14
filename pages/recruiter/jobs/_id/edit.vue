@@ -311,11 +311,13 @@ export default {
     featureItems: [
       '未経験OK',
       'メディア掲載実績あり',
-      '創業者が20代',
       '資金調達済み',
       '海外進出中',
       '友人と応募OK',
-      '土日OK'
+      '土日OK',
+      'シフト自由',
+      '平均年齢が20代',
+      '19時以降勤務可能'
     ],
     tempIndustry: '',
     industryItems: [
@@ -489,9 +491,6 @@ export default {
       if (features.media == true) {
         this.tempFeatures.push('メディア掲載実績あり')
       }
-      if (features.founder20s == true) {
-        this.tempFeatures.push('創業者が20代')
-      }
       if (features.funding == true) {
         this.tempFeatures.push('資金調達済み')
       }
@@ -503,6 +502,15 @@ export default {
       }
       if (features.weekend == true) {
         this.tempFeatures.push('土日OK')
+      }
+      if (features.shift == true) {
+        this.tempFeatures.push('シフト自由')
+      }
+      if (features.average20s == true) {
+        this.tempFeatures.push('平均年齢が20代')
+      }
+      if (features.worktime == true) {
+        this.tempFeatures.push('19時以降勤務可能')
       }
     },
     industry(industry) {
@@ -597,20 +605,19 @@ export default {
       let features = {
         experience: false,
         media: false,
-        founder20s: false,
         funding: false,
         overseas: false,
         friend: false,
         weekend: false,
+        shift: false,
+        average20s: false,
+        worktime: false
       }
       if (this.tempFeatures.includes('未経験OK')) {
         features.experience = true
       }
       if (this.tempFeatures.includes('メディア掲載実績あり')) {
         features.media = true
-      }
-      if (this.tempFeatures.includes('創業者が20代')) {
-        features.founder20s = true
       }
       if (this.tempFeatures.includes('資金調達済み')) {
         features.funding = true
@@ -623,6 +630,15 @@ export default {
       }
       if (this.tempFeatures.includes('土日OK')) {
         features.weekend = true
+      }
+      if (this.tempFeatures.includes('シフト自由')) {
+        features.shift = true
+      }
+      if (this.tempFeatures.includes('平均年齢が20代')) {
+        features.average20s = true
+      }
+      if (this.tempFeatures.includes('19時以降勤務可能')) {
+        features.worktime = true
       }
 
       let industry = {

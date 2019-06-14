@@ -15,11 +15,13 @@ export const state = () => ({
   others: false,
   experience: false,
   funding: false,
-  founder20s: false,
   media: false,
   friend: false,
   overseas: false,
   weekend: false,
+  shift: false,
+  average20s: false,
+  worktime: false,
   workweek: null,
   order: null,
   toolbarExtension: false,
@@ -70,9 +72,6 @@ export const mutations = {
   updateFunding(state, isActive) {
     state.funding = isActive
   },
-  updateFounder20s(state, isActive) {
-    state.founder20s = isActive
-  },
   updateMedia(state, isActive) {
     state.media = isActive
   },
@@ -84,6 +83,15 @@ export const mutations = {
   },
   updateWeekend(state, isActive) {
     state.weekend = isActive
+  },
+  updateShift(state, isActive) {
+    state.shift = isActive
+  },
+  updateAverage20s(state, isActive) {
+    state.average20s = isActive
+  },
+  updateWorktime(state, isActive) {
+    state.worktime = isActive
   },
   setWorkweek(state, workweek) {
     state.workweek = workweek
@@ -155,9 +163,6 @@ export const actions = {
       if (featuresParams.includes('funding')) {
         jobsRef = jobsRef.where('features.funding', '==', true)
       }
-      if (featuresParams.includes('founder20s')) {
-        jobsRef = jobsRef.where('features.founder20s', '==', true)
-      }
       if (featuresParams.includes('media')) {
         jobsRef = jobsRef.where('features.media', '==', true)
       }
@@ -169,6 +174,15 @@ export const actions = {
       }
       if (featuresParams.includes('weekend')) {
         jobsRef = jobsRef.where('features.weekend', '==', true)
+      }
+      if (featuresParams.includes('shift')) {
+        jobsRef = jobsRef.where('features.shift', '==', true)
+      }
+      if (featuresParams.includes('average20s')) {
+        jobsRef = jobsRef.where('features.average20s', '==', true)
+      }
+      if (featuresParams.includes('worktime')) {
+        jobsRef = jobsRef.where('features.worktime', '==', true)
       }
     }
 
@@ -465,11 +479,13 @@ export const actions = {
     if (featuresParams != null) {
       commit('updateExperience', featuresParams.includes('experience'))
       commit('updateFunding', featuresParams.includes('funding'))
-      commit('updateFounder20s', featuresParams.includes('founder20s'))
       commit('updateMedia', featuresParams.includes('media'))
       commit('updateFriend', featuresParams.includes('friend'))
       commit('updateOverseas', featuresParams.includes('overseas'))
       commit('updateWeekend', featuresParams.includes('weekend'))
+      commit('updateShift', featuresParams.includes('shift'))
+      commit('updateAverage20s', featuresParams.includes('average20s'))
+      commit('updateWorktime', featuresParams.includes('worktime'))
     }
     if (workweekParams != null) {
       commit('setWorkweek', workweekParams)
@@ -507,11 +523,13 @@ export const actions = {
     commit('updateOthers', false)
     commit('updateExperience', false)
     commit('updateFunding', false)
-    commit('updateFounder20s', false)
     commit('updateMedia', false)
     commit('updateFriend', false)
     commit('updateOverseas', false)
     commit('updateWeekend', false)
+    commit('updateShift', false)
+    commit('updateAverage20s', false)
+    commit('updateWorktime', false)
     commit('setWorkweek', null)
     commit('setOrder', null)
   },

@@ -1134,8 +1134,6 @@ export default {
           return '未経験OK'
         } else if (feature == 'media') {
           return 'メディア掲載実績あり'
-        } else if (feature == 'founder20s') {
-          return '創業者が20代'
         } else if (feature == 'funding') {
           return '資金調達済み'
         } else if (feature == 'overseas') {
@@ -1144,6 +1142,12 @@ export default {
           return '友人と応募OK'
         } else if (feature == 'weekend') {
           return '土日OK'
+        } else if (feature == 'shift') {
+          return 'シフト自由'
+        } else if (feature == 'average20s') {
+          return '平均年齢が20代'
+        } else if (feature == 'worktime') {
+          return '19時以降勤務可能'
         }
       }
     },
