@@ -239,32 +239,20 @@
                   <p class="body-text return">{{ period }}ヶ月</p>
                 </div>
               </div>
-              <!-- 勤務条件 -->
-              <div v-if="workweek" class="py-3">
+              <!-- シフト -->
+              <div v-if="workweek || workday != null || worktime" class="py-3">
                 <p class="job-sub-title font-weight-bold text-color">
-                  勤務条件
+                  シフト
                 </p>
-                <div>
-                  <p class="body-text return">週{{ workweekDays(workweek.days) }}日以上</p>
-                  <p v-if="workweek.hours != 0" class="body-text">週合計{{ workweek.hours }}時間以上</p>
+                <div v-if="workweek" class="body-text">
+                  週{{ workweekDays(workweek.days) }}日以上、
+                  <span v-if="workweek.hours != 0">週合計{{ workweek.hours }}時間以上</span>
+                  <span v-if="workday != null" class="body-text">
+                    ({{ workdayText(workday) }})
+                  </span>
                 </div>
-              </div>
-              <!-- 勤務可能日 -->
-              <div v-if="workday != null" class="py-3">
-                <p class="job-sub-title font-weight-bold text-color">
-                  勤務可能日
-                </p>
-                <div>
-                  <p class="body-text return">{{ workdayText(workday) }}</p>
-                </div>
-              </div>
-              <!-- 勤務可能時間 -->
-              <div v-if="worktime" class="py-3">
-                <p class="job-sub-title font-weight-bold text-color">
-                  勤務可能時間
-                </p>
-                <div>
-                  <p class="body-text return">{{ worktimeText(worktime) }}</p>
+                <div v-if="worktime" class="body-text pt-2">
+                  勤務可能時間：{{ worktimeText(worktime) }}
                 </div>
               </div>
               <!-- 給与 -->

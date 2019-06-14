@@ -252,6 +252,7 @@ export const actions = {
               occupation: doc.data()['occupation'],
               period: doc.data()['period'],
               workday: doc.data()['workday'],
+              workweek: doc.data()['workweek'],
               rating: doc.data()['rating'],
               createdAt: doc.data()['createdAt'],
               timestamp: timestamp
@@ -316,6 +317,7 @@ export const actions = {
               occupation: doc.data()['occupation'],
               period: doc.data()['period'],
               workday: doc.data()['workday'],
+              workweek: doc.data()['workweek'],
               rating: doc.data()['rating'],
               createdAt: doc.data()['createdAt'],
               timestamp: timestamp,
@@ -381,6 +383,8 @@ export const actions = {
               companyImageUrl: doc.data()['companyImageUrl'],
               occupation: doc.data()['occupation'],
               period: doc.data()['period'],
+              workday: doc.data()['workday'],
+              workweek: doc.data()['workweek'],
               createdAt: doc.data()['createdAt'],
               timestamp: timestamp
             }
@@ -446,6 +450,8 @@ export const actions = {
               companyImageUrl: doc.data()['companyImageUrl'],
               occupation: doc.data()['occupation'],
               period: doc.data()['period'],
+              workday: doc.data()['workday'],
+              workweek: doc.data()['workweek'],
               createdAt: doc.data()['createdAt'],
               timestamp: timestamp,
             }
