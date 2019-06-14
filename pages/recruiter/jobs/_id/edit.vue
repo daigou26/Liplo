@@ -302,6 +302,9 @@ export default {
       'エンジニア',
       'デザイナー',
       '営業',
+      'マーケター',
+      '企画',
+      'ライター',
       'その他',
     ],
     tempFeatures: [],
@@ -469,6 +472,12 @@ export default {
         this.tempOccupation = 'デザイナー'
       } else if (occupation.sales == true) {
         this.tempOccupation = '営業'
+      } else if (occupation.marketer == true) {
+        this.tempOccupation = 'マーケター'
+      } else if (occupation.planner == true) {
+        this.tempOccupation = '企画'
+      } else if (occupation.writer == true) {
+        this.tempOccupation = 'ライター'
       } else if (occupation.others == true) {
         this.tempOccupation = 'その他'
       }
@@ -570,12 +579,18 @@ export default {
         engineer: false,
         designer: false,
         sales: false,
+        marketer: false,
+        planner: false,
+        writer: false,
         others: false,
       }
       switch (this.tempOccupation) {
         case 'エンジニア': occupation.engineer = true; break
         case 'デザイナー': occupation.designer = true; break
         case '営業': occupation.sales = true; break
+        case 'マーケター': occupation.marketer = true; break
+        case '企画': occupation.planner = true; break
+        case 'ライター': occupation.writer = true; break
         case 'その他': occupation.others = true; break
       }
 

@@ -9,6 +9,9 @@ export const state = () => ({
   engineer: false,
   designer: false,
   sales: false,
+  marketer: false,
+  planner: false,
+  writer: false,
   others: false,
   experience: false,
   funding: false,
@@ -47,6 +50,15 @@ export const mutations = {
   },
   updateSales(state, isActive) {
     state.sales = isActive
+  },
+  updateMarketer(state, isActive) {
+    state.marketer = isActive
+  },
+  updatePlanner(state, isActive) {
+    state.planner = isActive
+  },
+  updateWriter(state, isActive) {
+    state.writer = isActive
   },
   updateOthers(state, isActive) {
     state.others = isActive
@@ -114,6 +126,15 @@ export const actions = {
       }
       if (!occupationParams.includes('sales')) {
         jobsRef = jobsRef.where('occupation.sales', '==', false)
+      }
+      if (!occupationParams.includes('marketer')) {
+        jobsRef = jobsRef.where('occupation.marketer', '==', false)
+      }
+      if (!occupationParams.includes('planner')) {
+        jobsRef = jobsRef.where('occupation.planner', '==', false)
+      }
+      if (!occupationParams.includes('writer')) {
+        jobsRef = jobsRef.where('occupation.writer', '==', false)
       }
       if (!occupationParams.includes('others')) {
         jobsRef = jobsRef.where('occupation.others', '==', false)
@@ -436,6 +457,9 @@ export const actions = {
       commit('updateEngineer', occupationParams.includes('engineer'))
       commit('updateDesigner', occupationParams.includes('designer'))
       commit('updateSales', occupationParams.includes('sales'))
+      commit('updateMarketer', occupationParams.includes('marketer'))
+      commit('updatePlanner', occupationParams.includes('planner'))
+      commit('updateWriter', occupationParams.includes('writer'))
       commit('updateOthers', occupationParams.includes('others'))
     }
     if (featuresParams != null) {
@@ -477,6 +501,9 @@ export const actions = {
     commit('updateEngineer', false)
     commit('updateDesigner', false)
     commit('updateSales', false)
+    commit('updateMarketer', false)
+    commit('updatePlanner', false)
+    commit('updateWriter', false)
     commit('updateOthers', false)
     commit('updateExperience', false)
     commit('updateFunding', false)

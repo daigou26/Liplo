@@ -347,6 +347,9 @@ export const actions = {
       engineer: false,
       designer: false,
       sales: false,
+      marketer: false,
+      planner: false,
+      writer: false,
       others: false,
     }
     if (desiredOccupations.includes('エンジニア')) {
@@ -357,6 +360,15 @@ export const actions = {
     }
     if (desiredOccupations.includes('営業')) {
       occupations.sales = true
+    }
+    if (desiredOccupations.includes('マーケター')) {
+      occupations.marketer = true
+    }
+    if (desiredOccupations.includes('企画')) {
+      occupations.planner = true
+    }
+    if (desiredOccupations.includes('ライター')) {
+      occupations.writer = true
     }
     if (desiredOccupations.includes('その他')) {
       occupations.others = true

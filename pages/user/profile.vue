@@ -295,6 +295,15 @@
                       <v-chip v-if="desiredOccupations.sales">
                         <span>営業</span>
                       </v-chip>
+                      <v-chip v-if="desiredOccupations.marketer">
+                        <span>マーケター</span>
+                      </v-chip>
+                      <v-chip v-if="desiredOccupations.planner">
+                        <span>企画</span>
+                      </v-chip>
+                      <v-chip v-if="desiredOccupations.writer">
+                        <span>ライター</span>
+                      </v-chip>
                       <v-chip v-if="desiredOccupations.others">
                         <span>その他</span>
                       </v-chip>
@@ -955,6 +964,9 @@ export default {
       'エンジニア',
       'デザイナー',
       '営業',
+      'マーケター',
+      '企画',
+      'ライター',
       'その他'
     ],
     tempSelfIntro: '',
@@ -1033,6 +1045,15 @@ export default {
           isSelected = true
         }
         if (this.desiredOccupations.sales == true) {
+          isSelected = true
+        }
+        if (this.desiredOccupations.marketer == true) {
+          isSelected = true
+        }
+        if (this.desiredOccupations.planner == true) {
+          isSelected = true
+        }
+        if (this.desiredOccupations.writer == true) {
           isSelected = true
         }
         if (this.desiredOccupations.others == true) {
@@ -1202,6 +1223,15 @@ export default {
         }
         if (this.desiredOccupations.sales == true) {
           this.tempDesiredOccupations.push('営業')
+        }
+        if (this.desiredOccupations.marketer == true) {
+          this.tempDesiredOccupations.push('マーケター')
+        }
+        if (this.desiredOccupations.planner == true) {
+          this.tempDesiredOccupations.push('企画')
+        }
+        if (this.desiredOccupations.writer == true) {
+          this.tempDesiredOccupations.push('ライター')
         }
         if (this.desiredOccupations.others == true) {
           this.tempDesiredOccupations.push('その他')

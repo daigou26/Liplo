@@ -90,6 +90,15 @@
                 <v-chip v-if="desiredOccupations.sales">
                   <span>営業</span>
                 </v-chip>
+                <v-chip v-if="desiredOccupations.marketer">
+                  <span>マーケター</span>
+                </v-chip>
+                <v-chip v-if="desiredOccupations.planner">
+                  <span>企画</span>
+                </v-chip>
+                <v-chip v-if="desiredOccupations.writer">
+                  <span>ライター</span>
+                </v-chip>
                 <v-chip v-if="desiredOccupations.others">
                   <span>その他</span>
                 </v-chip>
@@ -106,6 +115,15 @@
                 </v-chip>
                 <v-chip v-if="desiredOccupations.sales">
                   <span>営業</span>
+                </v-chip>
+                <v-chip v-if="desiredOccupations.marketer">
+                  <span>マーケター</span>
+                </v-chip>
+                <v-chip v-if="desiredOccupations.planner">
+                  <span>企画</span>
+                </v-chip>
+                <v-chip v-if="desiredOccupations.writer">
+                  <span>ライター</span>
                 </v-chip>
                 <v-chip v-if="desiredOccupations.others">
                   <span>その他</span>

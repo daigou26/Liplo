@@ -9,6 +9,9 @@ export const state = () => ({
   engineer: false,
   designer: false,
   sales: false,
+  marketer: false,
+  planner: false,
+  writer: false,
   others: false,
   toolbarExtension: false,
 })
@@ -41,6 +44,15 @@ export const mutations = {
   },
   updateSales(state, isActive) {
     state.sales = isActive
+  },
+  updateMarketer(state, isActive) {
+    state.marketer = isActive
+  },
+  updatePlanner(state, isActive) {
+    state.planner = isActive
+  },
+  updateWriter(state, isActive) {
+    state.writer = isActive
   },
   updateOthers(state, isActive) {
     state.others = isActive
@@ -183,6 +195,9 @@ export const actions = {
       commit('updateEngineer', occupationParams.includes('engineer'))
       commit('updateDesigner', occupationParams.includes('designer'))
       commit('updateSales', occupationParams.includes('sales'))
+      commit('updateMarketer', occupationParams.includes('marketer'))
+      commit('updatePlanner', occupationParams.includes('planner'))
+      commit('updateWriter', occupationParams.includes('writer'))
       commit('updateOthers', occupationParams.includes('others'))
     }
   },
@@ -196,6 +211,9 @@ export const actions = {
     commit('updateEngineer', false)
     commit('updateDesigner', false)
     commit('updateSales', false)
+    commit('updateMarketer', false)
+    commit('updatePlanner', false)
+    commit('updateWriter', false)
     commit('updateOthers', false)
   },
   resetState({commit}) {

@@ -1116,8 +1116,14 @@ export default {
             return 'fas fa-palette'
           } else if (occupation.sales == true) {
             return 'fas fa-user-tie'
+          } else if (occupation.marketer == true) {
+            return 'fas fa-poll-h'
+          } else if (occupation.planner == true) {
+            return 'fas fa-lightbulb'
+          } else if (occupation.writer == true) {
+            return 'fas fa-pen-fancy'
           } else if (occupation.others == true) {
-            return 'その他'
+            return ''
           }
         }
       }
@@ -1150,6 +1156,12 @@ export default {
             return 'デザイナー'
           } else if (occupation.sales == true) {
             return '営業'
+          } else if (occupation.marketer == true) {
+            return 'マーケター'
+          } else if (occupation.planner == true) {
+            return '企画'
+          } else if (occupation.writer == true) {
+            return 'ライター'
           } else if (occupation.others == true) {
             return 'その他'
           }

@@ -2882,6 +2882,15 @@ exports.editProfile = functions.region('asia-northeast1')
         if (desiredOccupations.sales == true) {
           isSelected = true
         }
+        if (desiredOccupations.marketer == true) {
+          isSelected = true
+        }
+        if (desiredOccupations.planner == true) {
+          isSelected = true
+        }
+        if (desiredOccupations.writer == true) {
+          isSelected = true
+        }
         if (desiredOccupations.others == true) {
           isSelected = true
         }
