@@ -89,6 +89,9 @@
                       <span v-if="user.desiredOccupations.engineer">エンジニア</span>
                       <span v-if="user.desiredOccupations.designer">　デザイナー</span>
                       <span v-if="user.desiredOccupations.sales">　営業</span>
+                      <span v-if="user.desiredOccupations.marketer">　マーケター</span>
+                      <span v-if="user.desiredOccupations.planner">　企画</span>
+                      <span v-if="user.desiredOccupations.writer">　ライター</span>
                       <span v-if="user.desiredOccupations.others">　その他</span>
                     </v-flex>
                     <!-- 自己紹介 -->

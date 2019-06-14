@@ -173,7 +173,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "features.experience",
+          "fieldPath": "features.average20s",
           "order": "ASCENDING"
         },
         {
@@ -187,7 +187,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "features.experience",
+          "fieldPath": "features.average20s",
           "order": "ASCENDING"
         },
         {
@@ -201,7 +201,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "features.founder20s",
+          "fieldPath": "features.experience",
           "order": "ASCENDING"
         },
         {
@@ -215,7 +215,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "features.founder20s",
+          "fieldPath": "features.experience",
           "order": "ASCENDING"
         },
         {
@@ -341,6 +341,34 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "features.shift",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "jobs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "features.shift",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "points",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "jobs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "features.weekend",
           "order": "ASCENDING"
         },
@@ -356,6 +384,34 @@
       "fields": [
         {
           "fieldPath": "features.weekend",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "points",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "jobs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "features.worktime",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "jobs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "features.worktime",
           "order": "ASCENDING"
         },
         {
@@ -425,6 +481,34 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "occupation.marketer",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "jobs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "occupation.marketer",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "points",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "jobs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "occupation.others",
           "order": "ASCENDING"
         },
@@ -453,6 +537,34 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "occupation.planner",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "jobs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "occupation.planner",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "points",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "jobs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "occupation.sales",
           "order": "ASCENDING"
         },
@@ -468,6 +580,34 @@
       "fields": [
         {
           "fieldPath": "occupation.sales",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "points",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "jobs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "occupation.writer",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "jobs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "occupation.writer",
           "order": "ASCENDING"
         },
         {

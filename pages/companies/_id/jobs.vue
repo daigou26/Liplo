@@ -148,6 +148,12 @@ export default {
           return 'デザイナー'
         } else if (occupation.sales == true) {
           return '営業'
+        } else if (occupation.marketer == true) {
+          return 'マーケター'
+        } else if (occupation.planner == true) {
+          return '企画'
+        } else if (occupation.writer == true) {
+          return 'ライター'
         } else if (occupation.others == true) {
           return 'その他'
         }
