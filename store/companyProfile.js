@@ -465,7 +465,20 @@ export const actions = {
   updateIsEditingServices({commit}, isEditing) {
     commit('updateIsEditingServices', isEditing)
   },
-  updateServices({commit}, {companyId, isServiceImageChanged, selectedIndex, services, tempServices, imageFile, imageUrl, title, content, url}) {
+  updateServices({commit}, {
+    companyId,
+    companyName,
+    companyImageUrl,
+    isServiceImageChanged,
+    selectedIndex,
+    services,
+    tempServices,
+    imageFile,
+    imageUrl,
+    title,
+    content,
+    url
+  }) {
     // 画像が変更されているか
     if (isServiceImageChanged) {
       const date = new Date()
@@ -486,61 +499,104 @@ export const actions = {
       }, function() {
         // dbに保存
         uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-          // 新しいitem
-          const tempService = {
+          // 新しいデータ
+          let tempService = {
             imageUrl: downloadURL,
             title: title,
             content: content,
             url: url,
             timestamp: timestamp
           }
-          // listに入れる
+          // project 用のデータ
+          let projectData = tempService
+          projectData.companyId = companyId
+          projectData.companyName = companyName
+          projectData.createdAt = new Date()
+          if (companyImageUrl) {
+            projectData.companyImageUrl = companyImageUrl
+          }
+
+          const batch = firestore.batch()
+
           if (selectedIndex != null) {
+            let projectId = tempServices[selectedIndex].projectId
+            // project 更新
+            let projectRef = firestore.collection('projects').doc(projectId)
+            batch.update(projectRef, projectData)
+
+            // list に追加
+            tempService.projectId = projectId
             tempServices.splice(selectedIndex, 1)
             tempServices.splice(selectedIndex, 0, tempService)
           } else {
+            // project 追加
+            let projectId = firestore.collection('projects').doc().id
+            let projectRef = firestore.collection('projects').doc(projectId)
+            batch.set(projectRef, projectData)
+
+            // list に追加
+            tempService.projectId = projectId
             if (tempServices == null) {
               tempServices = []
             }
             tempServices.push(tempService)
           }
-          // dbに保存
-          firestore.collection('companies').doc(companyId)
+
+          // company detail 更新
+          let companyDetailRef = firestore.collection('companies').doc(companyId)
             .collection('detail').doc(companyId)
-            .update({
-              services: tempServices,
-            })
+          batch.update(companyDetailRef, {
+            services: tempServices,
+          })
+
+          batch.commit()
             .then(() => {
               commit('setServices', tempServices)
               commit('updateIsEditingServices', false)
             })
             .catch((error) => {
-              console.error("Error adding document: ", error)
+              console.error("Error", error)
             })
         })
       })
     } else {
+      // 新しいデータ
       const tempService = {
         imageUrl: imageUrl,
         title: title,
         content: content,
         url: url
       }
+      // project 用のデータ
+      let projectData = tempService
+      projectData.createdAt = new Date()
+
       if (selectedIndex != null) {
+        let projectId = tempServices[selectedIndex].projectId
+        // project 更新
+        let projectRef = firestore.collection('projects').doc(projectId)
+        batch.update(projectRef, projectData)
+
+        // company services 更新
+        tempService.projectId = projectId
         tempServices.splice(selectedIndex, 1)
         tempServices.splice(selectedIndex, 0, tempService)
       }
-      firestore.collection('companies').doc(companyId)
+
+      // company detail 更新
+      let companyDetailRef = firestore.collection('companies').doc(companyId)
         .collection('detail').doc(companyId)
-        .update({
-          services: tempServices,
-        })
+      batch.update(companyDetailRef, {
+        services: tempServices,
+      })
+
+      batch.commit()
         .then(() => {
           commit('setServices', tempServices)
           commit('updateIsEditingServices', false)
         })
         .catch((error) => {
-          console.error("Error adding document: ", error)
+          console.error("Error", error)
         })
     }
   },

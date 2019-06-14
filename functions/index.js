@@ -2493,6 +2493,30 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
         }
         // name or imageUrl が変わっていれば続行
         if (isCompanyNameChanged || isCompanyImageUrlChanged) {
+          // projects
+          admin.firestore()
+            .collection('projects')
+            .where('companyId', '==', companyId)
+            .get()
+            .then(function(snapshot) {
+              const batch = admin.firestore().batch()
+
+              snapshot.forEach(function(doc) {
+                const projectRef = admin.firestore().collection('projects').doc(doc.id)
+                batch.update(projectRef, companyData)
+              })
+              batch.commit()
+                .then(() => {
+                  console.log('update project completed.')
+                })
+                .catch((error) => {
+                  console.error("Error", error)
+                })
+            })
+            .catch(err => {
+              console.log('Error getting document', err)
+            })
+
           // chats
           admin.firestore()
             .collection('chats')

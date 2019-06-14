@@ -829,12 +829,12 @@
               </template>
             </v-list>
             <!-- サービス編集画面 -->
-            <div v-show="isEditingServices">
+            <div v-if="isEditingServices">
               <v-form v-model="editServicesValid">
                 <div class="d-flex pb-3">
                   <v-flex xs12 sm10 class="px-4 break">
                     <div class="py-3">
-                      <v-img :src="tempServiceImageUrl" width="200" height="100" class="grey lighten-3"/>
+                      <v-img :src="tempServiceImageUrl" aspect-ratio="3" class="grey lighten-3"/>
                       <input type="file" v-on:change="onFileChange">
                       <p v-if="!imageFileSizeValid" class="warning-text-color">
                         {{ imageFileSizeWarning }}
@@ -882,6 +882,8 @@
                       :disabled="!editServicesValid || tempServiceUrl == null || !imageFileSizeValid || plan == null"
                       @click="updateServices({
                         companyId: companyId,
+                        companyName: companyName,
+                        companyImageUrl: companyImageUrl,
                         isServiceImageChanged: isServiceImageChanged,
                         selectedIndex: selectedServiceIndex,
                         services: services,
