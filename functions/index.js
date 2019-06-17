@@ -516,11 +516,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
             .catch((error) => {
               console.error("Error", error)
             })
-        } else if (newStatus.hired) {
-          const batch = admin.firestore().batch()
-
-          // paidActions に追加
-          const paidActionRef = admin.firestore().collection('paidActions').doc()
+        } else if (newStatus.contracted) {
           let paidActionData = {
             companyId: companyId,
             companyName: companyName,
@@ -535,13 +531,18 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
           if (companyImageUrl) {
             paidActionData.companyImageUrl = companyImageUrl
           }
-          batch.set(paidActionRef, paidActionData)
 
+          admin.firestore()
+            .collection('paidActions')
+            .add(paidActionData)
+            .then(() => {
+              console.log('set paidActions completed.')
+            })
+            .catch((error) => {
+              console.error("Error", error)
+            })
+        } else if (newStatus.hired) {
           // キャリア更新
-          const careerId = admin.firestore().collection('users').doc(user.uid)
-            .collection('career').doc().id
-          const careerRef = admin.firestore().collection('users').doc(user.uid)
-            .collection('career').doc(careerId)
           var careerData = {
             type: 'hired',
             occupation: occupation,
@@ -553,11 +554,13 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
           if (companyImageUrl) {
             careerData.companyImageUrl = companyImageUrl
           }
-          batch.set(careerRef, careerData)
 
-          batch.commit()
+          admin.firestore().collection('users')
+            .doc(user.uid)
+            .collection('career')
+            .add(careerData)
             .then(() => {
-              console.log('update paidActions & set career completed.')
+              console.log('set career completed.')
             })
             .catch((error) => {
               console.error("Error", error)
