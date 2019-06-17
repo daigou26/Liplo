@@ -398,10 +398,8 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
           batch.set(paidActionRef, paidActionData)
 
           // キャリア更新
-          const careerId = admin.firestore().collection('users').doc(user.uid)
-            .collection('career').doc().id
           const careerRef = admin.firestore().collection('users').doc(user.uid)
-            .collection('career').doc(careerId)
+            .collection('career').doc(career.careerId)
           var careerData = {
             type: 'intern',
             occupation: occupation,
@@ -418,23 +416,22 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
           }
           batch.set(careerRef, careerData)
 
-          // キャリア情報をcandidateに格納
-          const candidateRef = admin.firestore().collection('companies')
-            .doc(companyId).collection('candidates').doc(candidateId)
-          career.careerId = careerId
-          batch.update(candidateRef, {
-            career: career
-          })
-
-          // userスコア更新
-          const userRef = admin.firestore().collection('users').doc(user.uid)
-          batch.update(userRef, {
-            points: admin.firestore.FieldValue.increment(1),
-          })
-
           batch.commit()
             .then(() => {
-              console.log('update paidActions & career & candidate & user score completed.')
+              console.log('update paidActions & career completed.')
+            })
+            .catch((error) => {
+              console.error("Error", error)
+            })
+
+          // userスコア更新
+          admin.firestore().collection('users')
+            .doc(user.uid)
+            .update({
+              points: admin.firestore.FieldValue.increment(1)
+            })
+            .then(() => {
+              console.log('update user score completed.')
             })
             .catch((error) => {
               console.error("Error", error)
@@ -469,13 +466,12 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
           }
           batch.set(feedbackRef, feedbackData)
 
-          const notificationRef = admin.firestore().collection('users').doc(user.uid)
-            .collection('notifications').doc()
-
           if (feedback != null) {
             // フィードバック送信 通知
+            let feedbackNotificationRef = admin.firestore().collection('users').doc(user.uid)
+              .collection('notifications').doc()
             let feedbackUrl = '/user/feedbacks/' + feedbackId
-            batch.set(notificationRef, {
+            batch.set(feedbackNotificationRef, {
               type: 'normal',
               isImportant: false,
               content: companyName + 'からフィードバックが送られました！ ',
@@ -494,8 +490,10 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
           }
           batch.update(careerRef, careerData)
           // インターン終了 通知
+          let reviewNotificationRef = admin.firestore().collection('users').doc(user.uid)
+            .collection('notifications').doc()
           let reviewUrl = '/user/reviews/new?id=' + career.careerId
-          batch.set(notificationRef, {
+          batch.set(reviewNotificationRef, {
             type: 'normal',
             isImportant: true,
             content:
@@ -518,11 +516,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
             .catch((error) => {
               console.error("Error", error)
             })
-        } else if (newStatus.hired) {
-          const batch = admin.firestore().batch()
-
-          // paidActions に追加
-          const paidActionRef = admin.firestore().collection('paidActions').doc()
+        } else if (newStatus.contracted) {
           let paidActionData = {
             companyId: companyId,
             companyName: companyName,
@@ -537,13 +531,18 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
           if (companyImageUrl) {
             paidActionData.companyImageUrl = companyImageUrl
           }
-          batch.set(paidActionRef, paidActionData)
 
+          admin.firestore()
+            .collection('paidActions')
+            .add(paidActionData)
+            .then(() => {
+              console.log('set paidActions completed.')
+            })
+            .catch((error) => {
+              console.error("Error", error)
+            })
+        } else if (newStatus.hired) {
           // キャリア更新
-          const careerId = admin.firestore().collection('users').doc(user.uid)
-            .collection('career').doc().id
-          const careerRef = admin.firestore().collection('users').doc(user.uid)
-            .collection('career').doc(careerId)
           var careerData = {
             type: 'hired',
             occupation: occupation,
@@ -555,11 +554,13 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
           if (companyImageUrl) {
             careerData.companyImageUrl = companyImageUrl
           }
-          batch.set(careerRef, careerData)
 
-          batch.commit()
+          admin.firestore().collection('users')
+            .doc(user.uid)
+            .collection('career')
+            .add(careerData)
             .then(() => {
-              console.log('update paidActions & set career completed.')
+              console.log('set career completed.')
             })
             .catch((error) => {
               console.error("Error", error)
@@ -732,13 +733,12 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
         const feedbackRef = admin.firestore().collection('feedbacks').doc(feedbackId)
         batch.set(feedbackRef, feedbackData)
 
-        const notificationRef = admin.firestore().collection('users').doc(user.uid)
-          .collection('notifications').doc()
-
         if (feedback != null) {
           // フィードバック送信 通知
+          let feedbackNotificationRef = admin.firestore().collection('users').doc(user.uid)
+            .collection('notifications').doc()
           let feedbackUrl = '/user/feedbacks/' + feedbackId
-          batch.set(notificationRef, {
+          batch.set(feedbackNotificationRef, {
             type: 'normal',
             isImportant: false,
             content: companyName + 'からフィードバックが送られました！ ',
@@ -757,8 +757,10 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
         }
         batch.update(careerRef, careerData)
         // インターン終了 通知
+        let reviewNotificationRef = admin.firestore().collection('users').doc(user.uid)
+          .collection('notifications').doc()
         let reviewUrl = '/user/reviews/new?id=' + career.careerId
-        batch.set(notificationRef, {
+        batch.set(reviewNotificationRef, {
           type: 'normal',
           isImportant: true,
           content:
@@ -801,8 +803,10 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
         batch.set(passRef, passData)
 
         // pass 通知
+        let passNotificationRef = admin.firestore().collection('users').doc(user.uid)
+          .collection('notifications').doc()
         let passUrl = '/user/passes/' + pass.passId
-        batch.set(notificationRef, {
+        batch.set(passNotificationRef, {
           type: 'normal',
           isImportant: true,
           content: `${companyName}から${passTypeText}が送られました！ パスを使用する場合は、使用ボタンを押してから企業と連絡を取り、契約をしてください。`,
@@ -996,15 +1000,17 @@ exports.passHasChanged = functions.region('asia-northeast1')
 
     if (isAccepted == true && previousValue.isAccepted == false) {
       // パスを承諾した時の処理
-      const message = {
+      let message = {
         message: userMessage,
         createdAt: newValue.acceptedDate,
         type: 'acceptOffer',
         user: {
           uid: uid,
-          name: userName,
-          imageUrl: profileImageUrl
+          name: userName
         }
+      }
+      if (profileImageUrl) {
+        message.user.imageUrl = profileImageUrl
       }
       // パスの種類
       var typeText
@@ -2473,11 +2479,14 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
 
               snapshot.forEach(function(doc) {
                 const paidActionRef = admin.firestore().collection('paidActions').doc(doc.id)
-                batch.update(paidActionRef, {
+                let paidActionData = {
                   companyName: companyName,
-                  companyImageUrl: companyImageUrl,
                   invoiceEmail: invoiceEmail
-                })
+                }
+                if (companyImageUrl) {
+                  paidActionData.companyImageUrl = companyImageUrl
+                }
+                batch.update(paidActionRef, paidActionData)
               })
               batch.commit()
                 .then(() => {
@@ -3213,12 +3222,12 @@ exports.sendMessage = functions.region('asia-northeast1')
     var chatData = {
       updatedAt: snap.data().createdAt,
       lastMessage: message,
-      messagesExist: true,
+      messagesExist: true
     }
 
-    if (user != null && pic == null) {
+    if (user != null && !pic) {
       chatData.picUnreadCount = admin.firestore.FieldValue.increment(1)
-    } else if (user == null && pic != null) {
+    } else if (!user && pic != null) {
       chatData.userUnreadCount = admin.firestore.FieldValue.increment(1)
     }
 

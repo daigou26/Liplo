@@ -279,10 +279,11 @@ export const actions = {
     const user = state.user
     const type = state.type
     const jobId = state.jobId
-    const careerId = state.careerId
+    let careerId = state.careerId
     const candidateId = params.id
     const isInternExtended = state.isInternExtended
     const extendedInternEnd = state.extendedInternEnd
+    const currentDate = new Date()
 
     if (newStatus.contracted) {
       // パスが使用されている場合に限り、ステータスを更新できる
@@ -297,7 +298,7 @@ export const actions = {
               // candidate 更新
               var candidateData = {
                 status: newStatus,
-                updatedAt: new Date()
+                updatedAt: currentDate
               }
 
               const batch = firestore.batch()
@@ -312,7 +313,7 @@ export const actions = {
                 isContracted: true,
                 isAccepted: true,
                 isValid: false,
-                contractedDate: new Date(),
+                contractedDate: currentDate
               })
 
               // 候補者のデータを保存
@@ -321,7 +322,7 @@ export const actions = {
 
               var data = {
                 user: user,
-                createdAt: new Date()
+                createdAt: currentDate
               }
               if (type != null) {
                 data.type = type
@@ -351,14 +352,18 @@ export const actions = {
           commit('setError', 'エラーが発生しました')
         })
     } else {
-      // candidate 更新
+      const batch = firestore.batch()
+
       var candidateData = {
         status: newStatus,
-        updatedAt: new Date()
+        updatedAt: currentDate
       }
 
       if (newStatus.intern) {
+        careerId = firestore.collection('users').doc(user.uid)
+          .collection('career').doc().id
         candidateData.career = {
+          careerId: careerId,
           internOccupation: occupation,
         }
         candidateData.internOccupation = occupation
@@ -375,7 +380,7 @@ export const actions = {
         candidateData.extendedInternEnd = true
       }
 
-      const batch = firestore.batch()
+      // candidate 更新
       const candidateRef = firestore.collection('companies').doc(companyId)
         .collection('candidates').doc(candidateId)
       batch.update(candidateRef, candidateData)
@@ -395,7 +400,7 @@ export const actions = {
           .collection('career').doc(careerId)
 
         var careerData = {
-          endedAt: new Date(),
+          endedAt: currentDate,
           extendedInternEnd: true,
         }
         batch.update(careerRef, careerData)
@@ -421,7 +426,7 @@ export const actions = {
       if (setData) {
         var data = {
           user: user,
-          createdAt: new Date()
+          createdAt: currentDate
         }
         if (type != null) {
           data.type = type
@@ -436,6 +441,7 @@ export const actions = {
         .then(() => {
           commit('setError', null)
           if (newStatus.intern) {
+            commit('setCareerId', careerId)
             // analytics
             event({
               eventCategory: 'user',

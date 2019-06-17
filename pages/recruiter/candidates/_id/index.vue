@@ -71,7 +71,13 @@
           </v-card>
         </v-flex>
         <!-- candidate summary (md, lg, xl) -->
-        <v-flex md6 hidden-sm-and-down pb-4>
+        <v-flex
+          md6
+          hidden-sm-and-down
+          pb-4
+          class="scroll-y"
+          :style="{ height: windowHeight + 'px' }"
+        >
           <!-- user image & name (md, lg, xl) -->
           <v-card v-if="user" flat>
             <v-list two-line>
@@ -374,6 +380,7 @@
         <v-flex
           md6
           xs12
+          style="overflow: hidden;"
           :class="{'border-left': $vuetify.breakpoint.mdAndUp}"
         >
           <v-tabs @change="changeInput">
@@ -667,20 +674,26 @@
                   :items="statusItems"
                   solo
                 ></v-select>
+                <!-- 新しいステータスが不採用の時 -->
+                <div v-if="tempStatus == '不採用'">
+                  ステータスを変更すると、候補者一覧に表示されなくなります。
+                  不採用にする際に候補者にメッセージを送る場合は、
+                  ステータス変更前に送信してください。
+                </div>
                 <!-- ステータスが scouted の時 -->
-                <div v-if="status.scouted">
+                <div v-if="status.scouted && tempStatus != '不採用'">
                   メッセージのやりとりが始まり次第、ステータスを
                   <span class="font-weight-bold cyan--text text--lighten-1">選考中</span>
                   に更新してください。
                 </div>
                 <!-- ステータスが inbox の時 -->
-                <div v-if="status.inbox">
+                <div v-if="status.inbox && tempStatus != '不採用'">
                   この応募者を選考する場合は、ステータスを
                   <span class="font-weight-bold cyan--text text--lighten-1">選考中</span>
                   に変えた後、メッセージを送信してください。
                 </div>
                 <!-- ステータスが inProcess の時 -->
-                <div v-if="status.inProcess">
+                <div v-if="status.inProcess && tempStatus != '不採用'">
                   この候補者を採用する際は、まずメッセージにてやり取りをして頂き、
                   候補者と雇用契約を結んだ時点で、ステータスを
                   <span class="font-weight-bold orange--text text--darken-1">インターン</span>
@@ -701,13 +714,11 @@
                   </div>
                 </div>
                 <!-- ステータスが intern の時 -->
-                <div v-if="status.intern">
+                <div v-if="status.intern && tempStatus != '不採用'">
                   パスを送る場合は<span class="font-weight-bold teal--text text--lighten-1">パス</span>に変更してください。
-                  <div>
-                  </div>
                 </div>
                 <!-- pass -->
-                <div v-if="status.intern == true">
+                <div v-if="status.intern && tempStatus != '不採用'">
                   <div v-if="tempStatus == 'パス'" class="py-3">
                     <div class="pt-3 pb-3 text-color subheading font-weight-bold">
                       パス
@@ -800,7 +811,7 @@
                         required
                       ></v-textarea>
                       <div class="caption-2 font-weight-bold light-text-color py-2">
-                        ※ 入社に際しての労働条件などは、候補者とのメッセージにてお伝えください。
+                        ※ 入社時の労働条件などは、候補者とのメッセージにてお伝えください。
                       </div>
                     </v-form>
                   </div>
@@ -822,7 +833,7 @@
                     <v-textarea
                       label="アドバイス"
                       v-model="advice"
-                      placeholder="もっとこうした方が良くなるなど"
+                      placeholder="改善点"
                       :rules="feedbackRules"
                       required
                     ></v-textarea>
@@ -832,7 +843,7 @@
                   </div>
                 </div>
                 <!-- ステータスが pass の時 -->
-                <div v-if="status.pass == true">
+                <div v-if="status.pass && tempStatus != '不採用'">
                   <div>
                     契約が完了しましたら、ステータスを
                     <span class="font-weight-bold green--text text--lighten-1">入社予定</span>に変更してください。
@@ -849,14 +860,22 @@
                   </div>
                 </div>
                 <!-- ステータスが contracted の時 -->
-                <div v-if="status.contracted == true">
+                <div v-if="status.contracted && tempStatus != '不採用'">
                   候補者と雇用契約を結び次第、ステータスを<span class="font-weight-bold green--text text--lighten-1">入社</span>に変更してください。
                   ステータスを変更すると、候補者一覧に表示されなくなります。
                 </div>
                 <div v-if="error && error != ''" class="pt-3 red--text">
                   {{ error }}
                 </div>
-                <div v-if="!status.hired && !status.rejected" class="text-xs-right">
+                <div v-if="tempStatus == 'インターン' || tempStatus == '入社予定'" class="text-xs-right">
+                  <v-btn
+                    :disabled="updateStatusButtonDisabled"
+                    @click="statusDialog = true"
+                  >
+                    更新
+                  </v-btn>
+                </div>
+                <div v-else-if="!status.hired && !status.rejected" class="text-xs-right">
                   <v-btn
                     :disabled="updateStatusButtonDisabled"
                     @click="updateStatusButtonClicked"
@@ -1015,6 +1034,37 @@
             </v-tab-item>
           </v-tabs>
         </v-flex>
+        <!-- ステータス変更の確認 -->
+        <v-dialog
+          v-model="statusDialog"
+          :fullscreen="$vuetify.breakpoint.xsOnly"
+          width="600"
+        >
+          <v-card>
+            <v-card-title class="title font-weight-bold text-color">ステータス更新の確認</v-card-title>
+            <v-card-text>
+              ステータスをインターンまたは採用予定に変更すると料金が発生します。
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="grey"
+                flat="flat"
+                @click="statusDialog = false"
+              >
+                キャンセル
+              </v-btn>
+
+              <v-btn
+                color="teal"
+                flat="flat"
+                @click="updateStatusButtonClicked"
+              >
+                更新
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
         <!-- パスの種類の説明 -->
         <v-dialog
           v-model="passTypesDialog"
@@ -1090,6 +1140,7 @@ export default {
   data: () => ({
     isQueried: false,
     windowHeight: 0,
+    statusDialog: false,
     snackbar: false,
     snackbarText: '',
     isMessagesQueried: false,
@@ -1340,7 +1391,7 @@ export default {
     } else {
       toolbarHeight = 64
     }
-    this.windowHeight = window.innerHeight - toolbarHeight - 30
+    this.windowHeight = window.innerHeight - toolbarHeight
     // tab menu = 48  margin = 16
     this.tabItemHeight = window.innerHeight - toolbarHeight - 48 - 16
     this.messagesHeight = window.innerHeight - toolbarHeight - 48 - 63 - 18
@@ -1507,7 +1558,7 @@ export default {
         pass: false,
         contracted: false,
         hired: false,
-        rejected: false,
+        rejected: false
       }
       switch (this.tempStatus) {
         case 'スカウト': newStatus.scouted = true; break
@@ -1524,7 +1575,7 @@ export default {
         router: this.$router,
         params: this.params,
         companyId: this.companyId,
-        newStatus: newStatus,
+        newStatus: newStatus
       }
 
       if (this.tempStatus == 'インターン') {
@@ -1547,9 +1598,11 @@ export default {
           occupation: this.passOccupation,
           pic: {
             uid: this.uid,
-            name: this.lastName + ' ' + this.firstName,
-            imageUrl: this.imageUrl,
+            name: this.lastName + ' ' + this.firstName
           }
+        }
+        if (this.imageUrl) {
+          pass.pic.imageUrl = this.imageUrl
         }
         if (this.tempPassType != '入社パス') {
           pass.joiningYear = Number(this.tempJoiningYear)
@@ -1558,6 +1611,7 @@ export default {
         candidateData.pass = pass
       }
 
+      // 現在のステータスがインターンでフィードバックが記入されている場合
       if (this.status.intern == true && (this.goodPoint != '' || this.advice != '')) {
         let feedback = {}
         if (this.goodPoint != '') {
@@ -1570,6 +1624,7 @@ export default {
       }
 
       this.updateStatus(candidateData)
+      this.statusDialog = false
     },
     sendReviewButtonClicked() {
       let reviewData = {
