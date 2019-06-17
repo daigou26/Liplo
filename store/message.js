@@ -4,10 +4,12 @@ import { firestore } from '@/plugins/firebase'
 export const actions = {
   postMessageFromUser({commit}, {params, message, uid, imageUrl, name}) {
     const chatId = params.id
-    const user = {
+    let user = {
       uid: uid,
-      imageUrl: imageUrl,
       name: name,
+    }
+    if (imageUrl) {
+      user.imageUrl = imageUrl
     }
 
     return firestore.collection('chats').doc(chatId)
@@ -25,10 +27,12 @@ export const actions = {
       })
   },
   postMessageFromPic({commit}, {chatId, message, uid, imageUrl, name}) {
-    const pic = {
+    let pic = {
       uid: uid,
-      imageUrl: imageUrl,
       name: name,
+    }
+    if (imageUrl) {
+      pic.imageUrl = imageUrl
     }
 
     return firestore.collection('chats').doc(chatId)

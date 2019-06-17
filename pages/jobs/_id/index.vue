@@ -1329,12 +1329,14 @@ export default {
       }
     },
     applyButtonClicked() {
-      const user = {
+      let user = {
         uid: this.uid,
-        name: this.lastName + ' ' + this.firstName,
-        imageUrl: this.profileImageUrl,
+        name: this.lastName + ' ' + this.firstName
       }
-
+      if (this.profileImageUrl) {
+        user.imageUrl = this.profileImageUrl
+      }
+      
       this.apply({
         params: this.$route.params,
         user: user,

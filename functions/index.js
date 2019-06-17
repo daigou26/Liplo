@@ -996,15 +996,17 @@ exports.passHasChanged = functions.region('asia-northeast1')
 
     if (isAccepted == true && previousValue.isAccepted == false) {
       // パスを承諾した時の処理
-      const message = {
+      let message = {
         message: userMessage,
         createdAt: newValue.acceptedDate,
         type: 'acceptOffer',
         user: {
           uid: uid,
-          name: userName,
-          imageUrl: profileImageUrl
+          name: userName
         }
+      }
+      if (profileImageUrl) {
+        message.user.imageUrl = profileImageUrl
       }
       // パスの種類
       var typeText
@@ -2473,11 +2475,14 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
 
               snapshot.forEach(function(doc) {
                 const paidActionRef = admin.firestore().collection('paidActions').doc(doc.id)
-                batch.update(paidActionRef, {
+                let paidActionData = {
                   companyName: companyName,
-                  companyImageUrl: companyImageUrl,
                   invoiceEmail: invoiceEmail
-                })
+                }
+                if (companyImageUrl) {
+                  paidActionData.companyImageUrl = companyImageUrl
+                }
+                batch.update(paidActionRef, paidActionData)
               })
               batch.commit()
                 .then(() => {
