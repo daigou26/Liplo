@@ -667,20 +667,33 @@
                   :items="statusItems"
                   solo
                 ></v-select>
+                <!-- 新しいステータスが不採用の時 -->
+                <div v-if="tempStatus == '不採用'">
+                  ステータスを変更すると、候補者一覧に表示されなくなります。
+                  <!-- メッセージ -->
+                  <v-textarea
+                    label="メッセージ"
+                    class="mt-3"
+                    v-model="rejectMessage"
+                    placeholder="何かメッセージがございましたらご記入ください。"
+                    :rules="messageRules"
+                    required
+                  ></v-textarea>
+                </div>
                 <!-- ステータスが scouted の時 -->
-                <div v-if="status.scouted">
+                <div v-if="status.scouted && tempStatus != '不採用'">
                   メッセージのやりとりが始まり次第、ステータスを
                   <span class="font-weight-bold cyan--text text--lighten-1">選考中</span>
                   に更新してください。
                 </div>
                 <!-- ステータスが inbox の時 -->
-                <div v-if="status.inbox">
+                <div v-if="status.inbox && tempStatus != '不採用'">
                   この応募者を選考する場合は、ステータスを
                   <span class="font-weight-bold cyan--text text--lighten-1">選考中</span>
                   に変えた後、メッセージを送信してください。
                 </div>
                 <!-- ステータスが inProcess の時 -->
-                <div v-if="status.inProcess">
+                <div v-if="status.inProcess && tempStatus != '不採用'">
                   この候補者を採用する際は、まずメッセージにてやり取りをして頂き、
                   候補者と雇用契約を結んだ時点で、ステータスを
                   <span class="font-weight-bold orange--text text--darken-1">インターン</span>
@@ -701,13 +714,11 @@
                   </div>
                 </div>
                 <!-- ステータスが intern の時 -->
-                <div v-if="status.intern">
+                <div v-if="status.intern && tempStatus != '不採用'">
                   パスを送る場合は<span class="font-weight-bold teal--text text--lighten-1">パス</span>に変更してください。
-                  <div>
-                  </div>
                 </div>
                 <!-- pass -->
-                <div v-if="status.intern == true">
+                <div v-if="status.intern && tempStatus != '不採用'">
                   <div v-if="tempStatus == 'パス'" class="py-3">
                     <div class="pt-3 pb-3 text-color subheading font-weight-bold">
                       パス
@@ -822,7 +833,7 @@
                     <v-textarea
                       label="アドバイス"
                       v-model="advice"
-                      placeholder="もっとこうした方が良くなるなど"
+                      placeholder="改善点"
                       :rules="feedbackRules"
                       required
                     ></v-textarea>
@@ -832,7 +843,7 @@
                   </div>
                 </div>
                 <!-- ステータスが pass の時 -->
-                <div v-if="status.pass == true">
+                <div v-if="status.pass && tempStatus != '不採用'">
                   <div>
                     契約が完了しましたら、ステータスを
                     <span class="font-weight-bold green--text text--lighten-1">入社予定</span>に変更してください。
@@ -849,7 +860,7 @@
                   </div>
                 </div>
                 <!-- ステータスが contracted の時 -->
-                <div v-if="status.contracted == true">
+                <div v-if="status.contracted && tempStatus != '不採用'">
                   候補者と雇用契約を結び次第、ステータスを<span class="font-weight-bold green--text text--lighten-1">入社</span>に変更してください。
                   ステータスを変更すると、候補者一覧に表示されなくなります。
                 </div>
@@ -1102,6 +1113,7 @@ export default {
     passValid: true,
     feedbackValid: true,
     tempStatus: '',
+    rejectMessage: '',
     passMessage: '',
     messageRules: [
       v => !!v || '入力されていません',
@@ -1507,7 +1519,7 @@ export default {
         pass: false,
         contracted: false,
         hired: false,
-        rejected: false,
+        rejected: false
       }
       switch (this.tempStatus) {
         case 'スカウト': newStatus.scouted = true; break
@@ -1525,6 +1537,13 @@ export default {
         params: this.params,
         companyId: this.companyId,
         newStatus: newStatus,
+        pic: {
+          uid: this.uid,
+          name: this.lastName + ' ' + this.firstName
+        }
+      }
+      if (this.imageUrl) {
+        candidateData.pic.imageUrl = this.imageUrl
       }
 
       if (this.tempStatus == 'インターン') {
@@ -1547,9 +1566,11 @@ export default {
           occupation: this.passOccupation,
           pic: {
             uid: this.uid,
-            name: this.lastName + ' ' + this.firstName,
-            imageUrl: this.imageUrl,
+            name: this.lastName + ' ' + this.firstName
           }
+        }
+        if (this.imageUrl) {
+          pass.pic.imageUrl = this.imageUrl
         }
         if (this.tempPassType != '入社パス') {
           pass.joiningYear = Number(this.tempJoiningYear)
@@ -1558,6 +1579,7 @@ export default {
         candidateData.pass = pass
       }
 
+      // 現在のステータスがインターンでフィードバックが記入されている場合
       if (this.status.intern == true && (this.goodPoint != '' || this.advice != '')) {
         let feedback = {}
         if (this.goodPoint != '') {
@@ -1567,6 +1589,11 @@ export default {
           feedback.advice = this.advice
         }
         candidateData.feedback = feedback
+      }
+
+      //  新しいステータスが不採用でメッセージが記入されている場合
+      if (this.tempStatus == '不採用' && this.rejectMessage) {
+        candidateData.message = this.rejectMessage
       }
 
       this.updateStatus(candidateData)
