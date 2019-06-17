@@ -71,7 +71,13 @@
           </v-card>
         </v-flex>
         <!-- candidate summary (md, lg, xl) -->
-        <v-flex md6 hidden-sm-and-down pb-4>
+        <v-flex
+          md6
+          hidden-sm-and-down
+          pb-4
+          class="scroll-y"
+          :style="{ height: windowHeight + 'px' }"
+        >
           <!-- user image & name (md, lg, xl) -->
           <v-card v-if="user" flat>
             <v-list two-line>
@@ -374,6 +380,7 @@
         <v-flex
           md6
           xs12
+          style="overflow: hidden;"
           :class="{'border-left': $vuetify.breakpoint.mdAndUp}"
         >
           <v-tabs @change="changeInput">
@@ -670,15 +677,8 @@
                 <!-- 新しいステータスが不採用の時 -->
                 <div v-if="tempStatus == '不採用'">
                   ステータスを変更すると、候補者一覧に表示されなくなります。
-                  <!-- メッセージ -->
-                  <v-textarea
-                    label="メッセージ"
-                    class="mt-3"
-                    v-model="rejectMessage"
-                    placeholder="何かメッセージがございましたらご記入ください。"
-                    :rules="messageRules"
-                    required
-                  ></v-textarea>
+                  不採用にする際に候補者にメッセージを送る場合は、
+                  ステータス変更前に送信してください。
                 </div>
                 <!-- ステータスが scouted の時 -->
                 <div v-if="status.scouted && tempStatus != '不採用'">
@@ -867,7 +867,7 @@
                 <div v-if="error && error != ''" class="pt-3 red--text">
                   {{ error }}
                 </div>
-                <div v-if="tempStatus == 'インターン' || tempStatus == '採用予定'" class="text-xs-right">
+                <div v-if="tempStatus == 'インターン' || tempStatus == '入社予定'" class="text-xs-right">
                   <v-btn
                     :disabled="updateStatusButtonDisabled"
                     @click="statusDialog = true"
@@ -1153,7 +1153,6 @@ export default {
     passValid: true,
     feedbackValid: true,
     tempStatus: '',
-    rejectMessage: '',
     passMessage: '',
     messageRules: [
       v => !!v || '入力されていません',
@@ -1392,7 +1391,7 @@ export default {
     } else {
       toolbarHeight = 64
     }
-    this.windowHeight = window.innerHeight - toolbarHeight - 30
+    this.windowHeight = window.innerHeight - toolbarHeight
     // tab menu = 48  margin = 16
     this.tabItemHeight = window.innerHeight - toolbarHeight - 48 - 16
     this.messagesHeight = window.innerHeight - toolbarHeight - 48 - 63 - 18
@@ -1576,14 +1575,7 @@ export default {
         router: this.$router,
         params: this.params,
         companyId: this.companyId,
-        newStatus: newStatus,
-        pic: {
-          uid: this.uid,
-          name: this.lastName + ' ' + this.firstName
-        }
-      }
-      if (this.imageUrl) {
-        candidateData.pic.imageUrl = this.imageUrl
+        newStatus: newStatus
       }
 
       if (this.tempStatus == 'インターン') {
@@ -1629,11 +1621,6 @@ export default {
           feedback.advice = this.advice
         }
         candidateData.feedback = feedback
-      }
-
-      //  新しいステータスが不採用でメッセージが記入されている場合
-      if (this.tempStatus == '不採用' && this.rejectMessage) {
-        candidateData.message = this.rejectMessage
       }
 
       this.updateStatus(candidateData)

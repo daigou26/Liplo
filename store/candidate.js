@@ -273,16 +273,13 @@ export const actions = {
     newStatus,
     occupation,
     feedback,
-    pass,
-    pic,
-    message
+    pass
   }) {
     const currentStatus = state.status
     const user = state.user
     const type = state.type
     const jobId = state.jobId
-    const careerId = state.careerId
-    const chatId = state.chatId
+    let careerId = state.careerId
     const candidateId = params.id
     const isInternExtended = state.isInternExtended
     const extendedInternEnd = state.extendedInternEnd
@@ -363,7 +360,10 @@ export const actions = {
       }
 
       if (newStatus.intern) {
+        careerId = firestore.collection('users').doc(user.uid)
+          .collection('career').doc().id
         candidateData.career = {
+          careerId: careerId,
           internOccupation: occupation,
         }
         candidateData.internOccupation = occupation
@@ -406,18 +406,6 @@ export const actions = {
         batch.update(careerRef, careerData)
       }
 
-      // message 追加
-      if (newStatus.rejected && message) {
-        const messageRef = firestore.collection('chats').doc(chatId)
-          .collection('messages').doc()
-        batch.set(messageRef, {
-          pic: pic,
-          message: message,
-          createdAt: currentDate,
-          type: 'rejected',
-        })
-      }
-
       // 候補者のデータを保存
       var setData = false
       let ref
@@ -453,6 +441,7 @@ export const actions = {
         .then(() => {
           commit('setError', null)
           if (newStatus.intern) {
+            commit('setCareerId', careerId)
             // analytics
             event({
               eventCategory: 'user',

@@ -398,10 +398,8 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
           batch.set(paidActionRef, paidActionData)
 
           // キャリア更新
-          const careerId = admin.firestore().collection('users').doc(user.uid)
-            .collection('career').doc().id
           const careerRef = admin.firestore().collection('users').doc(user.uid)
-            .collection('career').doc(careerId)
+            .collection('career').doc(career.careerId)
           var careerData = {
             type: 'intern',
             occupation: occupation,
@@ -418,17 +416,9 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
           }
           batch.set(careerRef, careerData)
 
-          // キャリア情報をcandidateに格納
-          const candidateRef = admin.firestore().collection('companies')
-            .doc(companyId).collection('candidates').doc(candidateId)
-          career.careerId = careerId
-          batch.update(candidateRef, {
-            career: career
-          })
-
           batch.commit()
             .then(() => {
-              console.log('update paidActions & career & candidate completed.')
+              console.log('update paidActions & career completed.')
             })
             .catch((error) => {
               console.error("Error", error)
