@@ -422,7 +422,6 @@
           class="light-text-color"
           :class="{'px-4': $vuetify.breakpoint.smAndUp, 'px-4 mt-4': $vuetify.breakpoint.xsOnly}"
         >
-          <!-- 入社パス -->
           <div class="pb-3">
             <div class="subheading font-weight-bold">
               1. 入社パス
