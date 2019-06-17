@@ -201,7 +201,7 @@
                   <v-btn
                     :disabled="!acceptOfferValid || isAccepted"
                     color="warning"
-                    @click="acceptButtonClicked">
+                    @click="acceptDialog = true">
                     <span class="font-weight-bold">使用する</span>
                   </v-btn>
                 </v-form>
@@ -211,6 +211,36 @@
         </v-flex>
       </v-layout>
     </v-flex>
+    <!-- ステータス変更の確認 -->
+    <v-dialog
+      v-model="acceptDialog"
+      width="300"
+    >
+      <v-card>
+        <v-card-title class="title font-weight-bold text-color">パス使用の確認</v-card-title>
+        <v-card-text>
+          パスを使用すると、キャンセルは出来ません。慎重に使用してください。
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="grey"
+            flat="flat"
+            @click="acceptDialog = false"
+          >
+            キャンセル
+          </v-btn>
+
+          <v-btn
+            color="teal"
+            flat="flat"
+            @click="acceptButtonClicked"
+          >
+            使用
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-layout>
 </template>
 
@@ -225,6 +255,7 @@ export default {
   },
   data: () => ({
     isQueried: false,
+    acceptDialog: false,
     snackbar: false,
     snackbarText: '',
     windowHeight: 0,
@@ -325,6 +356,7 @@ export default {
     acceptButtonClicked() {
       this.acceptOffer({params: this.params, message: this.userMessage, joiningYear: this.tempJoiningYear})
 
+      this.acceptDialog = false
       this.snackbarText = '使用しました！'
       this.snackbar = true
     },

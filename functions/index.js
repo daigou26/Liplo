@@ -426,15 +426,22 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
             career: career
           })
 
-          // userスコア更新
-          const userRef = admin.firestore().collection('users').doc(user.uid)
-          batch.update(userRef, {
-            points: admin.firestore.FieldValue.increment(1),
-          })
-
           batch.commit()
             .then(() => {
-              console.log('update paidActions & career & candidate & user score completed.')
+              console.log('update paidActions & career & candidate completed.')
+            })
+            .catch((error) => {
+              console.error("Error", error)
+            })
+
+          // userスコア更新
+          admin.firestore().collection('users')
+            .doc(user.uid)
+            .update({
+              points: admin.firestore.FieldValue.increment(1)
+            })
+            .then(() => {
+              console.log('update user score completed.')
             })
             .catch((error) => {
               console.error("Error", error)
@@ -469,13 +476,12 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
           }
           batch.set(feedbackRef, feedbackData)
 
-          const notificationRef = admin.firestore().collection('users').doc(user.uid)
-            .collection('notifications').doc()
-
           if (feedback != null) {
             // フィードバック送信 通知
+            let feedbackNotificationRef = admin.firestore().collection('users').doc(user.uid)
+              .collection('notifications').doc()
             let feedbackUrl = '/user/feedbacks/' + feedbackId
-            batch.set(notificationRef, {
+            batch.set(feedbackNotificationRef, {
               type: 'normal',
               isImportant: false,
               content: companyName + 'からフィードバックが送られました！ ',
@@ -494,8 +500,10 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
           }
           batch.update(careerRef, careerData)
           // インターン終了 通知
+          let reviewNotificationRef = admin.firestore().collection('users').doc(user.uid)
+            .collection('notifications').doc()
           let reviewUrl = '/user/reviews/new?id=' + career.careerId
-          batch.set(notificationRef, {
+          batch.set(reviewNotificationRef, {
             type: 'normal',
             isImportant: true,
             content:
@@ -732,13 +740,12 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
         const feedbackRef = admin.firestore().collection('feedbacks').doc(feedbackId)
         batch.set(feedbackRef, feedbackData)
 
-        const notificationRef = admin.firestore().collection('users').doc(user.uid)
-          .collection('notifications').doc()
-
         if (feedback != null) {
           // フィードバック送信 通知
+          let feedbackNotificationRef = admin.firestore().collection('users').doc(user.uid)
+            .collection('notifications').doc()
           let feedbackUrl = '/user/feedbacks/' + feedbackId
-          batch.set(notificationRef, {
+          batch.set(feedbackNotificationRef, {
             type: 'normal',
             isImportant: false,
             content: companyName + 'からフィードバックが送られました！ ',
@@ -757,8 +764,10 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
         }
         batch.update(careerRef, careerData)
         // インターン終了 通知
+        let reviewNotificationRef = admin.firestore().collection('users').doc(user.uid)
+          .collection('notifications').doc()
         let reviewUrl = '/user/reviews/new?id=' + career.careerId
-        batch.set(notificationRef, {
+        batch.set(reviewNotificationRef, {
           type: 'normal',
           isImportant: true,
           content:
@@ -801,8 +810,10 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
         batch.set(passRef, passData)
 
         // pass 通知
+        let passNotificationRef = admin.firestore().collection('users').doc(user.uid)
+          .collection('notifications').doc()
         let passUrl = '/user/passes/' + pass.passId
-        batch.set(notificationRef, {
+        batch.set(passNotificationRef, {
           type: 'normal',
           isImportant: true,
           content: `${companyName}から${passTypeText}が送られました！ パスを使用する場合は、使用ボタンを押してから企業と連絡を取り、契約をしてください。`,
@@ -3218,12 +3229,12 @@ exports.sendMessage = functions.region('asia-northeast1')
     var chatData = {
       updatedAt: snap.data().createdAt,
       lastMessage: message,
-      messagesExist: true,
+      messagesExist: true
     }
 
-    if (user != null && pic == null) {
+    if (user != null && !pic) {
       chatData.picUnreadCount = admin.firestore.FieldValue.increment(1)
-    } else if (user == null && pic != null) {
+    } else if (!user && pic != null) {
       chatData.userUnreadCount = admin.firestore.FieldValue.increment(1)
     }
 

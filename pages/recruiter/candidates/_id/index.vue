@@ -811,7 +811,7 @@
                         required
                       ></v-textarea>
                       <div class="caption-2 font-weight-bold light-text-color py-2">
-                        ※ 入社に際しての労働条件などは、候補者とのメッセージにてお伝えください。
+                        ※ 入社時の労働条件などは、候補者とのメッセージにてお伝えください。
                       </div>
                     </v-form>
                   </div>
@@ -867,7 +867,15 @@
                 <div v-if="error && error != ''" class="pt-3 red--text">
                   {{ error }}
                 </div>
-                <div v-if="!status.hired && !status.rejected" class="text-xs-right">
+                <div v-if="tempStatus == 'インターン' || tempStatus == '採用予定'" class="text-xs-right">
+                  <v-btn
+                    :disabled="updateStatusButtonDisabled"
+                    @click="statusDialog = true"
+                  >
+                    更新
+                  </v-btn>
+                </div>
+                <div v-else-if="!status.hired && !status.rejected" class="text-xs-right">
                   <v-btn
                     :disabled="updateStatusButtonDisabled"
                     @click="updateStatusButtonClicked"
@@ -1026,6 +1034,37 @@
             </v-tab-item>
           </v-tabs>
         </v-flex>
+        <!-- ステータス変更の確認 -->
+        <v-dialog
+          v-model="statusDialog"
+          :fullscreen="$vuetify.breakpoint.xsOnly"
+          width="600"
+        >
+          <v-card>
+            <v-card-title class="title font-weight-bold text-color">ステータス更新の確認</v-card-title>
+            <v-card-text>
+              ステータスをインターンまたは採用予定に変更すると料金が発生します。
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="grey"
+                flat="flat"
+                @click="statusDialog = false"
+              >
+                キャンセル
+              </v-btn>
+
+              <v-btn
+                color="teal"
+                flat="flat"
+                @click="updateStatusButtonClicked"
+              >
+                更新
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
         <!-- パスの種類の説明 -->
         <v-dialog
           v-model="passTypesDialog"
@@ -1101,6 +1140,7 @@ export default {
   data: () => ({
     isQueried: false,
     windowHeight: 0,
+    statusDialog: false,
     snackbar: false,
     snackbarText: '',
     isMessagesQueried: false,
@@ -1597,6 +1637,7 @@ export default {
       }
 
       this.updateStatus(candidateData)
+      this.statusDialog = false
     },
     sendReviewButtonClicked() {
       let reviewData = {
