@@ -339,9 +339,17 @@
                   プランについて
                 </div>
                 <div class="pt-4 light-text-color">
-                  プランは、現在のところ採用報酬型のみになっています。
-                  今後、プランの追加が予定されています。
+                  現在、３つのプランが用意されています。
                   プランを変更する場合は、go26dev@gmail.com までご連絡ください。
+                  また、注意事項については
+                  <nuxt-link
+                    color="teal"
+                    to="/recruiter/company_settings"
+                    @click.native="helpMenu = false"
+                  >
+                    こちら
+                  </nuxt-link>
+                  から確認できます。
                 </div>
               </div>
               <div v-show="invoiceHelp">
@@ -777,7 +785,7 @@
                     <div>
                       労働条件など、入社に際して知りたいことがある場合は、
                       パスを使用する前に、担当者とのメッセージなどでご確認をお願いします。
-                    </div>    
+                    </div>
                     <span v-if="uid && uid != ''">
                       パスについては
                       <no-ssr>

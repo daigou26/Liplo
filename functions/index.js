@@ -392,8 +392,10 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
             paidActionData.companyImageUrl = companyImageUrl
           }
           if (plan == 0) {
-            let isFree = allCandidates.intern.all > 3 ? false : true
+            let isFree = allCandidates.intern.all > 2 ? false : true
             paidActionData.isFree = isFree
+          } else {
+            paidActionData.isFree = false
           }
           batch.set(paidActionRef, paidActionData)
 
@@ -525,9 +527,9 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
             invoiceEmail: invoiceEmail,
             createdAt: new Date()
           }
-          if (plan == 0) {
-            paidActionData.isFree = false
-          }
+
+          paidActionData.isFree = (plan == 2)
+
           if (companyImageUrl) {
             paidActionData.companyImageUrl = companyImageUrl
           }
