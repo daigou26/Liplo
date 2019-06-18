@@ -78,7 +78,11 @@ export default {
   computed: {
     planText() {
       if (this.plan == 0) {
-        return '成功報酬'
+        return '採用報酬型'
+      } else if (this.plan == 1) {
+        return 'アルファ（掲載課金型）'
+      } else if (this.plan == 2) {
+        return 'ベータ（掲載課金型）'
       }
     },
     breakpoint() {

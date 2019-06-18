@@ -76,11 +76,36 @@
           <span class="text-color font-weight-bold pr-3">
             プラン:
           </span>
-          <span v-if="plan == 0" class="teal--text font-weight-bold">成功報酬</span>
+          <span v-if="plan == 0" class="teal--text font-weight-bold">採用報酬型</span>
+          <span v-if="plan == 1" class="red--text font-weight-bold">アルファ</span>
+          <span v-if="plan == 2" class="blue--text font-weight-bold">ベータ</span>
           <span v-else-if="plan == null" class="grey--text font-weight-bold">未契約</span>
-          <div class="text-xs-right">
-            <v-btn v-if="plan != null" @click="updatePlan({companyId: companyId, plan: null})">終了</v-btn>
-            <v-btn v-else @click="updatePlan({companyId: companyId, plan: 0})">再開</v-btn>
+          <v-btn
+            v-show="!isEditingPlan"
+            flat
+            @click="editPlanButtonClicked"
+          >
+            <v-icon :size="14">edit</v-icon>
+            <span class="caption teal-text-color">編集する</span>
+          </v-btn>
+          <div v-if="isEditingPlan" class="pt-3">
+            <v-select
+              v-model="tempPlan"
+              :items="planItems"
+              attach
+              solo
+            ></v-select>
+            <v-btn
+              @click="isEditingPlan = false"
+            >
+              キャンセル
+            </v-btn>
+            <v-btn
+              :disabled="updatePlanButtonDisabled"
+              @click="updatePlanButtonClicked"
+            >
+              更新
+            </v-btn>
           </div>
         </div>
       </div>
@@ -97,8 +122,51 @@ export default {
     isQueried: false,
     windowHeight: 0,
     avatarSize: 50,
+    isEditingPlan: false,
+    tempPlan: null,
   }),
   computed: {
+    updatePlanButtonDisabled() {
+      if (this.tempPlan == null) {
+        return true
+      }
+
+      let currentPlan
+      if (this.plan == null) {
+        currentPlan = '未契約'
+      } else if (this.plan == 0) {
+        currentPlan = '採用報酬型'
+      } else if (this.plan == 1) {
+        currentPlan = 'アルファ'
+      } else if (this.plan == 2) {
+        currentPlan = 'ベータ'
+      }
+
+      if (currentPlan == this.tempPlan) {
+        return true
+      } else {
+        return false
+      }
+    },
+    planItems() {
+      let items
+      if (this.plan == null) {
+        items = [
+          '未契約',
+          '採用報酬型',
+          'アルファ',
+          'ベータ'
+        ]
+      } else {
+        items = [
+          '採用報酬型',
+          'アルファ',
+          'ベータ',
+          '解約'
+        ]
+      }
+      return items
+    },
     params() {
       return this.$route.params
     },
@@ -138,6 +206,33 @@ export default {
     }
   },
   methods: {
+    editPlanButtonClicked() {
+      if (this.plan == null) {
+        this.tempPlan = '未契約'
+      } else if (this.plan == 0) {
+        this.tempPlan = '採用報酬型'
+      } else if (this.plan == 1) {
+        this.tempPlan = 'アルファ'
+      } else if (this.plan == 2) {
+        this.tempPlan = 'ベータ'
+      }
+      this.isEditingPlan = true
+    },
+    updatePlanButtonClicked() {
+      let tempPlan
+      if (this.tempPlan == '採用報酬型') {
+        tempPlan = 0
+      } else if (this.tempPlan == 'アルファ') {
+        tempPlan = 1
+      } else if (this.tempPlan == 'ベータ') {
+        tempPlan = 2
+      } else if (this.tempPlan == '解約') {
+        tempPlan = null
+      }
+
+      this.updatePlan({companyId: this.companyId, plan: tempPlan})
+      this.isEditingPlan = false
+    },
     ...mapActions({
       queryCompanyFromAdmin: 'company/queryCompanyFromAdmin',
       updateIsLoading: 'company/updateIsLoading',

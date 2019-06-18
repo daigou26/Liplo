@@ -93,9 +93,11 @@ export default {
       v => /.+@.+/.test(v) || '無効なメールアドレスです'
     ],
     position: '',
-    plan: '成功報酬',
+    plan: '採用報酬型',
     planItems: [
-      '成功報酬'
+      '採用報酬型',
+      'アルファ',
+      'ベータ'
     ]
   }),
   computed: {
@@ -110,9 +112,14 @@ export default {
   methods: {
     addButtonClicked() {
       let plan
-      if (this.plan == '成功報酬') {
+      if (this.plan == '採用報酬型') {
         plan = 0
+      } else if (this.plan == 'アルファ') {
+        plan = 1
+      } else if (this.plan == 'ベータ') {
+        plan = 2
       }
+      
       this.addCompany({
         router: this.$router,
         companyName: this.companyName,
