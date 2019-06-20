@@ -198,11 +198,11 @@
             label="業界（必須）"
           ></v-select>
           <v-text-field
-          class="pt-5"
+            class="pt-5"
             v-model="tempNearestStation"
             :rules="nearestStationRules"
             label="最寄りの駅"
-            placeholder="例：　JR新宿駅 / 徒歩10分"
+            placeholder="例）JR新宿駅 / 徒歩10分"
             required
           ></v-text-field>
           <div class="text-xs-right py-3">

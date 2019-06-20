@@ -21,6 +21,7 @@ export const state = () => ({
   nearestStation: '',
   field: '',
   createdAt: '',
+  timestamp: '',
   status: '',
   isLoading: false,
 })
@@ -80,6 +81,9 @@ export const mutations = {
   setCreatedAt(state, createdAt) {
     state.createdAt = createdAt
   },
+  setTimestamp(state, timestamp) {
+    state.timestamp = timestamp
+  },
   setStatus(state, status) {
     state.status = status
   },
@@ -105,19 +109,20 @@ export const actions = {
           commit('setDescription', doc.data()['description'])
           commit('setWage', doc.data()['wage'])
           commit('setRequiredSkills', doc.data()['requiredSkills'])
-          commit('setIdealSkills', doc.data()['idealSkills'])
-          commit('setEnvironment', doc.data()['environment'])
+          commit('setIdealSkills', doc.data()['idealSkills'] ? doc.data()['idealSkills'] : '')
+          commit('setEnvironment', doc.data()['environment'] ? doc.data()['environment'] : '')
           commit('setWorkweek', doc.data()['workweek'])
           commit('setPeriod', doc.data()['period'])
           commit('setWorkday', doc.data()['workday'])
           commit('setWorktime', doc.data()['worktime'])
-          commit('setIdealCandidate', doc.data()['idealCandidate'])
+          commit('setIdealCandidate', doc.data()['idealCandidate'] ? doc.data()['idealCandidate'] : '')
           commit('setOccupation', doc.data()['occupation'])
           commit('setFeatures', doc.data()['features'])
           commit('setIndustry', doc.data()['industry'])
-          commit('setNearestStation', doc.data()['nearestStation'])
+          commit('setNearestStation', doc.data()['nearestStation'] ? doc.data()['nearestStation'] : '')
           commit('setStatus', doc.data()['status'])
           commit('setCreatedAt', doc.data()['createdAt'])
+          commit('setTimestamp', doc.data()['timestamp'])
         }
         commit('updateIsLoading', false)
       })
@@ -151,7 +156,7 @@ export const actions = {
   }) {
     const jobId = params.id
     const updatedAt = new Date()
-    const jobData = {
+    let jobData = {
       title: title,
       content: content,
       wage: wage,
@@ -167,7 +172,7 @@ export const actions = {
       status: status,
       createdAt: updatedAt
     }
-    const jobDetailData = {
+    let jobDetailData = {
       title: title,
       content: content,
       description: description,
@@ -193,7 +198,7 @@ export const actions = {
       commit('setImageUrl', '')
 
       var timestamp
-      timestamp = state.createdAt.seconds
+      timestamp = state.timestamp
       storageRef.child(`companies/${companyId}/jobs/${timestamp}.jpg`).delete()
       timestamp = Math.floor( updatedAt.getTime() / 1000 )
 
@@ -208,7 +213,10 @@ export const actions = {
         // dbにurl保存
         uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
           jobData.imageUrl = downloadURL
+          jobData.timestamp = updatedAt.getSeconds()
           jobDetailData.imageUrl = downloadURL
+          jobDetailData.timestamp = updatedAt.getSeconds()
+
           const batch = firestore.batch()
           const jobRef = firestore.collection('jobs').doc(jobId)
           batch.update(jobRef, jobData)
@@ -289,6 +297,7 @@ export const actions = {
           industry: industry,
           nearestStation: nearestStation,
           createdAt: createdAt,
+          timestamp: createdAt.getSeconds(),
           status: 'creating',
         }
         const jobDetailData = {
@@ -311,6 +320,7 @@ export const actions = {
           nearestStation: nearestStation,
           environment: environment,
           createdAt: createdAt,
+          timestamp: createdAt.getSeconds(),
           initialStatus: status,
           status: 'creating'
         }
