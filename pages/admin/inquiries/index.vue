@@ -96,6 +96,7 @@ export default {
         {
           text: 'Date',
           align: 'left',
+          sortable: false,
           value: 'timestamp'
         },
       ],

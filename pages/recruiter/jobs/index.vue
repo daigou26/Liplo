@@ -100,7 +100,7 @@ export default {
           width: '40%'
         },
         { text: 'ステータス', value: 'status' },
-        { text: '投稿日', value: 'timestamp' },
+        { text: '投稿日', value: 'timestamp', sortable: false },
         { text: '編集', value: 'edit', sortable: false },
       ],
       pagination: {
