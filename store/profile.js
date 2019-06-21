@@ -696,6 +696,10 @@ export const actions = {
     graduationDate = new Date(graduationDateArr[0], graduationDateArr[1] - 1, graduationDateArr[2])
 
     const batch = firestore.batch()
+    const userRef = firestore.collection('users').doc(uid)
+    batch.update(userRef, {
+      graduationDate: graduationDate
+    })
     const profileRef = firestore.collection('users')
       .doc(uid).collection('profile').doc(uid)
     batch.update(profileRef, {

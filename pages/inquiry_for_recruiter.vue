@@ -235,6 +235,7 @@
                         class="py-2"
                         :rules="positionRules"
                         label="役職（必須）"
+                        placeholder="例）採用担当、CEOなど"
                         required
                       ></v-text-field>
                       <!-- 要望 -->

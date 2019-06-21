@@ -1382,9 +1382,10 @@ exports.scoutUser = functions.region('asia-northeast1')
   .firestore
   .document('companies/{companyId}/candidates/{candidateId}')
   .onCreate((snap, context) => {
-    if (snap.data().status.scouted == false) {
+    if (snap.data().status == null || snap.data().status.scouted != true) {
       return 0
     }
+
     const user = snap.data().user
     const pic = snap.data().scout.pic
     const message = snap.data().scout.message
@@ -1800,7 +1801,7 @@ exports.applyForJob = functions.region('asia-northeast1')
   .firestore
   .document('companies/{companyId}/candidates/{candidateId}')
   .onCreate((snap, context) => {
-    if (snap.data().status.inbox == false) {
+    if (snap.data().status == null || snap.data().status.inbox != true) {
       return 0
     }
     const companyId = context.params.companyId

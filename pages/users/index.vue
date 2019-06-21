@@ -38,10 +38,12 @@
                 class="px-3"
                 :class="{'px-0': $vuetify.breakpoint.xsOnly}"
               >
-                <v-list-tile-avatar color="grey darken-3">
+                <v-list-tile-avatar>
                   <v-img
+                    v-if="user.imageUrl"
                     :src="user.imageUrl"
                   ></v-img>
+                  <v-icon v-else :size="40">person</v-icon>
                 </v-list-tile-avatar>
                 <v-list-tile-content>
                   <v-list-tile-title class="pl-3 text-color font-weight-bold">

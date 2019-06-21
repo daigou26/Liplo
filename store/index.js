@@ -388,6 +388,7 @@ export const actions = {
     firstName,
     lastName,
     birthDate,
+    graduationDate,
     companyId,
     position
   }) {
@@ -485,6 +486,12 @@ export const actions = {
                     }
                   })
 
+                // 卒業予定日
+                if (typeof graduationDate == 'string') {
+                  let arr = graduationDate.split('-')
+                  graduationDate = new Date(arr[0], arr[1] - 1, arr[2])
+                }
+
                 const batch = firestore.batch()
                 const userRef = firestore.collection('users').doc(user.uid)
                 batch.set(userRef, {
@@ -499,10 +506,11 @@ export const actions = {
                   isDeleted: false,
                   completionPercentage: 0,
                   canSearch: false,
+                  graduationDate: graduationDate
                 })
                 // 生年月日
                 if (typeof birthDate == 'string') {
-                  var arr = birthDate.split('-')
+                  let arr = birthDate.split('-')
                   birthDate = new Date(arr[0], arr[1] - 1, arr[2])
                 }
                 const profileRef = firestore.collection('users')
@@ -512,6 +520,7 @@ export const actions = {
                   lastName: lastName,
                   email: user.email,
                   birthDate: birthDate,
+                  graduationDate: graduationDate
                 })
                 const detailRef = firestore.collection('users')
                   .doc(user.uid).collection('detail').doc(user.uid)
@@ -522,6 +531,7 @@ export const actions = {
                   isDeleted: false,
                   acceptScout: true,
                   birthDate: birthDate,
+                  graduationDate: graduationDate
                 })
                 batch.commit()
                   .then(() => {
