@@ -107,8 +107,8 @@ export default {
         },
         { text: 'ステータス', value: 'status' },
         { text: '評価', value: 'reviews' },
-        { text: 'タグ', value: 'tags', sortable: false},
-        { text: '更新日', value: 'timestamp' },
+        { text: 'タグ', value: 'tags', sortable: false },
+        { text: '更新日', value: 'timestamp', sortable: false },
       ],
       pagination: {
         sortBy: 'timestamp',

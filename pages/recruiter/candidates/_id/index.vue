@@ -1580,6 +1580,7 @@ export default {
 
       if (this.tempStatus == 'インターン') {
         candidateData.occupation = this.internOccupation
+        candidateData.plan = this.plan
       }
 
       if (this.tempStatus == 'パス') {

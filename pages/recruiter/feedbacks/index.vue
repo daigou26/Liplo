@@ -130,6 +130,7 @@ export default {
         {
           text: 'インターン終了時期',
           align: 'left',
+          sortable: false,
           value: 'timestamp'
         },
       ],

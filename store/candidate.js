@@ -273,7 +273,8 @@ export const actions = {
     newStatus,
     occupation,
     feedback,
-    pass
+    pass,
+    plan
   }) {
     const currentStatus = state.status
     const user = state.user
@@ -367,6 +368,8 @@ export const actions = {
           internOccupation: occupation,
         }
         candidateData.internOccupation = occupation
+        // paidActions に書き込む時にインターン採用時のプランを確認するために使う
+        candidateData.plan = plan
       }
       if (newStatus.pass) {
         pass.passId = firestore.collection('passes').doc().id

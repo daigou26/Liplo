@@ -229,6 +229,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
     const companyId = context.params.companyId
     const candidateId = context.params.candidateId
     const user = newValue.user
+    const plan = newValue.plan
     const feedback = newValue.feedback
     const createdAt = newValue.updatedAt
     const updatedAt = newValue.updatedAt
@@ -266,7 +267,6 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
             let allCandidates = companyDoc.data().allCandidates
             let hiringPassCount = companyDoc.data().hiringPassCount
             let companyFeedbackData = companyDoc.data().feedback
-            const plan = companyDoc.data().plan
             const invoiceEmail = companyDoc.data().invoiceEmail
 
             // candidate count 更新
@@ -354,7 +354,6 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
 
             transaction.update(companyRef, companyData)
 
-            companyData.plan = plan
             companyData.invoiceEmail = invoiceEmail
             companyData.companyName = companyName
             if (companyImageUrl) {
@@ -372,7 +371,6 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
         let allCandidates = companyData.allCandidates
         let hiringPassCount = companyData.hiringPassCount
         let companyFeedbackData = companyData.feedback
-        const plan = companyData.plan
         const invoiceEmail = companyData.invoiceEmail
 
         if (beforeStatus.inProcess && newStatus.intern) {
@@ -519,6 +517,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
               console.error("Error", error)
             })
         } else if (newStatus.contracted) {
+
           let paidActionData = {
             companyId: companyId,
             companyName: companyName,

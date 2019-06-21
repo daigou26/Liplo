@@ -68,14 +68,10 @@ export default {
       showInfiniteLoading: false,
       isQueried: false,
       headers: [
-        { text: '記入日', value: 'createdAt' },
-        { text: '評価', value: 'all' },
+        { text: '記入日', value: 'createdAt', sortable: false },
+        { text: '評価', value: 'all', sortable: false },
         { text: 'コメント', value: 'content', sortable: false },
-      ],
-      pagination: {
-        sortBy: 'createdAt',
-        descending: true,
-      },
+      ]
     }
   },
   computed: {
