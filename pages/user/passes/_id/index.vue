@@ -219,7 +219,7 @@
       <v-card>
         <v-card-title class="title font-weight-bold text-color">パス使用の確認</v-card-title>
         <v-card-text>
-          パスを使用すると、キャンセルは出来ません。慎重に使用してください。
+          パスを使用すると、入社を取り消しすることは出来ません。慎重に使用してください。
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
