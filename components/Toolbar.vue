@@ -1022,11 +1022,9 @@
                     ></v-text-field>
                     <!-- 生年月日 -->
                     <v-menu
-                      ref="birthDateMenu"
                       v-model="birthDateMenu"
                       :close-on-content-click="false"
                       :nudge-right="40"
-                      :return-value.sync="birthDate"
                       lazy
                       transition="scale-transition"
                       offset-y
@@ -1040,14 +1038,45 @@
                           append-icon="event"
                           solo
                           readonly
+                          required
                           v-on="on"
                         ></v-text-field>
                       </template>
-                      <v-date-picker v-model="birthDate" color="teal" locale="ja">
-                        <v-spacer></v-spacer>
-                        <v-btn flat color="teal" @click="birthDateMenu = false">Cancel</v-btn>
-                        <v-btn flat color="teal" @click="$refs.birthDateMenu.save(birthDate)">OK</v-btn>
-                      </v-date-picker>
+                      <v-date-picker
+                        v-model="birthDate"
+                        color="teal"
+                        locale="ja"
+                        @input="birthDateMenu = false"
+                      ></v-date-picker>
+                    </v-menu>
+                    <!-- 卒業予定日 -->
+                    <v-menu
+                      v-model="graduationDateMenu"
+                      :close-on-content-click="false"
+                      :nudge-right="40"
+                      lazy
+                      transition="scale-transition"
+                      offset-y
+                      full-width
+                      min-width="290px"
+                    >
+                      <template v-slot:activator="{ on }">
+                        <v-text-field
+                          v-model="graduationDate"
+                          label="卒業予定日"
+                          append-icon="event"
+                          solo
+                          readonly
+                          required
+                          v-on="on"
+                        ></v-text-field>
+                      </template>
+                      <v-date-picker
+                        v-model="graduationDate"
+                        color="teal"
+                        locale="ja"
+                        @input="graduationDateMenu = false"
+                      ></v-date-picker>
                     </v-menu>
                     <!-- パスワード -->
                     <v-text-field
@@ -1063,7 +1092,7 @@
                   </v-flex>
                   <!-- 登録ボタン -->
                   <v-btn
-                    :disabled="!signUpValid || loading || birthDate == null"
+                    :disabled="!signUpValid || loading || birthDate == null || graduationDate == null"
                     class="orange darken-1"
                     @click="signUp"
                   >
@@ -1312,6 +1341,8 @@ export default {
     ],
     birthDate: null,
     birthDateMenu: false,
+    graduationDate: null,
+    graduationDateMenu: false,
     passwordShow: false,
     password: '',
     passwordRules: [
@@ -1386,6 +1417,7 @@ export default {
         firstName: this.firstName,
         lastName: this.lastName,
         birthDate: this.birthDate,
+        graduationDate: this.graduationDate,
         companyId: this.query.id,
         position: this.position,
       })
@@ -1527,6 +1559,8 @@ export default {
       this.lastName = ''
       this.email = ''
       this.password = ''
+      this.birthDate = null
+      this.graduationDate = null
     },
     ...mapActions({
       recruiterSignUp: 'recruiterSignUp',
