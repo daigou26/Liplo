@@ -241,6 +241,146 @@
                         />
                       </div>
                     </template>
+                    <div>
+                      <div>
+                        成長できるか：
+                      </div>
+                      <div>
+                        インターンに行って成長できたかどうか
+                      </div>
+                    </div>
+                    <div class="pt-3">
+                      <div>
+                        仕事内容：
+                      </div>
+                      <div>
+                        募集に書かれていた内容と合っていたかどうか
+                      </div>
+                    </div>
+                    <div class="pt-3">
+                      <div>
+                        裁量度：
+                      </div>
+                      <div>
+                        インターン生にも裁量が与えられていたかどうか
+                      </div>
+                    </div>
+                    <div class="pt-3">
+                      <div>
+                        勤務中の自由度：
+                      </div>
+                      <div>
+                        休憩などが自由にできるかどうか
+                      </div>
+                    </div>
+                    <div class="pt-3">
+                      <div>
+                        勤務時間の柔軟性：
+                      </div>
+                      <div>
+                        勤務時間、日程を自由に決められるかどうか
+                      </div>
+                    </div>
+                    <div class="pt-3">
+                      <div>
+                        メンター：
+                      </div>
+                      <div>
+                        メンター（インターン生の担当者）の評価
+                      </div>
+                    </div>
+                    <div class="pt-3">
+                      <div>
+                        雰囲気：
+                      </div>
+                      <div>
+                        社内の雰囲気、人間関係などが良好かどうか
+                      </div>
+                    </div>
+                  </v-tooltip>
+                </v-flex>
+                <div class="d-flex">
+                  <!-- comments -->
+                  <v-flex
+                    md8
+                    sm6
+                    xs12
+                    :class="{
+                      'pr-4': $vuetify.breakpoint.mdOnly,
+                      'pt-4': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    <v-list>
+                      <template v-for="(item, index) in reviews.comments">
+                        <v-hover>
+                          <div
+                            slot-scope="{ hover }"
+                            ontouchstart=""
+                            class="pt-2"
+                            :class="{
+                              'pt-3': $vuetify.breakpoint.xsOnly
+                            }"
+                          >
+                            <div class="font-weight-bold body-text">
+                              <v-avatar
+                                class="grey lighten-3"
+                                :size="25"
+                              >
+                                <v-icon style="font-size: 18px">person</v-icon>
+                              </v-avatar>
+                              {{ item.occupation }}
+                            </div>
+                            <div class="pt-3 pl-2 body-text return">{{ item.content }}</div>
+                            <div
+                              class="hidden-xs-only"
+                              :style="{ visibility: hover ? 'visible' : 'hidden' }"
+                            >
+                              <v-btn
+                                small
+                                flat
+                                class="caption teal--text text--lighten-1 mx-0"
+                                style="text-decoration: none;"
+                                @click="userReviewsButtonClicked(item.uid)"
+                              >
+                                この人が書いた他のレビューを見る
+                              </v-btn>
+                            </div>
+                            <v-btn
+                              small
+                              flat
+                              class="hidden-sm-and-up caption teal--text text--lighten-1 mt-0 mx-0"
+                              style="text-decoration: none;"
+                              @click="userReviewsButtonClicked(item.uid)"
+                            >
+                              この人が書いた他のレビューを見る
+                            </v-btn>
+                          </div>
+                        </v-hover>
+                      </template>
+                    </v-list>
+                    <div
+                      v-if="reviews.rating.count > 3"
+                      class="d-inline-flex teal--text font-weight-bold clickable"
+                      :class="{
+                        'pt-2': $vuetify.breakpoint.xsOnly
+                      }"
+                      @click="reviewsButtonClicked"
+                    >
+                      レビューをすべて見る
+                    </div>
+                  </v-flex>
+                  <!-- chart (xl, lg, md, sm) -->
+                  <v-flex md4 sm6 pl-3 hidden-xs-only>
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on }">
+                        <div v-on="on" ontouchstart="">
+                          <radar-chart
+                            v-if="showChart && reviewsChartData"
+                            :data="reviewsChartData"
+                            :options="reviewsChartOptions"
+                          />
+                        </div>
+                      </template>
                       <div>
                         <div>
                           成長できるか：
@@ -297,124 +437,6 @@
                           社内の雰囲気、人間関係などが良好かどうか
                         </div>
                       </div>
-                  </v-tooltip>
-                </v-flex>
-                <div class="d-flex">
-                  <!-- comments -->
-                  <v-flex
-                    md8
-                    sm6
-                    xs12
-                    :class="{
-                      'pr-4': $vuetify.breakpoint.mdOnly,
-                      'pt-4': $vuetify.breakpoint.xsOnly,
-                    }"
-                  >
-                    <v-list>
-                      <template v-for="(item, index) in reviews.comments">
-                        <v-hover>
-                          <div slot-scope="{ hover }" ontouchstart="" class="pt-2">
-                            <div class="font-weight-bold body-text">
-                              <v-avatar
-                                class="grey lighten-3"
-                                :size="25"
-                              >
-                                <v-icon style="font-size: 18px">person</v-icon>
-                              </v-avatar>
-                              {{ item.occupation }}
-                            </div>
-                            <div class="pt-3 body-text return">{{ item.content }}</div>
-                            <div :style="{ visibility: hover ? 'visible' : 'hidden' }">
-                              <v-btn
-                                small
-                                flat
-                                class="caption teal--text text--lighten-1 mx-0"
-                                style="text-decoration: none"
-                                @click="otherReviewsButtonClicked(item.uid)"
-                              >
-                                この人が書いた他のレビューを見る
-                              </v-btn>
-                            </div>
-                          </div>
-                        </v-hover>
-                      </template>
-                    </v-list>
-                    <div
-                      v-if="reviews.rating.count > 3"
-                      class="d-inline-flex teal--text font-weight-bold clickable"
-                      @click="reviewsButtonClicked"
-                    >
-                      レビューをすべて見る
-                    </div>
-                  </v-flex>
-                  <!-- chart (xl, lg, md, sm) -->
-                  <v-flex md4 sm6 pl-3 hidden-xs-only>
-                    <v-tooltip bottom>
-                      <template v-slot:activator="{ on }">
-                        <div v-on="on" ontouchstart="">
-                          <radar-chart
-                            v-if="showChart && reviewsChartData"
-                            :data="reviewsChartData"
-                            :options="reviewsChartOptions"
-                          />
-                        </div>
-                      </template>
-                        <div>
-                          <div>
-                            成長できるか：
-                          </div>
-                          <div>
-                            インターンに行って成長できたかどうか
-                          </div>
-                        </div>
-                        <div class="pt-3">
-                          <div>
-                            仕事内容：
-                          </div>
-                          <div>
-                            募集に書かれていた内容と合っていたかどうか
-                          </div>
-                        </div>
-                        <div class="pt-3">
-                          <div>
-                            裁量度：
-                          </div>
-                          <div>
-                            インターン生にも裁量が与えられていたかどうか
-                          </div>
-                        </div>
-                        <div class="pt-3">
-                          <div>
-                            勤務中の自由度：
-                          </div>
-                          <div>
-                            休憩などが自由にできるかどうか
-                          </div>
-                        </div>
-                        <div class="pt-3">
-                          <div>
-                            勤務時間の柔軟性：
-                          </div>
-                          <div>
-                            勤務時間、日程を自由に決められるかどうか
-                          </div>
-                        </div>
-                        <div class="pt-3">
-                          <div>
-                            メンター：
-                          </div>
-                          <div>
-                            メンター（インターン生の担当者）の評価
-                          </div>
-                        </div>
-                        <div class="pt-3">
-                          <div>
-                            雰囲気：
-                          </div>
-                          <div>
-                            社内の雰囲気、人間関係などが良好かどうか
-                          </div>
-                        </div>
                     </v-tooltip>
                   </v-flex>
                 </div>
@@ -520,25 +542,32 @@
       </v-flex>
       <div v-if="reviews" class="text-xs-center">
         <v-dialog
-          v-model="reviewsDialog"
+          :value="reviewsDialog || userReviewsDialog"
           :fullscreen="$vuetify.breakpoint.xsOnly"
+          persistent
           width="500"
         >
-          <v-card class="py-3 px-3">
+          <!-- レビュー -->
+          <v-card v-show="!userReviewsDialog" class="py-3 px-3">
             <v-toolbar flat color="white">
               <v-toolbar-side-icon
                 @click="reviewsDialog=false"
-                class="ml-2"
+                class="ma-0"
               >
-                <v-icon>close</v-icon>
+                <v-icon style="font-size: 20px">close</v-icon>
               </v-toolbar-side-icon>
-              <v-toolbar-title v-if="reviews" class="font-weight-bold text-color">
-                レビュー{{ reviews.rating.count }}件
+              <v-toolbar-title class="font-weight-bold ml-0">
+                <span
+                  :class="{
+                    'toolbar-title': $vuetify.breakpoint.smAndUp,
+                    'toolbar-title-small': $vuetify.breakpoint.xsOnly
+                  }"
+                >レビュー{{ reviews.rating.count }}件</span>
               </v-toolbar-title>
             </v-toolbar>
             <v-flex
               xs12
-              :class="{'px-2': $vuetify.breakpoint.smAndUp, 'mt-4': $vuetify.breakpoint.xsOnly}"
+              :class="{'px-2': $vuetify.breakpoint.smAndUp, 'mt-3': $vuetify.breakpoint.xsOnly}"
             >
               <v-container>
                 <v-layout
@@ -548,27 +577,52 @@
                   <div>
                     <v-list class="px-2">
                       <template v-for="(item, index) in allReviews">
-                        <div class="py-2">
-                          <div class="font-weight-bold body-text">
-                            <v-avatar
-                              class="grey lighten-3"
-                              :size="25"
+                        <v-hover>
+                          <div slot-scope="{ hover }" ontouchstart="" class="pt-3">
+                            <div class="font-weight-bold body-text">
+                              <v-avatar
+                                :size="25"
+                              >
+                                <v-icon style="font-size: 18px">person</v-icon>
+                              </v-avatar>
+                              {{ item.occupation }}
+                            </div>
+                            <v-rating
+                              v-model="item.all"
+                              background-color="pink"
+                              color="pink darken-1"
+                              small
+                              half-increments
+                              readonly
+                              class="pt-3 pl-2"
+                            />
+                            <div class="pt-3 pl-2 body-text return">{{ item.content }}</div>
+                            <div
+                              class="hidden-xs-only"
+                              :style="{ visibility: hover ? 'visible' : 'hidden' }"
                             >
-                              <v-icon style="font-size: 18px">person</v-icon>
-                            </v-avatar>
-                            {{ item.occupation }}
+                              <v-btn
+                                small
+                                flat
+                                class="caption teal--text text--lighten-1 mx-0"
+                                style="text-decoration: none;"
+                                @click="userReviewsButtonClicked(item.uid)"
+                              >
+                                この人が書いた他のレビューを見る
+                              </v-btn>
+                            </div>
+                            <v-btn
+                              small
+                              flat
+                              class="hidden-sm-and-up caption teal--text text--lighten-1 mt-0 mx-0"
+                              style="text-decoration: none;"
+                              @click="userReviewsButtonClicked(item.uid)"
+                            >
+                              この人が書いた他のレビューを見る
+                            </v-btn>
                           </div>
-                          <v-rating
-                            v-model="item.all"
-                            background-color="teal"
-                            color="teal darken-1"
-                            small
-                            half-increments
-                            readonly
-                            class="pt-2"
-                          />
-                          <p class="py-3 body-text return">{{ item.content }}</p>
-                        </div>
+                        </v-hover>
+                        <v-divider v-if="allReviews.length != index + 1"></v-divider>
                       </template>
                     </v-list>
                     <infinite-loading
@@ -576,6 +630,82 @@
                       :distance="50"
                       spinner="waveDots"
                       @infinite="infiniteHandler">
+                      <div slot="no-results"></div>
+                    </infinite-loading>
+                  </div>
+                </v-layout>
+              </v-container>
+            </v-flex>
+          </v-card>
+          <v-card v-show="userReviewsDialog" class="py-3 px-3">
+            <v-toolbar flat color="white">
+              <v-toolbar-side-icon
+                @click="userReviewsDialog=false"
+                class="ma-0"
+              >
+                <v-icon v-show="reviewsDialog" style="font-size: 20px">arrow_back</v-icon>
+                <v-icon v-show="!reviewsDialog" style="font-size: 20px">close</v-icon>
+              </v-toolbar-side-icon>
+              <v-toolbar-title class="font-weight-bold ml-0">
+                <span
+                  :class="{
+                    'toolbar-title': $vuetify.breakpoint.smAndUp,
+                    'toolbar-title-small': $vuetify.breakpoint.xsOnly
+                  }"
+                >このユーザーが記入したレビュー</span>
+              </v-toolbar-title>
+            </v-toolbar>
+            <v-flex
+              xs12
+              :class="{'px-2': $vuetify.breakpoint.smAndUp, 'mt-3': $vuetify.breakpoint.xsOnly}"
+            >
+              <v-container>
+                <v-layout
+                  column
+                  justify-center
+                >
+                  <div>
+                    <v-list class="px-2">
+                      <template v-for="(item, index) in userReviews">
+                        <div class="pt-3">
+                          <v-card
+                            flat
+                            class="font-weight-bold body-text"
+                            :to="'/companies/' + item.companyId"
+                          >
+                            <v-avatar
+                              :class="{'grey lighten-3': !item.companyImageUrl || item.companyImageUrl == ''}"
+                              :size="25"
+                            >
+                              <v-img
+                                v-if="item.companyImageUrl"
+                                :src="item.companyImageUrl"
+                              ></v-img>
+                            </v-avatar>
+                            {{ item.companyName }}
+                          </v-card>
+                          <v-rating
+                            v-model="item.all"
+                            background-color="pink"
+                            color="pink darken-1"
+                            small
+                            half-increments
+                            readonly
+                            class="pt-3"
+                          />
+                          <p class="pt-3 caption text-color">
+                            職種：　{{ item.occupation }}
+                          </p>
+                          <div class="pb-3 body-text return">{{ item.content }}</div>
+                        </div>
+                        <v-divider v-if="userReviews.length != index + 1"></v-divider>
+                      </template>
+                    </v-list>
+                    <infinite-loading
+                      v-if="showInfiniteLoading && userReviews && userReviews.length >= 10 && !isUserReviewsLoading"
+                      :distance="50"
+                      spinner="waveDots"
+                      @infinite="infiniteUserReviewsHandler">
                       <div slot="no-results"></div>
                     </infinite-loading>
                   </div>
@@ -594,11 +724,14 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   data: () => ({
+    reviewsQueryCount: 0,
+    userReviewsQueryCount: 0,
     windowHeight: 0,
     windowWidth: 0,
     xsWidth: false,
     showInfiniteLoading: false,
     reviewsDialog: false,
+    userReviewsDialog: false,
     reviewsChartOptions: {
       responsive: true,
       maintainAspectRatio: false,
@@ -613,6 +746,8 @@ export default {
       }
     },
     showChart: false,
+    // user のレビュー一覧をクエリする時に使用
+    selectedUserId: '',
   }),
   computed: {
     occupation: function() {
@@ -682,6 +817,11 @@ export default {
       jobs: state => state.company.jobs,
       isLoading: state => state.company.isLoading,
       allReviews: state => state.reviews.companyReviews,
+      isReviewsLoading: state => state.reviews.isCompanyReviewsLoading,
+      allReviewsQueried: state => state.reviews.allCompanyReviewsQueried,
+      userReviews: state => state.reviews.userReviews,
+      isUserReviewsLoading: state => state.reviews.isUserReviewsLoading,
+      allUserReviewsQueried: state => state.reviews.allUserReviewsQueried,
     }),
   },
   mounted() {
@@ -709,13 +849,31 @@ export default {
     }
   },
   methods: {
+    // 企業に対するレビュー一覧
     infiniteHandler($state) {
       if (!this.allReviewsQueried) {
         if (!this.isReviewsLoading) {
-          this.count += 1
+          this.reviewsQueryCount += 1
           this.updateIsReviewsLoading(true)
           this.queryCompanyReviews(this.companyId)
-          if (this.count > 50) {
+          if (this.reviewsQueryCount > 50) {
+            $state.complete()
+          } else {
+            $state.loaded()
+          }
+        }
+      } else {
+        $state.complete()
+      }
+    },
+    // 特定のユーザーのレビュー一覧
+    infiniteUserReviewsHandler($state) {
+      if (!this.allUserReviewsQueried) {
+        if (!this.isUserReviewsLoading) {
+          this.userReviewsQueryCount += 1
+          this.updateIsUserReviewsLoading(true)
+          this.queryUserReviews(this.selectedUserId)
+          if (this.userReviewsQueryCount > 20) {
             $state.complete()
           } else {
             $state.loaded()
@@ -733,6 +891,17 @@ export default {
         this.queryCompanyReviews(this.companyId)
       }
     },
+    userReviewsButtonClicked(uid) {
+      if (uid && uid != '') {
+        this.selectedUserId = uid
+        this.userReviewsDialog = true
+        if (this.userReviews.length == 0) {
+          this.resetUserReviewsState()
+          this.updateIsUserReviewsLoading(true)
+          this.queryUserReviews(this.selectedUserId)
+        }
+      }
+    },
     ...mapActions({
       queryCompanyDetail: 'company/queryCompanyDetail',
       updateIsLoading: 'company/updateIsLoading',
@@ -740,6 +909,9 @@ export default {
       queryCompanyReviews: 'reviews/queryCompanyReviews',
       updateIsReviewsLoading: 'reviews/updateIsCompanyReviewsLoading',
       resetReviewsState: 'reviews/resetCompanyReviewsState',
+      queryUserReviews: 'reviews/queryUserReviews',
+      updateIsUserReviewsLoading: 'reviews/updateIsUserReviewsLoading',
+      resetUserReviewsState: 'reviews/resetUserReviewsState',
     }),
   }
 }

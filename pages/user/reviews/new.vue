@@ -97,8 +97,8 @@
                     v-model="growth"
                     hover
                     half-increments
-                    background-color="teal"
-                    color="teal darken-1"
+                    background-color="pink"
+                    color="pink darken-1"
                   />
                 </div>
                 <div class="py-3">
@@ -107,8 +107,8 @@
                     v-model="job"
                     hover
                     half-increments
-                    background-color="teal"
-                    color="teal darken-1"
+                    background-color="pink"
+                    color="pink darken-1"
                   />
                 </div>
                 <div class="py-3">
@@ -117,8 +117,8 @@
                     v-model="discretion"
                     hover
                     half-increments
-                    background-color="teal"
-                    color="teal darken-1"
+                    background-color="pink"
+                    color="pink darken-1"
                   />
                 </div>
                 <div class="py-3">
@@ -127,8 +127,8 @@
                     v-model="flexibleSchedule"
                     hover
                     half-increments
-                    background-color="teal"
-                    color="teal darken-1"
+                    background-color="pink"
+                    color="pink darken-1"
                   />
                 </div>
                 <div class="py-3">
@@ -137,8 +137,8 @@
                     v-model="flexibility"
                     hover
                     half-increments
-                    background-color="teal"
-                    color="teal darken-1"
+                    background-color="pink"
+                    color="pink darken-1"
                   />
                 </div>
                 <div class="py-3">
@@ -147,8 +147,8 @@
                     v-model="mentor"
                     hover
                     half-increments
-                    background-color="teal"
-                    color="teal darken-1"
+                    background-color="pink"
+                    color="pink darken-1"
                   />
                 </div>
                 <div class="py-3">
@@ -157,8 +157,8 @@
                     v-model="atmosphere"
                     hover
                     half-increments
-                    background-color="teal"
-                    color="teal darken-1"
+                    background-color="pink"
+                    color="pink darken-1"
                   />
                 </div>
               </div>
@@ -187,7 +187,8 @@
                   <div class="text-xs-right">
                     <v-btn
                       :disabled="!reviewValid || notReviewedCompany.isWritten"
-                      color="warning"
+                      class="white--text"
+                      color="teal"
                       @click="reviewButtonClicked">
                       レビューを送信
                     </v-btn>

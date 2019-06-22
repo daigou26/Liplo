@@ -224,8 +224,8 @@
               パスの発行数の確認や先着パスの上限を設定したい年度を追加してください
             </div>
             <v-btn
-              class="mt-3 font-weight-bold"
-              color="warning"
+              class="mt-3 font-weight-bold white--text"
+              color="teal"
               :disabled="plan == null"
               @click="openAddYearDialogButtonClicked"
             >
@@ -307,7 +307,7 @@
                 <!-- 追加ボタン -->
                 <v-btn
                   :disabled="!addYearValid || plan == null"
-                  class="orange darken-1"
+                  class="teal"
                   @click="addYearButtonClicked"
                 >
                   <span
@@ -379,7 +379,7 @@
                 <!-- 更新ボタン -->
                 <v-btn
                   :disabled="!updatePassLimitValid || plan == null"
-                  class="orange darken-1"
+                  class="teal"
                   @click="updatePassLimitButtonClicked"
                 >
                   <span

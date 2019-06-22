@@ -433,7 +433,7 @@
                                 flat
                                 class="caption teal--text text--lighten-1 mx-0"
                                 style="text-decoration: none;"
-                                @click="otherReviewsButtonClicked(item.uid)"
+                                @click="userReviewsButtonClicked(item.uid)"
                               >
                                 この人が書いた他のレビューを見る
                               </v-btn>
@@ -443,7 +443,7 @@
                               flat
                               class="hidden-sm-and-up caption teal--text text--lighten-1 mt-0 mx-0"
                               style="text-decoration: none;"
-                              @click="otherReviewsButtonClicked(item.uid)"
+                              @click="userReviewsButtonClicked(item.uid)"
                             >
                               この人が書いた他のレビューを見る
                             </v-btn>
@@ -727,7 +727,7 @@
                             flat
                             class="caption teal--text text--lighten-1 mx-0"
                             style="text-decoration: none;"
-                            @click="otherReviewsButtonClicked(item.uid)"
+                            @click="userReviewsButtonClicked(item.uid)"
                           >
                             この人が書いた他のレビューを見る
                           </v-btn>
@@ -791,8 +791,8 @@
                       <v-card-actions class="pa-0">
                         <v-rating
                           v-model="reviews.rating.all"
-                          background-color="teal"
-                          color="teal darken-1"
+                          background-color="pink"
+                          color="pink darken-1"
                           small
                           half-increments
                           readonly
@@ -823,7 +823,7 @@
               large
               :disabled="isCandidate"
               class="white--text"
-              color="orange lighten-1"
+              color="pink darken-1"
               id="job-apply"
               @click="applyButtonClicked"
             >
@@ -850,13 +850,13 @@
       </v-footer>
       <div v-if="reviews" class="text-xs-center">
         <v-dialog
-          :value="reviewsDialog || otherReviewsDialog"
+          :value="reviewsDialog || userReviewsDialog"
           :fullscreen="$vuetify.breakpoint.xsOnly"
           persistent
           width="500"
         >
           <!-- レビュー -->
-          <v-card v-show="!otherReviewsDialog" class="py-3 px-3">
+          <v-card v-show="!userReviewsDialog" class="py-3 px-3">
             <v-toolbar flat color="white">
               <v-toolbar-side-icon
                 @click="reviewsDialog=false"
@@ -897,8 +897,8 @@
                             </div>
                             <v-rating
                               v-model="item.all"
-                              background-color="teal"
-                              color="teal darken-1"
+                              background-color="pink"
+                              color="pink darken-1"
                               small
                               half-increments
                               readonly
@@ -914,7 +914,7 @@
                                 flat
                                 class="caption teal--text text--lighten-1 mx-0"
                                 style="text-decoration: none;"
-                                @click="otherReviewsButtonClicked(item.uid)"
+                                @click="userReviewsButtonClicked(item.uid)"
                               >
                                 この人が書いた他のレビューを見る
                               </v-btn>
@@ -924,7 +924,7 @@
                               flat
                               class="hidden-sm-and-up caption teal--text text--lighten-1 mt-0 mx-0"
                               style="text-decoration: none;"
-                              @click="otherReviewsButtonClicked(item.uid)"
+                              @click="userReviewsButtonClicked(item.uid)"
                             >
                               この人が書いた他のレビューを見る
                             </v-btn>
@@ -945,10 +945,10 @@
               </v-container>
             </v-flex>
           </v-card>
-          <v-card v-show="otherReviewsDialog" class="py-3 px-3">
+          <v-card v-show="userReviewsDialog" class="py-3 px-3">
             <v-toolbar flat color="white">
               <v-toolbar-side-icon
-                @click="otherReviewsDialog=false"
+                @click="userReviewsDialog=false"
                 class="ma-0"
               >
                 <v-icon v-show="reviewsDialog" style="font-size: 20px">arrow_back</v-icon>
@@ -994,8 +994,8 @@
                           </v-card>
                           <v-rating
                             v-model="item.all"
-                            background-color="teal"
-                            color="teal darken-1"
+                            background-color="pink"
+                            color="pink darken-1"
                             small
                             half-increments
                             readonly
@@ -1033,14 +1033,14 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   data: () => ({
-    count: 0,
+    reviewsQueryCount: 0,
     userReviewsQueryCount: 0,
     isQueried: false,
     snackbar: false,
     snackbarText: '',
     showInfiniteLoading: false,
     reviewsDialog: false,
-    otherReviewsDialog: false,
+    userReviewsDialog: false,
     reviewsChartOptions: {
       responsive: true,
       maintainAspectRatio: true,
@@ -1277,13 +1277,14 @@ export default {
     }
   },
   methods: {
+    // 企業に対するレビュー一覧
     infiniteHandler($state) {
       if (!this.allReviewsQueried) {
         if (!this.isReviewsLoading) {
-          this.count += 1
+          this.reviewsQueryCount += 1
           this.updateIsReviewsLoading(true)
           this.queryCompanyReviews(this.companyId)
-          if (this.count > 50) {
+          if (this.reviewsQueryCount > 50) {
             $state.complete()
           } else {
             $state.loaded()
@@ -1293,6 +1294,7 @@ export default {
         $state.complete()
       }
     },
+    // 特定のユーザーのレビュー一覧
     infiniteUserReviewsHandler($state) {
       if (!this.allUserReviewsQueried) {
         if (!this.isUserReviewsLoading) {
@@ -1317,10 +1319,10 @@ export default {
         this.queryCompanyReviews(this.companyId)
       }
     },
-    otherReviewsButtonClicked(uid) {
+    userReviewsButtonClicked(uid) {
       if (uid && uid != '') {
         this.selectedUserId = uid
-        this.otherReviewsDialog = true
+        this.userReviewsDialog = true
         if (this.userReviews.length == 0) {
           this.resetUserReviewsState()
           this.updateIsUserReviewsLoading(true)
@@ -1336,7 +1338,7 @@ export default {
       if (this.profileImageUrl) {
         user.imageUrl = this.profileImageUrl
       }
-      
+
       this.apply({
         params: this.$route.params,
         user: user,

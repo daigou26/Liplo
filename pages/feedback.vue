@@ -79,7 +79,7 @@
                   <!-- 送信ボタン -->
                   <v-btn
                     :disabled="!valid"
-                    class="orange darken-1"
+                    class="teal"
                     @click="sendButtonClicked"
                   >
                     <span

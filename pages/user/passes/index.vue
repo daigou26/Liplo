@@ -187,7 +187,7 @@
                 <div class="pt-3 light-text-color">
                   企業からパスをもらった場合はこちらに表示されます
                 </div>
-                <v-btn class="mt-3 font-weight-bold" color="warning" to="/">募集を探す</v-btn>
+                <v-btn class="mt-4 font-weight-bold white--text" color="teal" to="/">募集を探す</v-btn>
               </div>
             </v-card>
             <infinite-loading
@@ -357,12 +357,12 @@ export default {
 </script>
 <style>
 .hiring {
-  background-image: linear-gradient(-135deg, #F06292 30px, transparent 0);
+  background-image: linear-gradient(-135deg, #F06292 15px, transparent 0);
 }
 .offer {
-  background-image: linear-gradient(-135deg, #42A5F5 30px, transparent 0);
+  background-image: linear-gradient(-135deg, #42A5F5 15px, transparent 0);
 }
 .limited {
-  background-image: linear-gradient(-135deg, #81C784 30px, transparent 0);
+  background-image: linear-gradient(-135deg, #81C784 15px, transparent 0);
 }
 </style>

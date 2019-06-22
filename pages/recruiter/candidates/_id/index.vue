@@ -892,6 +892,7 @@
                 <v-form v-model="reviewValid" class="pa-3">
                   <v-rating
                     v-model="rating"
+                    hover
                     background-color="teal"
                     color="teal darken-1"
                     half-increments
@@ -907,7 +908,8 @@
                   <div class="text-xs-right">
                     <v-btn
                       :disabled="!reviewValid || rating == 0 || plan == null"
-                      color="warning"
+                      color="teal"
+                      class="white--text"
                       @click="sendReviewButtonClicked">
                       {{ sendReviewButtonText }}
                     </v-btn>
