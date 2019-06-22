@@ -58,7 +58,7 @@
           >
             <v-card>
               <v-card-title
-                class="headline orange lighten-3"
+                class="headline grey lighten-3"
                 primary-title
               >
                 プロフィール画像を変更
@@ -110,7 +110,7 @@
           >
             <v-card>
               <v-card-title
-                class="headline orange lighten-3"
+                class="headline grey lighten-3"
                 primary-title
               >
                 名前を変更
@@ -178,7 +178,7 @@
           >
             <v-card>
               <v-card-title
-                class="headline orange lighten-3"
+                class="headline grey lighten-3"
                 primary-title
               >
                 役職を変更

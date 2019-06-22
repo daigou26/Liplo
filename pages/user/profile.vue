@@ -67,7 +67,7 @@
                   >
                     <v-card>
                       <v-card-title
-                        class="headline orange lighten-3"
+                        class="headline grey lighten-3"
                         primary-title
                       >
                         プロフィール画像を変更
@@ -98,7 +98,7 @@
                           キャンセル
                         </v-btn>
                         <v-btn
-                          color="primary"
+                          color="teal"
                           flat
                           :disabled ="selectedImage == null || !imageFileSizeValid"
                           @click="updateProfileImage({uid: uid, imageFile: imageFile})"
@@ -119,7 +119,7 @@
                   >
                     <v-card>
                       <v-card-title
-                        class="headline orange lighten-3"
+                        class="headline grey lighten-3"
                         primary-title
                       >
                         名前を変更
@@ -150,7 +150,7 @@
                           キャンセル
                         </v-btn>
                         <v-btn
-                          color="primary"
+                          color="teal"
                           flat
                           :disabled="!editUserNameValid"
                           @click="updateUserName({uid: uid, firstName: tempFirstName, lastName: tempLastName})"
@@ -172,7 +172,7 @@
                     <v-card
                       v-on="on"
                       ontouchstart=""
-                      color="orange lighten-2 hidden-sm-and-up"
+                      color="teal lighten-1 hidden-sm-and-up"
                       class="mx-3 mt-3 pa-3"
                       style="border-radius: 10px"
                     >
@@ -233,7 +233,7 @@
                         <v-card
                           v-on="on"
                           ontouchstart=""
-                          color="orange lighten-2"
+                          color="teal lighten-1"
                           class="mx-3 pa-3"
                           style="border-radius: 10px"
                         >
@@ -908,7 +908,7 @@
               <div class="text-xs-center">
                 <v-avatar
                   size="100"
-                  color="orange lighten-3"
+                  color="teal lighten-1"
                 >
                   <div class="white--text" style="display: block">
                     <div style="font-size: 10px">

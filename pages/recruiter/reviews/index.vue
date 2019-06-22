@@ -18,7 +18,6 @@
       <v-data-table
         :headers="headers"
         :items="reviews"
-        :pagination.sync="pagination"
         class="elevation-1"
         hide-actions
         no-data-text="レビューがありません。"
@@ -29,8 +28,8 @@
             <td style="min-width: 150px" class="text-xs-left">
               <v-rating
                 :value="props.item.all == null ? 0 : props.item.all"
-                background-color="teal"
-                color="teal darken-1"
+                background-color="pink"
+                color="pink darken-1"
                 small
                 half-increments
                 readonly

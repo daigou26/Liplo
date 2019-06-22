@@ -108,7 +108,7 @@
           width="500"
         >
           <v-card>
-            <v-toolbar flat color="orange lighten-2">
+            <v-toolbar flat>
               <span class="text-color font-weight-bold subheading">メールアドレス変更</span>
             </v-toolbar>
             <div class="pa-4">
@@ -154,9 +154,8 @@
                     </v-flex>
                     <!-- 変更ボタン -->
                     <v-btn
-                      block
                       :disabled="!changeEmailValid || loading"
-                      class="orange darken-1"
+                      class="teal"
                       @click="changeEmailButtonClicked"
                     >
                       <span
@@ -179,7 +178,7 @@
           width="500"
         >
           <v-card>
-            <v-toolbar flat color="orange lighten-2">
+            <v-toolbar flat>
               <span class="text-color font-weight-bold subheading">本当に削除しますか？</span>
             </v-toolbar>
             <div class="pa-4">
@@ -226,9 +225,8 @@
                     </v-flex>
                     <!-- 削除ボタン -->
                     <v-btn
-                      block
                       :disabled="!deleteAccountValid || loading"
-                      class="orange darken-1"
+                      class="teal"
                       @click="deleteAccountButtonClicked"
                     >
                       <span

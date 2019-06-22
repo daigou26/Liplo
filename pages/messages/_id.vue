@@ -33,7 +33,7 @@
               <div class="pt-3 light-text-color">
                 採用担当者から連絡がある場合はこちらに表示されます
               </div>
-              <v-btn class="mt-3 font-weight-bold" color="warning" to="/">募集を探す</v-btn>
+              <v-btn class="mt-4 font-weight-bold white--text" color="teal" to="/">募集を探す</v-btn>
             </div>
           </v-card>
         </v-flex>
@@ -89,8 +89,8 @@
                     <v-list-tile-action-text>{{ chat.timestamp }}</v-list-tile-action-text>
                     <v-avatar
                       v-show="chat.userUnreadCount && chat.userUnreadCount != 0"
-                      size="24"
-                      color="orange"
+                      size="22"
+                      color="pink"
                     >
                       <span class="white--text" style="font-size: 12px">{{ chat.userUnreadCount > 99 ? '99+' : chat.userUnreadCount }}</span>
                     </v-avatar>
@@ -262,8 +262,8 @@
                     <v-list-tile-action-text>{{ chat.timestamp }}</v-list-tile-action-text>
                     <v-avatar
                       v-show="chat.userUnreadCount && chat.userUnreadCount != 0"
-                      size="24"
-                      color="orange"
+                      size="22"
+                      color="pink"
                     >
                       <span class="white--text" style="font-size: 12px">{{ chat.userUnreadCount > 99 ? '99+' : chat.userUnreadCount }}</span>
                     </v-avatar>

@@ -101,7 +101,7 @@
           width="500"
         >
           <v-card>
-            <v-toolbar flat color="orange lighten-2">
+            <v-toolbar flat>
               <span class="text-color font-weight-bold subheading">メールアドレス変更</span>
             </v-toolbar>
             <div class="pa-4">
@@ -127,9 +127,8 @@
                     </v-flex>
                     <!-- 変更ボタン -->
                     <v-btn
-                      block
                       :disabled="!changeInvoiceEmailValid"
-                      class="orange darken-1"
+                      class="teal"
                       @click="changeInvoiceEmailButtonClicked"
                     >
                       <span

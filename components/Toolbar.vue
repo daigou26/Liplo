@@ -961,7 +961,7 @@
                   <!-- ログインボタン -->
                   <v-btn
                     :disabled="!signInValid || loading"
-                    class="orange darken-1"
+                    class="teal"
                     @click="signIn"
                   >
                     <span
@@ -1093,7 +1093,7 @@
                   <!-- 登録ボタン -->
                   <v-btn
                     :disabled="!signUpValid || loading || birthDate == null || graduationDate == null"
-                    class="orange darken-1"
+                    class="teal"
                     @click="signUp"
                   >
                     <span
@@ -1235,7 +1235,7 @@
                   <!-- 登録ボタン -->
                   <v-btn
                     :disabled="!recruiterSignUpValid || loading"
-                    class="orange darken-1"
+                    class="teal"
                     @click="recruiterSignUpClicked"
                   >
                     <span

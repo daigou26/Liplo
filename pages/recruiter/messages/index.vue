@@ -73,10 +73,10 @@
                 <v-list-tile-action-text>{{ chat.timestamp }}</v-list-tile-action-text>
                 <v-avatar
                   v-show="chat.picUnreadCount && chat.picUnreadCount != 0"
-                  size="24"
-                  color="orange"
+                  size="22"
+                  color="pink"
                 >
-                  <span class="white--text" style="font-size: 14px">{{ chat.picUnreadCount > 99 ? '99+' : chat.picUnreadCount }}</span>
+                  <span class="white--text" style="font-size: 12px">{{ chat.picUnreadCount > 99 ? '99+' : chat.picUnreadCount }}</span>
                 </v-avatar>
               </v-list-tile-action>
             </v-list-tile>

@@ -200,7 +200,9 @@
                   ></v-textarea>
                   <v-btn
                     :disabled="!acceptOfferValid || isAccepted"
-                    color="warning"
+                    class="mt-3 white--text"
+                    color="teal"
+                    style="width: 150px"
                     @click="acceptDialog = true">
                     <span class="font-weight-bold">使用する</span>
                   </v-btn>

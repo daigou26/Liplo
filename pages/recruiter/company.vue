@@ -60,7 +60,7 @@
           >
             <v-card>
               <v-card-title
-                class="headline orange lighten-3"
+                class="headline grey lighten-3"
                 primary-title
               >
                 トップ画像を変更
@@ -139,7 +139,7 @@
             >
               <v-card>
                 <v-card-title
-                  class="headline orange lighten-3"
+                  class="headline grey lighten-3"
                   primary-title
                 >
                   企業ロゴを変更
@@ -191,7 +191,7 @@
             >
               <v-card>
                 <v-card-title
-                  class="headline orange lighten-3"
+                  class="headline grey lighten-3"
                   primary-title
                 >
                   企業名を変更
@@ -310,9 +310,8 @@
                       </v-flex>
                       <!-- 招待ボタン -->
                       <v-btn
-                        block
                         :disabled="!addMemberValid || addMemberLoading || plan == null"
-                        class="orange darken-1"
+                        class="teal"
                         @click="inviteMember"
                       >
                         <span

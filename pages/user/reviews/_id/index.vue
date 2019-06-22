@@ -69,8 +69,8 @@
                 <v-flex v-if="growth" xs5 sm6 text-sm-left text-xs-right>
                   <v-rating
                     v-model="growth"
-                    background-color="teal"
-                    color="teal darken-1"
+                    background-color="pink"
+                    color="pink darken-1"
                     small
                     half-increments
                     readonly
@@ -84,8 +84,8 @@
                 <v-flex v-if="job" xs5 sm6 text-sm-left text-xs-right>
                   <v-rating
                     v-model="job"
-                    background-color="teal"
-                    color="teal darken-1"
+                    background-color="pink"
+                    color="pink darken-1"
                     small
                     half-increments
                     readonly
@@ -99,8 +99,8 @@
                 <v-flex v-if="discretion" xs5 sm6 text-sm-left text-xs-right>
                   <v-rating
                     v-model="discretion"
-                    background-color="teal"
-                    color="teal darken-1"
+                    background-color="pink"
+                    color="pink darken-1"
                     small
                     half-increments
                     readonly
@@ -114,8 +114,8 @@
                 <v-flex v-if="flexibleSchedule" xs5 sm6 text-sm-left text-xs-right>
                   <v-rating
                     v-model="flexibleSchedule"
-                    background-color="teal"
-                    color="teal darken-1"
+                    background-color="pink"
+                    color="pink darken-1"
                     small
                     half-increments
                     readonly
@@ -129,8 +129,8 @@
                 <v-flex v-if="flexibility" xs5 sm6 text-sm-left text-xs-right>
                   <v-rating
                     v-model="flexibility"
-                    background-color="teal"
-                    color="teal darken-1"
+                    background-color="pink"
+                    color="pink darken-1"
                     small
                     half-increments
                     readonly
@@ -144,8 +144,8 @@
                 <v-flex v-if="mentor" xs5 sm6 text-sm-left text-xs-right>
                   <v-rating
                     v-model="mentor"
-                    background-color="teal"
-                    color="teal darken-1"
+                    background-color="pink"
+                    color="pink darken-1"
                     small
                     half-increments
                     readonly
@@ -159,8 +159,8 @@
                 <v-flex v-if="atmosphere" xs5 sm6 text-sm-left text-xs-right>
                   <v-rating
                     v-model="atmosphere"
-                    background-color="teal"
-                    color="teal darken-1"
+                    background-color="pink"
+                    color="pink darken-1"
                     small
                     half-increments
                     readonly

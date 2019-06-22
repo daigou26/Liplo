@@ -257,8 +257,9 @@ export const actions = {
                           ],
                           datasets: [
                             {
-                              borderColor: '#f87979',
-                              backgroundColor: 'rgba(248, 121, 121, 0.1)',
+                              borderColor: 'rgba(236, 64, 122, 1)',
+                              backgroundColor: 'rgba(236, 64, 122, 0.2)',
+                              borderWidth: 2,
                               data: [
                                 reviews.rating.growth,
                                 reviews.rating.job,
