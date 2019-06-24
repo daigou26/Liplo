@@ -485,7 +485,16 @@ export const actions = {
       commit('updatePlanner', occupationParams.includes('planner'))
       commit('updateWriter', occupationParams.includes('writer'))
       commit('updateOthers', occupationParams.includes('others'))
+    } else {
+      commit('updateEngineer', false)
+      commit('updateDesigner', false)
+      commit('updateSales', false)
+      commit('updateMarketer', false)
+      commit('updatePlanner', false)
+      commit('updateWriter', false)
+      commit('updateOthers', false)
     }
+
     if (featuresParams != null) {
       commit('updateExperience', featuresParams.includes('experience'))
       commit('updateFunding', featuresParams.includes('funding'))
@@ -496,7 +505,18 @@ export const actions = {
       commit('updateShift', featuresParams.includes('shift'))
       commit('updateAverage20s', featuresParams.includes('average20s'))
       commit('updateWorktime', featuresParams.includes('worktime'))
+    } else {
+      commit('updateExperience', false)
+      commit('updateFunding', false)
+      commit('updateMedia', false)
+      commit('updateFriend', false)
+      commit('updateOverseas', false)
+      commit('updateWeekend', false)
+      commit('updateShift', false)
+      commit('updateAverage20s', false)
+      commit('updateWorktime', false)
     }
+    
     if (workweekParams != null) {
       commit('setWorkweek', workweekParams)
     } else {
