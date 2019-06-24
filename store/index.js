@@ -418,8 +418,10 @@ export const actions = {
                   const profileRef = firestore.collection('users')
                     .doc(user.uid).collection('profile').doc(user.uid)
                   var profileData = {
+                    companyId: companyId,
                     firstName: firstName,
                     lastName: lastName,
+                    type: 'recruiter',
                     email: user.email
                   }
                   if (position) {
@@ -518,6 +520,7 @@ export const actions = {
                 batch.set(profileRef, {
                   firstName: firstName,
                   lastName: lastName,
+                  type: 'user',
                   email: user.email,
                   birthDate: birthDate,
                   graduationDate: graduationDate

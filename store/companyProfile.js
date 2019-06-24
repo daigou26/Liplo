@@ -479,6 +479,8 @@ export const actions = {
     content,
     url
   }) {
+    const batch = firestore.batch()
+    
     // 画像が変更されているか
     if (isServiceImageChanged) {
       const date = new Date()
@@ -515,8 +517,6 @@ export const actions = {
           if (companyImageUrl) {
             projectData.companyImageUrl = companyImageUrl
           }
-
-          const batch = firestore.batch()
 
           if (selectedIndex != null) {
             let projectId = tempServices[selectedIndex].projectId

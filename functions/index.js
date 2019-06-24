@@ -2347,7 +2347,6 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
     const foundedDate = newValue.foundedDate
     const employeesCount = newValue.employeesCount
     const feedback = newValue.feedback
-    const members = newValue.members
     const invoiceEmail = newValue.invoiceEmail
     var isCompanyNameChanged = false
     var isCompanyImageUrlChanged = false
@@ -2364,18 +2363,53 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
       system == previousValue.system &&
       why == previousValue.why &&
       what == previousValue.what &&
-      services == previousValue.services &&
       welfare == previousValue.welfare &&
       url == previousValue.url &&
       location == previousValue.location &&
-      foundedDate == previousValue.foundedDate &&
       employeesCount == previousValue.employeesCount &&
       feedback.all == previousValue.feedback.all &&
       feedback.writtenCount == previousValue.feedback.writtenCount &&
-      members == previousValue.members &&
       invoiceEmail == previousValue.invoiceEmail
     ) {
-      return 0
+      var isChanged = false
+      // foundedDate比較
+      if (foundedDate) {
+        if (foundedDate.seconds != previousValue.foundedDate.seconds) {
+          isChanged = true
+        }
+      }
+      // service比較
+      if (services) {
+        if (services.length == previousValue.services.length) {
+          var isEqual = true
+          services.forEach((service, serviceIndex) => {
+            // 同じものが存在するか
+            var sameServiceExists = false
+            previousValue.services.forEach((previousService, previousServiceIndex) => {
+              if (
+                service.title == previousService.title &&
+                service.content == previousService.content &&
+                service.url == previousService.url &&
+                service.imageUrl == previousService.imageUrl
+              ) {
+                sameServiceExists = true
+              }
+            })
+
+            if (!sameServiceExists) {
+              isEqual = false
+            }
+          })
+          // 変更されていない場合
+          if (!isEqual) {
+            isChanged = true
+          }
+        }
+      }
+
+      if (!isChanged) {
+        return 0
+      }
     }
 
     if (companyName != previousValue.companyName) {
@@ -2849,6 +2883,8 @@ exports.editRecruiterSetting = functions.region('asia-northeast1')
         .catch(err => {
           console.log('Error getting document', err)
         })
+    } else {
+      return 0
     }
   })
 
@@ -2864,6 +2900,7 @@ exports.editProfile = functions.region('asia-northeast1')
     const position = newValue.position
     const firstName = newValue.firstName
     const lastName = newValue.lastName
+    const type = newValue.type
     const imageUrl = newValue.imageUrl
     const selfIntro = newValue.selfIntro
     const whatWantToDo = newValue.whatWantToDo
@@ -2876,7 +2913,7 @@ exports.editProfile = functions.region('asia-northeast1')
     const department = newValue.department
     const desiredOccupations = newValue.desiredOccupations
 
-    if (companyId == null) {
+    if (companyId == null && type == 'user') {
       // user が profile を編集した時
       // プロフィール完成度などを更新
       var percentage = 0
@@ -2976,7 +3013,7 @@ exports.editProfile = functions.region('asia-northeast1')
       } else {
         return 0
       }
-    } else {
+    } else if (companyId && type == 'recruiter') {
       // recruiter
       // name, imageUrl, position, selfIntro どれも変わっていない場合はreturn
       if (
@@ -3005,11 +3042,14 @@ exports.editProfile = functions.region('asia-northeast1')
               }
             })
 
-            const member = {
+            let member = {
               uid: uid,
               position: position,
               name: lastName + ' ' + firstName,
               selfIntro: selfIntro,
+            }
+            if (imageUrl) {
+              member.imageUrl = imageUrl
             }
             members.splice(index, 1)
             members.push(member)
@@ -3036,6 +3076,8 @@ exports.editProfile = functions.region('asia-northeast1')
         .catch(err => {
           console.log('Error getting document', err)
         })
+    } else {
+      return 0
     }
   })
 
