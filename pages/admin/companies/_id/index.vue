@@ -180,7 +180,7 @@ export default {
       isLoading: state => state.company.isLoading,
       plan: state => state.company.plan,
       isDeleted: state => state.company.isDeleted,
-      imageUrl: state => state.company.imageUrl,
+      imageUrl: state => state.company.companyImageUrl,
       companyId: state => state.company.companyId,
       companyName: state => state.company.companyName,
       email: state => state.company.email,
