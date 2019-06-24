@@ -4,7 +4,7 @@ import { firestore, functions } from '@/plugins/firebase'
 export const state = () => ({
   plan: null,
   isDeleted: null,
-  imageUrl: '',
+  topImageUrl: '',
   companyId: '',
   companyName: '',
   companyImageUrl: '',
@@ -44,8 +44,8 @@ export const mutations = {
   setIsDeleted(state, isDeleted) {
     state.isDeleted = isDeleted
   },
-  setImageUrl(state, imageUrl) {
-    state.imageUrl = imageUrl
+  setTopImageUrl(state, topImageUrl) {
+    state.topImageUrl = topImageUrl
   },
   setCompanyId(state, companyId) {
     state.companyId = companyId
@@ -311,7 +311,7 @@ export const actions = {
               foundedDate = `${year}/${month}/${day}`
             }
 
-            commit('setImageUrl', doc.data()['imageUrl'])
+            commit('setTopImageUrl', doc.data()['topImageUrl'])
             commit('setCompanyId', doc.id)
             commit('setCompanyName', doc.data()['companyName'])
             commit('setCompanyImageUrl', doc.data()['companyImageUrl'])
@@ -453,7 +453,7 @@ export const actions = {
       .get()
       .then(function(doc) {
         if (doc.exists) {
-          commit('setImageUrl', doc.data()['imageUrl'])
+          commit('setCompanyImageUrl', doc.data()['imageUrl'])
           commit('setCompanyId', doc.id)
           commit('setCompanyName', doc.data()['companyName'])
           commit('setEmail', doc.data()['email'])
@@ -516,7 +516,7 @@ export const actions = {
     commit('setCandidatesChartData', null)
     commit('setAllCandidates', null)
     commit('setFeedback', null)
-    commit('setImageUrl', '')
+    commit('setTopImageUrl', '')
     commit('setCompanyId', '')
     commit('setCompanyName', '')
     commit('setCompanyImageUrl', '')

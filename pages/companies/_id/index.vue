@@ -18,7 +18,7 @@
     <v-flex v-else xs12>
       <v-img
         class="grey lighten-2"
-        :src="imageUrl"
+        :src="topImageUrl"
         :aspect-ratio="imageRatio"
       ></v-img>
       <v-flex xs10 offset-xs1 class="break">
@@ -793,7 +793,7 @@ export default {
     ...mapState({
       uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
-      imageUrl: state => state.company.imageUrl,
+      topImageUrl: state => state.company.topImageUrl,
       companyId: state => state.company.companyId,
       companyName: state => state.company.companyName,
       companyImageUrl: state => state.company.companyImageUrl,
