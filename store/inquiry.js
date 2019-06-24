@@ -80,6 +80,7 @@ export const actions = {
           companyName: companyName,
           userName: userName,
           email: email,
+          position: position,
           type: type,
           content: content
         })

@@ -115,7 +115,7 @@ export default {
     content: '',
     contentRules: [
       v => !!v || '内容を入力してください',
-      v => (v && v.length <= 1000) || '1000文字を超えています'
+      v => (v && v.length <= 3000) || '3000文字を超えています'
     ],
   }),
   computed: {
