@@ -2638,7 +2638,7 @@ exports.sendInquiryMail = functions
     if (data.type == 0) {
       type = '資料請求'
     } else if (data.type == 1) {
-      type = '質問がしたい'
+      type = '詳しく聞きたい'
     } else if (data.type == 2) {
       type = 'すぐに導入したい'
     }
@@ -2649,7 +2649,8 @@ exports.sendInquiryMail = functions
     mailOptions.subject = `${data.companyName}の${data.userName}様からのお問い合わせ`
     mailOptions.html = `
       <p><b>CompanyName: </b>${data.companyName}</p>
-      <p><b>Name: </b>${data.userName}</p>
+      <p><b>Name: </b>${data.userName} 様</p>
+      <p><b>Position: </b>${data.position} </p>
       <p><b>Email: </b>${data.email}</p>
       <p><b>Type: </b>${type}</p>
       <p><b>Content: </b>${data.content}</p>

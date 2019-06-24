@@ -321,7 +321,7 @@ export default {
     type: '資料請求',
     typeItems: [
       '資料請求',
-      '質問がしたい',
+      '詳しく聞きたい',
       'すぐにサービスを導入したい'
     ],
     content: '',
@@ -354,7 +354,7 @@ export default {
       let type
       if (this.type == '資料請求') {
         type = 0
-      } else if (this.type == '質問がしたい') {
+      } else if (this.type == '詳しく聞きたい') {
         type = 1
       } else if (this.type == 'すぐにサービスを導入したい') {
         type = 2

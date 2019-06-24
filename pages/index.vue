@@ -193,7 +193,7 @@
               </div>
             </v-card>
             <infinite-loading
-              v-if="showInfiniteLoading && jobs && jobs.length >= 10 && !isLoading"
+              v-if="showInfiniteLoading && jobs && jobs.length >= 20 && !isLoading"
               :distance="50"
               spinner="waveDots"
               @infinite="infiniteHandler">
