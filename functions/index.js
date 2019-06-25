@@ -2400,10 +2400,16 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
               isEqual = false
             }
           })
-          // 変更されていない場合
+          // 同じものが存在しない場合
           if (!isEqual) {
             isChanged = true
           }
+        } else {
+          isChanged = true
+        }
+      } else {
+        if (previousValue.services) {
+          isChanged = true
         }
       }
 
@@ -2503,8 +2509,8 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
             console.error("Error", error)
           })
 
-        // name or imageUrl or invoiceEmail が変わっていれば続行
-        if (isCompanyNameChanged || isCompanyImageUrlChanged || isInvoiceEmailChanged) {
+        // name or invoiceEmail が変わっていれば続行
+        if (isCompanyNameChanged || isInvoiceEmailChanged) {
           // paidActions
           admin.firestore()
             .collection('paidActions')
@@ -2536,8 +2542,8 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
               console.log('Error getting document', err)
             })
         }
-        // name or imageUrl が変わっていれば続行
-        if (isCompanyNameChanged || isCompanyImageUrlChanged) {
+        // name が変わっていれば続行
+        if (isCompanyNameChanged) {
           // projects
           admin.firestore()
             .collection('projects')
@@ -2563,9 +2569,13 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
             })
 
           // chats
+          const limitDate = new Date()
+          limitDate.setYear(limitDate.getFullYear() - 1)
+
           admin.firestore()
             .collection('chats')
             .where('companyId', '==', companyId)
+            .where('updatedAt', '>', limitDate)
             .get()
             .then(function(snapshot) {
               const batch = admin.firestore().batch()
@@ -2586,58 +2596,11 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
               console.log('Error getting document', err)
             })
 
-          // reviews
-          admin.firestore()
-            .collection('reviews')
-            .where('companyId', '==', companyId)
-            .get()
-            .then(function(snapshot) {
-              const batch = admin.firestore().batch()
-
-              snapshot.forEach(function(doc) {
-                const reviewRef = admin.firestore().collection('reviews').doc(doc.id)
-                batch.update(reviewRef, companyData)
-              })
-              batch.commit()
-                .then(() => {
-                  console.log('update review completed.')
-                })
-                .catch((error) => {
-                  console.error("Error", error)
-                })
-            })
-            .catch(err => {
-              console.log('Error getting document', err)
-            })
-
-          // feedbacks
-          admin.firestore()
-            .collection('feedbacks')
-            .where('companyId', '==', companyId)
-            .get()
-            .then(function(snapshot) {
-              const batch = admin.firestore().batch()
-
-              snapshot.forEach(function(doc) {
-                const feedbackRef = admin.firestore().collection('feedbacks').doc(doc.id)
-                batch.update(feedbackRef, companyData)
-              })
-              batch.commit()
-                .then(() => {
-                  console.log('update feedback completed.')
-                })
-                .catch((error) => {
-                  console.error("Error", error)
-                })
-            })
-            .catch(err => {
-              console.log('Error getting document', err)
-            })
-
           // passes
           admin.firestore()
             .collection('passes')
             .where('companyId', '==', companyId)
+            .where('isValid', '==', true)
             .get()
             .then(function(snapshot) {
               const batch = admin.firestore().batch()

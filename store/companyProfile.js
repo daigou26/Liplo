@@ -480,7 +480,7 @@ export const actions = {
     url
   }) {
     const batch = firestore.batch()
-    
+
     // 画像が変更されているか
     if (isServiceImageChanged) {
       const date = new Date()
@@ -561,7 +561,7 @@ export const actions = {
       })
     } else {
       // 新しいデータ
-      const tempService = {
+      let tempService = {
         imageUrl: imageUrl,
         title: title,
         content: content,
@@ -578,6 +578,7 @@ export const actions = {
         batch.update(projectRef, projectData)
 
         // company services 更新
+        tempService.timestamp = tempServices[selectedIndex].timestamp
         tempService.projectId = projectId
         tempServices.splice(selectedIndex, 1)
         tempServices.splice(selectedIndex, 0, tempService)

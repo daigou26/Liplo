@@ -150,6 +150,21 @@
                 <p class="body-text return">{{ culture }}</p>
               </div>
             </div>
+            <!-- system -->
+            <div v-if="system" class="py-4">
+              <p
+                class="font-weight-bold text-color"
+                :class="{
+                  'headline': $vuetify.breakpoint.smAndUp,
+                  'title': $vuetify.breakpoint.xsOnly
+                }"
+              >
+                社内制度
+              </p>
+              <div>
+                <p class="body-text return">{{ system }}</p>
+              </div>
+            </div>
             <!-- what -->
             <div v-if="what" class="py-4">
               <p

@@ -39,9 +39,19 @@
           v-if="topImageUrl"
           :src="topImageUrl"
           :aspect-ratio="imageRatio"
-          @click="topImageClicked"
         ></v-img>
-        <div v-else class="grey" style="height: 200px;">
+        <v-btn
+          v-if="topImageUrl"
+          class="text-color"
+          absolute
+          top
+          left
+          style="top: 20px"
+          @click="topImageClicked"
+        >
+          トップ画像を設定
+        </v-btn>
+        <div v-if="!topImageUrl" class="grey lighten-1" style="height: 200px;">
           <v-btn
             flat
             @click="topImageClicked"
@@ -65,7 +75,7 @@
               >
                 トップ画像を変更
               </v-card-title>
-              <v-flex xs10 offset-xs1 text-xs-center>
+              <v-flex xs10 offset-xs1>
                 <div class="py-4">
                   <v-img v-if="selectedTopImage" :src="selectedTopImage" height="200" />
                   <v-img v-else-if="topImageUrl" :src="topImageUrl" height="200" />
