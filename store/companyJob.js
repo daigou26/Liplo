@@ -213,9 +213,9 @@ export const actions = {
         // dbにurl保存
         uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
           jobData.imageUrl = downloadURL
-          jobData.timestamp = updatedAt.getSeconds()
+          jobData.timestamp = timestamp
           jobDetailData.imageUrl = downloadURL
-          jobDetailData.timestamp = updatedAt.getSeconds()
+          jobDetailData.timestamp = timestamp
 
           const batch = firestore.batch()
           const jobRef = firestore.collection('jobs').doc(jobId)
@@ -297,7 +297,7 @@ export const actions = {
           industry: industry,
           nearestStation: nearestStation,
           createdAt: createdAt,
-          timestamp: createdAt.getSeconds(),
+          timestamp: timestamp,
           status: 'creating',
         }
         const jobDetailData = {
@@ -320,7 +320,7 @@ export const actions = {
           nearestStation: nearestStation,
           environment: environment,
           createdAt: createdAt,
-          timestamp: createdAt.getSeconds(),
+          timestamp: timestamp,
           initialStatus: status,
           status: 'creating'
         }
