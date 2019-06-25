@@ -2380,7 +2380,9 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
       }
       // service比較
       if (services) {
-        if (services.length == previousValue.services.length) {
+        if (previousValue.services == null) {
+          isChanged = true
+        } else if (services.length == previousValue.services.length) {
           var isEqual = true
           services.forEach((service, serviceIndex) => {
             // 同じものが存在するか
@@ -2769,11 +2771,8 @@ exports.editRecruiterSetting = functions.region('asia-northeast1')
               }
             })
 
-            var member = members[index]
-            member.email = email
-            member.notificationsSetting = notificationsSetting
-            members.splice(index, 1)
-            members.push(member)
+            members[index].email = email
+            members[index].notificationsSetting = notificationsSetting
 
             // members更新
             const batch = admin.firestore().batch()
@@ -3005,17 +3004,12 @@ exports.editProfile = functions.region('asia-northeast1')
               }
             })
 
-            let member = {
-              uid: uid,
-              position: position,
-              name: lastName + ' ' + firstName,
-              selfIntro: selfIntro,
-            }
             if (imageUrl) {
-              member.imageUrl = imageUrl
+              members[index].imageUrl = imageUrl
             }
-            members.splice(index, 1)
-            members.push(member)
+            members[index].name = lastName + ' ' + firstName
+            members[index].position = position
+            members[index].selfIntro = selfIntro
 
             // members更新
             const batch = admin.firestore().batch()

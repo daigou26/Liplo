@@ -82,11 +82,17 @@
             <div class="title text-color pt-5">
               メールアドレスを変更する
             </div>
-            <div class="pt-3">
+            <div class="text-color pt-4">
               現在のメールアドレス： {{ currentEmail }}
             </div>
+            <div class="pt-3 light-text-color">
+              メールアドレスを変更した後、変更確認メールが元のメールアドレスに届きます。
+              メールアドレスを戻したい場合は、届いた確認メールのリンクをクリックしてください。
+              次に、サービスに戻り、一度ログアウトしてから元のメールアドレスで再ログインすることで、
+              メールアドレスのリセットが完了します。
+            </div>
             <div class="text-xs-right pt-4 pb-3">
-              <v-btn @click="changeEmailDialog = true">
+              <v-btn @click="changeEmailButtonClicked">
                 メールアドレスを変更する
               </v-btn>
             </div>
@@ -95,7 +101,7 @@
               アカウントの削除
             </div>
             <div class="text-xs-left pt-4">
-              <v-btn @click="deleteAccountDialog = true">
+              <v-btn @click="deleteAccountButtonClicked">
                 アカウントを削除する
               </v-btn>
             </div>
@@ -124,7 +130,7 @@
                     <v-flex xs12>
                       <!-- Error Message -->
                       <v-alert
-                        :value="authError != null"
+                        :value="authError != null && authError != ''"
                         type="error"
                         class="mb-5"
                         outline
@@ -156,7 +162,7 @@
                     <v-btn
                       :disabled="!changeEmailValid || loading"
                       class="teal"
-                      @click="changeEmailButtonClicked"
+                      @click="changeEmailDialogButtonClicked"
                     >
                       <span
                         class="font-weight-bold body-1"
@@ -204,7 +210,7 @@
                     <v-flex xs12>
                       <!-- Error Message -->
                       <v-alert
-                        :value="authError != null"
+                        :value="authError != null && authError != ''"
                         type="error"
                         class="mb-5"
                         outline
@@ -227,7 +233,7 @@
                     <v-btn
                       :disabled="!deleteAccountValid || loading"
                       class="teal"
-                      @click="deleteAccountButtonClicked"
+                      @click="deleteAccountDialogButtonClicked"
                     >
                       <span
                         class="font-weight-bold body-1"
@@ -319,9 +325,13 @@ export default {
         this.tempAcceptScout = acceptScout
       }
     },
-    loading(loading) {
-      if (loading == false) {
+    authError(authError) {
+      if (authError && authError != '') {
+        this.changeEmailValid = true
+        this.deleteAccountValid = true
+      } else if (authError == '') {
         this.changeEmailDialog = false
+        this.deleteAccountDialog = false
       }
     }
   },
@@ -335,15 +345,24 @@ export default {
       this.snackbarText = 'アカウント設定を更新しました！'
     },
     changeEmailButtonClicked() {
+      this.resetAuthError()
+      this.changeEmailDialog = true
+    },
+    // ダイアログ内のボタン
+    changeEmailDialogButtonClicked() {
       this.setLoading()
       this.resetAuthError()
       this.changeEmail({type: this.type, newEmail: this.newEmail, password: this.password})
     },
     deleteAccountButtonClicked() {
+      this.resetAuthError()
+      this.deleteAccountDialog = true
+    },
+    // ダイアログ内のボタン
+    deleteAccountDialogButtonClicked() {
       this.setLoading()
       this.resetAuthError()
       this.deleteAccount({type: this.type, password: this.password})
-      this.deleteAccountDialog = false
     },
     ...mapActions({
       querySettings: 'settings/querySettings',

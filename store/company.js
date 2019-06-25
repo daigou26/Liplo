@@ -494,7 +494,7 @@ export const actions = {
     })
     const companyDetailRef = firestore.collection('companies')
       .doc(companyId).collection('detail').doc(companyId)
-    batch.set(companyDetailRef, {
+    batch.update(companyDetailRef, {
       invoiceEmail: email
     })
 
