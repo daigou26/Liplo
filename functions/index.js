@@ -2380,7 +2380,9 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
       }
       // service比較
       if (services) {
-        if (services.length == previousValue.services.length) {
+        if (previousValue.services == null) {
+          isChanged = true
+        } else if (services.length == previousValue.services.length) {
           var isEqual = true
           services.forEach((service, serviceIndex) => {
             // 同じものが存在するか
