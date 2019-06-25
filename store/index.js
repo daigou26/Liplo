@@ -187,8 +187,6 @@ export const actions = {
   },
   async signOut({dispatch, commit}) {
     auth.signOut()
-    dispatch('job/resetState')
-    dispatch('company/resetState')
     dispatch('chats/resetMessagesListener')
     dispatch('chats/resetHasNewMessage')
     dispatch('notifications/resetNotificationsListener')
@@ -245,6 +243,7 @@ export const actions = {
           // メアド変更
           user.updateEmail(newEmail).then(function() {
             dispatch('profile/setEmail', newEmail)
+            commit('setAuthError', '')
             commit('resetLoading')
           }).catch(function(error) {
             console.error("Error adding document: ", error)
@@ -256,7 +255,6 @@ export const actions = {
           console.error("Error adding document: ", error)
         })
     }).catch(function(error) {
-      console.error("Error adding document: ", error)
       var errorCode = error.code
       switch (errorCode) {
         case 'auth/user-mismatch':
@@ -303,10 +301,8 @@ export const actions = {
         .then(() => {
           // delete
           user.delete().then(function() {
+            commit('setAuthError', '')
             commit('resetLoading')
-            dispatch('jobs/resetState')
-            dispatch('job/resetState')
-            dispatch('company/resetState')
             dispatch('chats/resetMessagesListener')
             dispatch('chats/resetHasNewMessage')
             dispatch('notifications/resetNotificationsListener')
@@ -345,7 +341,6 @@ export const actions = {
           commit('resetLoading')
         })
     }).catch(function(error) {
-      console.error("Error adding document: ", error)
       var errorCode = error.code
       switch (errorCode) {
         case 'auth/user-mismatch':
@@ -413,6 +408,7 @@ export const actions = {
                     type: 'recruiter',
                     email: user.email,
                     isEmailVerified: user.emailVerified,
+                    notificationsSetting: {application: true, acceptPass: true},
                     isDeleted: false,
                   })
                   const profileRef = firestore.collection('users')
