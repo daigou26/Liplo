@@ -604,6 +604,10 @@ export const actions = {
   updateSkills({commit}, {uid, skills}) {
     // dbに保存
     const batch = firestore.batch()
+    const userRef = firestore.collection('users').doc(uid)
+    batch.update(userRef, {
+      skills: skills,
+    })
     const profileRef = firestore.collection('users')
       .doc(uid).collection('profile').doc(uid)
     batch.update(profileRef, {
