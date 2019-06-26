@@ -99,7 +99,7 @@
           まだフィードバックを書いていません。
         </div>
         <infinite-loading
-          v-if="showInfiniteLoading && feedbacks && feedbacks.length >= 20 && !isLoading"
+          v-if="showInfiniteLoading && feedbacks && feedbacks.length >= 10 && !isLoading"
           :distance="50"
           spinner="waveDots"
           @infinite="infiniteHandler">
