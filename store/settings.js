@@ -56,12 +56,13 @@ export const actions = {
       })
   },
   updateAcceptScout({commit}, {uid, acceptScout}) {
+    const batch = firestore.batch()
     const userRef = firestore.collection('users').doc(uid)
     batch.update(userRef, {
       acceptScout: acceptScout
     })
     const userDetailRef = firestore.collection('users').doc(uid)
-      .collection('detail').doc(user.uid)
+      .collection('detail').doc(uid)
     batch.update(userDetailRef, {
       acceptScout: acceptScout
     })
