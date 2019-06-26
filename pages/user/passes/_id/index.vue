@@ -149,6 +149,11 @@
                   </v-list-tile>
                 </v-card-actions>
               </v-card>
+              <div class="pb-4">
+                <span v-if="type == 'hiring'" class="font-weight-bold pink--text text--lighten-2">入社パス</span>
+                <span v-else-if="type == 'offer'" class="font-weight-bold blue--text text--lighten-1">内定パス</span>
+                <span v-else-if="type == 'limited'" class="font-weight-bold green--text text--lighten-2">先着パス</span>
+              </div>
               <div v-if="joiningYear" class="pb-2">
                 <span class="font-weight-bold text-color">入社年度：　{{ joiningYear }}年度</span>
               </div>
