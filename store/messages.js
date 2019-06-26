@@ -66,19 +66,21 @@ export const actions = {
             docCount += 1
 
             var timestamp = doc.data()['createdAt']
-            if (timestamp) {
-              let date = new Date( timestamp.seconds * 1000 )
-              let year  = date.getFullYear()
-              let month = date.getMonth() + 1
-              let day  = date.getDate()
-              let hours = date.getHours()
-              let minutes = date.getMinutes()
-              timestamp = `${year}/${month}/${day} ${hours}:${minutes}`
+            let date = new Date( timestamp.seconds * 1000 )
+            let year  = date.getFullYear()
+            let month = date.getMonth() + 1
+            let day  = date.getDate()
+            let hours = date.getHours()
+            let minutes = date.getMinutes()
+            if (minutes < 10) {
+              minutes = '0' + String(minutes)
             }
+
             const message = {
               message: doc.data()['message'],
               createdAt: doc.data()['createdAt'],
-              timestamp: timestamp,
+              date: `${year}/${month}/${day}`,
+              time: `${hours}:${minutes}`,
               pic: doc.data()['pic'],
               user: doc.data()['user'],
             }
@@ -135,20 +137,21 @@ export const actions = {
               snapshot.docChanges().forEach(function(change) {
                 if (change.type === "added") {
                   var timestamp = change.doc.data()['createdAt']
-                  if (timestamp) {
-                    let date = new Date( timestamp.seconds * 1000 )
-                    let year  = date.getFullYear()
-                    let month = date.getMonth() + 1
-                    let day  = date.getDate()
-                    let hours = date.getHours()
-                    let minutes = date.getMinutes()
-                    timestamp = `${year}/${month}/${day} ${hours}:${minutes}`
+                  let date = new Date( timestamp.seconds * 1000 )
+                  let year  = date.getFullYear()
+                  let month = date.getMonth() + 1
+                  let day  = date.getDate()
+                  let hours = date.getHours()
+                  let minutes = date.getMinutes()
+                  if (minutes < 10) {
+                    minutes = '0' + String(minutes)
                   }
 
                   const message = {
                     message: change.doc.data()['message'],
                     createdAt: change.doc.data()['createdAt'],
-                    timestamp: timestamp,
+                    date: `${year}/${month}/${day}`,
+                    time: `${hours}:${minutes}`,
                     pic: change.doc.data()['pic'],
                     user: change.doc.data()['user'],
                   }
@@ -177,19 +180,21 @@ export const actions = {
             docCount += 1
 
             var timestamp = doc.data()['createdAt']
-            if (timestamp) {
-              let date = new Date( timestamp.seconds * 1000 )
-              let year  = date.getFullYear()
-              let month = date.getMonth() + 1
-              let day  = date.getDate()
-              let hours = date.getHours()
-              let minutes = date.getMinutes()
-              timestamp = `${year}/${month}/${day} ${hours}:${minutes}`
+            let date = new Date( timestamp.seconds * 1000 )
+            let year  = date.getFullYear()
+            let month = date.getMonth() + 1
+            let day  = date.getDate()
+            let hours = date.getHours()
+            let minutes = date.getMinutes()
+            if (minutes < 10) {
+              minutes = '0' + String(minutes)
             }
+
             const message = {
               message: doc.data()['message'],
               createdAt: doc.data()['createdAt'],
-              timestamp: timestamp,
+              date: `${year}/${month}/${day}`,
+              time: `${hours}:${minutes}`,
               pic: doc.data()['pic'],
               user: doc.data()['user'],
             }

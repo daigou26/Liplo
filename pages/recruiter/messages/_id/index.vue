@@ -92,7 +92,10 @@
                           class="px-3 py-2 white message-border-radius return text-xs-left"
                           style="display: inline-block;"
                         >{{ message.message }}</div>
-                        <div class="text-xs-right pt-1 pr-2 caption light-text-color return">{{ message.timestamp }}</div>
+                        <div class="text-xs-right pt-1 pr-2 caption light-text-color">
+                          {{ message.date }}
+                          <span class="pl-1">{{ message.time }}</span>
+                        </div>
                       </div>
                     </v-card-actions>
                   </v-flex>
