@@ -30,7 +30,7 @@
         <div class="font-weight-bold text-color subheading">
           記入可能なフィードバック
           <div class="pt-2 body-2 text-color">
-            フィードバック記入率は、募集ページで表示されます
+            フィードバック記入率は、ダッシュボードで確認できます。
           </div>
         </div>
         <v-list v-if="unwrittenFeedbacks && unwrittenFeedbacks.length > 0" two-line>
@@ -64,6 +64,12 @@
       <div class="my-4">
         <div class="font-weight-bold text-color subheading">
           過去に書いたフィードバック
+          <div class="pt-2 body-2 text-color">
+            直前に送信したフィードバックが表示されない場合があります。
+          </div>
+          <div class="body-2 text-color">
+            その際は、少し時間を置いて、リロードしてください。
+          </div>
         </div>
         <v-list v-if="feedbacks && feedbacks.length > 0" two-line>
           <template v-for="(feedback, index) in feedbacks">
@@ -93,7 +99,7 @@
           まだフィードバックを書いていません。
         </div>
         <infinite-loading
-          v-if="showInfiniteLoading && feedbacks && feedbacks.length >= 20 && !isLoading"
+          v-if="showInfiniteLoading && feedbacks && feedbacks.length >= 10 && !isLoading"
           :distance="50"
           spinner="waveDots"
           @infinite="infiniteHandler">
