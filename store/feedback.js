@@ -123,29 +123,16 @@ export const actions = {
       isWritten: true
     }
 
-    const batch = firestore.batch()
-    const feedbackRef = firestore.collection('feedbacks').doc(feedbackId)
-    batch.update(feedbackRef, feedbackData)
-    const notificationRef = firestore.collection('users')
-      .doc(state.uid).collection('notifications').doc()
-    const url = '/user/feedbacks/' + feedbackId
-    batch.set(notificationRef, {
-      type: 'normal',
-      isImportant: false,
-      content: state.companyName + 'からフィードバックが送られました！',
-      createdAt: new Date(),
-      url: url,
-      isUnread: true,
-    })
-
-    batch.commit()
+    firestore.collection('feedbacks')
+      .doc(feedbackId)
+      .update(feedbackData)
       .then(() => {
         router.replace({path: '/recruiter/feedbacks'})
         // analytics
         event('user', 'feedback')
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error updating document", error)
       })
   },
   updateIsLoading({commit}, isLoading) {

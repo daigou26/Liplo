@@ -944,7 +944,9 @@ exports.updateCompanyFeedbackCount = functions.region('asia-northeast1')
   .onUpdate((change, context) => {
     const newValue = change.after.data()
     const previousValue = change.before.data()
-
+    const feedbackId = context.params.feedbackId
+    const uid = newValue.uid
+    const companyName = newValue.companyName
     const companyId = newValue.companyId
     const isWritten = newValue.isWritten
 
@@ -968,7 +970,26 @@ exports.updateCompanyFeedbackCount = functions.region('asia-northeast1')
           })
         })
       }).then(() => {
-        console.log('completed.')
+        // 通知
+        const url = '/user/feedbacks/' + feedbackId
+
+        admin.firestore().collection('users')
+          .doc(uid)
+          .collection('notifications')
+          .add({
+            type: 'normal',
+            isImportant: false,
+            content: companyName + 'からフィードバックが送られました！',
+            createdAt: new Date(),
+            url: url,
+            isUnread: true,
+          })
+          .then(() => {
+            console.log('completed.')
+          })
+          .catch((error) => {
+            console.error("Error adding document", error)
+          })
       }).catch(error => {
         console.error(error)
       })
