@@ -180,7 +180,8 @@ export const actions = {
             let date = new Date( graduationDate.seconds * 1000 )
             graduationDate = date
           }
-
+          
+          commit('setPoints', doc.data()['points'])
           commit('setPosition', doc.data()['position'])
           commit('setFirstName', doc.data()['firstName'])
           commit('setLastName', doc.data()['lastName'])

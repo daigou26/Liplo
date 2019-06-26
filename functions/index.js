@@ -436,6 +436,20 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
             .catch((error) => {
               console.error("Error", error)
             })
+
+          admin.firestore().collection('users')
+            .doc(user.uid)
+            .collection('profile')
+            .doc(user.uid)
+            .update({
+              points: admin.firestore.FieldValue.increment(1)
+            })
+            .then(() => {
+              console.log('update user profile score completed.')
+            })
+            .catch((error) => {
+              console.error("Error", error)
+            })
         } else if (beforeStatus.intern) {
           const batch = admin.firestore().batch()
 
@@ -3083,6 +3097,8 @@ exports.sendReview = functions.region('asia-northeast1')
       .doc(companyId).collection('detail').doc(companyId)
 
     const userRef = admin.firestore().collection('users').doc(uid)
+    const userProfileRef = admin.firestore().collection('users').doc(uid)
+      .collection('profile').doc(uid)
 
     return admin.firestore().runTransaction(function(transaction) {
       return transaction.getAll(companyDetailRef, userRef).then(function(docs) {
@@ -3195,6 +3211,9 @@ exports.sendReview = functions.region('asia-northeast1')
           })
           // userスコア更新
           transaction.update(userRef, {
+            points: userDoc.data().points + 1,
+          })
+          transaction.update(userProfileRef, {
             points: userDoc.data().points + 1,
           })
           return { rating: rating, points: points }
