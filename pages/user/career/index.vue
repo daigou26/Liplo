@@ -117,9 +117,7 @@
                   </div>
                   <div v-if="item.jobDescription">
                     仕事内容:
-                    <div class="text-color">
-                      {{ item.jobDescription }}
-                    </div>
+                    <div class="pt-1 text-color return">{{ item.jobDescription }}</div>
                   </div>
                 </v-card>
               </v-timeline-item>

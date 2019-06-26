@@ -517,6 +517,7 @@ export const actions = {
                   firstName: firstName,
                   lastName: lastName,
                   type: 'user',
+                  points: 0,
                   email: user.email,
                   birthDate: birthDate,
                   graduationDate: graduationDate
