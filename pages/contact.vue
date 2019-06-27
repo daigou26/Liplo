@@ -131,17 +131,17 @@ export default {
   },
   methods: {
     sendButtonClicked() {
-      this.sendContact({
+      this.addInquiry({
         name: this.name,
         email: this.email,
-        content: this.content,
+        content: this.content
       })
       this.valid = false
       this.snackbar = true
       this.snackbarText = `お問い合わせありがとうございます。こちらからメールをお送りしますので、少々お待ちください。`
     },
     ...mapActions({
-      sendContact: 'sendContact',
+      addInquiry: 'inquiry/addInquiry',
     }),
   }
 }

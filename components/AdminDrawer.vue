@@ -51,7 +51,8 @@ export default {
       items: [
         { title: '企業', icon: 'business', url: 'companies' },
         { title: '請求', icon: 'payment', url: 'paidActions' },
-        { title: '問い合わせ', icon: 'call', url: 'inquiries' },
+        { title: '企業問い合わせ', icon: 'call', url: 'companyInquiries' },
+        { title: '問い合わせ', icon: 'email', url: 'inquiries' },
         { title: 'フィードバック', icon: 'chat_bubble_outline', url: 'feedbacks' },
       ],
     }

@@ -374,7 +374,7 @@ export default {
       this.snackbarText = `送信が完了しました。こちらからメールをお送りしますので、少々お待ちください。`
     },
     ...mapActions({
-      addInquiry: 'inquiry/addInquiry',
+      addInquiry: 'companyInquiry/addInquiry',
     }),
   }
 }

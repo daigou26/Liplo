@@ -27,11 +27,60 @@ export const mutations = {
 }
 
 export const actions = {
+  searchInquiries({commit, state}, searchText) {
+    const inquiries = state.inquiries
+
+    if (inquiries.length == 0) {
+      // 最初の20件だけクエリ
+      firestore.collection('companyInquiries')
+        .orderBy('companyName')
+        .startAt(searchText)
+        .endAt(searchText + "\uf8ff")
+        .limit(20)
+        .get()
+        .then(function(snapshot) {
+          var docCount = 0
+          snapshot.forEach(function(doc) {
+            docCount += 1
+
+            var timestamp = doc.data()['createdAt']
+            if (timestamp) {
+              let date = new Date( timestamp.seconds * 1000 )
+              let year  = date.getFullYear()
+              let month = date.getMonth() + 1
+              let day  = date.getDate()
+              timestamp = `${year}/${month}/${day}`
+            }
+
+            const inquiry = {
+              inquiryId: doc.id,
+              companyEmail: doc.data()['companyEmail'],
+              companyName: doc.data()['companyName'],
+              userName: doc.data()['userName'],
+              email: doc.data()['email'],
+              position: doc.data()['position'],
+              type: doc.data()['type'],
+              content: doc.data()['content'],
+              createdAt: doc.data()['createdAt'],
+              timestamp: timestamp
+            }
+            commit('addInquiry', inquiry)
+          })
+
+          // loading
+          commit('updateIsLoading', false)
+        })
+        .catch(function(error) {
+          commit('updateIsLoading', false)
+          console.log("Error getting document:", error);
+        })
+    }
+  },
   queryInquiries({commit, state}) {
     const inquiries = state.inquiries
 
     if (inquiries.length == 0) {
-      firestore.collection('inquiries')
+      firestore.collection('companyInquiries')
         .orderBy('createdAt', 'desc')
         .limit(20)
         .get()
@@ -51,8 +100,12 @@ export const actions = {
 
             const inquiry = {
               inquiryId: doc.id,
-              name: doc.data()['name'],
+              companyEmail: doc.data()['companyEmail'],
+              companyName: doc.data()['companyName'],
+              userName: doc.data()['userName'],
               email: doc.data()['email'],
+              position: doc.data()['position'],
+              type: doc.data()['type'],
               content: doc.data()['content'],
               createdAt: doc.data()['createdAt'],
               timestamp: timestamp
@@ -74,7 +127,7 @@ export const actions = {
       const lastIndex = inquiries.length - 1
       const lastDate = inquiries[lastIndex].createdAt
 
-      firestore.collection('inquiries')
+      firestore.collection('companyInquiries')
         .orderBy('createdAt', 'desc')
         .startAfter(lastDate)
         .limit(20)
@@ -95,8 +148,12 @@ export const actions = {
 
             const inquiry = {
               inquiryId: doc.id,
-              name: doc.data()['name'],
+              companyEmail: doc.data()['companyEmail'],
+              companyName: doc.data()['companyName'],
+              userName: doc.data()['userName'],
               email: doc.data()['email'],
+              position: doc.data()['position'],
+              type: doc.data()['type'],
               content: doc.data()['content'],
               createdAt: doc.data()['createdAt'],
               timestamp: timestamp
