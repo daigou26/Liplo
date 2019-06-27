@@ -20,39 +20,19 @@
       xs12
       class="break"
     >
-      <!-- 検索 -->
-      <div class="pl-3">
-        <v-layout row wrap>
-          <v-flex xs10 sm4>
-            <v-text-field
-              v-model="searchText"
-              label="Search"
-              single-line
-              hide-details
-            ></v-text-field>
-          </v-flex>
-          <v-btn flat icon color="blue" class="mt-3" @click="searchButtonClicked">
-            <v-icon>search</v-icon>
-          </v-btn>
-        </v-layout>
-      </div>
-      <!-- 企業一覧 -->
+      <!-- 問い合わせ一覧 -->
       <div class="pt-3">
         <v-data-table
           :headers="headers"
           :items="inquiries"
           class="elevation-1"
           hide-actions
-          no-data-text="企業がありません"
+          no-data-text="問い合わせがありません"
         >
           <template v-slot:items="props">
             <n-link class="clickable" tag="tr" :to="'/admin/inquiries/' + props.item.inquiryId">
-              <td style="min-width: 150px">{{ props.item.companyName }}</td>
-              <td style="min-width: 150px">
-                <span v-if="props.item.type == 0" class="teal--text font-weight-bold">資料請求</span>
-                <span v-else-if="props.item.type == 1" class="green--text font-weight-bold">質問がしたい</span>
-                <span v-else-if="props.item.type == 2" class="orange--text font-weight-bold">すぐに導入したい</span>
-              </td>
+              <td style="min-width: 150px">{{ props.item.name }}</td>
+              <td style="min-width: 150px">{{ props.item.email }}</td>
               <td class="text-xs-left" style="min-width: 150px">{{ props.item.timestamp }}</td>
             </n-link>
           </template>
@@ -82,16 +62,16 @@ export default {
       showInfiniteLoading: false,
       headers: [
         {
-          text: '企業名',
+          text: '名前',
           align: 'left',
           sortable: false,
-          value: 'companyName'
+          value: 'name'
         },
         {
-          text: 'Type',
+          text: 'email',
           align: 'left',
           sortable: false,
-          value: 'type'
+          value: 'email'
         },
         {
           text: 'Date',
@@ -160,7 +140,6 @@ export default {
     },
     ...mapActions({
       queryInquiries: 'inquiries/queryInquiries',
-      searchInquiries: 'inquiries/searchInquiries',
       updateIsInitialLoading: 'inquiries/updateIsInitialLoading',
       updateIsLoading: 'inquiries/updateIsLoading',
       resetState: 'inquiries/resetState',

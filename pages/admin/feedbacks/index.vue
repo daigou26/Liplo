@@ -74,7 +74,6 @@ export default {
     return {
       isQueried: false,
       windowHeight: 0,
-      showChart: false,
       showInfiniteLoading: false,
       headers: [
         {
@@ -119,7 +118,7 @@ export default {
       toolbarHeight = 64
     }
     this.windowHeight = window.innerHeight - toolbarHeight - 30
-    this.showChart = true
+    this.showInfiniteLoading = true
 
     if (this.isAdmin) {
       this.resetState()
@@ -134,7 +133,7 @@ export default {
   methods: {
     infiniteHandler($state) {
       if (!this.allFeedbacksQueried) {
-        if (!this.isLoading && this.companyId != null) {
+        if (!this.isLoading) {
           this.count += 1
           this.updateIsLoading(true)
           this.queryFeedbacks()

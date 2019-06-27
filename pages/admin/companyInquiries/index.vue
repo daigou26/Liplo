@@ -20,48 +20,45 @@
       xs12
       class="break"
     >
-      <!-- 請求一覧 -->
-      <div>
+      <!-- 検索 -->
+      <div class="pl-3">
+        <v-layout row wrap>
+          <v-flex xs10 sm4>
+            <v-text-field
+              v-model="searchText"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field>
+          </v-flex>
+          <v-btn flat icon color="blue" class="mt-3" @click="searchButtonClicked">
+            <v-icon>search</v-icon>
+          </v-btn>
+        </v-layout>
+      </div>
+      <!-- 企業問い合わせ一覧 -->
+      <div class="pt-3">
         <v-data-table
           :headers="headers"
-          :items="paidActions"
+          :items="inquiries"
           class="elevation-1"
           hide-actions
-          no-data-text="データがありません"
+          no-data-text="問い合わせがありません"
         >
           <template v-slot:items="props">
-            <n-link class="clickable" tag="tr" :to="'/admin/paidActions/' + props.item.paidActionId">
-              <td class="py-1">
-                <v-avatar
-                  size="50"
-                  class="grey lighten-3"
-                >
-                  <v-img
-                    v-if="props.item.companyImageUrl"
-                    :src="props.item.companyImageUrl"
-                  />
-                </v-avatar>
-              </td>
+            <n-link class="clickable" tag="tr" :to="'/admin/companyInquiries/' + props.item.inquiryId">
               <td style="min-width: 150px">{{ props.item.companyName }}</td>
               <td style="min-width: 150px">
-                <span v-if="props.item.type == 'intern'" class="green--text text--lighten-1 font-weight-bold">インターン</span>
-                <span v-else-if="props.item.type == 'hired'" class="pink--text text--lighten-2 font-weight-bold">本採用</span>
-              </td>
-              <td style="min-width: 150px">
-                <v-icon v-if="props.item.isFree" color="green">check</v-icon>
-                <v-icon v-else>remove</v-icon>
-              </td>
-              <td style="min-width: 150px">
-                <span v-if="props.item.plan == 0" class="teal--text font-weight-bold">採用報酬型</span>
-                <span v-if="props.item.plan == 1" class="red--text font-weight-bold">アルファ</span>
-                <span v-if="props.item.plan == 2" class="blue--text font-weight-bold">ベータ</span>
+                <span v-if="props.item.type == 0" class="teal--text font-weight-bold">資料請求</span>
+                <span v-else-if="props.item.type == 1" class="green--text font-weight-bold">質問がしたい</span>
+                <span v-else-if="props.item.type == 2" class="orange--text font-weight-bold">すぐに導入したい</span>
               </td>
               <td class="text-xs-left" style="min-width: 150px">{{ props.item.timestamp }}</td>
             </n-link>
           </template>
         </v-data-table>
         <infinite-loading
-          v-if="showInfiniteLoading && paidActions && paidActions.length >= 20 && !isLoading"
+          v-if="showInfiniteLoading && inquiries && inquiries.length >= 20 && !isLoading"
           :distance="50"
           spinner="waveDots"
           @infinite="infiniteHandler">
@@ -79,14 +76,11 @@ export default {
   data() {
     return {
       isQueried: false,
+      count: 0,
       windowHeight: 0,
+      searchText: '',
       showInfiniteLoading: false,
       headers: [
-        {
-          sortable: false,
-          value: 'companyImageUrl',
-          width: '100'
-        },
         {
           text: '企業名',
           align: 'left',
@@ -94,26 +88,15 @@ export default {
           value: 'companyName'
         },
         {
-          text: 'type',
+          text: 'Type',
           align: 'left',
           sortable: false,
           value: 'type'
         },
         {
-          text: 'free',
-          align: 'left',
-          sortable: false,
-          value: 'free'
-        },
-        {
-          text: 'plan',
-          align: 'left',
-          sortable: false,
-          value: 'plan'
-        },
-        {
           text: 'Date',
           align: 'left',
+          sortable: false,
           value: 'timestamp'
         },
       ],
@@ -127,10 +110,10 @@ export default {
       isRefreshing: state => state.isRefreshing,
       uid: state => state.uid,
       isAdmin: state => state.profile.isAdmin,
-      paidActions: state => state.paidActions.paidActions,
-      isInitialLoading: state => state.paidActions.isInitialLoading,
-      isLoading: state => state.paidActions.isLoading,
-      allPaidActionsQueried: state => state.paidActions.allPaidActionsQueried,
+      inquiries: state => state.companyInquiries.inquiries,
+      isInitialLoading: state => state.companyInquiries.isInitialLoading,
+      isLoading: state => state.companyInquiries.isLoading,
+      allInquiriesQueried: state => state.companyInquiries.allInquiriesQueried,
     }),
   },
   mounted() {
@@ -147,19 +130,24 @@ export default {
       this.resetState()
       this.updateIsInitialLoading(true)
       this.updateIsLoading(true)
-      this.queryCompanyPaidActions(this.$route.params.id)
+      this.queryInquiries()
     } else {
       // 管理者出ない場合は rootへ
       this.$router.push('/')
     }
   },
   methods: {
+    searchButtonClicked() {
+      this.resetState()
+      this.updateIsLoading(true)
+      this.searchInquiries(this.searchText)
+    },
     infiniteHandler($state) {
-      if (!this.allPaidActionsQueried) {
-        if (!this.isLoading && this.$route.params.id != null) {
+      if (!this.allInquiriesQueried) {
+        if (!this.isLoading) {
           this.count += 1
           this.updateIsLoading(true)
-          this.queryCompanyPaidActions(this.$route.params.id)
+          this.queryInquiries()
         }
         if (this.count > 50) {
           $state.complete()
@@ -171,10 +159,11 @@ export default {
       }
     },
     ...mapActions({
-      queryCompanyPaidActions: 'paidActions/queryCompanyPaidActions',
-      updateIsInitialLoading: 'paidActions/updateIsInitialLoading',
-      updateIsLoading: 'paidActions/updateIsLoading',
-      resetState: 'paidActions/resetState',
+      queryInquiries: 'companyInquiries/queryInquiries',
+      searchInquiries: 'companyInquiries/searchInquiries',
+      updateIsInitialLoading: 'companyInquiries/updateIsInitialLoading',
+      updateIsLoading: 'companyInquiries/updateIsLoading',
+      resetState: 'companyInquiries/resetState',
     }),
   }
 }

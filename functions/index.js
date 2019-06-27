@@ -2664,39 +2664,6 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
       })
   })
 
-// 問い合わせがあった時
-exports.sendInquiryMail = functions
-  .https
-  .onCall((data, context) => {
-    var type
-    if (data.type == 0) {
-      type = '資料請求'
-    } else if (data.type == 1) {
-      type = '詳しく聞きたい'
-    } else if (data.type == 2) {
-      type = 'すぐに導入したい'
-    }
-    const mailOptions = {
-      from: `LightHouse <noreply@firebase.com>`,
-      to: 'go26dev@gmail.com',
-    }
-    mailOptions.subject = `${data.companyName}の${data.userName}様からのお問い合わせ`
-    mailOptions.html = `
-      <p><b>CompanyName: </b>${data.companyName}</p>
-      <p><b>Name: </b>${data.userName} 様</p>
-      <p><b>Position: </b>${data.position} </p>
-      <p><b>Email: </b>${data.email}</p>
-      <p><b>Type: </b>${type}</p>
-      <p><b>Content: </b>${data.content}</p>
-    `
-    mailTransport.sendMail(mailOptions, (err, info) => {
-      if (err) {
-        console.log(err)
-      }
-      console.log('completed.')
-    })
-  })
-
 // 担当者がサインアップした時の処理
 exports.createRecruiter = functions.region('asia-northeast1')
   .firestore
@@ -3282,6 +3249,39 @@ exports.sendMessage = functions.region('asia-northeast1')
       .catch(error => {
         console.log('Error updating document', error)
       })
+  })
+
+// 企業から問い合わせがあった時
+exports.sendCompanyInquiryMail = functions
+  .https
+  .onCall((data, context) => {
+    var type
+    if (data.type == 0) {
+      type = '資料請求'
+    } else if (data.type == 1) {
+      type = '詳しく聞きたい'
+    } else if (data.type == 2) {
+      type = 'すぐに導入したい'
+    }
+    const mailOptions = {
+      from: `LightHouse <noreply@firebase.com>`,
+      to: 'go26dev@gmail.com',
+    }
+    mailOptions.subject = `${data.companyName}の${data.userName}様からのお問い合わせ`
+    mailOptions.html = `
+      <p><b>CompanyName: </b>${data.companyName}</p>
+      <p><b>Name: </b>${data.userName} 様</p>
+      <p><b>Position: </b>${data.position} </p>
+      <p><b>Email: </b>${data.email}</p>
+      <p><b>Type: </b>${type}</p>
+      <p><b>Content: </b>${data.content}</p>
+    `
+    mailTransport.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.log(err)
+      }
+      console.log('completed.')
+    })
   })
 
 exports.sendContact = functions
