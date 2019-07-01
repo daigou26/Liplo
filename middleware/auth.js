@@ -5,6 +5,8 @@ export default function ({ store, route, redirect }) {
       route.path !== '/signup' &&
       route.path !== '/inquiry_for_recruiter' &&
       route.path !== '/how_to_use' &&
+      route.path !== '/privacy_policy' &&
+      route.path !== '/terms' &&
       route.path !== '/company_registration' &&
       route.path !== '/contact' &&
       route.path !== '/feedback' &&

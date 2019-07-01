@@ -13,6 +13,8 @@
           routeName == 'companies-id' ||
           path == '/inquiry_for_recruiter' ||
           path == '/how_to_use' ||
+          path == '/terms' ||
+          path == '/privacy_policy' ||
           path == '/contact' ||
           path == '/feedback' ||
           (path == '/user/profile' && uid) ||

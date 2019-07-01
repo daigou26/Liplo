@@ -525,6 +525,7 @@
                 <!-- 利用規約 -->
                 <v-list-tile
                   class="px-3"
+                  to="/terms"
                   @click="dropdownMenu=false"
                 >
                   <v-list-tile-content>
@@ -534,6 +535,7 @@
                 <!-- プライバシー -->
                 <v-list-tile
                   class="px-3"
+                  to="/privacy_policy"
                   @click="dropdownMenu=false"
                 >
                   <v-list-tile-content>
@@ -599,6 +601,8 @@
           <span v-else-if="path == '/contact'" class="toolbar-title-small">お問い合わせ</span>
           <span v-else-if="path == '/feedback'" class="toolbar-title-small">フィードバックを送る</span>
           <span v-else-if="path == '/how_to_use'" class="toolbar-title-small">サービスの使い方</span>
+          <span v-else-if="path == '/terms'" class="toolbar-title-small">利用規約</span>
+          <span v-else-if="path == '/privacy_policy'" class="toolbar-title-small">プライバシーポリシー</span>
           <span v-else class="toolbar-title-small">Home</span>
         </div>
       </no-ssr>
@@ -1090,6 +1094,12 @@
                       @click:append="passwordShow = !passwordShow"
                     ></v-text-field>
                   </v-flex>
+                  <div class="caption text-color py-2 pl-2 pb-3 text-xs-left">
+                    登録前に<a href="/terms" target="_blank">利用規約</a>をご確認ください。
+                    <div>
+                      登録すると利用規約に同意したことになります。
+                    </div>
+                  </div>
                   <!-- 登録ボタン -->
                   <v-btn
                     :disabled="!signUpValid || loading || birthDate == null || graduationDate == null"

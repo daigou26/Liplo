@@ -110,6 +110,8 @@ export default {
         { title: 'アカウント設定', icon: 'settings', url: '/user/settings/account' },
         { title: '通知設定', icon: 'settings', url: '/user/settings/notifications' },
         { title: 'サービスの使い方', icon: 'help_outline', url: '/how_to_use' },
+        { title: '利用規約', icon: 'assignment', url: '/terms' },
+        { title: 'プライバシーポリシー ', icon: 'assignment', url: '/privacy_policy' },
         { title: 'フィードバックを送る', icon: 'send', url: '/feedback' },
         { title: 'ログアウト', icon: 'person_outline', url: null },
       ],
