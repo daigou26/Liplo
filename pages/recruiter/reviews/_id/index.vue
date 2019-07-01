@@ -42,21 +42,6 @@
           <div class="hidden-sm-and-up pt-3 pb-5">
             <div class="d-flex">
               <v-flex xs7 sm6>
-                <span class="font-weight-bold light-text-color pr-2">成長できるか</span>
-              </v-flex>
-              <v-flex xs5 sm6 text-sm-left text-xs-right>
-                <v-rating
-                  v-model="growth"
-                  background-color="pink"
-                  color="pink darken-1"
-                  small
-                  half-increments
-                  readonly
-                />
-              </v-flex>
-            </div>
-            <div class="d-flex">
-              <v-flex xs7 sm6>
                 <span class="font-weight-bold light-text-color pr-2">仕事内容</span>
               </v-flex>
               <v-flex xs5 sm6 text-sm-left text-xs-right>
@@ -87,11 +72,11 @@
             </div>
             <div class="d-flex">
               <v-flex xs7 sm6>
-                <span class="font-weight-bold light-text-color pr-2">出勤時間の柔軟性</span>
+                <span class="font-weight-bold light-text-color pr-2">労働時間</span>
               </v-flex>
               <v-flex xs5 sm6 text-sm-left text-xs-right>
                 <v-rating
-                  v-model="flexibleSchedule"
+                  v-model="workingHours"
                   background-color="pink"
                   color="pink darken-1"
                   small
@@ -102,26 +87,11 @@
             </div>
             <div class="d-flex">
               <v-flex xs7 sm6>
-                <span class="font-weight-bold light-text-color pr-2">勤務中の自由度</span>
+                <span class="font-weight-bold light-text-color pr-2">労働環境</span>
               </v-flex>
               <v-flex xs5 sm6 text-sm-left text-xs-right>
                 <v-rating
-                  v-model="flexibility"
-                  background-color="pink"
-                  color="pink darken-1"
-                  small
-                  half-increments
-                  readonly
-                />
-              </v-flex>
-            </div>
-            <div class="d-flex">
-              <v-flex xs7 sm6>
-                <span class="font-weight-bold light-text-color pr-2">メンター</span>
-              </v-flex>
-              <v-flex xs5 sm6 text-sm-left text-xs-right>
-                <v-rating
-                  v-model="mentor"
+                  v-model="environment"
                   background-color="pink"
                   color="pink darken-1"
                   small
@@ -154,14 +124,6 @@
               <span class="light-text-color caption">ヒント（レビューの項目について）</span>
             </v-card-actions>
             <v-card v-show="hover" flat class="caption pa-2">
-              <div>
-                <div class="text-color">
-                  成長できるか：
-                </div>
-                <div class="text-color">
-                  インターンに行って成長できたかどうか
-                </div>
-              </div>
               <div class="pt-3">
                 <div class="text-color">
                   仕事内容：
@@ -180,26 +142,18 @@
               </div>
               <div class="pt-3">
                 <div class="text-color">
-                  勤務中の自由度：
+                  労働環境：
                 </div>
                 <div class="text-color">
-                  休憩などが自由にできるかどうか
-                </div>
-              </div>
-              <div class="pt-3">
-                <div class="text-color">
-                  勤務時間の柔軟性：
-                </div>
-                <div class="text-color">
-                  勤務時間、日程を自由に決められるかどうか
+                  働きやすい環境かどうか（休憩などが自由にできるか、質問がしやすい環境かなど）
                 </div>
               </div>
               <div class="pt-3">
                 <div class="text-color">
-                  メンター：
+                  労働時間：
                 </div>
                 <div class="text-color">
-                  メンター（インターン生の担当者）の評価
+                  勤務時間帯を柔軟に決められるか、休暇を取りやすい環境か
                 </div>
               </div>
               <div class="pt-3">
@@ -252,10 +206,8 @@ export default {
       atmosphere: state => state.review.atmosphere,
       job: state => state.review.job,
       discretion: state => state.review.discretion,
-      flexibleSchedule: state => state.review.flexibleSchedule,
-      flexibility: state => state.review.flexibility,
-      mentor: state => state.review.mentor,
-      growth: state => state.review.growth,
+      workingHours: state => state.review.workingHours,
+      environment: state => state.review.environment,
       chartData: state => state.review.chartData,
       isLoading: state => state.review.isLoading,
     }),
@@ -296,3 +248,4 @@ export default {
   }
 }
 </script>
+労働時間

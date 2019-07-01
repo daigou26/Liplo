@@ -50,7 +50,6 @@
         </v-snackbar>
         <!-- menu (lg, md, sm)-->
         <my-page-menu/>
-        <!-- feedbacks -->
         <v-flex
           xs12
           class="py-3"
@@ -91,17 +90,7 @@
                 <p class="pb-3 title font-weight-bold text-color">
                   レビュー
                 </p>
-                <div class="py-3">
-                  <p class="text-color">成長できる環境か</p>
-                  <v-rating
-                    v-model="growth"
-                    hover
-                    half-increments
-                    background-color="pink"
-                    color="pink darken-1"
-                  />
-                </div>
-                <div class="py-3">
+                <div class="py-4">
                   <p class="text-color">仕事内容が募集に書かれていたこととあっているか</p>
                   <v-rating
                     v-model="job"
@@ -111,7 +100,7 @@
                     color="pink darken-1"
                   />
                 </div>
-                <div class="py-3">
+                <div class="py-4">
                   <p class="text-color">インターン生に対して裁量が与えられているか</p>
                   <v-rating
                     v-model="discretion"
@@ -121,38 +110,28 @@
                     color="pink darken-1"
                   />
                 </div>
-                <div class="py-3">
-                  <p class="text-color">勤務時間を柔軟に決められるか</p>
+                <div class="py-4">
+                  <p class="text-color">勤務時間帯を柔軟に決められるか、休暇を取りやすい環境か（社員が休暇を取れているか）</p>
                   <v-rating
-                    v-model="flexibleSchedule"
+                    v-model="workingHours"
                     hover
                     half-increments
                     background-color="pink"
                     color="pink darken-1"
                   />
                 </div>
-                <div class="py-3">
-                  <p class="text-color">勤務中の自由度があるか（休憩などが自由にできるか）</p>
+                <div class="py-4">
+                  <p class="text-color">働きやすい環境か（休憩などが自由にできるか、質問しやすい環境かなど）</p>
                   <v-rating
-                    v-model="flexibility"
+                    v-model="environment"
                     hover
                     half-increments
                     background-color="pink"
                     color="pink darken-1"
                   />
                 </div>
-                <div class="py-3">
-                  <p class="text-color">メンターの評価（自分の担当者の評価）</p>
-                  <v-rating
-                    v-model="mentor"
-                    hover
-                    half-increments
-                    background-color="pink"
-                    color="pink darken-1"
-                  />
-                </div>
-                <div class="py-3">
-                  <p class="text-color">社内の雰囲気が良かったかどうか</p>
+                <div class="py-4">
+                  <p class="text-color">社内の雰囲気や人間関係が良かったか</p>
                   <v-rating
                     v-model="atmosphere"
                     hover
@@ -220,10 +199,8 @@ export default {
     atmosphere: 3,
     job: 3,
     discretion: 3,
-    flexibleSchedule: 3,
-    flexibility: 3,
-    mentor: 3,
-    growth: 3,
+    workingHours: 3,
+    environment: 3,
     reviewValid: true,
     content: '',
     contentRules: [
@@ -288,11 +265,9 @@ export default {
         this.atmosphere +
         this.job +
         this.discretion +
-        this.flexibleSchedule +
-        this.flexibility +
-        this.mentor +
-        this.mentor
-      ) / 7 * 10) / 10
+        this.workingHours +
+        this.environment
+      ) / 5 * 10) / 10
 
       var review = {
         uid: this.uid,
@@ -305,10 +280,8 @@ export default {
         atmosphere: this.atmosphere,
         job: this.job,
         discretion: this.discretion,
-        flexibleSchedule: this.flexibleSchedule,
-        flexibility: this.flexibility,
-        mentor: this.mentor,
-        growth: this.growth,
+        workingHours: this.workingHours,
+        environment: this.environment,
         createdAt: new Date(),
       }
       if (this.notReviewedCompany.companyImageUrl) {

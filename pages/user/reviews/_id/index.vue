@@ -64,21 +64,6 @@
               </v-card>
               <div class="d-flex pt-2">
                 <v-flex xs7 sm6>
-                  <span class="font-weight-bold light-text-color pr-2">成長できるか</span>
-                </v-flex>
-                <v-flex v-if="growth" xs5 sm6 text-sm-left text-xs-right>
-                  <v-rating
-                    v-model="growth"
-                    background-color="pink"
-                    color="pink darken-1"
-                    small
-                    half-increments
-                    readonly
-                  />
-                </v-flex>
-              </div>
-              <div class="d-flex pt-2">
-                <v-flex xs7 sm6>
                   <span class="font-weight-bold light-text-color pr-2">仕事内容</span>
                 </v-flex>
                 <v-flex v-if="job" xs5 sm6 text-sm-left text-xs-right>
@@ -109,11 +94,11 @@
               </div>
               <div class="d-flex pt-2">
                 <v-flex xs7 sm6>
-                  <span class="font-weight-bold light-text-color pr-2">出勤時間の柔軟性</span>
+                  <span class="font-weight-bold light-text-color pr-2">労働時間</span>
                 </v-flex>
-                <v-flex v-if="flexibleSchedule" xs5 sm6 text-sm-left text-xs-right>
+                <v-flex v-if="workingHours" xs5 sm6 text-sm-left text-xs-right>
                   <v-rating
-                    v-model="flexibleSchedule"
+                    v-model="workingHours"
                     background-color="pink"
                     color="pink darken-1"
                     small
@@ -124,26 +109,11 @@
               </div>
               <div class="d-flex pt-2">
                 <v-flex xs7 sm6>
-                  <span class="font-weight-bold light-text-color pr-2">勤務中の自由度</span>
+                  <span class="font-weight-bold light-text-color pr-2">労働環境</span>
                 </v-flex>
-                <v-flex v-if="flexibility" xs5 sm6 text-sm-left text-xs-right>
+                <v-flex v-if="environment" xs5 sm6 text-sm-left text-xs-right>
                   <v-rating
-                    v-model="flexibility"
-                    background-color="pink"
-                    color="pink darken-1"
-                    small
-                    half-increments
-                    readonly
-                  />
-                </v-flex>
-              </div>
-              <div class="d-flex pt-2">
-                <v-flex xs7 sm6>
-                  <span class="font-weight-bold light-text-color pr-2">メンター</span>
-                </v-flex>
-                <v-flex v-if="mentor" xs5 sm6 text-sm-left text-xs-right>
-                  <v-rating
-                    v-model="mentor"
+                    v-model="environment"
                     background-color="pink"
                     color="pink darken-1"
                     small
@@ -215,10 +185,8 @@ export default {
       atmosphere: state => state.review.atmosphere,
       job: state => state.review.job,
       discretion: state => state.review.discretion,
-      flexibleSchedule: state => state.review.flexibleSchedule,
-      flexibility: state => state.review.flexibility,
-      mentor: state => state.review.mentor,
-      growth: state => state.review.growth,
+      workingHours: state => state.review.workingHours,
+      environment: state => state.review.environment,
       isLoading: state => state.review.isLoading,
     }),
   },
