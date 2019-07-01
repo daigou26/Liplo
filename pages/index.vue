@@ -238,10 +238,10 @@
                   </v-btn>
                 </div>
                 <div class="pb-2">
-                  <nuxt-link to="/" class="font-weight-bold text-color">利用規約</nuxt-link>
+                  <nuxt-link to="/terms" class="font-weight-bold text-color">利用規約</nuxt-link>
                 </div>
                 <div class="pb-2">
-                  <nuxt-link to="/" class="font-weight-bold text-color">プライバシー</nuxt-link>
+                  <nuxt-link to="/privacy_policy" class="font-weight-bold text-color">プライバシー</nuxt-link>
                 </div>
               </v-flex>
             </v-layout>
