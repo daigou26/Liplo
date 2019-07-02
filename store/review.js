@@ -11,10 +11,8 @@ export const state = () => ({
   atmosphere: null,
   job: null,
   discretion: null,
-  flexibleSchedule: null,
-  flexibility: null,
-  mentor: null,
-  growth: null,
+  workingHours: null,
+  environment: null,
   chartData: null,
   isLoading: false,
 })
@@ -44,17 +42,11 @@ export const mutations = {
   setDiscretion(state, discretion) {
     state.discretion = discretion
   },
-  setFlexibleSchedule(state, flexibleSchedule) {
-    state.flexibleSchedule = flexibleSchedule
+  setWorkingHours(state, workingHours) {
+    state.workingHours = workingHours
   },
-  setFlexibility(state, flexibility) {
-    state.flexibility = flexibility
-  },
-  setMentor(state, mentor) {
-    state.mentor = mentor
-  },
-  setGrowth(state, growth) {
-    state.growth = growth
+  setEnvironment(state, environment) {
+    state.environment = environment
   },
   setChartData(state, data) {
     state.chartData = data
@@ -109,20 +101,16 @@ export const actions = {
           commit('setAtmosphere', doc.data()['atmosphere'])
           commit('setJob', doc.data()['job'])
           commit('setDiscretion', doc.data()['discretion'])
-          commit('setFlexibleSchedule', doc.data()['flexibleSchedule'])
-          commit('setFlexibility', doc.data()['flexibility'])
-          commit('setMentor', doc.data()['mentor'])
-          commit('setGrowth', doc.data()['growth'])
+          commit('setWorkingHours', doc.data()['workingHours'])
+          commit('setEnvironment', doc.data()['environment'])
 
           // chart Data
           const chartData = {
             labels: [
-              '成長できるか',
               '仕事内容',
               '裁量度',
-              '勤務中の自由度',
-              '勤務時間の柔軟性',
-              'メンター',
+              '労働環境',
+              '労働時間',
               '雰囲気',
             ],
             datasets: [
@@ -131,12 +119,10 @@ export const actions = {
                 backgroundColor: 'rgba(236, 64, 122, 0.2)',
                 borderWidth: 2,
                 data: [
-                  doc.data()['growth'],
                   doc.data()['job'],
                   doc.data()['discretion'],
-                  doc.data()['flexibility'],
-                  doc.data()['flexibleSchedule'],
-                  doc.data()['mentor'],
+                  doc.data()['environment'],
+                  doc.data()['workingHours'],
                   doc.data()['atmosphere']
                 ]
               }
@@ -169,10 +155,8 @@ export const actions = {
     commit('setAtmosphere', null)
     commit('setJob', null)
     commit('setDiscretion', null)
-    commit('setFlexibleSchedule', null)
-    commit('setFlexibility', null)
-    commit('setMentor', null)
-    commit('setGrowth', null)
+    commit('setWorkingHours', null)
+    commit('setEnvironment', null)
     commit('setChartData', null)
     commit('updateIsLoading', false)
   },

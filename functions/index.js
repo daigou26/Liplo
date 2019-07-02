@@ -3102,10 +3102,8 @@ exports.sendReview = functions.region('asia-northeast1')
           var atmosphere
           var job
           var discretion
-          var flexibleSchedule
-          var flexibility
-          var mentor
-          var growth
+          var workingHours
+          var environment
           var all
           var comments
 
@@ -3114,11 +3112,9 @@ exports.sendReview = functions.region('asia-northeast1')
             atmosphere = Math.round((companyDetailDoc.data().reviews.rating.atmosphere * reviewCount + snap.data().atmosphere) / (reviewCount + 1) * 10) / 10
             job = Math.round((companyDetailDoc.data().reviews.rating.job * reviewCount + snap.data().job) / (reviewCount + 1) * 10) / 10
             discretion = Math.round((companyDetailDoc.data().reviews.rating.discretion * reviewCount + snap.data().discretion) / (reviewCount + 1) * 10) / 10
-            flexibleSchedule = Math.round((companyDetailDoc.data().reviews.rating.flexibleSchedule * reviewCount + snap.data().flexibleSchedule) / (reviewCount + 1) * 10) / 10
-            flexibility = Math.round((companyDetailDoc.data().reviews.rating.flexibility * reviewCount + snap.data().flexibility) / (reviewCount + 1) * 10) / 10
-            mentor = Math.round((companyDetailDoc.data().reviews.rating.mentor * reviewCount + snap.data().mentor) / (reviewCount + 1) * 10) / 10
-            growth = Math.round((companyDetailDoc.data().reviews.rating.growth * reviewCount + snap.data().growth) / (reviewCount + 1) * 10) / 10
-            all = Math.round((atmosphere + job + discretion + flexibleSchedule + flexibility + mentor + growth) / 7 * 10) / 10
+            workingHours = Math.round((companyDetailDoc.data().reviews.rating.workingHours * reviewCount + snap.data().workingHours) / (reviewCount + 1) * 10) / 10
+            environment = Math.round((companyDetailDoc.data().reviews.rating.environment * reviewCount + snap.data().environment) / (reviewCount + 1) * 10) / 10
+            all = Math.round((atmosphere + job + discretion + workingHours + environment) / 5 * 10) / 10
             comments = companyDetailDoc.data().reviews.comments
 
             if (comments == null) {
@@ -3142,11 +3138,9 @@ exports.sendReview = functions.region('asia-northeast1')
             atmosphere = snap.data().atmosphere
             job = snap.data().job
             discretion = snap.data().discretion
-            flexibleSchedule = snap.data().flexibleSchedule
-            flexibility = snap.data().flexibility
-            mentor = snap.data().mentor
-            growth = snap.data().growth
-            all = Math.round((atmosphere + job + discretion + flexibleSchedule + flexibility + mentor + growth) / 7 * 10) / 10
+            workingHours = snap.data().workingHours
+            environment = snap.data().environment
+            all = Math.round((atmosphere + job + discretion + workingHours + environment) / 5 * 10) / 10
             comments = [comment]
           }
 
@@ -3156,10 +3150,8 @@ exports.sendReview = functions.region('asia-northeast1')
             atmosphere: atmosphere,
             job: job,
             discretion: discretion,
-            flexibleSchedule: flexibleSchedule,
-            flexibility: flexibility,
-            mentor: mentor,
-            growth: growth
+            workingHours: workingHours,
+            environment: environment,
           }
           const reviews = {
             rating: rating,

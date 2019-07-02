@@ -212,12 +212,10 @@ export const actions = {
               const rating = doc.data()['rating']
               const reviewsChartData = {
                 labels: [
-                  '成長できるか',
                   '仕事内容',
                   '裁量度',
-                  '勤務中の自由度',
-                  '勤務時間の柔軟性',
-                  'メンター',
+                  '労働環境',
+                  '労働時間',
                   '雰囲気',
                 ],
                 datasets: [
@@ -226,12 +224,10 @@ export const actions = {
                     backgroundColor: 'rgba(236, 64, 122, 0.2)',
                     borderWidth: 2,
                     data: [
-                      rating.growth,
                       rating.job,
                       rating.discretion,
-                      rating.flexibility,
-                      rating.flexibleSchedule,
-                      rating.mentor,
+                      rating.environment,
+                      rating.workingHours,
                       rating.atmosphere
                     ]
                   }
@@ -338,12 +334,10 @@ export const actions = {
                 const reviews = doc.data()['reviews']
                 const reviewsChartData = {
                   labels: [
-                    '成長できるか',
                     '仕事内容',
                     '裁量度',
-                    '勤務中の自由度',
-                    '出勤時間の柔軟性',
-                    'メンター',
+                    '労働環境',
+                    '労働時間',
                     '雰囲気',
                   ],
                   datasets: [
@@ -352,12 +346,10 @@ export const actions = {
                       backgroundColor: 'rgba(236, 64, 122, 0.2)',
                       borderWidth: 2,
                       data: [
-                        reviews.rating.growth,
                         reviews.rating.job,
                         reviews.rating.discretion,
-                        reviews.rating.flexibility,
-                        reviews.rating.flexibleSchedule,
-                        reviews.rating.mentor,
+                        reviews.rating.environment,
+                        reviews.rating.workingHours,
                         reviews.rating.atmosphere
                       ]
                     }
