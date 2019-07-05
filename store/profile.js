@@ -538,6 +538,8 @@ export const actions = {
         tempPortfolio[selectedIndex].content = content
         if (url) {
           tempPortfolio[selectedIndex].url = url
+        } else {
+          delete tempPortfolio[selectedIndex].url
         }
       }
       const batch = firestore.batch()

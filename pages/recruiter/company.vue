@@ -865,7 +865,7 @@
                     ></v-text-field>
                     <v-text-field
                       solo
-                      label="URL"
+                      placeholder="URLがある場合は記入してください"
                       v-model="tempServiceUrl"
                       :rules="serviceUrlRules"
                       required
@@ -888,7 +888,13 @@
                       削除
                     </v-btn>
                     <v-btn
-                      :disabled="!editServicesValid || tempServiceUrl == null || !imageFileSizeValid || plan == null"
+                      :disabled="
+                        !editServicesValid ||
+                        tempServiceImageUrl == null ||
+                        tempServiceImageUrl == '' ||
+                        !imageFileSizeValid ||
+                        plan == null
+                      "
                       @click="updateServices({
                         companyId: companyId,
                         companyName: companyName,
@@ -1199,9 +1205,8 @@ export default {
       v => (v && v.length <= 200) || '200字以内で入力してください'
     ],
     serviceUrlRules: [
-      v => !!v || 'URLを入力してください',
-      v => (v && v.length <= 100) || '100字以内で入力してください',
-      v => (v.includes('http://') || v.includes('https://')) || '無効なURLです'
+      v => (v.length <= 100) || '100字以内で入力してください',
+      v => (v.includes('http://') || v.includes('https://') || v == null || v == '') || '無効なURLです'
     ],
     editWelfareValid: true,
     tempWelfare: '',
@@ -1431,7 +1436,7 @@ export default {
         this.tempServiceImageUrl = this.services[index].imageUrl
         this.tempServiceTitle = this.services[index].title
         this.tempServiceContent = this.services[index].content
-        this.tempServiceUrl = this.services[index].url
+        this.tempServiceUrl = this.services[index].url ? this.services[index].url : ''
       } else {
         this.tempServiceImageUrl = ''
         this.tempServiceTitle = ''

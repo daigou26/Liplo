@@ -240,7 +240,7 @@ export const actions = {
             commit('setTopImageUrl', downloadURL)
           })
           .catch((error) => {
-            console.error("Error adding document: ", error)
+            console.error("Error updating document: ", error)
           })
       })
     })
@@ -280,7 +280,7 @@ export const actions = {
             commit('setCompanyImageUrl', downloadURL)
           })
           .catch((error) => {
-            console.error("Error adding document: ", error)
+            console.error("Error", error)
           })
       })
     })
@@ -307,7 +307,7 @@ export const actions = {
         commit('updateIsEditingCompanyName', false)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error", error)
       })
   },
   resetAddMemberError({commit}) {
@@ -345,7 +345,7 @@ export const actions = {
         commit('updateIsEditingMission', false)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error updating document: ", error)
       })
   },
   updateIsEditingVision({commit}, isEditing) {
@@ -363,7 +363,7 @@ export const actions = {
         commit('updateIsEditingVision', false)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error updating document: ", error)
       })
   },
   updateIsEditingValue({commit}, isEditing) {
@@ -381,7 +381,7 @@ export const actions = {
         commit('updateIsEditingValue', false)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error updating document: ", error)
       })
   },
   updateIsEditingCulture({commit}, isEditing) {
@@ -399,7 +399,7 @@ export const actions = {
         commit('updateIsEditingCulture', false)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error updating document: ", error)
       })
   },
   updateIsEditingSystem({commit}, isEditing) {
@@ -417,7 +417,7 @@ export const actions = {
         commit('updateIsEditingSystem', false)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error updating document: ", error)
       })
   },
   updateIsEditingWhy({commit}, isEditing) {
@@ -435,7 +435,7 @@ export const actions = {
         commit('updateIsEditingWhy', false)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error updating document: ", error)
       })
   },
   updateIsEditingWhat({commit}, isEditing) {
@@ -453,7 +453,7 @@ export const actions = {
         commit('updateIsEditingWhat', false)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error updating document: ", error)
       })
   },
   updateIsServiceImageChanged({commit}, isChanged) {
@@ -506,8 +506,10 @@ export const actions = {
             imageUrl: downloadURL,
             title: title,
             content: content,
-            url: url,
             timestamp: timestamp
+          }
+          if (url) {
+            tempService.url = url
           }
           // project 用のデータ
           let projectData = tempService
@@ -560,16 +562,14 @@ export const actions = {
         })
       })
     } else {
-      // 新しいデータ
-      let tempService = {
+      // project 用のデータ
+      let projectData = {
         imageUrl: imageUrl,
         title: title,
         content: content,
-        url: url
+        url: url,
+        createdAt: new Date()
       }
-      // project 用のデータ
-      let projectData = tempService
-      projectData.createdAt = new Date()
 
       if (selectedIndex != null) {
         let projectId = tempServices[selectedIndex].projectId
@@ -578,10 +578,13 @@ export const actions = {
         batch.update(projectRef, projectData)
 
         // company services 更新
-        tempService.timestamp = tempServices[selectedIndex].timestamp
-        tempService.projectId = projectId
-        tempServices.splice(selectedIndex, 1)
-        tempServices.splice(selectedIndex, 0, tempService)
+        tempServices[selectedIndex].title = title
+        tempServices[selectedIndex].content = content
+        if (url) {
+          tempServices[selectedIndex].url = url
+        } else {
+          delete tempServices[selectedIndex].url
+        }
       }
 
       // company detail 更新
@@ -607,6 +610,14 @@ export const actions = {
       const fileName = services[selectedIndex].timestamp
       storageRef.child(`companies/${companyId}/services/${fileName}.jpg`).delete()
     }
+    // project 削除
+    firestore.collection('projects').doc(services[selectedIndex].projectId)
+      .delete()
+      .catch((error) => {
+        console.error("Error removing document: ", error)
+      })
+
+    // company 更新
     tempServices.splice(selectedIndex, 1)
     firestore.collection('companies').doc(companyId)
       .collection('detail').doc(companyId)
@@ -618,7 +629,7 @@ export const actions = {
         commit('updateIsEditingServices', false)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error updating document: ", error)
       })
   },
   updateIsEditingWelfare({commit}, isEditing) {
@@ -636,7 +647,7 @@ export const actions = {
         commit('updateIsEditingWelfare', false)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error updating document: ", error)
       })
   },
   updateIsEditingCompanyInfo({commit}, isEditing) {
@@ -674,7 +685,7 @@ export const actions = {
           commit('updateIsEditingCompanyInfo', false)
         })
         .catch((error) => {
-          console.error("Error adding document: ", error)
+          console.error("Error", error)
         })
     } else {
       firestore.collection('companies').doc(companyId)
@@ -694,7 +705,7 @@ export const actions = {
           commit('updateIsEditingCompanyInfo', false)
         })
         .catch((error) => {
-          console.error("Error adding document: ", error)
+          console.error("Error updating document: ", error)
         })
     }
   },
