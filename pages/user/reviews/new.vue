@@ -97,7 +97,7 @@
                     hover
                     half-increments
                     background-color="pink"
-                    color="pink darken-1"
+                    color="pink"
                   />
                 </div>
                 <div class="py-4">
@@ -107,7 +107,7 @@
                     hover
                     half-increments
                     background-color="pink"
-                    color="pink darken-1"
+                    color="pink"
                   />
                 </div>
                 <div class="py-4">
@@ -117,7 +117,7 @@
                     hover
                     half-increments
                     background-color="pink"
-                    color="pink darken-1"
+                    color="pink"
                   />
                 </div>
                 <div class="py-4">
@@ -127,7 +127,7 @@
                     hover
                     half-increments
                     background-color="pink"
-                    color="pink darken-1"
+                    color="pink"
                   />
                 </div>
                 <div class="py-4">
@@ -137,7 +137,7 @@
                     hover
                     half-increments
                     background-color="pink"
-                    color="pink darken-1"
+                    color="pink"
                   />
                 </div>
               </div>

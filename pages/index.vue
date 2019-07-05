@@ -144,7 +144,7 @@
                                   v-if="job.rating"
                                   v-model="job.rating.all"
                                   background-color="pink"
-                                  color="pink darken-1"
+                                  color="pink"
                                   small
                                   half-increments
                                   readonly
