@@ -71,10 +71,14 @@
             >
               <div class="font-weight-bold">おめでとうございます！　{{ typeText }}が送られました。</div>
               <div v-if="type == 'limited'" class="font-weight-bold">
-                先着パスは、採用枠がなくなり次第無効になるため、入社することを決めた場合は、早めに使用してください。
+                先着パスは、採用枠がなくなり次第無効になるため、入社することを決めた場合は、
+                早めに使用してください。
               </div>
               <div v-else class="font-weight-bold">
                 この企業に入社することを決めたらメッセージを記入し、使用ボタンを押してください。
+              </div>
+              <div class="font-weight-bold">
+                ※ 労働条件などを担当者とのメッセージにて確認し、同意の上、使用してください。
               </div>
             </v-alert>
             <!-- 使用済み & 未契約 -->
@@ -226,7 +230,8 @@
       <v-card>
         <v-card-title class="title font-weight-bold text-color">パス使用の確認</v-card-title>
         <v-card-text>
-          パスを使用すると、入社を取り消しすることは出来ません。慎重に使用してください。
+          パスを使用すると、入社を取り消しすることは出来ません。使用前に、
+          担当者とのメッセージにて労働条件などを確認し、同意の上、慎重に使用してください。
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>

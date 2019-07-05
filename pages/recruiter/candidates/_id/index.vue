@@ -715,7 +715,7 @@
                 </div>
                 <!-- ステータスが intern の時 -->
                 <div v-if="status.intern && tempStatus != '不採用'">
-                  パスを送る場合は<span class="font-weight-bold teal--text text--lighten-1">パス</span>に変更してください。
+                  パスを送る場合は<span class="font-weight-bold red--text">パス</span>に変更してください。
                 </div>
                 <!-- pass -->
                 <div v-if="status.intern && tempStatus != '不採用'">
@@ -846,7 +846,7 @@
                 <div v-if="status.pass && tempStatus != '不採用'">
                   <div>
                     契約が完了しましたら、ステータスを
-                    <span class="font-weight-bold green--text text--lighten-1">入社予定</span>に変更してください。
+                    <span class="font-weight-bold pink--text">入社予定</span>に変更してください。
                     ステータスを切り替えた翌月に請求書をお送り致します。（無料枠を使い切っている場合）
                   </div>
                   <div class="pt-3 light-text-color">
@@ -861,7 +861,7 @@
                 </div>
                 <!-- ステータスが contracted の時 -->
                 <div v-if="status.contracted && tempStatus != '不採用'">
-                  候補者と雇用契約を結び次第、ステータスを<span class="font-weight-bold green--text text--lighten-1">入社</span>に変更してください。
+                  候補者と雇用契約を結び次第、ステータスを<span class="font-weight-bold purple--text text--lighten-1">入社</span>に変更してください。
                   ステータスを変更すると、候補者一覧に表示されなくなります。
                 </div>
                 <div v-if="error && error != ''" class="pt-3 red--text">

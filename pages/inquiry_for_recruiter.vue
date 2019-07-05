@@ -107,7 +107,7 @@
               class="mr-5 hidden-xs-only"
               max-height="100"
               max-width="100"
-              src="https://firebasestorage.googleapis.com/v0/b/lighthouse-7c1a8.appspot.com/o/app%2Fhandshake.png?alt=media&token=137407e1-8a73-4fab-bbd6-9c394dd83c51"
+              v-bind:src="require('@/assets/images/inquiry/handshake.png')"
             ></v-img>
             <v-flex sm6 md4 hidden-xs-only class="pt-4 pl-5">
               <div
@@ -202,8 +202,8 @@
                 elevation="3"
               >
                 <v-img
-                max-height="400"
-                  src="https://firebasestorage.googleapis.com/v0/b/lighthouse-7c1a8.appspot.com/o/app%2Flighthouse_job_view.png?alt=media&token=3e26c1c2-efdb-4009-bcff-0b358aa70b1a"
+                  max-height="400"
+                  v-bind:src="require('@/assets/images/inquiry/job_view.png')"
                 ></v-img>
               </v-card>
             </v-flex>
@@ -264,7 +264,7 @@
               >
                 <v-img
                   max-height="400"
-                  src="https://firebasestorage.googleapis.com/v0/b/lighthouse-7c1a8.appspot.com/o/app%2Flighthouse_scout_view.png?alt=media&token=14d649d3-c6ff-4afc-9614-53e520d69e8d"
+                  v-bind:src="require('@/assets/images/inquiry/scout_view.png')"
                 ></v-img>
               </v-card>
             </v-flex>
@@ -287,7 +287,7 @@
               >
                 <v-img
                   max-height="400"
-                  src="https://firebasestorage.googleapis.com/v0/b/lighthouse-7c1a8.appspot.com/o/app%2Flighthouse_review_view.png?alt=media&token=e27a516f-7ea7-480d-8662-f05315c87162"
+                  v-bind:src="require('@/assets/images/inquiry/review_view.png')"
                 ></v-img>
               </v-card>
             </v-flex>
@@ -327,7 +327,10 @@
             料金プラン
           </div>
           <v-flex xs12 sm8 md6 offset-sm2 offset-md3>
-            <v-img src="https://firebasestorage.googleapis.com/v0/b/lighthouse-7c1a8.appspot.com/o/app%2Flighthouse_fee.png?alt=media&token=14b96c84-2675-41bd-8027-e601626aca09"></v-img>
+            <v-img v-bind:src="require('@/assets/images/inquiry/fee.png')"></v-img>
+            <div class="text-xs-right text-color pt-2">
+              ※ 料金について詳しく知りたい方は、資料請求をお願いします。
+            </div>
           </v-flex>
         </div>
       </v-flex>
