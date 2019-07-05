@@ -163,7 +163,7 @@
               class="pt-5"
             >
               <v-flex xs8 sm10>
-                <v-card-title class="title font-weight-bold">やりたいこと・実現したいこと</v-card-title>
+                <v-card-title class="title font-weight-bold">やりたいこと・興味のあること</v-card-title>
               </v-flex>
             </v-layout>
             <v-flex xs12 sm10>
@@ -202,14 +202,14 @@
                     <v-flex xs8 sm9 lg10 class="pl-4 break">
                       <div class="font-weight-bold body-text">{{ item.title }}</div>
                       <p　class="text-color return">{{ item.content }}</p>
-                      <a :href="item.url" target="_blank">{{ item.url }}</a>
+                      <a v-if="item.url" :href="item.url" target="_blank">{{ item.url }}</a>
                     </v-flex>
                   </div>
                   <div v-else class="pt-4">
                     <v-img :src="item.imageUrl" aspect-ratio="1.5" max-height="100" max-width="160"></v-img>
                     <div class="font-weight-bold body-text">{{ item.title }}</div>
                     <div　class="text-color return pb-2">{{ item.content }}</div>
-                    <a :href="item.url" target="_blank">{{ item.url }}</a>
+                    <a v-if="item.url" :href="item.url" target="_blank">{{ item.url }}</a>
                   </div>
                 </template>
               </v-list>
