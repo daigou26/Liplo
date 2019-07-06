@@ -37,7 +37,7 @@
         さらに詳しく
       </div>
       <v-divider class="mt-3"></v-divider>
-      <v-layout wrap row class="pt-3">
+      <v-layout wrap row class="py-3">
         <v-flex xs6>
           <v-list>
             <template v-for="(item, index) in leftHelpItems">
@@ -137,9 +137,3 @@ export default {
   },
 }
 </script>
-<style>
-.help-link {
-  color: #555555;
-  text-decoration: inherit;
-}
-</style>

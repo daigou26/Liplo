@@ -87,6 +87,7 @@
                       xs8
                       offset-xs1
                       px-2
+                      class="text-color"
                     >
                       <span v-if="user.desiredOccupations.engineer">エンジニア</span>
                       <span v-if="user.desiredOccupations.designer">　デザイナー</span>
@@ -105,6 +106,13 @@
                         {{ user.selfIntro.substr(0, 100) }}
                         {{ user.selfIntro.length > 100 ? '...' : '' }}
                       </div>
+                    </v-flex>
+                    <!-- 卒業予定日 -->
+                    <v-flex v-if="user.graduationDate" sm2 xs3 pt-4>
+                      <div >卒業予定日</div>
+                    </v-flex>
+                    <v-flex v-if="user.graduationDate" class="text-color" xs8 offset-xs1 px-2 pt-4>
+                      {{ user.graduationDate }}
                     </v-flex>
                     <!-- スキル -->
                     <v-flex v-if="user.skills" sm2 xs3 pt-4>

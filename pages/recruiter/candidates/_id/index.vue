@@ -715,7 +715,7 @@
                 </div>
                 <!-- ステータスが intern の時 -->
                 <div v-if="status.intern && tempStatus != '不採用'">
-                  パスを送る場合は<span class="font-weight-bold red--text">パス</span>に変更してください。
+                  パスを送る場合は<span class="font-weight-bold teal--text">パス</span>に変更してください。
                 </div>
                 <!-- pass -->
                 <div v-if="status.intern && tempStatus != '不採用'">

@@ -43,7 +43,7 @@
               <span v-else-if="props.item.status.inbox == true" class="font-weight-bold blue--text text--darken-2">応募</span>
               <span v-else-if="props.item.status.inProcess == true" class="font-weight-bold cyan--text text--lighten-1">選考中</span>
               <span v-else-if="props.item.status.intern == true" class="font-weight-bold orange--text text--darken-1">インターン</span>
-              <span v-else-if="props.item.status.pass == true" class="font-weight-bold red--text">パス</span>
+              <span v-else-if="props.item.status.pass == true" class="font-weight-bold teal--text">パス</span>
               <span v-else-if="props.item.status.contracted == true" class="font-weight-bold pink--text text--lighten-1">入社予定(契約完了)</span>
             </td>
             <td style="min-width: 150px" class="text-xs-left">

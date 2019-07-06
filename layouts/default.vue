@@ -182,6 +182,10 @@ export default {
   text-decoration: inherit;
   font-size: 14px;
 }
+.help-link {
+  color: #555555;
+  text-decoration: inherit;
+}
 .job-title {
   font-size: 30px;
 }
