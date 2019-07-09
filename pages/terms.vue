@@ -176,6 +176,11 @@
             対価の請求や損害賠償請求等があった場合には、
             弁護士費用等を含めて掲載企業の費用で処理されるものとします。
           </div>
+          <div class="pt-3">
+            ただし、候補者が学校を無事に卒業できなかった場合や掲載企業に伝えていた経歴などに重大な嘘があった場合など、
+            パスの取り消しが合理的であると認められるものであれば、
+            パスの取り消しは可能であるものとし、ユーザーはこれを予め承諾するものとします。
+          </div>
         </div>
         <div class="subheading font-weight-bold text-color pt-5">
           11. パスの使用
@@ -193,9 +198,39 @@
             責任は全てユーザーが負うものとし、対価の請求や損害賠償請求等があった場合には、
             弁護士費用等を含めてユーザーの費用で処理されるものとします。
           </div>
+          <div class="pt-3">
+            ただし、重大な病気などの止むを得ない理由で入社できない場合には、
+            入社を断ることが出来るものとします。
+          </div>
         </div>
         <div class="subheading font-weight-bold text-color pt-5">
-          12. 禁止事項
+          12. 秘密情報の取り扱い
+        </div>
+        <div class="text-color pt-3">
+          本サービスを通じてユーザー間で連絡を取り合う場合、
+          相手方から開示された情報については秘密として保持し、
+          事前に当該相手方の書面による承諾を得ることなく第三者への開示又は漏洩をしてはならないものとします。
+          <div class="pt-3">
+            次の各号に定める情報は、秘密情報から除外します。
+            <div>
+              （1）開示者から開示を受ける前に、被開示者が正当に保有していたことを証明できる情報
+            </div>
+            <div>
+              （2）開示者から開示を受ける前に、公知となっていた情報
+            </div>
+            <div>
+              （3）開示者から開示を受けた後に、被開示者の責に帰すべからざる事由により公知となった情報
+            </div>
+            <div>
+              （4）被開示者が、正当な権限を有する第三者から秘密保持義務を負うことなく正当に入手した情報
+            </div>
+            <div>
+              （5）被開示者が、開示された情報によらず独自に開発した情報
+            </div>
+          </div>
+        </div>
+        <div class="subheading font-weight-bold text-color pt-5">
+          13. 禁止事項
         </div>
         <div class="text-color pt-3">
           本サービスのご利用に際しては、以下に定める行為
@@ -252,7 +287,7 @@
           </ol>
         </div>
         <div class="subheading font-weight-bold text-color pt-5">
-          13. 違反等に対する措置
+          14. 違反等に対する措置
         </div>
         <div class="text-color pt-3">
           以下の場合、当社は、事前に通知することなく、ユーザーのデータ、コンテンツ、
@@ -275,7 +310,7 @@
           </ol>
         </div>
         <div class="subheading font-weight-bold text-color pt-5">
-          14. 当社に対する補償
+          15. 当社に対する補償
         </div>
         <div class="text-color pt-3">
           ユーザーの行為が原因で生じたクレームなどにより、当社に損害
@@ -283,7 +318,7 @@
           ユーザーは当社の損害を補償するものとします。
         </div>
         <div class="subheading font-weight-bold text-color pt-5">
-          15. 非保証
+          16. 非保証
         </div>
         <div class="text-color pt-3">
           本サービスは「現状有姿で」提供されます。本規約または追加規定に明示されている場合を除き、
@@ -292,7 +327,7 @@
           有用性やセキュリティについて、一切の保証を行いません。
         </div>
         <div class="subheading font-weight-bold text-color pt-5">
-          16. 免責
+          17. 免責
         </div>
         <div class="text-color pt-3">
           本サービスに関する当社の責任は、当社の故意または重過失によらない場合には免除されるものとします。
@@ -311,13 +346,13 @@
           </div>
         </div>
         <div class="subheading font-weight-bold text-color pt-5">
-          17. 譲渡禁止
+          18. 譲渡禁止
         </div>
         <div class="text-color pt-3">
           ユーザーは、当社との契約より生じる権利義務を、当社の承諾なく第三者に譲渡することはできません。
         </div>
         <div class="subheading font-weight-bold text-color pt-5">
-          18. 連絡
+          19. 連絡
         </div>
         <div class="text-color pt-3">
           本サービスに関するユーザーから当社への連絡は、
@@ -333,7 +368,7 @@
           </div>
         </div>
         <div class="subheading font-weight-bold text-color pt-5">
-          19. プライバシーポリシー
+          20. プライバシーポリシー
         </div>
         <div class="text-color pt-3">
           当社は、ユーザーから取得した情報（個人情報を含みます）を、
@@ -341,7 +376,7 @@
           事前にプライバシーポリシー を熟読していただき、すべての内容について同意したうえで利用するものとします。
         </div>
         <div class="subheading font-weight-bold text-color pt-5">
-          20. 通信の秘密
+          21. 通信の秘密
         </div>
         <div class="text-color pt-3">
           当社は、ユーザーの通信の秘密を守って、ユーザーの通信内容や通信履歴を取扱います。
@@ -349,7 +384,7 @@
           ユーザーの通信内容や通信履歴を閲覧し、捜査機関等の第三者に開⽰し、または削除することがあります。
         </div>
         <div class="subheading font-weight-bold text-color pt-5">
-          21. 反社会的勢力に該当しないこと
+          22. 反社会的勢力に該当しないこと
         </div>
         <div class="text-color pt-3">
           当社とユーザーとは、相手方に対し、自己およびその代表者、役員、その他、
@@ -359,7 +394,7 @@
           かつ、将来にわたっても該当しないことを確約するものとします。
         </div>
         <div class="subheading font-weight-bold text-color pt-5">
-          22. 準拠法・管轄合意
+          23. 準拠法・管轄合意
         </div>
         <div class="text-color pt-3">
           当社とユーザーとの契約関係は、日本法を準拠法とします。
