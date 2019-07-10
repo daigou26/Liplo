@@ -74,7 +74,7 @@
                 採用プラットフォームです。
                 企業の雰囲気や文化、求職者の働き方や性格など
                 実際に働いてみないと分からないことをお互いが知ることで、
-                ミスマッチを減らし、より良い採用が出来るようサポートをします。
+                ミスマッチを減らし、より良い採用が出来るようサポートします。
               </h4>
             </div>
           </v-flex>
@@ -82,95 +82,267 @@
             <v-img max-width="400" v-bind:src="require('@/assets/images/aurora.png')"/>
           </v-flex> -->
         </v-layout>
+        <!-- メリット -->
+        <div style="padding-top: 150px">
+          <div
+            class="text-xs-center font-weight-bold text-color"
+            :class="{
+              'headline': $vuetify.breakpoint.smAndDown,
+              'title-font-size-md': $vuetify.breakpoint.mdAndUp,
+            }"
+          >
+            なぜ LightHouse なのか
+          </div>
+          <v-layout row wrap justify-center align-center style="padding-top: 100px">
+            <v-flex xs10 hidden-sm-and-up>
+              <div class="title font-weight-bold teal--text">
+                企業にマッチした学生を採用できる
+              </div>
+              <div class="subheading light-text-color pt-2">
+                独自のパス制度により、長期インターンを終えた魅力的な学生の採用機会を
+                増やすことが出来ます。
+              </div>
+            </v-flex>
+            <v-img
+              class="mr-5 hidden-xs-only"
+              max-height="100"
+              max-width="100"
+              v-bind:src="require('@/assets/images/inquiry/handshake.png')"
+            ></v-img>
+            <v-flex sm6 md4 hidden-xs-only class="pt-4 pl-5">
+              <div
+                class="title font-weight-bold teal--text"
+                :class="{
+                  'px-4': $vuetify.breakpoint.smOnly,
+                  'px-5': $vuetify.breakpoint.mdAndUp,
+                }"
+              >
+                企業にマッチした学生を採用できる
+              </div>
+              <div
+                class="subheading light-text-color pt-4"
+                :class="{
+                  'px-4': $vuetify.breakpoint.smOnly,
+                  'px-5': $vuetify.breakpoint.mdAndUp,
+                }"
+              >
+                独自のパス制度により、
+                長期インターンを終えた魅力的な学生の採用機会を増やすことが出来ます。
+              </div>
+            </v-flex>
+          </v-layout>
+          <!-- パス -->
+          <v-layout row wrap justify-center align-center style="padding-top: 100px">
+            <v-flex xs10 hidden-sm-and-up>
+              <div class="title font-weight-bold teal--text">
+                パスとは
+              </div>
+              <div class="subheading light-text-color pt-2">
+                インターン後、企業が採用したいと思う候補者にパスを渡すことが出来ます。
+                パスを発行することで、候補者に入社や内定取得の権利を与えることができます。
+                （有効期間などは設定可能）
+              </div>
+            </v-flex>
+            <v-flex sm6 md4 hidden-xs-only class="pt-4 pr-5">
+              <div
+                class="title font-weight-bold teal--text"
+                :class="{
+                  'px-4': $vuetify.breakpoint.smOnly,
+                  'px-5': $vuetify.breakpoint.mdAndUp,
+                }"
+              >
+                パスとは
+              </div>
+              <div
+                class="subheading light-text-color pt-4"
+                :class="{
+                  'px-4': $vuetify.breakpoint.smOnly,
+                  'px-5': $vuetify.breakpoint.mdAndUp,
+                }"
+              >
+                インターン後、企業が採用したいと思う候補者にパスを渡すことが出来ます。
+                <div class="pt-3">
+                  パスを発行することで、候補者に入社や内定取得の権利を与えることができます。
+                  （有効期間などは設定可能）
+                </div>
+              </div>
+            </v-flex>
+            <v-icon
+              class="ml-5 material-icons-outlined hidden-xs-only"
+              style="font-size: 100px"
+              color="teal lighten-1"
+            >
+              style
+            </v-icon>
+          </v-layout>
+        </div>
         <!-- 機能 -->
-        <div class="py-5">
-          <div class="text-xs-center font-weight-bold headline text-color">
+        <div style="padding-top: 150px">
+          <div
+            class="text-xs-center font-weight-bold text-color"
+            :class="{
+              'headline': $vuetify.breakpoint.smAndDown,
+              'title-font-size-md': $vuetify.breakpoint.mdAndUp,
+            }"
+          >
             機能・特徴
           </div>
-          <v-flex xs12 sm8 offset-sm2 class="pt-2">
-            <v-divider></v-divider>
-          </v-flex>
-          <v-flex xs10 sm8 md6 offset-xs1 offset-sm2 offset-md3 class="pt-4">
-            <div class="py-4 text-color">
-              <div class="font-weight-bold subheading text-color">
-                1. 募集
+          <!-- 募集 -->
+          <v-layout row wrap justify-center align-center pt-5>
+            <v-flex xs10 hidden-sm-and-up>
+              <div class="title font-weight-bold teal--text">
+                募集
               </div>
-              <div class="pt-2">
+              <div class="subheading light-text-color pt-2">
                 募集を作成して企業や仕事の魅力を伝えましょう。
               </div>
-            </div>
-            <div class="py-4 text-color">
-              <div class="font-weight-bold subheading text-color">
-                2. スカウト
+            </v-flex>
+            <v-flex xs10 sm4 class="pt-4">
+              <v-card
+                elevation="3"
+              >
+                <v-img
+                  max-height="400"
+                  v-bind:src="require('@/assets/images/inquiry/job_view.png')"
+                ></v-img>
+              </v-card>
+            </v-flex>
+            <v-flex sm6 md4 hidden-xs-only class="pt-4 pl-5">
+              <div
+                class="title font-weight-bold teal--text"
+                :class="{
+                  'px-4': $vuetify.breakpoint.smOnly,
+                  'px-5': $vuetify.breakpoint.mdAndUp,
+                }"
+              >
+                募集
               </div>
-              <div class="pt-2">
-                気になる求職者がいたらスカウトをしてアプローチしましょう。
+              <div
+                class="subheading light-text-color pt-4"
+                :class="{
+                  'px-4': $vuetify.breakpoint.smOnly,
+                  'px-5': $vuetify.breakpoint.mdAndUp,
+                }"
+              >
+                募集を作成して企業や仕事の魅力を伝えましょう。
               </div>
-            </div>
-            <div class="py-4 text-color">
-              <div class="font-weight-bold subheading text-color">
-                3. レビュー
+            </v-flex>
+          </v-layout>
+          <!-- スカウト -->
+          <v-layout row wrap justify-center align-center pt-5>
+            <v-flex xs10 pt-5 hidden-sm-and-up>
+              <div class="title font-weight-bold teal--text">
+                スカウト
               </div>
-              <div class="pt-2">
+              <div class="subheading light-text-color pt-2">
+                気になる求職者がいたらスカウトをしてアプローチすることが出来ます。
+              </div>
+            </v-flex>
+            <v-flex sm6 md4 hidden-xs-only class="pt-4 pr-5">
+              <div
+                class="title font-weight-bold teal--text"
+                :class="{
+                  'px-4': $vuetify.breakpoint.smOnly,
+                  'px-5': $vuetify.breakpoint.mdAndUp,
+                }"
+              >
+                スカウト
+              </div>
+              <div
+                class="subheading light-text-color pt-4"
+                :class="{
+                  'px-4': $vuetify.breakpoint.smOnly,
+                  'px-5': $vuetify.breakpoint.mdAndUp,
+                }"
+              >
+                気になる求職者がいたらスカウトをしてアプローチすることが出来ます。
+              </div>
+            </v-flex>
+            <v-flex xs10 sm4 class="pt-4">
+              <v-card
+                elevation="3"
+              >
+                <v-img
+                  max-height="400"
+                  v-bind:src="require('@/assets/images/inquiry/scout_view.png')"
+                ></v-img>
+              </v-card>
+            </v-flex>
+          </v-layout>
+          <!-- レビュー -->
+          <v-layout row wrap justify-center align-center pt-5>
+            <v-flex xs10 pt-5 hidden-sm-and-up>
+              <div class="title font-weight-bold teal--text">
+                レビュー
+              </div>
+              <div class="subheading light-text-color pt-2">
                 インターン後、候補者にレビューをしてもらえます。これにより、候補者から見た
                 企業の良い点や改善すべき点などを知ることが出来ます。また、良いレビューをもらえると
                 検索で上位に表示されるため、求職者に認知されやすくなります。
               </div>
-            </div>
-            <div class="py-4 text-color">
-              <div class="font-weight-bold subheading text-color">
-                4. パス
+            </v-flex>
+            <v-flex xs10 sm4 class="pt-4">
+              <v-card
+                elevation="3"
+              >
+                <v-img
+                  max-height="400"
+                  v-bind:src="require('@/assets/images/inquiry/review_view.png')"
+                ></v-img>
+              </v-card>
+            </v-flex>
+            <v-flex sm6 md4 hidden-xs-only class="pt-4 pl-5">
+              <div
+                class="title font-weight-bold teal--text"
+                :class="{
+                  'px-4': $vuetify.breakpoint.smOnly,
+                  'px-5': $vuetify.breakpoint.mdAndUp,
+                }"
+              >
+                レビュー
               </div>
-              <div class="pt-2">
-                インターン後、企業が採用したいと思う候補者にパスを渡すことが出来ます。
-                パスを発行することで、候補者に入社や内定取得の権利を与えることができます。
-                これにより、優秀な求職者の採用機会を増やすことが出来ます。
+              <div
+                class="subheading light-text-color pt-4"
+                :class="{
+                  'px-4': $vuetify.breakpoint.smOnly,
+                  'px-5': $vuetify.breakpoint.mdAndUp,
+                }"
+              >
+                インターン後、候補者にレビューをしてもらえます。これにより、候補者から見た
+                企業の良い点や改善すべき点などを知ることが出来ます。また、良いレビューをもらえると
+                検索で上位に表示されるため、求職者に認知されやすくなります。
               </div>
-            </div>
-          </v-flex>
+            </v-flex>
+          </v-layout>
         </div>
         <!-- 料金 -->
-        <div class="py-5">
-          <div class="pb-3 text-xs-center font-weight-bold headline text-color">
+        <div style="padding-top: 150px">
+          <div
+            class="pb-3 text-xs-center font-weight-bold text-color"
+            :class="{
+              'headline': $vuetify.breakpoint.smAndDown,
+              'title-font-size-md': $vuetify.breakpoint.mdAndUp,
+            }"
+          >
             料金プラン
           </div>
           <v-flex xs12 sm8 md6 offset-sm2 offset-md3>
-            <v-card class="text-xs-center ma-2">
-              <div class="py-3 font-weight-bold text-color">
-                成功報酬型
-              </div>
-              <v-divider class="mx-3"></v-divider>
-              <div class="py-4 text-color">
-                <div>
-                  採用人数に応じて
-                </div>
-                <div>
-                  費用が発生します
-                </div>
-              </div>
-              <v-divider class="mx-3"></v-divider>
-              <div class="py-4 text-color">
-                <div>
-                  募集作成やスカウトなど
-                </div>
-                <div>
-                  すべての機能を制限なく使用できます
-                </div>
-              </div>
-              <v-divider class="mx-3"></v-divider>
-              <div class="py-4 text-color">
-                掲載期間は6ヶ月（自動更新）
-              </div>
-            </v-card>
-            <div class="pt-2 light-text-color text-xs-right">
-              ※ 料金プランは今後増える予定です。
+            <v-img v-bind:src="require('@/assets/images/inquiry/fee.png')"></v-img>
+            <div class="text-xs-right text-color pt-2">
+              ※ 料金について詳しく知りたい方は、資料請求をお願いします。
             </div>
           </v-flex>
         </div>
       </v-flex>
-      <v-flex xs12 sm8 md6 offset-sm2 offset-md3 class="py-5">
+      <v-flex xs12 sm8 md6 offset-sm2 offset-md3 style="padding-top: 150px">
         <!-- フォーム -->
-        <div class="pb-3 text-xs-center font-weight-bold headline text-color">
+        <div
+          class="pb-3 text-xs-center font-weight-bold text-color"
+          :class="{
+            'headline': $vuetify.breakpoint.smAndDown,
+            'title-font-size-md': $vuetify.breakpoint.mdAndUp,
+          }"
+        >
           資料請求・お問い合わせ
         </div>
         <v-card class="ma-2">
@@ -283,6 +455,16 @@
 import { mapActions, mapState, mapGetters } from 'vuex'
 
 export default {
+  head () {
+    return {
+      link: [
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp'
+        }
+      ]
+    }
+  },
   data: () => ({
     windowHeight: 0,
     snackbar: false,
@@ -380,6 +562,9 @@ export default {
 }
 </script>
 <style>
+.title-font-size-md {
+  font-size: 30px;
+}
 .padding-left-lg {
   padding-left: 120px;
 }

@@ -462,7 +462,7 @@
                     </div>
                   </v-flex>
                   <!-- chart (xl, lg, md, sm) -->
-                  <v-flex md4 sm6 pl-3 hidden-xs-only>
+                  <v-flex md4 sm6 pl-4 hidden-xs-only>
                     <v-tooltip bottom>
                       <template v-slot:activator="{ on }">
                         <div v-on="on" ontouchstart="">
@@ -735,7 +735,7 @@
             sm7
             md8
             text-xs-left
-            class="break"
+            class="break pl-2"
             :class="{
               'pl-4': $vuetify.breakpoint.mdAndUp,
             }"
@@ -759,7 +759,7 @@
                         <v-rating
                           v-model="reviews.rating.all"
                           background-color="pink"
-                          color="pink darken-1"
+                          color="pink"
                           small
                           half-increments
                           readonly
@@ -790,7 +790,7 @@
               large
               :disabled="isCandidate"
               class="white--text"
-              color="pink darken-1"
+              color="#FF5A5F"
               id="job-apply"
               @click="applyButtonClicked"
             >

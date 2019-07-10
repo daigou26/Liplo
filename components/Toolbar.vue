@@ -66,6 +66,27 @@
   </v-toolbar>
   <!-- recruiter -->
   <v-toolbar v-else-if="uid && uid != '' && type == 'recruiter'" flat fixed app color="white" id="toolbar">
+    <v-toolbar-side-icon
+      v-if="
+        this.routeName == 'users-id' ||
+        this.routeName == 'recruiter-jobs-new' ||
+        this.routeName == 'recruiter-jobs-id-edit' ||
+        this.routeName == 'recruiter-candidates-id' ||
+        this.routeName == 'recruiter-passes-id' ||
+        this.routeName == 'recruiter-messages-id' ||
+        this.routeName == 'recruiter-reviews-id' ||
+        (this.path != '/recruiter/feedbacks' &&
+        this.path.includes('/recruiter/feedbacks')) ||
+        (this.path != '/recruiter/help' &&
+        this.path.includes('/recruiter/help'))
+      "
+      @click="iconClicked"
+      class="toolbar-side-icon hidden-sm-and-up"
+    >
+      <v-icon style="font-size: 20px">
+        arrow_back
+      </v-icon>
+    </v-toolbar-side-icon>
     <!-- filter extension -->
     <v-flex
       xs12
@@ -102,6 +123,7 @@
           <span v-else-if="breakpoint == 'xs' && path == '/users'" class="toolbar-title-small">ユーザー検索</span>
           <span v-else-if="breakpoint == 'xs' && path == '/recruiter/profile'" class="toolbar-title-small">プロフィール</span>
           <span v-else-if="breakpoint == 'xs' && path == '/recruiter/notifications'" class="toolbar-title-small">通知</span>
+          <span v-else-if="breakpoint == 'xs' && path == '/recruiter/help'" class="toolbar-title-small">ヘルプ</span>
         </div>
       </no-ssr>
     </v-toolbar-title>
@@ -193,201 +215,9 @@
         </v-card>
       </v-menu>
       <!-- help -->
-      <v-btn v-if="uid && uid != ''" flat class="hidden-xs-only" @click="helpMenu = true">
+      <v-btn　v-if="uid && uid != ''" flat active-class to="/recruiter/help" class="hidden-xs-only">
         <span class="font-weight-bold text-color">ヘルプ</span>
       </v-btn>
-      <v-menu
-        v-model="helpMenu"
-        :close-on-content-click="false"
-        :position-x="9000"
-        :position-y="0"
-        min-width="400"
-        max-width="450"
-        max-height="100%"
-        class="hidden-xs-only scroll-y"
-      >
-        <v-card :height="windowHeight">
-          <v-toolbar flat color="white" height="60">
-            <span class="text-color font-weight-bold subheading">サービスの使い方</span>
-            <v-spacer></v-spacer>
-            <v-toolbar-items>
-              <v-btn flat icon @click="helpMenu = false">
-                <v-icon>close</v-icon>
-              </v-btn>
-            </v-toolbar-items>
-          </v-toolbar>
-          <div
-            v-if="
-              jobHelp ||
-              scoutHelp ||
-              candidateHelp ||
-              reviewHelp ||
-              feedbackHelp ||
-              passHelp ||
-              messageHelp ||
-              planHelp ||
-              invoiceHelp
-            "
-          >
-            <v-btn class="mb-3" flat color="teal" @click="helpBackButtonClicked">
-              <v-icon style="font-size: 18px;">arrow_back_ios</v-icon>
-              戻る
-            </v-btn>
-            <div class="px-4 pb-4">
-              <div v-show="jobHelp">
-                <div class="title font-weight-bold text-color">
-                  募集について
-                </div>
-                <div class="pt-4 light-text-color">
-                  募集の新規作成や編集は、サイドバーの募集管理から行うことが出来ます。
-                </div>
-                <div class="pt-3 light-text-color">
-                  また、公開される募集は、企業の情報と共に表示されます。
-                  募集を作成する前に、サイドバーの企業・社員から企業情報の入力をお願いします。
-                </div>
-              </div>
-              <div v-show="scoutHelp">
-                <div class="title font-weight-bold text-color">
-                  スカウトについて
-                </div>
-                <div class="pt-4 light-text-color">
-                  ユーザー検索から候補者を選び、スカウトを行うことが出来ます。
-                  スカウトした候補者は、候補者管理画面で確認することが出来ます。
-                </div>
-              </div>
-              <div v-show="candidateHelp">
-                <div class="title font-weight-bold text-color">
-                  候補者管理について
-                </div>
-                <div class="pt-4 light-text-color">
-                  候補者管理画面では、候補者のステータスの変更やメッセージの送信などが出来ます。
-                  また、候補者の評価を書き残すことも出来るため、
-                  担当者間で候補者の評価を共有することが可能です。
-                </div>
-              </div>
-              <div v-show="reviewHelp">
-                <div class="title font-weight-bold text-color">
-                  レビューについて
-                </div>
-                <div class="pt-4 light-text-color">
-                  インターン終了後、候補者からレビューをもらえることがあります。
-                  このレビューによって、募集の表示順位が変動します。
-                  レビューは、サイドバーのレビューから確認が出来ます。
-                </div>
-              </div>
-              <div v-show="feedbackHelp">
-                <div class="title font-weight-bold text-color">
-                  フィードバックについて
-                </div>
-                <div class="pt-4 light-text-color">
-                  インターン終了後、候補者にフィードバックを送ることが出来るようになります。
-                  フィードバックの記入率は、ダッシュボードに表示されます。
-                  可能な限り、フィードバックを記入するよう、お願いします。
-                </div>
-              </div>
-              <div v-show="passHelp">
-                <div class="title font-weight-bold text-color">
-                  パスについて
-                </div>
-                <div class="pt-4 light-text-color">
-                  インターン終了後、採用したいと思った候補者にパスを送ることが出来ます。
-                  パスには以下の３種類があります。一度発行したパスは、
-                  取り消すことが出来ませんのでご注意ください。
-                  なお、パスの有効期間は変更することが出来ます。
-
-                  <div class="pt-3">
-                    <div class="subheading font-weight-bold">
-                      1. 入社パス
-                    </div>
-                    <div class="pt-2">
-                      卒業後の一定期間、いつでも入社できる権利を与えるパスです。
-                      卒業後、どれくらい有効かは企業が決めることができます。
-                      このパスを多く発行すると、採用予定人数を上回ってしまう可能性があるため、対象者を厳選して発行することを推奨しています。
-                    </div>
-                    <div class="pt-3 subheading font-weight-bold">
-                      2. 内定パス
-                    </div>
-                    <div class="pt-2">
-                      企業が定めた期間内であれば、いつでも内定を取得できる権利を与えるパスです。
-                      有効期間や入社年度は企業が設定します。
-                      このパスも入社パス同様、多く発行すると採用予定人数を上回ってしまう可能性があるため、対象者を厳選して発行することを推奨しています。
-                    </div>
-                    <div class="pt-3 subheading font-weight-bold">
-                      3. 先着パス
-                    </div>
-                    <div class="pt-2">
-                      企業が定めた期間内であり、採用枠にあまりがある場合に限り、内定を取得できる権利を与えるパスです。
-                      有効期間、入社年度および採用予定人数は企業が設定することが出来ます。
-                      入社パスや内定パスは性質上、パスを使う人数が予想しにくいため、あまり発行することが出来ませんが、
-                      先着パスは上限を自由に設定することが出来るため、数を気にせず発行することができます。
-                      先着パスの上限数は、サイドバーのパスから設定できます。
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div v-show="messageHelp">
-                <div class="title font-weight-bold text-color">
-                  メッセージについて
-                </div>
-                <div class="pt-4 light-text-color">
-                  候補者が応募した場合、採用担当者がスカウトした場合に、
-                  候補者とのメッセージが可能になります。
-                </div>
-              </div>
-              <div v-show="planHelp">
-                <div class="title font-weight-bold text-color">
-                  プランについて
-                </div>
-                <div class="pt-4 light-text-color">
-                  現在、３つのプランが用意されています。
-                  プランを変更する場合は、go26dev@gmail.com までご連絡ください。
-                  また、注意事項については
-                  <nuxt-link
-                    color="teal"
-                    to="/recruiter/company_settings"
-                    @click.native="helpMenu = false"
-                  >
-                    こちら
-                  </nuxt-link>
-                  から確認できます。
-                </div>
-              </div>
-              <div v-show="invoiceHelp">
-                <div class="title font-weight-bold text-color">
-                  請求書について
-                </div>
-                <div class="pt-4 light-text-color">
-                  請求書は、候補者をインターンに採用した際（候補者ステータスがインターン）または
-                  正社員として雇用契約した際（候補者ステータスが入社予定）の翌月に、
-                  請求書の送信先として設定してあるメールアドレスに送信致します。
-                  請求書の送信先の変更は、サイドバーの設定から行うことが出来ます。
-                </div>
-              </div>
-            </div>
-          </div>
-          <v-list v-else class="py-0 px-2">
-            <template v-for="(item, index) in helpItems">
-              <v-list-tile
-                class="py-2"
-                @click="helpListTileClicked(item.value)"
-              >
-                <v-list-tile-content>
-                  <v-list-tile-title class="light-text-color">{{ item.title }}</v-list-tile-title>
-                </v-list-tile-content>
-                <v-list-tile-action>
-                  <v-btn icon ripple>
-                    <v-icon color="grey lighten-1" style="font-size: 18px;">arrow_forward_ios</v-icon>
-                  </v-btn>
-                </v-list-tile-action>
-              </v-list-tile>
-              <v-divider
-                v-if="helpItems.length != index + 1"
-                class="mx-3"
-              ></v-divider>
-            </template>
-          </v-list>
-        </v-card>
-      </v-menu>
       <!-- Profile画像 -->
       <v-layout row wrap align-center class="pl-3">
         <v-flex class="text-xs-center">
@@ -402,35 +232,35 @@
               </v-avatar>
               <v-list>
                 <v-list-tile to="/users" class="hidden-sm-and-up">
-                  <v-list-tile-title>ユーザー検索</v-list-tile-title>
+                  <v-list-tile-title class="text-color">ユーザー検索</v-list-tile-title>
                 </v-list-tile>
                 <v-divider class="hidden-sm-and-up"></v-divider>
                 <v-list-tile to="/recruiter/profile">
-                  <v-list-tile-title>プロフィール</v-list-tile-title>
+                  <v-list-tile-title class="text-color">プロフィール</v-list-tile-title>
                 </v-list-tile>
                 <v-divider></v-divider>
                 <v-list-tile to="/recruiter/dashboard">
-                  <v-list-tile-title>ダッシュボード</v-list-tile-title>
+                  <v-list-tile-title class="text-color">ダッシュボード</v-list-tile-title>
                 </v-list-tile>
                 <v-divider></v-divider>
                 <v-list-tile to="/recruiter/notifications" class="hidden-sm-and-up">
-                  <v-list-tile-title>通知</v-list-tile-title>
+                  <v-list-tile-title class="text-color">通知</v-list-tile-title>
                 </v-list-tile>
                 <v-divider class="hidden-sm-and-up"></v-divider>
                 <v-list-tile to="/user/settings/notifications" class="hidden-xs-only">
-                  <v-list-tile-title>設定</v-list-tile-title>
+                  <v-list-tile-title class="text-color">設定</v-list-tile-title>
                 </v-list-tile>
                 <v-divider class="hidden-xs-only"></v-divider>
                 <v-list-tile to="/user/settings/account" class="hidden-sm-and-up">
-                  <v-list-tile-title>アカウント設定</v-list-tile-title>
+                  <v-list-tile-title class="text-color">アカウント設定</v-list-tile-title>
                 </v-list-tile>
                 <v-divider class="hidden-sm-and-up"></v-divider>
                 <v-list-tile to="/user/settings/notifications" class="hidden-sm-and-up">
-                  <v-list-tile-title>通知設定</v-list-tile-title>
+                  <v-list-tile-title class="text-color">通知設定</v-list-tile-title>
                 </v-list-tile>
                 <v-divider class="hidden-sm-and-up"></v-divider>
                 <v-list-tile @click="signOut">
-                  <v-list-tile-title>ログアウト</v-list-tile-title>
+                  <v-list-tile-title class="text-color">ログアウト</v-list-tile-title>
                 </v-list-tile>
               </v-list>
             </v-menu>
@@ -790,7 +620,7 @@
                       労働条件など、入社に際して知りたいことがある場合は、
                       パスを使用する前に、担当者とのメッセージなどでご確認をお願いします。
                     </div>
-                    <span v-if="uid && uid != ''">
+                    <span v-if="uid && uid != '' && type == 'user'">
                       パスについては
                       <no-ssr>
                         <nuxt-link
@@ -804,7 +634,7 @@
                       から確認できます。
                     </span>
                     <div class="pt-2 font-weight-bold">
-                      ※ 本サービス外で提示されたパスは、保証されないのでご注意ください。
+                      ※ 本サービス外で提示されたパスは、保証されない可能性があるのでご注意ください。
                     </div>
                   </div>
                 </v-flex>
@@ -869,35 +699,35 @@
                 </v-avatar>
                 <v-list>
                   <v-list-tile v-if="isAdmin" to="/admin/companies">
-                    <v-list-tile-title>Admin</v-list-tile-title>
+                    <v-list-tile-title class="text-color">Admin</v-list-tile-title>
                   </v-list-tile>
                   <v-divider v-if="isAdmin"></v-divider>
                   <v-list-tile to="/user/profile" class="hidden-xs-only">
-                    <v-list-tile-title>プロフィール</v-list-tile-title>
+                    <v-list-tile-title class="text-color">プロフィール</v-list-tile-title>
                   </v-list-tile>
                   <v-divider class="hidden-xs-only"></v-divider>
                   <v-list-tile to="/user/menu" class="hidden-sm-and-up">
-                    <v-list-tile-title>プロフィール</v-list-tile-title>
+                    <v-list-tile-title class="text-color">プロフィール</v-list-tile-title>
                   </v-list-tile>
                   <v-divider class="hidden-sm-and-up"></v-divider>
                   <v-list-tile to="/user/passes" class="hidden-xs-only">
-                    <v-list-tile-title>マイページ</v-list-tile-title>
+                    <v-list-tile-title class="text-color">マイページ</v-list-tile-title>
                   </v-list-tile>
                   <v-divider class="hidden-xs-only"></v-divider>
                   <v-list-tile to="/user/settings/notifications" class="hidden-xs-only">
-                    <v-list-tile-title>設定</v-list-tile-title>
+                    <v-list-tile-title class="text-color">設定</v-list-tile-title>
                   </v-list-tile>
                   <v-divider class="hidden-xs-only"></v-divider>
                   <v-list-tile to="/user/settings/account" class="hidden-sm-and-up">
-                    <v-list-tile-title>アカウント設定</v-list-tile-title>
+                    <v-list-tile-title class="text-color">アカウント設定</v-list-tile-title>
                   </v-list-tile>
                   <v-divider class="hidden-sm-and-up"></v-divider>
                   <v-list-tile to="/user/settings/notifications" class="hidden-sm-and-up">
-                    <v-list-tile-title>通知設定</v-list-tile-title>
+                    <v-list-tile-title class="text-color">通知設定</v-list-tile-title>
                   </v-list-tile>
                   <v-divider class="hidden-sm-and-up"></v-divider>
                   <v-list-tile @click="signOut">
-                    <v-list-tile-title>ログアウト</v-list-tile-title>
+                    <v-list-tile-title class="text-color">ログアウト</v-list-tile-title>
                   </v-list-tile>
                 </v-list>
               </v-menu>
@@ -1281,53 +1111,6 @@ export default {
     signUpForm: false,
     signInDialog: false,
     helpMenu: false,
-    helpItems: [
-      {
-        title: '募集',
-        value: 'job'
-      },
-      {
-        title: 'スカウト',
-        value: 'scout'
-      },
-      {
-        title: '候補者管理',
-        value: 'candidate'
-      },
-      {
-        title: 'レビュー',
-        value: 'review'
-      },
-      {
-        title: 'フィードバック',
-        value: 'feedback'
-      },
-      {
-        title: 'パス',
-        value: 'pass'
-      },
-      {
-        title: 'メッセージ',
-        value: 'message'
-      },
-      {
-        title: 'サービスのプラン',
-        value: 'plan'
-      },
-      {
-        title: '請求書',
-        value: 'invoice'
-      }
-    ],
-    jobHelp: false,
-    scoutHelp: false,
-    candidateHelp: false,
-    reviewHelp: false,
-    feedbackHelp: false,
-    passHelp: false,
-    messageHelp: false,
-    planHelp: false,
-    invoiceHelp: false,
     notificationsMenu: false,
     dropdownMenu: false,
     signInValid: true,
@@ -1465,38 +1248,6 @@ export default {
     }
   },
   methods: {
-    helpListTileClicked(value) {
-      if (value == 'job') {
-        this.jobHelp = true
-      } else if (value == 'scout') {
-        this.scoutHelp = true
-      } else if (value == 'candidate') {
-        this.candidateHelp = true
-      } else if (value == 'review') {
-        this.reviewHelp = true
-      } else if (value == 'feedback') {
-        this.feedbackHelp = true
-      } else if (value == 'pass') {
-        this.passHelp = true
-      } else if (value == 'message') {
-        this.messageHelp = true
-      } else if (value == 'plan') {
-        this.planHelp = true
-      } else if (value == 'invoice') {
-        this.invoiceHelp = true
-      }
-    },
-    helpBackButtonClicked() {
-      this.jobHelp = false
-      this.scoutHelp = false
-      this.candidateHelp = false
-      this.reviewHelp = false
-      this.feedbackHelp = false
-      this.passHelp = false
-      this.messageHelp = false
-      this.planHelp = false
-      this.invoiceHelp = false
-    },
     iconClicked() {
       if (this.$vuetify.breakpoint.name == 'xs') {
         if (this.path == '/') {

@@ -179,7 +179,7 @@
                       <div class="white--text caption">
                         スコア
                       </div>
-                      <div class="pt-2 white--text font-weight-bold headline">
+                      <div class="text-xs-right pr-4 pt-2 white--text font-weight-bold headline">
                         {{ points }}
                       </div>
                     </v-card>
@@ -240,7 +240,7 @@
                           <div class="white--text caption">
                             スコア
                           </div>
-                          <div class="pt-2 white--text font-weight-bold headline">
+                          <div class="text-xs-right pr-4 pt-2 white--text font-weight-bold headline">
                             {{ points }}
                           </div>
                         </v-card>
@@ -269,7 +269,15 @@
                   >
                     <!-- タイトル&編集ボタン -->
                     <v-flex xs8 sm10>
-                      <v-card-title class="title font-weight-bold">志望する職種</v-card-title>
+                      <v-card-title
+                        class="font-weight-bold"
+                        :class="{
+                          'subheading': $vuetify.breakpoint.xsOnly,
+                          'title': $vuetify.breakpoint.smAndUp,
+                        }"
+                      >
+                        志望する職種
+                      </v-card-title>
                     </v-flex>
                     <v-flex xs4 sm2 v-show="!isEditingDesiredOccupations">
                       <v-btn
@@ -341,7 +349,15 @@
                   >
                     <!-- タイトル&編集ボタン -->
                     <v-flex xs8 sm10>
-                      <v-card-title class="title font-weight-bold">紹介文</v-card-title>
+                      <v-card-title
+                        class="font-weight-bold"
+                        :class="{
+                          'subheading': $vuetify.breakpoint.xsOnly,
+                          'title': $vuetify.breakpoint.smAndUp,
+                        }"
+                      >
+                        紹介文
+                      </v-card-title>
                     </v-flex>
                     <v-flex xs4 sm2 v-show="!isEditingSelfIntro">
                       <v-btn
@@ -399,7 +415,15 @@
                     class="pt-5"
                   >
                     <v-flex xs8 sm10>
-                      <v-card-title class="title font-weight-bold">やりたいこと・実現したいこと</v-card-title>
+                      <v-card-title
+                        class="font-weight-bold"
+                        :class="{
+                          'subheading': $vuetify.breakpoint.xsOnly,
+                          'title': $vuetify.breakpoint.smAndUp,
+                        }"
+                      >
+                        やりたいこと・興味のあること
+                      </v-card-title>
                     </v-flex>
                     <v-flex xs4 sm2 v-show="!isEditingWhatWantToDo">
                       <v-btn
@@ -424,7 +448,7 @@
                       <v-form v-model="editWhatWantToDoValid">
                         <v-textarea
                           solo
-                          label="やりたいことや実現したいことを書いてください"
+                          label="やりたいことや興味のあることを書いてください"
                           v-model="tempWhatWantToDo"
                           :rules="whatWantToDoRules"
                           required
@@ -453,7 +477,15 @@
                     class="pt-5"
                   >
                     <v-flex xs8 sm10>
-                      <v-card-title class="title font-weight-bold">ポートフォリオ</v-card-title>
+                      <v-card-title
+                        class="font-weight-bold"
+                        :class="{
+                          'subheading': $vuetify.breakpoint.xsOnly,
+                          'title': $vuetify.breakpoint.smAndUp,
+                        }"
+                      >
+                        ポートフォリオ
+                      </v-card-title>
                     </v-flex>
                     <v-flex xs4 sm2 v-show="!isEditingPortfolio">
                       <v-btn
@@ -498,7 +530,7 @@
                               </v-btn>
                             </div>
                             <p　class="text-color return">{{ item.content }}</p>
-                            <a :href="item.url" target="_blank">{{ item.url }}</a>
+                            <a v-if="item.url" :href="item.url" target="_blank">{{ item.url }}</a>
                           </v-flex>
                         </v-layout>
                         <div v-else class="pt-4 pb-3">
@@ -525,7 +557,7 @@
                         <div class="d-flex pb-3">
                           <v-flex xs12 sm10 class="px-4 break">
                             <div class="py-3">
-                              <v-img :src="tempPortfolioItemImageUrl" width="200" height="100" class="grey lighten-3"/>
+                              <v-img :src="tempPortfolioItemImageUrl" height="200" class="grey lighten-3"/>
                               <input type="file" v-on:change="onFileChange">
                               <p v-if="!imageFileSizeValid" class="warning-text-color">
                                 {{ imageFileSizeWarning }}
@@ -547,7 +579,7 @@
                             ></v-text-field>
                             <v-text-field
                               solo
-                              label="URL"
+                              placeholder="URLがある場合は記入してください"
                               v-model="tempPortfolioItemUrl"
                               :rules="portfolioItemUrlRules"
                               required
@@ -569,7 +601,12 @@
                               削除
                             </v-btn>
                             <v-btn
-                              :disabled="!editPortfolioValid || tempPortfolioItemUrl == null || !imageFileSizeValid"
+                              :disabled="
+                                !editPortfolioValid ||
+                                tempPortfolioItemImageUrl == null ||
+                                tempPortfolioItemImageUrl == '' ||
+                                !imageFileSizeValid
+                              "
                               @click="updatePortfolio({
                                 uid: uid,
                                 isPortfolioImageChanged: isPortfolioImageChanged,
@@ -600,7 +637,15 @@
                     class="pt-5"
                   >
                     <v-flex xs8 sm10>
-                      <v-card-title class="title font-weight-bold">スキル</v-card-title>
+                      <v-card-title
+                        class="font-weight-bold"
+                        :class="{
+                          'subheading': $vuetify.breakpoint.xsOnly,
+                          'title': $vuetify.breakpoint.smAndUp,
+                        }"
+                      >
+                        スキル
+                      </v-card-title>
                     </v-flex>
                     <v-flex xs4 sm2 v-show="!isEditingSkills">
                       <v-btn
@@ -681,7 +726,15 @@
                     class="pt-5"
                   >
                     <v-flex xs8 sm10>
-                      <v-card-title class="title font-weight-bold">関連リンク</v-card-title>
+                      <v-card-title
+                        class="font-weight-bold"
+                        :class="{
+                          'subheading': $vuetify.breakpoint.xsOnly,
+                          'title': $vuetify.breakpoint.smAndUp,
+                        }"
+                      >
+                        関連リンク
+                      </v-card-title>
                     </v-flex>
                     <v-flex xs4 sm2 v-show="!isEditingLinks">
                       <v-btn
@@ -779,7 +832,15 @@
                     class="pt-5"
                   >
                     <v-flex xs8 sm10>
-                      <v-card-title class="title font-weight-bold">基本情報</v-card-title>
+                      <v-card-title
+                        class="font-weight-bold"
+                        :class="{
+                          'subheading': $vuetify.breakpoint.xsOnly,
+                          'title': $vuetify.breakpoint.smAndUp,
+                        }"
+                      >
+                        基本情報
+                      </v-card-title>
                     </v-flex>
                     <v-flex xs4 sm2 v-show="!isEditingUserInfo">
                       <v-btn
@@ -994,9 +1055,8 @@ export default {
       v => (v && v.length <= 100) || '100字以内で入力してください'
     ],
     portfolioItemUrlRules: [
-      v => !!v || 'URLを入力してください',
-      v => (v && v.length <= 100) || '100字以内で入力してください',
-      v => (v.includes('http://') || v.includes('https://')) || '無効なURLです'
+      v => (v.length <= 100) || '100字以内で入力してください',
+      v => (v.includes('http://') || v.includes('https://') || v == null || v == '') || '無効なURLです'
     ],
     editPortfolioValid: true,
     tempSkills: null,
@@ -1259,7 +1319,7 @@ export default {
         this.tempPortfolioItemImageUrl = this.portfolio[index].imageUrl
         this.tempPortfolioItemTitle = this.portfolio[index].title
         this.tempPortfolioItemContent = this.portfolio[index].content
-        this.tempPortfolioItemUrl = this.portfolio[index].url
+        this.tempPortfolioItemUrl = this.portfolio[index].url ? this.portfolio[index].url : ''
       } else {
         this.tempPortfolioItemImageUrl = ''
         this.tempPortfolioItemTitle = ''

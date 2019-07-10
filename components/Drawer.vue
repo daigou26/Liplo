@@ -58,6 +58,7 @@ export default {
         { title: 'レビュー', icon: 'bar_chart', url: 'reviews' },
         { title: 'フィードバック', icon: 'create', url: 'feedbacks' },
         { title: '設定', icon: 'settings', url: 'company_settings' },
+        { title: 'ヘルプ', icon: 'help', url: 'help' },
       ],
     }
   },

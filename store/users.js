@@ -113,6 +113,16 @@ export const actions = {
           var docCount = 0
           snapshot.forEach(function(doc) {
             docCount += 1
+
+            var graduationDate = doc.data()['graduationDate']
+            if (graduationDate) {
+              let date = new Date( graduationDate.seconds * 1000 )
+              let year  = date.getFullYear()
+              let month = date.getMonth() + 1
+              let day  = date.getDate()
+              graduationDate = `${year}/${month}/${day}`
+            }
+
             const user = {
               uid: doc.id,
               imageUrl: doc.data()['imageUrl'],
@@ -123,6 +133,7 @@ export const actions = {
               desiredOccupations: doc.data()['desiredOccupations'],
               skills: doc.data()['skills'],
               points: doc.data()['points'],
+              graduationDate: graduationDate,
               completionPercentage: doc.data()['completionPercentage']
             }
             commit('addUser', user)
@@ -154,6 +165,16 @@ export const actions = {
           var docCount = 0
           snapshot.forEach(function(doc) {
             docCount += 1
+
+            var graduationDate = doc.data()['graduationDate']
+            if (graduationDate) {
+              let date = new Date( graduationDate.seconds * 1000 )
+              let year  = date.getFullYear()
+              let month = date.getMonth() + 1
+              let day  = date.getDate()
+              graduationDate = `${year}/${month}/${day}`
+            }
+
             const user = {
               uid: doc.id,
               imageUrl: doc.data()['imageUrl'],
@@ -164,6 +185,7 @@ export const actions = {
               desiredOccupations: doc.data()['desiredOccupations'],
               skills: doc.data()['skills'],
               points: doc.data()['points'],
+              graduationDate: graduationDate,
               completionPercentage: doc.data()['completionPercentage']
             }
             commit('addUser', user)

@@ -231,6 +231,8 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
     const user = newValue.user
     const plan = newValue.plan
     const feedback = newValue.feedback
+    const isInternExtended = newValue.isInternExtended
+    const extendedInternEnd = newValue.extendedInternEnd
     const createdAt = newValue.updatedAt
     const updatedAt = newValue.updatedAt
     const career = newValue.career
@@ -495,29 +497,32 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
             })
           }
 
-          // キャリア更新
-          const careerRef = admin.firestore().collection('users').doc(user.uid)
-            .collection('career').doc(career.careerId)
-          var careerData = {
-            end: true,
-            endedAt: new Date()
+          // キャリア更新（インターンを延長していない場合）
+          if (!isInternExtended) {
+            const careerRef = admin.firestore().collection('users').doc(user.uid)
+              .collection('career').doc(career.careerId)
+            var careerData = {
+              end: true,
+              endedAt: new Date()
+            }
+            batch.update(careerRef, careerData)
+
+            // インターン終了 通知
+            let reviewNotificationRef = admin.firestore().collection('users').doc(user.uid)
+              .collection('notifications').doc()
+            let reviewUrl = '/user/reviews/new?id=' + career.careerId
+            batch.set(reviewNotificationRef, {
+              type: 'normal',
+              isImportant: true,
+              content:
+                'インターンが終了しました。お疲れ様でした！ ' +
+                companyName +
+                'のレビューをしましょう！',
+              createdAt: new Date(),
+              url: reviewUrl,
+              isUnread: true,
+            })
           }
-          batch.update(careerRef, careerData)
-          // インターン終了 通知
-          let reviewNotificationRef = admin.firestore().collection('users').doc(user.uid)
-            .collection('notifications').doc()
-          let reviewUrl = '/user/reviews/new?id=' + career.careerId
-          batch.set(reviewNotificationRef, {
-            type: 'normal',
-            isImportant: true,
-            content:
-              'インターンが終了しました。お疲れ様でした！ ' +
-              companyName +
-              'のレビューをしましょう！',
-            createdAt: new Date(),
-            url: reviewUrl,
-            isUnread: true,
-          })
 
           batch.commit()
             .then(() => {
@@ -1163,7 +1168,7 @@ exports.passHasChanged = functions.region('asia-northeast1')
                 batch.set(notificationRef, {
                   type: 'normal',
                   isImportant: true,
-                  content: `${userName}さんが${typeText}を使用しました！ 契約が済みましたら、ステータスを採用予定に変更してください。`,
+                  content: `${userName}さんが${typeText}（${joiningYear}年度入社）を使用しました！ 契約が済みましたら、ステータスを採用予定に変更してください。`,
                   createdAt: new Date(),
                   url: candidateUrl,
                   isUnread: true,
@@ -1203,7 +1208,7 @@ exports.passHasChanged = functions.region('asia-northeast1')
                                           line-height: 24px;
                                         "
                                       >
-                                        ${userName}さんが${typeText}を使用しました。
+                                        ${userName}さんが${typeText}（${joiningYear}年度入社）を使用しました。
                                       </h1>
                                       <div style="margin: 0 16px 60px; color: #555555">
                                         下のボタンから確認ができます。 契約が済みましたら、ステータスを採用予定に変更してください。

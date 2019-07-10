@@ -573,7 +573,7 @@
                             <v-rating
                               v-model="item.all"
                               background-color="pink"
-                              color="pink darken-1"
+                              color="pink"
                               small
                               half-increments
                               readonly
@@ -670,7 +670,7 @@
                           <v-rating
                             v-model="item.all"
                             background-color="pink"
-                            color="pink darken-1"
+                            color="pink"
                             small
                             half-increments
                             readonly

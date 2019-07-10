@@ -180,7 +180,7 @@ export const actions = {
             let date = new Date( graduationDate.seconds * 1000 )
             graduationDate = date
           }
-          
+
           commit('setPoints', doc.data()['points'])
           commit('setPosition', doc.data()['position'])
           commit('setFirstName', doc.data()['firstName'])
@@ -203,7 +203,7 @@ export const actions = {
       })
       .catch((error) => {
         commit('updateIsLoading', false)
-        console.error("Error adding document: ", error)
+        console.error("Error getting document: ", error)
       })
   },
   updateIsLoading({commit}, isLoading) {
@@ -241,7 +241,7 @@ export const actions = {
         commit('updateIsEditingPosition', false)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error updating document: ", error)
       })
   },
   setCompanyId({commit}, companyId) {
@@ -304,7 +304,7 @@ export const actions = {
             commit('setImageUrl', downloadURL)
           })
           .catch((error) => {
-            console.error("Error adding document: ", error)
+            console.error("Error", error)
           })
       })
     })
@@ -337,7 +337,7 @@ export const actions = {
         commit('updateIsEditingUserName', false)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error", error)
       })
   },
   updateIsEditingDesiredOccupations({commit}, isEditing) {
@@ -396,7 +396,7 @@ export const actions = {
         commit('updateIsEditingDesiredOccupations', false)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error", error)
       })
   },
   updateIsEditingSelfIntro({commit}, isEditing) {
@@ -428,7 +428,7 @@ export const actions = {
         commit('updateIsEditingSelfIntro', false)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error", error)
       })
   },
   updateIsEditingWhatWantToDo({commit}, isEditing) {
@@ -452,7 +452,7 @@ export const actions = {
         commit('updateIsEditingWhatWantToDo', false)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error", error)
       })
   },
   updateIsPortfolioImageChanged({commit}, isChanged) {
@@ -487,12 +487,14 @@ export const actions = {
         uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
           console.log('File available at', downloadURL)
           // 新しいitem
-          const tempPortfolioItem = {
+          let tempPortfolioItem = {
             imageUrl: downloadURL,
             title: title,
             content: content,
-            url: url,
             timestamp: timestamp
+          }
+          if (url) {
+            tempPortfolioItem.url = url
           }
           // listに入れる
           if (selectedIndex != null) {
@@ -526,20 +528,19 @@ export const actions = {
               commit('updateIsEditingPortfolio', false)
             })
             .catch((error) => {
-              console.error("Error adding document: ", error)
+              console.error("Error", error)
             })
         })
       })
     } else {
-      const tempPortfolioItem = {
-        imageUrl: imageUrl,
-        title: title,
-        content: content,
-        url: url
-      }
       if (selectedIndex != null) {
-        tempPortfolio.splice(selectedIndex, 1)
-        tempPortfolio.splice(selectedIndex, 0, tempPortfolioItem)
+        tempPortfolio[selectedIndex].title = title
+        tempPortfolio[selectedIndex].content = content
+        if (url) {
+          tempPortfolio[selectedIndex].url = url
+        } else {
+          delete tempPortfolio[selectedIndex].url
+        }
       }
       const batch = firestore.batch()
       const userRef = firestore.collection('users').doc(uid)
@@ -562,7 +563,7 @@ export const actions = {
           commit('updateIsEditingPortfolio', false)
         })
         .catch((error) => {
-          console.error("Error adding document: ", error)
+          console.error("Error", error)
         })
     }
   },
@@ -596,7 +597,7 @@ export const actions = {
         commit('updateIsEditingPortfolio', false)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error", error)
       })
   },
   updateIsEditingSkills({commit}, isEditing) {
@@ -625,7 +626,7 @@ export const actions = {
         commit('updateIsEditingSkills', false)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error", error)
       })
   },
   setSelectedLinkIndex({commit}, index) {
@@ -668,7 +669,7 @@ export const actions = {
         commit('updateIsEditingLinks', false)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error", error)
       })
   },
   deleteLink({commit}, {uid, selectedIndex, links}) {
@@ -690,7 +691,7 @@ export const actions = {
         commit('updateIsEditingLinks', false)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error", error)
       })
   },
   updateIsEditingUserInfo({commit}, isEditing) {
@@ -739,7 +740,7 @@ export const actions = {
         }
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error", error)
       })
   },
   // プランの変更に対応

@@ -212,7 +212,7 @@ export const actions = {
   updateIsEditingExtendedIntern({commit}, isEditing) {
     commit('updateIsEditingExtendedIntern', isEditing)
   },
-  updateExtendedIntern({commit, state}, {params, companyId, extendIntern}) {
+  updateExtendedIntern({commit, state}, {params, companyId, extendIntern, status}) {
     const candidateId = params.id
     const user = state.user
     const careerId = state.careerId
@@ -244,6 +244,27 @@ export const actions = {
     if (extendIntern) {
       careerData = {
         isInternExtended: true,
+      }
+
+      // パスを発行せず、インターンを延長する場合
+      if (status.intern) {
+        careerData.end = true
+        careerData.endedAt = new Date()
+
+        // インターン終了 通知
+        let reviewNotificationRef = firestore.collection('users').doc(user.uid)
+          .collection('notifications').doc()
+        let reviewUrl = '/user/reviews/new?id=' + careerId
+        batch.set(reviewNotificationRef, {
+          type: 'normal',
+          isImportant: true,
+          content:
+            'インターンが終了しました。お疲れ様でした！ ' +
+            'レビューをしましょう！',
+          createdAt: new Date(),
+          url: reviewUrl,
+          isUnread: true,
+        })
       }
     } else {
       careerData = {
@@ -625,7 +646,7 @@ export const actions = {
                     if (minutes < 10) {
                       minutes = '0' + String(minutes)
                     }
-                    
+
                     const message = {
                       message: change.doc.data()['message'],
                       createdAt: change.doc.data()['createdAt'],

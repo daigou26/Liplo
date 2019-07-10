@@ -96,7 +96,7 @@
                         <v-rating
                           v-model="review.all"
                           background-color="pink"
-                          color="pink darken-1"
+                          color="pink"
                           small
                           half-increments
                           readonly

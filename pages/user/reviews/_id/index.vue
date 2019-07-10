@@ -70,7 +70,7 @@
                   <v-rating
                     v-model="job"
                     background-color="pink"
-                    color="pink darken-1"
+                    color="pink"
                     small
                     half-increments
                     readonly
@@ -85,7 +85,7 @@
                   <v-rating
                     v-model="discretion"
                     background-color="pink"
-                    color="pink darken-1"
+                    color="pink"
                     small
                     half-increments
                     readonly
@@ -100,7 +100,7 @@
                   <v-rating
                     v-model="workingHours"
                     background-color="pink"
-                    color="pink darken-1"
+                    color="pink"
                     small
                     half-increments
                     readonly
@@ -115,7 +115,7 @@
                   <v-rating
                     v-model="environment"
                     background-color="pink"
-                    color="pink darken-1"
+                    color="pink"
                     small
                     half-increments
                     readonly
@@ -130,7 +130,7 @@
                   <v-rating
                     v-model="atmosphere"
                     background-color="pink"
-                    color="pink darken-1"
+                    color="pink"
                     small
                     half-increments
                     readonly

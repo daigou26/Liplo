@@ -277,12 +277,13 @@
                 style="font-size: 13px"
               >
                 先着パスおよび内定パスの有効期限は、学生の卒業予定日付近を推奨しています。
+                （期限を早くしすぎてしまうと、候補者を採用できる可能性が低くなります）
                 <div class="pt-2">
                   卒業予定日は、学生のプロフィールから確認できます。プロフィールに卒業予定日が設定されていない場合は、学生とのメッセージにてご確認ください。
                 </div>
               </div>
               <div v-show="passType == 'hiring'" class="caption light-text-color pb-3">
-                入社パスは、卒業後の一定期間の入社を保証するものであるため、有効期限は卒業予定日以降を指定してください。
+                有効期限は、最低でも卒業予定日以降である必要があり、卒業日から1,2年を推奨しています。
               </div>
               <div class="text-xs-right">
                 <v-btn
@@ -300,7 +301,7 @@
             </v-form>
           </div>
           <!-- インターン延長 -->
-          <div v-if="status && (status.pass || status.contracted || status.hired || status.rejected)">
+          <div v-if="status && ( status.intern || status.pass || status.contracted || status.hired || status.rejected)">
             <v-flex class="px-3 pt-5 break text-xs-left">
               <span class="text-color font-weight-bold">
                 インターン延長
@@ -325,19 +326,37 @@
             <v-flex v-show="!isEditingExtendedIntern" class="px-3 break text-xs-left text-color">
               <div v-if="isInternExtended">
                 <div v-if="extendedInternEnd" class="pt-2">
-                  終了しています
+                  終了しました
                 </div>
                 <div v-else>
                   インターン延長中
-                  <div class="caption light-text-color pt-2">
-                    インターンが終了した場合は、更新してください。
+                  <div class="caption light-text-color pt-3">
+                    <div v-if="status.intern">
+                      終了する場合は、「インターンを終了する」に設定してから、
+                      ステータスを不採用に変更してください。
+                    </div>
+                    <div v-else>
+                      インターンが終了した場合は、更新してください。
+                    </div>
                   </div>
                 </div>
               </div>
               <div v-else>
                 延長していません
-                <div class="caption light-text-color pt-2">
-                  パスを発行した後もインターンを継続する場合は、更新してください。
+                <div class="caption light-text-color pt-3">
+                  <div v-if="status.intern">
+                    パスを発行せず、インターンを延長する場合は、更新してください。
+                    <div class="font-weight-bold">
+                      ※ インターンを延長した後にパスを発行することは出来ません
+                    </div>
+                    <div class="pt-2">
+                      パスを発行する場合は、ステータスをパスに変更してから、
+                      インターン延長の設定をしてください。
+                    </div>
+                  </div>
+                  <div v-else-if="status.pass">
+                    パスを発行した後もインターンを継続する場合は、更新してください。
+                  </div>
                 </div>
               </div>
             </v-flex>
@@ -572,7 +591,7 @@
                       </div>
                     </div>
                     <div v-show="passType == 'hiring'" class="caption light-text-color pb-3">
-                      入社パスは、卒業後の一定期間の入社を保証するものであるため、有効期限は卒業予定日以降を指定してください。
+                      有効期限は、最低でも卒業予定日以降である必要があり、卒業日から1,2年を推奨しています。
                     </div>
                     <div class="text-xs-right">
                       <v-btn
@@ -615,19 +634,37 @@
                   <v-flex v-show="!isEditingExtendedIntern" class="px-3 break text-xs-left text-color">
                     <div v-if="isInternExtended">
                       <div v-if="extendedInternEnd" class="pt-2">
-                        終了しています
+                        終了しました
                       </div>
                       <div v-else>
                         インターン延長中
-                        <div class="caption light-text-color pt-2">
-                          インターンが終了した場合は、更新してください。
+                        <div class="caption light-text-color pt-3">
+                          <div v-if="status.intern">
+                            終了する場合は、「インターンを終了する」に設定してから、
+                            ステータスを不採用に変更してください。
+                          </div>
+                          <div v-else>
+                            インターンが終了した場合は、更新してください。
+                          </div>
                         </div>
                       </div>
                     </div>
                     <div v-else>
                       延長していません
-                      <div class="caption light-text-color pt-2">
-                        パスを発行した後もインターンを継続する場合は、更新してください。
+                      <div class="caption light-text-color pt-3">
+                        <div v-if="status.intern">
+                          パスを発行せず、インターンを延長する場合は、更新してください。
+                          <div class="font-weight-bold">
+                            ※ インターンを延長した後にパスを発行することは出来ません
+                          </div>
+                          <div class="pt-2">
+                            パスを発行する場合は、ステータスをパスに変更してから、
+                            インターン延長の設定をしてください。
+                          </div>
+                        </div>
+                        <div v-else-if="status.pass">
+                          パスを発行した後もインターンを継続する場合は、更新してください。
+                        </div>
                       </div>
                     </div>
                   </v-flex>
@@ -715,7 +752,7 @@
                 </div>
                 <!-- ステータスが intern の時 -->
                 <div v-if="status.intern && tempStatus != '不採用'">
-                  パスを送る場合は<span class="font-weight-bold teal--text text--lighten-1">パス</span>に変更してください。
+                  パスを送る場合は<span class="font-weight-bold teal--text">パス</span>に変更してください。
                 </div>
                 <!-- pass -->
                 <div v-if="status.intern && tempStatus != '不採用'">
@@ -795,13 +832,16 @@
                       </v-menu>
                       <div v-show="tempPassType == '内定パス' || tempPassType == '先着パス'" class=" light-text-color pb-3" style="font-size: 13px">
                         先着パスおよび内定パスの有効期限は、学生の卒業予定日付近を推奨しています。
-                        また、入社年度は、卒業の翌年度を指定してください。（卒業日が2019年3月の場合、入社年度は2019年度）
+                        （期限を早くしすぎてしまうと、候補者を採用できる可能性が低くなります）
+                        <div class="pt-2">
+                          入社年度は、卒業の翌年度を指定してください。（卒業予定が2019年3月の場合、入社年度は2019年度）
+                        </div>
                         <div class="pt-2">
                           卒業予定日は、学生のプロフィールから確認できます。プロフィールに卒業予定日が設定されていない場合は、学生とのメッセージにてご確認ください。
                         </div>
                       </div>
                       <div v-show="tempPassType == '入社パス'" class="caption light-text-color pb-3">
-                        入社パスは、卒業後の一定期間の入社を保証するものであるため、有効期限は卒業予定日以降を指定してください。
+                        有効期限は、最低でも卒業予定日以降である必要があり、卒業日から1,2年を推奨しています。
                       </div>
                       <!-- メッセージ -->
                       <v-textarea
@@ -812,6 +852,7 @@
                       ></v-textarea>
                       <div class="caption-2 font-weight-bold light-text-color py-2">
                         ※ 入社時の労働条件などは、候補者とのメッセージにてお伝えください。
+                        （パス使用前に候補者から確認が来る場合があります）
                       </div>
                     </v-form>
                   </div>
@@ -846,7 +887,7 @@
                 <div v-if="status.pass && tempStatus != '不採用'">
                   <div>
                     契約が完了しましたら、ステータスを
-                    <span class="font-weight-bold green--text text--lighten-1">入社予定</span>に変更してください。
+                    <span class="font-weight-bold pink--text">入社予定</span>に変更してください。
                     ステータスを切り替えた翌月に請求書をお送り致します。（無料枠を使い切っている場合）
                   </div>
                   <div class="pt-3 light-text-color">
@@ -861,16 +902,25 @@
                 </div>
                 <!-- ステータスが contracted の時 -->
                 <div v-if="status.contracted && tempStatus != '不採用'">
-                  候補者と雇用契約を結び次第、ステータスを<span class="font-weight-bold green--text text--lighten-1">入社</span>に変更してください。
+                  候補者と雇用契約を結び次第、ステータスを<span class="font-weight-bold purple--text text--lighten-1">入社</span>に変更してください。
                   ステータスを変更すると、候補者一覧に表示されなくなります。
                 </div>
                 <div v-if="error && error != ''" class="pt-3 red--text">
                   {{ error }}
                 </div>
+                <!-- ステータスをインターン、入社予定に変更する場合 -->
                 <div v-if="tempStatus == 'インターン' || tempStatus == '入社予定'" class="text-xs-right">
                   <v-btn
                     :disabled="updateStatusButtonDisabled"
                     @click="statusDialog = true"
+                  >
+                    更新
+                  </v-btn>
+                </div>
+                <div v-else-if="tempStatus == 'パス'" class="text-xs-right">
+                  <v-btn
+                    :disabled="updateStatusButtonDisabled"
+                    @click="passDialog = true"
                   >
                     更新
                   </v-btn>
@@ -882,6 +932,9 @@
                   >
                     更新
                   </v-btn>
+                </div>
+                <div v-if="status.intern && tempStatus == 'パス' && isInternExtended" class="pt-2 text-xs-right red--text caption">
+                  インターンを延長してからのパスの発行は出来ません
                 </div>
               </div>
               <!-- reviews -->
@@ -1053,19 +1106,48 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn
-                color="grey"
+                color="grey darken-1"
                 flat="flat"
                 @click="statusDialog = false"
               >
                 キャンセル
               </v-btn>
-
               <v-btn
                 color="teal"
                 flat="flat"
                 @click="updateStatusButtonClicked"
               >
                 更新
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <!-- パス発行の確認 -->
+        <v-dialog
+          v-model="passDialog"
+          :fullscreen="$vuetify.breakpoint.xsOnly"
+          width="600"
+        >
+          <v-card>
+            <v-card-title class="title font-weight-bold text-color">パス発行の確認</v-card-title>
+            <v-card-text>
+              一度パスを発行すると取り消すことが出来ません。ご注意ください。
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="grey darken-1"
+                flat="flat"
+                @click="passDialog = false"
+              >
+                キャンセル
+              </v-btn>
+              <v-btn
+                color="teal"
+                flat="flat"
+                @click="updatePassButtonClicked"
+              >
+                発行
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -1103,26 +1185,57 @@
                   1. 入社パス
                 </div>
                 <div class="pt-2">
-                  卒業後の一定期間、いつでも入社できる権利を与えるパスです。
-                  卒業後、どれくらい有効かは企業が決めることができます。
-                  このパスを多く発行すると、採用予定人数を上回ってしまう可能性があるため、対象者を厳選して発行することを推奨しています。
+                  企業が定めた期間内であれば、いつでも入社できる権利を与えるパスです。
+                  （卒業前に使用した場合は、原則、卒業後に入社という形になります）
+                  <div>
+                    有効期限は、最低でも卒業予定日以降である必要があり、卒業日から1,2年を推奨しています。
+                  </div>
+                  <div>
+                    入社パスでの入社月日は、候補者の希望を聞いていただき、すり合わせを行ってください。
+                    （入社年度に関しては、候補者がパスの使用時に指定します）
+                  </div>
+                  <div>
+                    このパスを多く発行すると、採用予定人数を上回ってしまう可能性があるため、
+                    対象者を厳選して発行することを推奨しています。
+                  </div>
                 </div>
                 <div class="pt-3 subheading font-weight-bold">
                   2. 内定パス
                 </div>
                 <div class="pt-2">
-                  企業が定めた期間内であれば、いつでも内定を取得できる権利を与えるパスです。
-                  有効期間や入社年度は企業が設定します。
-                  このパスも入社パス同様、多く発行すると採用予定人数を上回ってしまう可能性があるため、対象者を厳選して発行することを推奨しています。
+                  企業が定めた期間内であれば、内定を取得できる権利を与えるパスです。
+                  <div>
+                    有効期限は、候補者の卒業日付近を推奨しています。
+                    （期限を早くしすぎてしまうと、候補者を採用できる可能性が低くなります）
+                  </div>
+                  <div>
+                    内定パスでの入社時期は、候補者の卒業年度に合わせて企業が設定します。
+                    （例えば、2019年3月卒業であれば、2019年度と設定して下さい）
+                  </div>
+                  <div>
+                    このパスも入社パス同様、多く発行すると採用予定人数を上回ってしまう可能性があるため、
+                    対象者を厳選して発行することを推奨しています。
+                  </div>
                 </div>
                 <div class="pt-3 subheading font-weight-bold">
                   3. 先着パス
                 </div>
                 <div class="pt-2">
-                  企業が定めた期間内であり、採用枠にあまりがある場合に限り、内定を取得できる権利を与えるパスです。
-                  有効期間、入社年度および採用予定人数は企業が設定することが出来ます。
-                  入社パスや内定パスは性質上、パスを使う人数が予想しにくいため、あまり発行することが出来ませんが、
-                  先着パスは上限を自由に設定することが出来るため、数を気にせず発行することができます。
+                  企業が定めた期間内であり、採用枠にあまりがある場合に限り、
+                  内定を取得できる権利を与えるパスです。
+                  <div>
+                    有効期限、入社年度および先着パスの使用上限数は企業が設定することが出来ます。
+                    有効期限は、候補者の卒業日付近を推奨しています。
+                    （期限を早くしすぎてしまうと、候補者を採用できる可能性が低くなります）
+                  </div>
+                  <div>
+                    先着パスの使用数が、設定した使用上限数に達した場合、候補者は先着パスを使用出来なくなります。
+                  </div>
+                  <div>
+                    入社パスや内定パスは性質上、パスを使う人数が予想しにくいため、あまり発行することが出来ませんが、
+                    先着パスは使用上限数を自由に設定することが出来るため、数を気にせず発行することができます。
+                    先着パスの使用上限数は、サイドバーのパスから設定できます。
+                  </div>
                 </div>
               </div>
             </v-flex>
@@ -1146,6 +1259,7 @@ export default {
     isQueried: false,
     windowHeight: 0,
     statusDialog: false,
+    passDialog: false,
     snackbar: false,
     snackbarText: '',
     isMessagesQueried: false,
@@ -1273,11 +1387,9 @@ export default {
       if (this.status.inProcess && this.tempStatus == 'インターン') {
         return !this.internValid
       } else if (this.status.intern && this.tempStatus == 'パス') {
-        return !this.feedbackValid || !this.passValid || this.tempExpirationDate == null
+        return !this.feedbackValid || !this.passValid || this.tempExpirationDate == null || this.isInternExtended
       } else if (this.status.intern && this.tempStatus != 'パス') {
         return !this.feedbackValid
-      } else if (!this.status.intern && this.tempStatus == 'パス') {
-        return !this.passValid || this.tempExpirationDate == null
       } else {
         return false
       }
@@ -1541,9 +1653,9 @@ export default {
     },
     updateExtendedInternButtonClicked() {
       if (!this.isInternExtended) {
-        this.updateExtendedIntern({params: this.params, companyId: this.companyId, extendIntern: true})
+        this.updateExtendedIntern({params: this.params, companyId: this.companyId, extendIntern: true, status: this.status})
       } else {
-        this.updateExtendedIntern({params: this.params, companyId: this.companyId, extendIntern: false})
+        this.updateExtendedIntern({params: this.params, companyId: this.companyId, extendIntern: false, status: this.status})
       }
     },
     removeSkill(item) {
