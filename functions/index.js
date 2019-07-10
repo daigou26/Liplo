@@ -231,6 +231,8 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
     const user = newValue.user
     const plan = newValue.plan
     const feedback = newValue.feedback
+    const isInternExtended = newValue.isInternExtended
+    const extendedInternEnd = newValue.extendedInternEnd
     const createdAt = newValue.updatedAt
     const updatedAt = newValue.updatedAt
     const career = newValue.career
@@ -495,14 +497,17 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
             })
           }
 
-          // キャリア更新
-          const careerRef = admin.firestore().collection('users').doc(user.uid)
-            .collection('career').doc(career.careerId)
-          var careerData = {
-            end: true,
-            endedAt: new Date()
+          // キャリア更新（インターンを延長していない場合）
+          if (!isInternExtended) {
+            const careerRef = admin.firestore().collection('users').doc(user.uid)
+              .collection('career').doc(career.careerId)
+            var careerData = {
+              end: true,
+              endedAt: new Date()
+            }
+            batch.update(careerRef, careerData)
           }
-          batch.update(careerRef, careerData)
+
           // インターン終了 通知
           let reviewNotificationRef = admin.firestore().collection('users').doc(user.uid)
             .collection('notifications').doc()

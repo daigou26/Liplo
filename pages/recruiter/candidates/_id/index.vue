@@ -301,7 +301,7 @@
             </v-form>
           </div>
           <!-- インターン延長 -->
-          <div v-if="status && (status.pass || status.contracted || status.hired || status.rejected)">
+          <div v-if="status && ( status.intern || status.pass || status.contracted || status.hired || status.rejected)">
             <v-flex class="px-3 pt-5 break text-xs-left">
               <span class="text-color font-weight-bold">
                 インターン延長
@@ -330,15 +330,33 @@
                 </div>
                 <div v-else>
                   インターン延長中
-                  <div class="caption light-text-color pt-2">
-                    インターンが終了した場合は、更新してください。
+                  <div class="caption light-text-color pt-3">
+                    <div v-if="status.intern">
+                      終了する場合は、「インターンを終了する」に設定してから、
+                      ステータスを不採用に変更してください。
+                    </div>
+                    <div v-else>
+                      インターンが終了した場合は、更新してください。
+                    </div>
                   </div>
                 </div>
               </div>
               <div v-else>
                 延長していません
-                <div class="caption light-text-color pt-2">
-                  パスを発行した後もインターンを継続する場合は、更新してください。
+                <div class="caption light-text-color pt-3">
+                  <div v-if="status.intern">
+                    パスを発行せず、インターンを延長する場合は、更新してください。
+                    <div class="font-weight-bold">
+                      ※ インターンを延長した後にパスを発行することは出来ません
+                    </div>
+                    <div class="pt-2">
+                      パスを発行する場合は、ステータスをパスに変更してから、
+                      インターン延長の設定をしてください。
+                    </div>
+                  </div>
+                  <div v-else-if="status.pass">
+                    パスを発行した後もインターンを継続する場合は、更新してください。
+                  </div>
                 </div>
               </div>
             </v-flex>
@@ -620,15 +638,33 @@
                       </div>
                       <div v-else>
                         インターン延長中
-                        <div class="caption light-text-color pt-2">
-                          インターンが終了した場合は、更新してください。
+                        <div class="caption light-text-color pt-3">
+                          <div v-if="status.intern">
+                            終了する場合は、「インターンを終了する」に設定してから、
+                            ステータスを不採用に変更してください。
+                          </div>
+                          <div v-else>
+                            インターンが終了した場合は、更新してください。
+                          </div>
                         </div>
                       </div>
                     </div>
                     <div v-else>
                       延長していません
-                      <div class="caption light-text-color pt-2">
-                        パスを発行した後もインターンを継続する場合は、更新してください。
+                      <div class="caption light-text-color pt-3">
+                        <div v-if="status.intern">
+                          パスを発行せず、インターンを延長する場合は、更新してください。
+                          <div class="font-weight-bold">
+                            ※ インターンを延長した後にパスを発行することは出来ません
+                          </div>
+                          <div class="pt-2">
+                            パスを発行する場合は、ステータスをパスに変更してから、
+                            インターン延長の設定をしてください。
+                          </div>
+                        </div>
+                        <div v-else-if="status.pass">
+                          パスを発行した後もインターンを継続する場合は、更新してください。
+                        </div>
                       </div>
                     </div>
                   </v-flex>
@@ -896,6 +932,9 @@
                   >
                     更新
                   </v-btn>
+                </div>
+                <div v-if="status.intern && tempStatus == 'パス' && isInternExtended" class="pt-2 text-xs-right red--text caption">
+                  インターンを延長してからのパスの発行は出来ません
                 </div>
               </div>
               <!-- reviews -->
@@ -1348,11 +1387,9 @@ export default {
       if (this.status.inProcess && this.tempStatus == 'インターン') {
         return !this.internValid
       } else if (this.status.intern && this.tempStatus == 'パス') {
-        return !this.feedbackValid || !this.passValid || this.tempExpirationDate == null
+        return !this.feedbackValid || !this.passValid || this.tempExpirationDate == null || this.isInternExtended
       } else if (this.status.intern && this.tempStatus != 'パス') {
         return !this.feedbackValid
-      } else if (!this.status.intern && this.tempStatus == 'パス') {
-        return !this.passValid || this.tempExpirationDate == null
       } else {
         return false
       }
@@ -1616,9 +1653,9 @@ export default {
     },
     updateExtendedInternButtonClicked() {
       if (!this.isInternExtended) {
-        this.updateExtendedIntern({params: this.params, companyId: this.companyId, extendIntern: true})
+        this.updateExtendedIntern({params: this.params, companyId: this.companyId, extendIntern: true, status: this.status})
       } else {
-        this.updateExtendedIntern({params: this.params, companyId: this.companyId, extendIntern: false})
+        this.updateExtendedIntern({params: this.params, companyId: this.companyId, extendIntern: false, status: this.status})
       }
     },
     removeSkill(item) {
