@@ -77,10 +77,15 @@
               <div v-else class="font-weight-bold">
                 この企業に入社することを決めたらメッセージを記入し、使用ボタンを押してください。
               </div>
-              <div class="pt-3 font-weight-bold">
-                ※ 担当者とのメッセージにて労働条件（給料や労働時間、仕事内容、勤務開始日など）を確認し、同意の上、慎重に使用してください。
-              </div>
             </v-alert>
+            <div
+              v-if="!isContracted && !isAccepted && isValid && !isExpired && !(type == 'limited' && limit && limit <= usedCount)"
+              class="pt-3 text-color"
+            >
+              ※ 担当者とのメッセージにて労働条件（給料や労働時間、仕事内容、勤務開始日など）を確認し、同意の上、慎重に使用してください。
+              （労働条件は変更される可能性があるので、過去に一度確認している場合でも、パスの使用前に必ず確認してください）
+              <div v-if="type == 'hiring'">また、入社パスを使用する場合は、メッセージにて、勤務開始日の希望を担当者に伝え、日程のすり合わせを行ってください。</div>
+            </div>
             <!-- 使用済み & 未契約 -->
             <v-alert
               v-if="!isContracted && isAccepted && isValid"
@@ -303,7 +308,7 @@ export default {
       const year = new Date()
       return [
         v => (String(v).length == 4) || '4桁で指定してください',
-        v => (v <= this.expirationDate.getFullYear()) || '有効期間を過ぎています',
+        v => (v <= this.expirationDate.getFullYear()) || '有効期限を過ぎています',
         v => (v >= year.getFullYear() - 1) || `${year.getFullYear() - 1}以上で指定してください`,
       ]
     },

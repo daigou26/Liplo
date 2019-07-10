@@ -816,6 +816,7 @@
                       ></v-textarea>
                       <div class="caption-2 font-weight-bold light-text-color py-2">
                         ※ 入社時の労働条件などは、候補者とのメッセージにてお伝えください。
+                        （パス使用前に候補者から確認が来る場合があります）
                       </div>
                     </v-form>
                   </div>
@@ -871,10 +872,19 @@
                 <div v-if="error && error != ''" class="pt-3 red--text">
                   {{ error }}
                 </div>
+                <!-- ステータスをインターン、入社予定に変更する場合 -->
                 <div v-if="tempStatus == 'インターン' || tempStatus == '入社予定'" class="text-xs-right">
                   <v-btn
                     :disabled="updateStatusButtonDisabled"
                     @click="statusDialog = true"
+                  >
+                    更新
+                  </v-btn>
+                </div>
+                <div v-else-if="tempStatus == 'パス'" class="text-xs-right">
+                  <v-btn
+                    :disabled="updateStatusButtonDisabled"
+                    @click="passDialog = true"
                   >
                     更新
                   </v-btn>
@@ -1057,19 +1067,48 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn
-                color="grey"
+                color="grey darken-1"
                 flat="flat"
                 @click="statusDialog = false"
               >
                 キャンセル
               </v-btn>
-
               <v-btn
                 color="teal"
                 flat="flat"
                 @click="updateStatusButtonClicked"
               >
                 更新
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <!-- パス発行の確認 -->
+        <v-dialog
+          v-model="passDialog"
+          :fullscreen="$vuetify.breakpoint.xsOnly"
+          width="600"
+        >
+          <v-card>
+            <v-card-title class="title font-weight-bold text-color">パス発行の確認</v-card-title>
+            <v-card-text>
+              一度パスを発行すると取り消すことが出来ません。ご注意ください。
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="grey darken-1"
+                flat="flat"
+                @click="passDialog = false"
+              >
+                キャンセル
+              </v-btn>
+              <v-btn
+                color="teal"
+                flat="flat"
+                @click="updatePassButtonClicked"
+              >
+                発行
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -1111,6 +1150,10 @@
                   （卒業前に使用した場合は、原則、卒業後に入社という形になります）
                   <div>
                     有効期限は、最低でも卒業予定日以降である必要があり、卒業日から1,2年を推奨しています。
+                  </div>
+                  <div>
+                    入社パスでの入社月日は、候補者の希望を聞いていただき、すり合わせを行ってください。
+                    （入社年度に関しては、候補者がパスの使用時に指定します）
                   </div>
                   <div>
                     このパスを多く発行すると、採用予定人数を上回ってしまう可能性があるため、
@@ -1177,6 +1220,7 @@ export default {
     isQueried: false,
     windowHeight: 0,
     statusDialog: false,
+    passDialog: false,
     snackbar: false,
     snackbarText: '',
     isMessagesQueried: false,
