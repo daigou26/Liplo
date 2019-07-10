@@ -506,23 +506,23 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
               endedAt: new Date()
             }
             batch.update(careerRef, careerData)
-          }
 
-          // インターン終了 通知
-          let reviewNotificationRef = admin.firestore().collection('users').doc(user.uid)
-            .collection('notifications').doc()
-          let reviewUrl = '/user/reviews/new?id=' + career.careerId
-          batch.set(reviewNotificationRef, {
-            type: 'normal',
-            isImportant: true,
-            content:
-              'インターンが終了しました。お疲れ様でした！ ' +
-              companyName +
-              'のレビューをしましょう！',
-            createdAt: new Date(),
-            url: reviewUrl,
-            isUnread: true,
-          })
+            // インターン終了 通知
+            let reviewNotificationRef = admin.firestore().collection('users').doc(user.uid)
+              .collection('notifications').doc()
+            let reviewUrl = '/user/reviews/new?id=' + career.careerId
+            batch.set(reviewNotificationRef, {
+              type: 'normal',
+              isImportant: true,
+              content:
+                'インターンが終了しました。お疲れ様でした！ ' +
+                companyName +
+                'のレビューをしましょう！',
+              createdAt: new Date(),
+              url: reviewUrl,
+              isUnread: true,
+            })
+          }
 
           batch.commit()
             .then(() => {

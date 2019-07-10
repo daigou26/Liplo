@@ -250,6 +250,21 @@ export const actions = {
       if (status.intern) {
         careerData.end = true
         careerData.endedAt = new Date()
+
+        // インターン終了 通知
+        let reviewNotificationRef = firestore.collection('users').doc(user.uid)
+          .collection('notifications').doc()
+        let reviewUrl = '/user/reviews/new?id=' + careerId
+        batch.set(reviewNotificationRef, {
+          type: 'normal',
+          isImportant: true,
+          content:
+            'インターンが終了しました。お疲れ様でした！ ' +
+            'レビューをしましょう！',
+          createdAt: new Date(),
+          url: reviewUrl,
+          isUnread: true,
+        })
       }
     } else {
       careerData = {

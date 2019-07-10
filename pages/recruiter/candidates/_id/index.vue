@@ -326,7 +326,7 @@
             <v-flex v-show="!isEditingExtendedIntern" class="px-3 break text-xs-left text-color">
               <div v-if="isInternExtended">
                 <div v-if="extendedInternEnd" class="pt-2">
-                  終了しています
+                  終了しました
                 </div>
                 <div v-else>
                   インターン延長中
@@ -634,7 +634,7 @@
                   <v-flex v-show="!isEditingExtendedIntern" class="px-3 break text-xs-left text-color">
                     <div v-if="isInternExtended">
                       <div v-if="extendedInternEnd" class="pt-2">
-                        終了しています
+                        終了しました
                       </div>
                       <div v-else>
                         インターン延長中
