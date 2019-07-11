@@ -52,7 +52,7 @@
             }"
           >
             <div class="text-xs-left white--text">
-              <h1 class="headline font-weight-bold mb-3">LightHouse</h1>
+              <h1 class="headline font-weight-bold mb-3">Liplo</h1>
               <h1
                 class="pt-4 font-weight-bold mb-3"
                 :class="{
@@ -69,7 +69,7 @@
                 </div>
               </h1>
               <h4 class="pt-4 subheading font-weight-bold" style="max-width: 500px">
-                LightHouse は長期インターンを通して、
+                Liplo は長期インターンを通して、
                 求人者と求職者をマッチングする
                 採用プラットフォームです。
                 企業の雰囲気や文化、求職者の働き方や性格など
@@ -91,7 +91,7 @@
               'title-font-size-md': $vuetify.breakpoint.mdAndUp,
             }"
           >
-            なぜ LightHouse なのか
+            なぜ Liplo なのか
           </div>
           <v-layout row wrap justify-center align-center style="padding-top: 100px">
             <v-flex xs10 hidden-sm-and-up>

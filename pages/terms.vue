@@ -21,7 +21,7 @@
         利用規約
       </div>
       <div class="text-color">
-        本規約は、Lighthoouse（以下「当社」といいます）が提供する全てのサービス
+        本規約は、株式会社 Liplo（以下「当社」といいます）が提供する全てのサービス
         （以下「本サービス」といいます）の利用条件を定めるものであり、
         本サービスを利用する全てのユーザーに適用されます。以下を注意してお読みください。
         <div class="subheading font-weight-bold text-color pt-5">

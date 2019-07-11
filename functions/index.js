@@ -111,7 +111,7 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
 
     // 招待されたユーザーにメール送信
     const mailOptions = {
-      from: `LightHouse <noreply@firebase.com>`,
+      from: `Liplo <noreply@liplo.jp>`,
       to: email,
     }
     mailOptions.subject = `[招待] ${userName}さんが${companyName}にあなたを招待しました。`
@@ -185,7 +185,7 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
                       line-height: 24px;
                     "
                   >
-                    <p style="margin: 0;"> LightHouse Inc.</p>
+                    <p style="margin: 0;"> Liplo Inc.</p>
                   </td>
                 </tr>
               </table>
@@ -845,7 +845,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
                   if (userDoc.data().notificationsSetting == null
                     || userDoc.data().notificationsSetting.pass) {
                     const mailOptions = {
-                      from: `LightHouse <noreply@firebase.com>`,
+                      from: `Liplo <noreply@liplo.jp>`,
                       to: userDoc.data().email,
                     }
                     mailOptions.subject = `[パス] ${companyName}から${passTypeText}が届きました！`
@@ -920,7 +920,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
                                       line-height: 24px;
                                     "
                                   >
-                                    <p style="margin: 0;"> LightHouse Inc.</p>
+                                    <p style="margin: 0;"> Liplo Inc.</p>
                                   </td>
                                 </tr>
                               </table>
@@ -1180,7 +1180,7 @@ exports.passHasChanged = functions.region('asia-northeast1')
                   members.forEach((member, i) => {
                     if (member.notificationsSetting == null || member.notificationsSetting.acceptPass) {
                       const mailOptions = {
-                        from: `LightHouse <noreply@firebase.com>`,
+                        from: `Liplo <noreply@liplo.jp>`,
                         to: member.email,
                       }
                       mailOptions.subject = `[パス] ${userName}さんが${typeText}を使用しました。`
@@ -1254,7 +1254,7 @@ exports.passHasChanged = functions.region('asia-northeast1')
                                         line-height: 24px;
                                       "
                                     >
-                                      <p style="margin: 0;"> LightHouse Inc.</p>
+                                      <p style="margin: 0;"> Liplo Inc.</p>
                                     </td>
                                   </tr>
                                 </table>
@@ -1562,7 +1562,7 @@ exports.scoutUser = functions.region('asia-northeast1')
                           if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.scout) {
                             // スカウトされたユーザーにメール送信
                             const mailOptions = {
-                              from: `LightHouse <noreply@firebase.com>`,
+                              from: `Liplo <noreply@liplo.jp>`,
                               to: userDoc.data().email,
                             }
                             mailOptions.subject = `[スカウト] ${companyName}にスカウトされました！ 返事をして話を聞きに行ってみましょう！`
@@ -1637,7 +1637,7 @@ exports.scoutUser = functions.region('asia-northeast1')
                                               line-height: 24px;
                                             "
                                           >
-                                            <p style="margin: 0;"> LightHouse Inc.</p>
+                                            <p style="margin: 0;"> Liplo Inc.</p>
                                           </td>
                                         </tr>
                                       </table>
@@ -1724,7 +1724,7 @@ exports.scoutUser = functions.region('asia-northeast1')
                       if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.scout) {
                         // スカウトされたユーザーにメール送信
                         const mailOptions = {
-                          from: `LightHouse <noreply@firebase.com>`,
+                          from: `Liplo <noreply@liplo.jp>`,
                           to: userDoc.data().email,
                         }
                         mailOptions.subject = `[スカウト] ${companyName}にスカウトされました！ 返事をして話を聞きに行ってみましょう！`
@@ -1799,7 +1799,7 @@ exports.scoutUser = functions.region('asia-northeast1')
                                           line-height: 24px;
                                         "
                                       >
-                                        <p style="margin: 0;"> LightHouse Inc.</p>
+                                        <p style="margin: 0;"> Liplo Inc.</p>
                                       </td>
                                     </tr>
                                   </table>
@@ -1969,7 +1969,7 @@ exports.applyForJob = functions.region('asia-northeast1')
                       if (member.notificationsSetting == null ||
                         member.notificationsSetting.application) {
                         const mailOptions = {
-                          from: `LightHouse <noreply@firebase.com>`,
+                          from: `Liplo <noreply@liplo.jp>`,
                           to: member.email,
                         }
                         mailOptions.subject = `[応募] ${user.name}さんから応募が来ました。`
@@ -2044,7 +2044,7 @@ exports.applyForJob = functions.region('asia-northeast1')
                                           line-height: 24px;
                                         "
                                       >
-                                        <p style="margin: 0;"> LightHouse Inc.</p>
+                                        <p style="margin: 0;"> Liplo Inc.</p>
                                       </td>
                                     </tr>
                                   </table>
@@ -2100,7 +2100,7 @@ exports.applyForJob = functions.region('asia-northeast1')
                   if (member.notificationsSetting == null ||
                     member.notificationsSetting.application) {
                     const mailOptions = {
-                      from: `LightHouse <noreply@firebase.com>`,
+                      from: `Liplo <noreply@liplo.jp>`,
                       to: member.email,
                     }
                     mailOptions.subject = `[応募] ${user.name}さんから応募が来ました。`
@@ -2175,7 +2175,7 @@ exports.applyForJob = functions.region('asia-northeast1')
                                       line-height: 24px;
                                     "
                                   >
-                                    <p style="margin: 0;"> LightHouse Inc.</p>
+                                    <p style="margin: 0;"> Liplo Inc.</p>
                                   </td>
                                 </tr>
                               </table>
@@ -3261,7 +3261,7 @@ exports.sendCompanyInquiryMail = functions
       type = 'すぐに導入したい'
     }
     const mailOptions = {
-      from: `LightHouse <noreply@firebase.com>`,
+      from: `Liplo <noreply@liplo.jp>`,
       to: 'go26dev@gmail.com',
     }
     mailOptions.subject = `${data.companyName}の${data.userName}様からのお問い合わせ`
@@ -3285,7 +3285,7 @@ exports.sendContact = functions
   .https
   .onCall((data, context) => {
     const mailOptions = {
-      from: `LightHouse <noreply@firebase.com>`,
+      from: `Liplo <noreply@liplo.jp>`,
       to: 'go26dev@gmail.com',
     }
     mailOptions.subject = `お問い合わせ`
