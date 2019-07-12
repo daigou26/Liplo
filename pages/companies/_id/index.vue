@@ -706,6 +706,19 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
+  head () {
+    return {
+      title: this.companyName,
+      meta: [
+        { hid: 'description', name: 'description', content: this.what },
+        { hid: 'og:type', property: 'og:type', content: 'article' },
+        { hid: 'og:title', property: 'og:title', content: this.companyName + ' - Liplo' },
+        { hid: 'og:description', property: 'og:description', content: this.what },
+        { hid: 'og:url', property: 'og:url', content: 'https://liplo.jp' + this.$route.path },
+        { hid: 'og:image', property: 'og:image', content: this.companyImageUrl },
+      ],
+    }
+  },
   data: () => ({
     reviewsQueryCount: 0,
     userReviewsQueryCount: 0,

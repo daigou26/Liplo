@@ -69,6 +69,14 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   middleware: 'auth',
+  head () {
+    return {
+      title: this.userName + ' - ' + 'フィードバック',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   data: () => ({
     isQueried: false,
     windowHeight: 0,

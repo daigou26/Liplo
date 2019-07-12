@@ -269,6 +269,12 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
+  head () {
+    return {
+      titleTemplate: null,
+      title: 'Liplo',
+    }
+  },
   data() {
     return {
       footer: false,

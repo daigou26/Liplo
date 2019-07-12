@@ -140,6 +140,18 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 export default {
+  head () {
+    return {
+      title: 'サービスの使い方',
+      meta: [
+        { hid: 'description', name: 'description', content: null },
+        { hid: 'og:type', property: 'og:type', content: 'article' },
+        { hid: 'og:title', property: 'og:title', content: 'サービスの使い方' + ' - Liplo' },
+        { hid: 'og:description', property: 'og:description', content: null },
+        { hid: 'og:url', property: 'og:url', content: 'https://liplo.jp' + this.$route.path },
+      ],
+    }
+  },
   computed: {
     breakpoint() {
       return this.$vuetify.breakpoint.name

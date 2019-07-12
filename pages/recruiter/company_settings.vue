@@ -154,6 +154,14 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   middleware: 'auth',
+  head () {
+    return {
+      title: '企業設定',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   data: () => ({
     isQueried: false,
     snackbar: false,

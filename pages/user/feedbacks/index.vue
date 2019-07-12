@@ -112,6 +112,14 @@ export default {
   components: {
     MyPageMenu
   },
+  head () {
+    return {
+      title: 'フィードバック',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   data: () => ({
     isQueried: false,
     windowHeight: 0,

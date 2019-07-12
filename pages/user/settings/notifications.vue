@@ -110,6 +110,14 @@ export default {
   components: {
     SettingsMenu
   },
+  head () {
+    return {
+      title: '通知設定',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   data: () => ({
     isQueried: false,
     tempScout: true,

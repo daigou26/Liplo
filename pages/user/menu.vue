@@ -91,6 +91,10 @@ export default {
   middleware: 'auth',
   head () {
     return {
+      title: 'メニュー',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
       link: [
         {
           rel: 'stylesheet',

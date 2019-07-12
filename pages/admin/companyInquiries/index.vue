@@ -73,6 +73,14 @@
 import { mapActions, mapState } from 'vuex'
 export default {
   middleware: 'auth',
+  head () {
+    return {
+      title: '企業お問い合わせ',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   data() {
     return {
       isQueried: false,

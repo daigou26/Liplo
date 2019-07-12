@@ -492,6 +492,14 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   middleware: 'auth',
+  head () {
+    return {
+      title: 'パス',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   data() {
     return {
       count: 0,

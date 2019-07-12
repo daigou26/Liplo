@@ -79,6 +79,14 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   middleware: 'auth',
+  head () {
+    return {
+      title: '企業作成',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   data: () => ({
     valid: true,
     companyName: '',
@@ -119,7 +127,7 @@ export default {
       } else if (this.plan == 'ベータ') {
         plan = 2
       }
-      
+
       this.addCompany({
         router: this.$router,
         companyName: this.companyName,

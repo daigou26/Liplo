@@ -95,6 +95,14 @@
 import { mapActions, mapState } from 'vuex'
 export default {
   middleware: 'auth',
+  head () {
+    return {
+      title: this.paramsId + '年度のパス',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   data() {
     return {
       count: 0,

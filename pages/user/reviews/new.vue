@@ -191,6 +191,14 @@ export default {
   components: {
     MyPageMenu
   },
+  head () {
+    return {
+      title: 'レビュー作成',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   data: () => ({
     isQueried: false,
     windowHeight: 0,

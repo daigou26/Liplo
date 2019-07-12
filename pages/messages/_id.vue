@@ -90,7 +90,7 @@
                     <v-avatar
                       v-show="chat.userUnreadCount && chat.userUnreadCount != 0"
                       size="22"
-                      color="pink"
+                      color="#FF5A5F"
                     >
                       <span class="white--text" style="font-size: 12px">{{ chat.userUnreadCount > 99 ? '99+' : chat.userUnreadCount }}</span>
                     </v-avatar>
@@ -266,7 +266,7 @@
                     <v-avatar
                       v-show="chat.userUnreadCount && chat.userUnreadCount != 0"
                       size="22"
-                      color="pink"
+                      color="#FF5A5F"
                     >
                       <span class="white--text" style="font-size: 12px">{{ chat.userUnreadCount > 99 ? '99+' : chat.userUnreadCount }}</span>
                     </v-avatar>
@@ -390,6 +390,14 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   middleware: 'auth',
+  head () {
+    return {
+      title: 'メッセージ',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   data: () => ({
     isQueried: false,
     message: '',

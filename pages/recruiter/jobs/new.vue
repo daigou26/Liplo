@@ -226,6 +226,14 @@ import { mapActions, mapState, mapGetters } from 'vuex'
 
 export default {
   middleware: 'auth',
+  head () {
+    return {
+      title: '募集作成',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   data: () => ({
     valid: true,
     imageFileSizeValid: true,

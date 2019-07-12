@@ -233,6 +233,14 @@ import { mapActions, mapState, mapGetters } from 'vuex'
 
 export default {
   middleware: 'auth',
+  head () {
+    return {
+      title: '募集編集',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   data: () => ({
     isQueried: false,
     windowHeight: 0,

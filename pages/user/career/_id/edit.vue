@@ -135,6 +135,14 @@ export default {
   components: {
     MyPageMenu
   },
+  head () {
+    return {
+      title: 'キャリア編集',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   data: () => ({
     isQueried: false,
     windowHeight: 0,

@@ -87,6 +87,14 @@
 import { mapActions, mapState } from 'vuex'
 export default {
   middleware: 'auth',
+  head () {
+    return {
+      title: '候補者管理',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   data() {
     return {
       count: 0,

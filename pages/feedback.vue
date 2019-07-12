@@ -106,6 +106,18 @@
 import { mapActions, mapState, mapGetters } from 'vuex'
 
 export default {
+  head () {
+    return {
+      title: 'フィードバック',
+      meta: [
+        { hid: 'description', name: 'description', content: null },
+        { hid: 'og:type', property: 'og:type', content: 'article' },
+        { hid: 'og:title', property: 'og:title', content: 'フィードバック' + ' - Liplo' },
+        { hid: 'og:description', property: 'og:description', content: null },
+        { hid: 'og:url', property: 'og:url', content: 'https://liplo.jp' + this.$route.path },
+      ],
+    }
+  },
   data: () => ({
     snackbar: false,
     snackbarText: '',

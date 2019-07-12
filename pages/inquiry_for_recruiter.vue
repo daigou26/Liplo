@@ -52,11 +52,11 @@
             }"
           >
             <div class="text-xs-left white--text">
-              <h1 class="headline font-weight-bold mb-3">Liplo</h1>
+              <h1 class="display-1 font-weight-bold mb-3">Liplo</h1>
               <h1
                 class="pt-4 font-weight-bold mb-3"
                 :class="{
-                  'eading-font-size-xs': $vuetify.breakpoint.xsOnly,
+                  'heading-font-size-xs': $vuetify.breakpoint.xsOnly,
                   'heading-font-size-sm': $vuetify.breakpoint.smAndUp,
                 }"
                 style="max-width: 500px;"
@@ -457,6 +457,14 @@ import { mapActions, mapState, mapGetters } from 'vuex'
 export default {
   head () {
     return {
+      title: '採用担当者様はこちら',
+      meta: [
+        { hid: 'description', name: 'description', content: null },
+        { hid: 'og:type', property: 'og:type', content: 'article' },
+        { hid: 'og:title', property: 'og:title', content: '採用担当者様はこちら' + ' - Liplo' },
+        { hid: 'og:description', property: 'og:description', content: null },
+        { hid: 'og:url', property: 'og:url', content: 'https://liplo.jp' + this.$route.path },
+      ],
       link: [
         {
           rel: 'stylesheet',

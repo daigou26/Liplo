@@ -1,6 +1,4 @@
 const pkg = require('./package')
-
-
 const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
 
 module.exports = {
@@ -13,14 +11,32 @@ module.exports = {
   ** Headers of the page
   */
   head: {
-    title: pkg.name,
+    titleTemplate: '%s - Liplo',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: pkg.description }
+      { hid: 'description', name: 'author', content: null },
+      { hid: 'description', name: 'description', content: 'Liplo は長期インターンを通して、 求人者と求職者をマッチングする 採用プラットフォームです。' },
+      { hid: 'og:site_name', property: 'og:site_name', content: 'Liplo' },
+      { hid: 'og:type', property: 'og:type', content: 'website' },
+      { hid: 'og:url', property: 'og:url', content: 'https://liplo.jp' },
+      { hid: 'og:title', property: 'og:title', content: 'Liplo' },
+      { hid: 'og:description', property: 'og:description', content: 'Liplo は長期インターンを通して、 求人者と求職者をマッチングする 採用プラットフォームです。' },
+      { hid: 'og:image', property: 'og:image', content: '/icon.png' },
+      // pwa iOS
+      { name: 'apple-mobile-web-app-capable', content: 'yes' },
+      { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
+      // twitter
+      { hid: 'twitter:card', name: 'twitter:card', content: 'summary' },
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'icon', sizes: '16x16', type: 'image/png', href: '/favicon-16x16' },
+      { rel: 'icon', sizes: '32x32', type: 'image/png', href: '/favicon-32x32' },
+      { rel: 'icon', sizes: '96x96', type: 'image/png', href: '/favicon-96x96' },
+      { rel: 'icon', sizes: '48x48', type: 'image/png', href: '/android-icon-48x48' },
+      // apple touch icon
+      { rel: 'apple-touch-icon', sizes: '180x180', href: 'apple-icon-180x180.png' },
       {
         rel: 'stylesheet',
         href:
@@ -30,15 +46,25 @@ module.exports = {
   },
 
   router: {
-        middleware: [
-          'toolbar',
-          'auth'
-        ]
-    },
+    middleware: [
+      'toolbar',
+      'auth'
+    ]
+  },
   /*
   ** Customize the progress-bar color
   */
   loading: false,
+  manifest: {
+    lang: 'ja',
+    name: 'Liplo',
+    short_name: 'Liplo',
+    description: 'Liplo は長期インターンを通して、 求人者と求職者をマッチングする 採用プラットフォームです。',
+    theme_color: '#ffffff',
+  },
+  icon: {
+    iconFileName: '/icon.png'
+  },
 
   /*
   ** Global CSS
