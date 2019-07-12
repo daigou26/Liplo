@@ -92,10 +92,16 @@ module.exports = {
   ],
 
   // googleAnalytics
+  // dev
   googleAnalytics: {
     id: 'UA-127466651-3',
     dev: false,
   },
+  // prod
+  // googleAnalytics: {
+  //   id: 'UA-127466651-4',
+  //   dev: false,
+  // },
 
   /*
   ** Build configuration
