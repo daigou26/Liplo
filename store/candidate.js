@@ -4,6 +4,7 @@ import { event } from 'vue-analytics'
 
 export const state = () => ({
   user: null,
+  userName: null,
   status: null,
   reviews: null,
   tags: null,
@@ -30,6 +31,9 @@ export const state = () => ({
 export const mutations = {
   setUser(state, user) {
     state.user = user
+  },
+  setUserName(state, name) {
+    state.userName = name
   },
   setStatus(state, status) {
     state.status = status
@@ -122,6 +126,7 @@ export const actions = {
           }
 
           commit('setUser', doc.data()['user'])
+          commit('setUserName', doc.data()['user'].name)
           commit('setStatus', doc.data()['status'])
           commit('setReviews', doc.data()['reviews'])
           commit('setTags', doc.data()['tags'])
