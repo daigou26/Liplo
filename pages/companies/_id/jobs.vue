@@ -146,6 +146,9 @@ export default {
         { hid: 'og:description', property: 'og:description', content: null },
         { hid: 'og:url', property: 'og:url', content: 'https://liplo.jp' + this.$route.path },
         { hid: 'og:image', property: 'og:image', content: this.companyImageUrl },
+        { hid: 'twitter:image', name: 'twitter:image', content: this.companyImageUrl },
+        { hid: 'twitter:title', name: 'twitter:title', content: '募集一覧 - ' + this.companyName + ' - Liplo' },
+        { hid: 'twitter:description', name: 'twitter:description', content: null },
       ],
     }
   },

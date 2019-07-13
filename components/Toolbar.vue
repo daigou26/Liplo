@@ -385,6 +385,16 @@
                     <v-list-tile-title class="text-color">運営会社</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
+                <!-- 採用担当者向けお問い合わせ -->
+                <v-list-tile
+                  class="px-3"
+                  to="/inquiry_for_recruiter"
+                  @click="dropdownMenu=false"
+                >
+                  <v-list-tile-content>
+                    <v-list-tile-title class="text-color">採用担当者様はこちら</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
                 <!-- お問い合わせ -->
                 <v-list-tile
                   class="px-3"
@@ -444,6 +454,7 @@
           <span v-else-if="path == '/user/settings/account'" class="toolbar-title-small">アカウント設定</span>
           <span v-else-if="path == '/user/settings/notifications'" class="toolbar-title-small">通知設定</span>
           <span v-else-if="path == '/contact'" class="toolbar-title-small">お問い合わせ</span>
+          <span v-else-if="path == '/inquiry_for_recruiter'" class="toolbar-title-small">資料請求</span>
           <span v-else-if="path == '/feedback'" class="toolbar-title-small">フィードバックを送る</span>
           <span v-else-if="path == '/how_to_use'" class="toolbar-title-small">サービスの使い方</span>
           <span v-else-if="path == '/terms'" class="toolbar-title-small">利用規約</span>
@@ -536,7 +547,7 @@
         </v-card>
       </v-menu>
       <!-- help -->
-      <v-btn flat class="hidden-xs-only" @click="helpMenu = true">
+      <v-btn v-if="uid && uid != ''" flat class="hidden-xs-only" @click="helpMenu = true">
         <span class="font-weight-bold text-color">ヘルプ</span>
       </v-btn>
       <v-menu

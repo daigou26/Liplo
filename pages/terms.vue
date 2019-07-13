@@ -410,6 +410,8 @@ export default {
         { hid: 'og:title', property: 'og:title', content: '利用規約' + ' - Liplo' },
         { hid: 'og:description', property: 'og:description', content: null },
         { hid: 'og:url', property: 'og:url', content: 'https://liplo.jp' + this.$route.path },
+        { hid: 'twitter:title', name: 'twitter:title', content: '利用規約' + ' - Liplo' },
+        { hid: 'twitter:description', name: 'twitter:description', content: null },
       ],
     }
   },

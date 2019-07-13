@@ -328,7 +328,12 @@
           </div>
           <v-flex xs12 sm8 md6 offset-sm2 offset-md3>
             <v-img v-bind:src="require('@/assets/images/inquiry/fee.png')"></v-img>
-            <div class="text-xs-right text-color pt-2">
+            <div
+              class="text-xs-right text-color pt-2 px-4"
+              :class="{
+                'caption': $vuetify.breakpoint.smOnly,
+              }"
+            >
               ※ 料金について詳しく知りたい方は、資料請求をお願いします。
             </div>
           </v-flex>
@@ -464,6 +469,8 @@ export default {
         { hid: 'og:title', property: 'og:title', content: '採用担当者様はこちら' + ' - Liplo' },
         { hid: 'og:description', property: 'og:description', content: null },
         { hid: 'og:url', property: 'og:url', content: 'https://liplo.jp' + this.$route.path },
+        { hid: 'twitter:title', name: 'twitter:title', content: '採用担当者様はこちら' + ' - Liplo' },
+        { hid: 'twitter:description', name: 'twitter:description', content: null },
       ],
       link: [
         {

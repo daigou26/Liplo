@@ -1,6 +1,8 @@
 const pkg = require('./package')
 const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
 
+const baseUrl = process.env.BASE_URL || 'https://liplo.jp'
+
 module.exports = {
   mode: 'universal',
 
@@ -19,24 +21,28 @@ module.exports = {
       { hid: 'description', name: 'description', content: 'Liplo は長期インターンを通して、 求人者と求職者をマッチングする 採用プラットフォームです。' },
       { hid: 'og:site_name', property: 'og:site_name', content: 'Liplo' },
       { hid: 'og:type', property: 'og:type', content: 'website' },
-      { hid: 'og:url', property: 'og:url', content: 'https://liplo.jp' },
+      { hid: 'og:url', property: 'og:url', content: baseUrl },
       { hid: 'og:title', property: 'og:title', content: 'Liplo' },
       { hid: 'og:description', property: 'og:description', content: 'Liplo は長期インターンを通して、 求人者と求職者をマッチングする 採用プラットフォームです。' },
-      { hid: 'og:image', property: 'og:image', content: '/icon.png' },
+      { hid: 'og:image', property: 'og:image', content: baseUrl + '/icon.png' },
       // pwa iOS
       { name: 'apple-mobile-web-app-capable', content: 'yes' },
       { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
       // twitter
       { hid: 'twitter:card', name: 'twitter:card', content: 'summary' },
+      { hid: 'twitter:site', name: 'twitter:site', content: baseUrl },
+      { hid: 'twitter:image', name: 'twitter:image', content: baseUrl + '/icon.png' },
+      { hid: 'twitter:title', name: 'twitter:title', content: 'Liplo' },
+      { hid: 'twitter:description', name: 'twitter:description', content: 'Liplo は長期インターンを通して、 求人者と求職者をマッチングする 採用プラットフォームです。' },
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
       { rel: 'icon', sizes: '16x16', type: 'image/png', href: '/favicon-16x16' },
       { rel: 'icon', sizes: '32x32', type: 'image/png', href: '/favicon-32x32' },
+      { rel: 'icon', sizes: '48x48', type: 'image/png', href: '/favicon-48x48' },
       { rel: 'icon', sizes: '96x96', type: 'image/png', href: '/favicon-96x96' },
-      { rel: 'icon', sizes: '48x48', type: 'image/png', href: '/android-icon-48x48' },
       // apple touch icon
-      { rel: 'apple-touch-icon', sizes: '180x180', href: 'apple-icon-180x180.png' },
+      { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
       {
         rel: 'stylesheet',
         href:
