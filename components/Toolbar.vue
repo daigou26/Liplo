@@ -106,10 +106,13 @@
           to="/"
           class="toolbar-title hidden-xs-only"
         >
-          Home
+          <v-card-actions>
+            <img class="mr-2" src="/icon.png" width="34" height="34"/>
+            <span style="color: #FF5A5F">Liplo</span>
+          </v-card-actions>
         </nuxt-link>
         <div class="hidden-sm-and-up">
-          <span v-if="breakpoint == 'xs' && path == '/'"　class="toolbar-title-small">募集</span>
+          <span v-if="breakpoint == 'xs' && path == '/'"　class="toolbar-title" style="color: #FF5A5F">Liplo</span>
           <span v-else-if="breakpoint == 'xs' && path == '/recruiter/dashboard'"　class="toolbar-title-small">ダッシュボード</span>
           <span v-else-if="breakpoint == 'xs' && path == '/recruiter/company'"　class="toolbar-title-small">企業情報</span>
           <span v-else-if="breakpoint == 'xs' && path.includes('/recruiter/jobs')"　class="toolbar-title-small">募集管理</span>
@@ -276,7 +279,7 @@
       @click="iconClicked"
       class="toolbar-side-icon hidden-sm-and-up"
     >
-      <v-icon style="font-size: 18px">menu</v-icon>
+      <v-icon style="font-size: 16px; color: #555555;">menu</v-icon>
     </v-toolbar-side-icon>
     <v-toolbar-side-icon
       v-if="
@@ -307,6 +310,7 @@
                 <v-toolbar-side-icon
                   @click="iconClicked"
                   class="ml-2"
+                  style="color: #555555;"
                 ></v-toolbar-side-icon>
               </v-toolbar>
               <v-list class="py-0">
@@ -381,6 +385,16 @@
                     <v-list-tile-title class="text-color">運営会社</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
+                <!-- 採用担当者向けお問い合わせ -->
+                <v-list-tile
+                  class="px-3"
+                  to="/inquiry_for_recruiter"
+                  @click="dropdownMenu=false"
+                >
+                  <v-list-tile-content>
+                    <v-list-tile-title class="text-color">採用担当者様はこちら</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
                 <!-- お問い合わせ -->
                 <v-list-tile
                   class="px-3"
@@ -413,9 +427,20 @@
     </v-flex>
     <v-toolbar-title class="font-weight-bold ml-0">
       <no-ssr>
-        <nuxt-link to="/" class="toolbar-title hidden-xs-only">Home</nuxt-link>
+        <nuxt-link to="/" class="toolbar-title hidden-xs-only">
+          <v-card-actions>
+            <img class="mr-2" src="/icon.png" width="34" height="34"/>
+            <span style="color: #FF5A5F">Liplo</span>
+          </v-card-actions>
+        </nuxt-link>
+        <nuxt-link v-if="path == '/'" to="/" class="toolbar-title hidden-sm-and-up">
+          <v-card-actions class="px-0">
+            <img class="mr-2" src="/icon.png" width="30" height="30"/>
+            <span style="color: #FF5A5F">Liplo</span>
+          </v-card-actions>
+        </nuxt-link>
         <div class="hidden-sm-and-up">
-          <span v-if="path == '/'"　class="toolbar-title-small">募集</span>
+          <span v-if="path == '/'"　class="toolbar-title" style="color: #FF5A5F"></span>
           <span v-else-if="routeName == 'jobs-id' || routeName == 'companies-id'"　class="toolbar-title-small"></span>
           <span v-else-if="routeName == 'companies-id-jobs'"　class="toolbar-title-small">募集一覧</span>
           <span v-else-if="path == '/user/profile'" class="toolbar-title-small">プロフィール</span>
@@ -429,11 +454,12 @@
           <span v-else-if="path == '/user/settings/account'" class="toolbar-title-small">アカウント設定</span>
           <span v-else-if="path == '/user/settings/notifications'" class="toolbar-title-small">通知設定</span>
           <span v-else-if="path == '/contact'" class="toolbar-title-small">お問い合わせ</span>
+          <span v-else-if="path == '/inquiry_for_recruiter'" class="toolbar-title-small">資料請求</span>
           <span v-else-if="path == '/feedback'" class="toolbar-title-small">フィードバックを送る</span>
           <span v-else-if="path == '/how_to_use'" class="toolbar-title-small">サービスの使い方</span>
           <span v-else-if="path == '/terms'" class="toolbar-title-small">利用規約</span>
           <span v-else-if="path == '/privacy_policy'" class="toolbar-title-small">プライバシーポリシー</span>
-          <span v-else class="toolbar-title-small">Home</span>
+          <span v-else class="toolbar-title" style="color: #FF5A5F">Liplo</span>
         </div>
       </no-ssr>
     </v-toolbar-title>
@@ -521,7 +547,7 @@
         </v-card>
       </v-menu>
       <!-- help -->
-      <v-btn flat class="hidden-xs-only" @click="helpMenu = true">
+      <v-btn v-if="uid && uid != ''" flat class="hidden-xs-only" @click="helpMenu = true">
         <span class="font-weight-bold text-color">ヘルプ</span>
       </v-btn>
       <v-menu

@@ -52,11 +52,11 @@
             }"
           >
             <div class="text-xs-left white--text">
-              <h1 class="headline font-weight-bold mb-3">LightHouse</h1>
+              <h1 class="display-1 font-weight-bold mb-3">Liplo</h1>
               <h1
                 class="pt-4 font-weight-bold mb-3"
                 :class="{
-                  'eading-font-size-xs': $vuetify.breakpoint.xsOnly,
+                  'heading-font-size-xs': $vuetify.breakpoint.xsOnly,
                   'heading-font-size-sm': $vuetify.breakpoint.smAndUp,
                 }"
                 style="max-width: 500px;"
@@ -69,7 +69,7 @@
                 </div>
               </h1>
               <h4 class="pt-4 subheading font-weight-bold" style="max-width: 500px">
-                LightHouse は長期インターンを通して、
+                Liplo は長期インターンを通して、
                 求人者と求職者をマッチングする
                 採用プラットフォームです。
                 企業の雰囲気や文化、求職者の働き方や性格など
@@ -91,7 +91,7 @@
               'title-font-size-md': $vuetify.breakpoint.mdAndUp,
             }"
           >
-            なぜ LightHouse なのか
+            なぜ Liplo なのか
           </div>
           <v-layout row wrap justify-center align-center style="padding-top: 100px">
             <v-flex xs10 hidden-sm-and-up>
@@ -328,7 +328,12 @@
           </div>
           <v-flex xs12 sm8 md6 offset-sm2 offset-md3>
             <v-img v-bind:src="require('@/assets/images/inquiry/fee.png')"></v-img>
-            <div class="text-xs-right text-color pt-2">
+            <div
+              class="text-xs-right text-color pt-2 px-4"
+              :class="{
+                'caption': $vuetify.breakpoint.smOnly,
+              }"
+            >
               ※ 料金について詳しく知りたい方は、資料請求をお願いします。
             </div>
           </v-flex>
@@ -457,6 +462,16 @@ import { mapActions, mapState, mapGetters } from 'vuex'
 export default {
   head () {
     return {
+      title: '採用担当者様はこちら',
+      meta: [
+        { hid: 'description', name: 'description', content: null },
+        { hid: 'og:type', property: 'og:type', content: 'article' },
+        { hid: 'og:title', property: 'og:title', content: '採用担当者様はこちら' + ' - Liplo' },
+        { hid: 'og:description', property: 'og:description', content: null },
+        { hid: 'og:url', property: 'og:url', content: 'https://liplo.jp' + this.$route.path },
+        { hid: 'twitter:title', name: 'twitter:title', content: '採用担当者様はこちら' + ' - Liplo' },
+        { hid: 'twitter:description', name: 'twitter:description', content: null },
+      ],
       link: [
         {
           rel: 'stylesheet',

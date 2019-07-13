@@ -158,6 +158,14 @@ import { auth } from '@/plugins/firebase'
 import { mapActions, mapState } from 'vuex'
 export default {
   middleware: 'auth',
+  head () {
+    return {
+      title: 'ダッシュボード',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   data() {
     return {
       isQueried: false,

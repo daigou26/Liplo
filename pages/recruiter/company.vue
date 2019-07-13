@@ -1127,6 +1127,14 @@ import { mapActions, mapState, mapGetters } from 'vuex'
 
 export default {
   middleware: 'auth',
+  head () {
+    return {
+      title: '企業情報',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   data: () => ({
     snackbar: false,
     snackbarText: '',

@@ -21,7 +21,7 @@
         利用規約
       </div>
       <div class="text-color">
-        本規約は、Lighthoouse（以下「当社」といいます）が提供する全てのサービス
+        本規約は、株式会社 Liplo（以下「当社」といいます）が提供する全てのサービス
         （以下「本サービス」といいます）の利用条件を定めるものであり、
         本サービスを利用する全てのユーザーに適用されます。以下を注意してお読みください。
         <div class="subheading font-weight-bold text-color pt-5">
@@ -401,6 +401,20 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
+  head () {
+    return {
+      title: '利用規約',
+      meta: [
+        { hid: 'description', name: 'description', content: null },
+        { hid: 'og:type', property: 'og:type', content: 'article' },
+        { hid: 'og:title', property: 'og:title', content: '利用規約' + ' - Liplo' },
+        { hid: 'og:description', property: 'og:description', content: null },
+        { hid: 'og:url', property: 'og:url', content: 'https://liplo.jp' + this.$route.path },
+        { hid: 'twitter:title', name: 'twitter:title', content: '利用規約' + ' - Liplo' },
+        { hid: 'twitter:description', name: 'twitter:description', content: null },
+      ],
+    }
+  },
   computed: {
     breakpoint() {
       return this.$vuetify.breakpoint.name

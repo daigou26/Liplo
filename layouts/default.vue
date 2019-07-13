@@ -175,7 +175,7 @@ export default {
 .toolbar-title {
   color: #555555;
   text-decoration: inherit;
-  font-size: 16px;
+  font-size: 22px;
 }
 .toolbar-title-small {
   color: #555555;

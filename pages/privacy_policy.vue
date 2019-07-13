@@ -179,6 +179,20 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
+  head () {
+    return {
+      title: 'プライバシーポリシー',
+      meta: [
+        { hid: 'description', name: 'description', content: null },
+        { hid: 'og:type', property: 'og:type', content: 'article' },
+        { hid: 'og:title', property: 'og:title', content: 'プライバシーポリシー' + ' - Liplo' },
+        { hid: 'og:description', property: 'og:description', content: null },
+        { hid: 'og:url', property: 'og:url', content: 'https://liplo.jp' + this.$route.path },
+        { hid: 'twitter:title', name: 'twitter:title', content: 'プライバシーポリシー' + ' - Liplo' },
+        { hid: 'twitter:description', name: 'twitter:description', content: null },
+      ],
+    }
+  },
   computed: {
     ...mapState({
       isRefreshing: state => state.isRefreshing,

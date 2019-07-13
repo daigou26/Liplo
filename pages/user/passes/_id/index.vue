@@ -271,6 +271,14 @@ export default {
   components: {
     MyPageMenu
   },
+  head () {
+    return {
+      title: this.companyName + ' - ' + 'パス',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   data: () => ({
     isQueried: false,
     acceptDialog: false,

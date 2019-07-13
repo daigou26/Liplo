@@ -153,6 +153,14 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 export default {
+  head () {
+    return {
+      title: '基本的な使い方 - ヘルプ',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   computed: {
     breakpoint() {
       return this.$vuetify.breakpoint.name

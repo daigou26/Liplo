@@ -74,7 +74,7 @@
                 <v-avatar
                   v-show="chat.picUnreadCount && chat.picUnreadCount != 0"
                   size="22"
-                  color="pink"
+                  color="#FF5A5F"
                 >
                   <span class="white--text" style="font-size: 12px">{{ chat.picUnreadCount > 99 ? '99+' : chat.picUnreadCount }}</span>
                 </v-avatar>
@@ -103,6 +103,14 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   middleware: 'auth',
+  head () {
+    return {
+      title: 'メッセージ',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   data: () => ({
     count: 0,
     windowHeight: 0,

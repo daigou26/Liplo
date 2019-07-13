@@ -158,6 +158,14 @@ export default {
   components: {
     MyPageMenu
   },
+  head () {
+    return {
+      title: this.companyName + ' - ' + 'レビュー',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   data: () => ({
     isQueried: false,
     windowHeight: 0,

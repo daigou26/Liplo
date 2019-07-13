@@ -262,6 +262,14 @@ export default {
   components: {
     SettingsMenu
   },
+  head () {
+    return {
+      title: 'アカウント設定',
+      meta: [
+        { name: 'robots', content: 'noindex' },
+      ],
+    }
+  },
   data: () => ({
     isQueried: false,
     tempAcceptScout: true,
