@@ -69,8 +69,8 @@
                 <v-flex v-if="job" xs5 sm6 text-sm-left text-xs-right>
                   <v-rating
                     v-model="job"
-                    background-color="pink"
-                    color="pink"
+                    background-color="#FF5A5F"
+                    color="#FF5A5F"
                     small
                     half-increments
                     readonly
@@ -84,8 +84,8 @@
                 <v-flex v-if="discretion" xs5 sm6 text-sm-left text-xs-right>
                   <v-rating
                     v-model="discretion"
-                    background-color="pink"
-                    color="pink"
+                    background-color="#FF5A5F"
+                    color="#FF5A5F"
                     small
                     half-increments
                     readonly
@@ -99,8 +99,8 @@
                 <v-flex v-if="workingHours" xs5 sm6 text-sm-left text-xs-right>
                   <v-rating
                     v-model="workingHours"
-                    background-color="pink"
-                    color="pink"
+                    background-color="#FF5A5F"
+                    color="#FF5A5F"
                     small
                     half-increments
                     readonly
@@ -114,8 +114,8 @@
                 <v-flex v-if="environment" xs5 sm6 text-sm-left text-xs-right>
                   <v-rating
                     v-model="environment"
-                    background-color="pink"
-                    color="pink"
+                    background-color="#FF5A5F"
+                    color="#FF5A5F"
                     small
                     half-increments
                     readonly
@@ -129,8 +129,8 @@
                 <v-flex v-if="atmosphere" xs5 sm6 text-sm-left text-xs-right>
                   <v-rating
                     v-model="atmosphere"
-                    background-color="pink"
-                    color="pink"
+                    background-color="#FF5A5F"
+                    color="#FF5A5F"
                     small
                     half-increments
                     readonly

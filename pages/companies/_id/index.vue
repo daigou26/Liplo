@@ -572,8 +572,8 @@
                             </div>
                             <v-rating
                               v-model="item.all"
-                              background-color="pink"
-                              color="pink"
+                              background-color="#FF5A5F"
+                              color="#FF5A5F"
                               small
                               half-increments
                               readonly
@@ -669,8 +669,8 @@
                           </v-card>
                           <v-rating
                             v-model="item.all"
-                            background-color="pink"
-                            color="pink"
+                            background-color="#FF5A5F"
+                            color="#FF5A5F"
                             small
                             half-increments
                             readonly

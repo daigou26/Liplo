@@ -143,8 +143,8 @@
                                 <v-rating
                                   v-if="job.rating"
                                   v-model="job.rating.all"
-                                  background-color="pink"
-                                  color="pink"
+                                  background-color="#FF5A5F"
+                                  color="#FF5A5F"
                                   small
                                   half-increments
                                   readonly

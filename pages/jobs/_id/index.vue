@@ -758,8 +758,8 @@
                       <v-card-actions class="pa-0">
                         <v-rating
                           v-model="reviews.rating.all"
-                          background-color="pink"
-                          color="pink"
+                          background-color="#FF5A5F"
+                          color="#FF5A5F"
                           small
                           half-increments
                           readonly
@@ -864,8 +864,8 @@
                             </div>
                             <v-rating
                               v-model="item.all"
-                              background-color="pink"
-                              color="pink darken-1"
+                              background-color="#FF5A5F"
+                              color="#FF5A5F"
                               small
                               half-increments
                               readonly
@@ -961,8 +961,8 @@
                           </v-card>
                           <v-rating
                             v-model="item.all"
-                            background-color="pink"
-                            color="pink darken-1"
+                            background-color="#FF5A5F"
+                            color="#FF5A5F"
                             small
                             half-increments
                             readonly
