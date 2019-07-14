@@ -140,7 +140,7 @@
       </v-btn>
       <!-- notifications -->
       <v-btn flat class="text-color hidden-xs-only" @click="notificationsButtonClicked">
-        <span v-if="!hasNewNotification" class="font-weight-bold text-color">通知</span>
+        <span v-if="!hasNewNotification && !hasNewMessage" class="font-weight-bold text-color">通知</span>
         <v-badge v-else overlap color="red">
           <template v-slot:badge>
             <span></span>
