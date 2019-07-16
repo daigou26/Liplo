@@ -168,39 +168,39 @@ export const actions = {
               const currentCandidates = doc.data()['currentCandidates']
               const candidatesChartData = {
                 labels: [
+                  'スカウト',
                   '応募',
                   '選考中',
                   'インターン',
                   'パス',
                   '入社予定',
-                  '入社',
                 ],
                 datasets: [
                   {
                     borderWidth: 1,
                     backgroundColor: [
                       'rgba(25, 118, 210, 0.2)',
+                      'rgba(100, 181, 246, 0.2)',
                       'rgba(38, 198, 218, 0.2)',
                       'rgba(251, 140, 0, 0.2)',
-                      'rgba(38, 166, 154, 0.2)',
-                      'rgba(102, 187, 106, 0.2)',
                       'rgba(236, 64, 122, 0.2)',
+                      'rgba(156, 39, 176, 0.2)',
                     ],
                     borderColor: [
                       'rgba(25, 118, 210, 1)',
+                      'rgba(100, 181, 246, 1)',
                       'rgba(38, 198, 218, 1)',
                       'rgba(251, 140, 0, 1)',
-                      'rgba(38, 166, 154, 1)',
-                      'rgba(102, 187, 106, 1)',
                       'rgba(236, 64, 122, 1)',
+                      'rgba(156, 39, 176, 1)',
                     ],
                     data: [
+                      currentCandidates.scouted,
                       currentCandidates.inbox,
                       currentCandidates.inProcess,
                       currentCandidates.intern,
                       currentCandidates.pass,
                       currentCandidates.contracted,
-                      currentCandidates.hired,
                     ]
                   }
                 ]
@@ -246,7 +246,7 @@ export const actions = {
                 ],
                 datasets: [{
                     data: [feedbackRate, (100 - feedbackRate)],
-                    backgroundColor: ['#26A69A','#EEEEEE']
+                    backgroundColor: ['#26A69A','#EFEFEF']
                 }],
               }
               const feedbacksChartOptions = {
