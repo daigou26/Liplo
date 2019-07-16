@@ -69,6 +69,9 @@
           </v-list>
         </v-flex>
       </v-layout>
+      <div class="pt-5 text-color">
+        ※ メールでの対応が必要な場合は、help@liplo.jp までご連絡ください。
+      </div>
     </v-flex>
   </v-layout>
 </template>

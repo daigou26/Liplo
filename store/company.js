@@ -493,6 +493,11 @@ export const actions = {
     batch.commit()
       .then(() => {
         commit('setInvoiceEmail', email)
+        var sendChangeInvoiceEmailConfirmation = functions.httpsCallable("sendChangeInvoiceEmailConfirmation")
+        sendChangeInvoiceEmailConfirmation({
+          companyId: companyId,
+          newEmail: email
+        })
       })
       .catch((error) => {
         console.log("Error", error)

@@ -226,7 +226,7 @@ export default {
       this.updateInvoiceEmail({companyId: this.companyId, email: this.newEmail})
       this.changeInvoiceEmailDialog = false
       this.snackbar = true
-      this.snackbarText = 'メールアドレスを更新しました！'
+      this.snackbarText = 'メールアドレスを更新しました！ 変更完了メールが届いているかご確認ください。（届くのに少々時間がかかる場合がございます）'
     },
     ...mapActions({
       queryCompanyInfo: 'company/queryCompanyInfo',
