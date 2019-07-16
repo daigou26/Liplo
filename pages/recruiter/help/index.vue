@@ -122,6 +122,10 @@ export default {
     ],
     rightHelpItems: [
       {
+        title: 'メールアドレス',
+        url: '/recruiter/help/email'
+      },
+      {
         title: '料金プラン',
         url: '/recruiter/help/plan'
       },
