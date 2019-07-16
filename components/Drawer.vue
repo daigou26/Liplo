@@ -11,13 +11,13 @@
       'drawer-mini': $vuetify.breakpoint.smAndDown,
     }"
   >
-    <v-toolbar flat>
+    <v-toolbar flat class="white">
       <v-list-tile to="/">
         <v-list-tile-action>
-          <v-icon>home</v-icon>
+          <img src="/icon.png" width="34" height="34"/>
         </v-list-tile-action>
         <v-list-tile-content>
-          <v-list-tile-title class="font-weight-medium hidden-sm-and-down" style="font-size: 18px">Home</v-list-tile-title>
+          <v-list-tile-title class="font-weight-medium hidden-sm-and-down" style="font-size: 22px; color: #FF5A5F">Liplo</v-list-tile-title>
         </v-list-tile-content>
       </v-list-tile>
     </v-toolbar>

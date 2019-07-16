@@ -3285,6 +3285,7 @@ exports.sendCompanyInquiryMail = functions
     })
   })
 
+// 問い合わせがあった時
 exports.sendContact = functions
   .https
   .onCall((data, context) => {
@@ -3297,6 +3298,52 @@ exports.sendContact = functions
       <p><b>Name: </b>${data.name}</p>
       <p><b>Email: </b>${data.email}</p>
       <p><b>Content: </b>${data.content}</p>
+    `
+    mailTransport.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.log(err)
+      }
+      console.log('completed.')
+    })
+  })
+
+// 企業メアドが変更された時
+exports.sendChangeEmailConfirmation = functions
+  .https
+  .onCall((data, context) => {
+    const mailOptions = {
+      from: `Liplo <noreply@liplo.jp>`,
+      to: data.newEmail,
+    }
+    mailOptions.subject = `[ご確認] 企業メールアドレス変更のお知らせ`
+    mailOptions.html = `
+      <p>${data.companyName} 様</p>
+      <p>お世話になっております。株式会社Liploでございます。</p>
+      <p>企業メールアドレスの変更が正常に行われたことをお知らせいたします。</p>
+      <p>引き続き、Liploをよろしくお願い致します。</p>
+    `
+    mailTransport.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.log(err)
+      }
+      console.log('completed.')
+    })
+  })
+
+// 請求書の送信先が変更された時
+exports.sendChangeInvoiceEmailConfirmation = functions
+  .https
+  .onCall((data, context) => {
+    const mailOptions = {
+      from: `Liplo <noreply@liplo.jp>`,
+      to: data.newEmail,
+    }
+    mailOptions.subject = `[ご確認] 請求書の送信先変更のお知らせ`
+    mailOptions.html = `
+      <p>${data.companyName} 様</p>
+      <p>お世話になっております。株式会社Liploでございます。</p>
+      <p>請求書の送信先の変更が正常に行われたことをお知らせいたします。</p>
+      <p>引き続き、Liploをよろしくお願い致します。</p>
     `
     mailTransport.sendMail(mailOptions, (err, info) => {
       if (err) {

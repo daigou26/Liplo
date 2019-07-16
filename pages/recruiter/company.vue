@@ -1023,10 +1023,6 @@
                 <span class="pl-2">{{ employeesCount }}</span>
               </div>
               <div class="pb-2">
-                <span>メールアドレス:</span>
-                <span class="pl-2">{{ email }}</span>
-              </div>
-              <div class="pb-2">
                 <span>ホームページ:</span>
                 <span class="pl-2">{{ url }}</span>
               </div>
@@ -1081,14 +1077,6 @@
                 ></v-text-field>
                 <v-text-field
                   solo
-                  label="メールアドレス"
-                  append-icon="email"
-                  v-model="tempEmail"
-                  :rules="emailRules"
-                  required
-                ></v-text-field>
-                <v-text-field
-                  solo
                   label="ホームページ"
                   append-icon="home"
                   v-model="tempUrl"
@@ -1107,7 +1095,6 @@
                     location: tempLocation,
                     employeesCount: Number(tempEmployeesCount),
                     foundedDate: tempFoundedDate,
-                    email: tempEmail == email ? null : tempEmail,
                     url: tempUrl,
                   })"
                 >
@@ -1158,7 +1145,6 @@ export default {
     addMemberDialog: false,
     addMemberValid: true,
     memberEmail: '',
-    tempEmail: '',
     emailRules: [
       v => /.+@.+/.test(v) || '無効なメールアドレスです'
     ],
@@ -1467,7 +1453,6 @@ export default {
 
       this.tempLocation = this.location
       this.tempEmployeesCount = this.employeesCount
-      this.tempEmail = this.email
       this.tempUrl = this.url
       this.updateIsEditingCompanyInfo(true)
     },

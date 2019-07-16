@@ -653,61 +653,31 @@ export const actions = {
   updateIsEditingCompanyInfo({commit}, isEditing) {
     commit('updateIsEditingCompanyInfo', isEditing)
   },
-  updateCompanyInfo({commit}, {companyId, email, location, foundedDate, url, employeesCount}) {
+  updateCompanyInfo({commit}, {companyId, location, foundedDate, url, employeesCount}) {
     if (foundedDate) {
       var foundedDateArr = foundedDate.split('-')
       foundedDate = new Date(foundedDateArr[0], foundedDateArr[1] - 1, foundedDateArr[2])
     }
-    if (email) {
-      const batch = firestore.batch()
-      const companyRef = firestore.collection('companies').doc(companyId)
-      batch.update(companyRef, {
-        email: email
-      })
-      const companyDetailRef = firestore.collection('companies')
-        .doc(companyId)
-        .collection('detail')
-        .doc(companyId)
-      batch.update(companyDetailRef, {
-        foundedDate: foundedDate,
+
+    firestore.collection('companies').doc(companyId)
+      .collection('detail')
+      .doc(companyId)
+      .update({
         location: location,
-        employeesCount: employeesCount,
-        email: email,
+        foundedDate: foundedDate,
         url: url,
+        employeesCount: employeesCount
       })
-      batch.commit()
-        .then(() => {
-          commit('setFoundedDate', foundedDate)
-          commit('setLocation', location)
-          commit('setEmployeesCount', employeesCount)
-          commit('setEmail', email)
-          commit('setUrl', url)
-          commit('updateIsEditingCompanyInfo', false)
-        })
-        .catch((error) => {
-          console.error("Error", error)
-        })
-    } else {
-      firestore.collection('companies').doc(companyId)
-        .collection('detail')
-        .doc(companyId)
-        .update({
-          location: location,
-          foundedDate: foundedDate,
-          url: url,
-          employeesCount: employeesCount
-        })
-        .then(() => {
-          commit('setLocation', location)
-          commit('setFoundedDate', foundedDate)
-          commit('setUrl', url)
-          commit('setEmployeesCount', employeesCount)
-          commit('updateIsEditingCompanyInfo', false)
-        })
-        .catch((error) => {
-          console.error("Error updating document: ", error)
-        })
-    }
+      .then(() => {
+        commit('setLocation', location)
+        commit('setFoundedDate', foundedDate)
+        commit('setUrl', url)
+        commit('setEmployeesCount', employeesCount)
+        commit('updateIsEditingCompanyInfo', false)
+      })
+      .catch((error) => {
+        console.error("Error updating document: ", error)
+      })
   },
   updateIsLoading({commit}, isLoading) {
     commit('updateIsLoading', isLoading)

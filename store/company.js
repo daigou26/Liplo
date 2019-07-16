@@ -168,39 +168,39 @@ export const actions = {
               const currentCandidates = doc.data()['currentCandidates']
               const candidatesChartData = {
                 labels: [
+                  'スカウト',
                   '応募',
                   '選考中',
                   'インターン',
                   'パス',
                   '入社予定',
-                  '入社',
                 ],
                 datasets: [
                   {
                     borderWidth: 1,
                     backgroundColor: [
                       'rgba(25, 118, 210, 0.2)',
+                      'rgba(100, 181, 246, 0.2)',
                       'rgba(38, 198, 218, 0.2)',
                       'rgba(251, 140, 0, 0.2)',
-                      'rgba(38, 166, 154, 0.2)',
-                      'rgba(102, 187, 106, 0.2)',
                       'rgba(236, 64, 122, 0.2)',
+                      'rgba(156, 39, 176, 0.2)',
                     ],
                     borderColor: [
                       'rgba(25, 118, 210, 1)',
+                      'rgba(100, 181, 246, 1)',
                       'rgba(38, 198, 218, 1)',
                       'rgba(251, 140, 0, 1)',
-                      'rgba(38, 166, 154, 1)',
-                      'rgba(102, 187, 106, 1)',
                       'rgba(236, 64, 122, 1)',
+                      'rgba(156, 39, 176, 1)',
                     ],
                     data: [
+                      currentCandidates.scouted,
                       currentCandidates.inbox,
                       currentCandidates.inProcess,
                       currentCandidates.intern,
                       currentCandidates.pass,
                       currentCandidates.contracted,
-                      currentCandidates.hired,
                     ]
                   }
                 ]
@@ -246,7 +246,7 @@ export const actions = {
                 ],
                 datasets: [{
                     data: [feedbackRate, (100 - feedbackRate)],
-                    backgroundColor: ['#26A69A','#EEEEEE']
+                    backgroundColor: ['#26A69A','#EFEFEF']
                 }],
               }
               const feedbacksChartOptions = {
@@ -464,12 +464,15 @@ export const actions = {
   updatePlan({commit}, plan) {
     commit('setPlan', plan)
   },
+  // 企業設定画面
   queryCompanyInfo({commit}, companyId) {
     firestore.collection('companies')
       .doc(companyId)
       .get()
       .then(function(doc) {
         if (doc.exists) {
+          commit('setCompanyName', doc.data()['companyName'])
+          commit('setEmail', doc.data()['email'])
           commit('setPlan', doc.data()['plan'])
           commit('setInvoiceEmail', doc.data()['invoiceEmail'])
         }
@@ -478,7 +481,32 @@ export const actions = {
         console.log("Error getting document:", error)
       })
   },
-  updateCompanyInvoiceEmail({commit}, {companyId, email}) {
+  updateCompanyEmail({commit}, {companyId, companyName, email}) {
+    const batch = firestore.batch()
+    const companyRef = firestore.collection('companies').doc(companyId)
+    batch.update(companyRef, {
+      email: email
+    })
+    const companyDetailRef = firestore.collection('companies')
+      .doc(companyId).collection('detail').doc(companyId)
+    batch.update(companyDetailRef, {
+      email: email
+    })
+
+    batch.commit()
+      .then(() => {
+        commit('setEmail', email)
+        var sendChangeEmailConfirmation = functions.httpsCallable("sendChangeEmailConfirmation")
+        sendChangeEmailConfirmation({
+          companyName: companyName,
+          newEmail: email
+        })
+      })
+      .catch((error) => {
+        console.log("Error", error)
+      })
+  },
+  updateCompanyInvoiceEmail({commit}, {companyId, companyName, email}) {
     const batch = firestore.batch()
     const companyRef = firestore.collection('companies').doc(companyId)
     batch.update(companyRef, {
@@ -493,6 +521,11 @@ export const actions = {
     batch.commit()
       .then(() => {
         commit('setInvoiceEmail', email)
+        var sendChangeInvoiceEmailConfirmation = functions.httpsCallable("sendChangeInvoiceEmailConfirmation")
+        sendChangeInvoiceEmailConfirmation({
+          companyName: companyName,
+          newEmail: email
+        })
       })
       .catch((error) => {
         console.log("Error", error)

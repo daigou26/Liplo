@@ -338,6 +338,33 @@
             </div>
           </v-flex>
         </div>
+        <!-- ビジョン -->
+        <div style="padding-top: 150px">
+          <div
+            class="text-xs-center font-weight-bold text-color"
+            :class="{
+              'headline': $vuetify.breakpoint.smAndDown,
+              'title-font-size-md': $vuetify.breakpoint.mdAndUp,
+            }"
+          >
+            Liplo が実現したいこと
+          </div>
+          <v-flex xs12 sm8 md6 offset-sm2 offset-md3 pt-5>
+            <div class="text-color subheading">
+              現在、新卒で入社した人の３割が３年以内に離職していると言われています。
+              これは、ネット上で確認できる企業の情報や面接、ワークショップだけでは、
+              自分に合った企業を見つけるのが困難だということを表しています。
+            </div>
+            <div class="pt-5 text-color subheading">
+              せっかく努力して入社した企業でも、人間関係や仕事内容、企業の雰囲気などが理由で、
+              悩み、辛い思いをして離職する人が多いのが現状です。
+            </div>
+            <div class="pt-5 text-color subheading">
+              私たちは、そういった問題をこのサービスで解決し、多くの人が自分に合った仕事、企業に就き、
+              生き生きと働ける社会を創りたいと思っています。
+            </div>
+          </v-flex>
+        </div>
       </v-flex>
       <v-flex xs12 sm8 md6 offset-sm2 offset-md3 style="padding-top: 150px">
         <!-- フォーム -->
