@@ -220,8 +220,8 @@ export const actions = {
                 ],
                 datasets: [
                   {
-                    borderColor: 'rgba(236, 64, 122, 1)',
-                    backgroundColor: 'rgba(236, 64, 122, 0.2)',
+                    borderColor: 'rgba(255, 90, 95, 1)',
+                    backgroundColor: 'rgba(255, 90, 95, 0.2)',
                     borderWidth: 2,
                     data: [
                       rating.job,
@@ -342,8 +342,8 @@ export const actions = {
                   ],
                   datasets: [
                     {
-                      borderColor: 'rgba(236, 64, 122, 1)',
-                      backgroundColor: 'rgba(236, 64, 122, 0.2)',
+                      borderColor: 'rgba(255, 90, 95, 1)',
+                      backgroundColor: 'rgba(255, 90, 95, 0.2)',
                       borderWidth: 2,
                       data: [
                         reviews.rating.job,

@@ -3015,8 +3015,12 @@ exports.editProfile = functions.region('asia-northeast1')
               members[index].imageUrl = imageUrl
             }
             members[index].name = lastName + ' ' + firstName
-            members[index].position = position
-            members[index].selfIntro = selfIntro
+            if (position) {
+              members[index].position = position
+            }
+            if (selfIntro) {
+              members[index].selfIntro = selfIntro
+            }
 
             // members更新
             const batch = admin.firestore().batch()

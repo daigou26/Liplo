@@ -96,8 +96,8 @@
                     v-model="job"
                     hover
                     half-increments
-                    background-color="pink"
-                    color="pink"
+                    background-color="#FF5A5F"
+                    color="#FF5A5F"
                   />
                 </div>
                 <div class="py-4">
@@ -106,8 +106,8 @@
                     v-model="discretion"
                     hover
                     half-increments
-                    background-color="pink"
-                    color="pink"
+                    background-color="#FF5A5F"
+                    color="#FF5A5F"
                   />
                 </div>
                 <div class="py-4">
@@ -116,8 +116,8 @@
                     v-model="workingHours"
                     hover
                     half-increments
-                    background-color="pink"
-                    color="pink"
+                    background-color="#FF5A5F"
+                    color="#FF5A5F"
                   />
                 </div>
                 <div class="py-4">
@@ -126,8 +126,8 @@
                     v-model="environment"
                     hover
                     half-increments
-                    background-color="pink"
-                    color="pink"
+                    background-color="#FF5A5F"
+                    color="#FF5A5F"
                   />
                 </div>
                 <div class="py-4">
@@ -136,8 +136,8 @@
                     v-model="atmosphere"
                     hover
                     half-increments
-                    background-color="pink"
-                    color="pink"
+                    background-color="#FF5A5F"
+                    color="#FF5A5F"
                   />
                 </div>
               </div>

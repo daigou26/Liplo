@@ -95,8 +95,8 @@
                       <v-list-tile-sub-title>
                         <v-rating
                           v-model="review.all"
-                          background-color="pink"
-                          color="pink"
+                          background-color="#FF5A5F"
+                          color="#FF5A5F"
                           small
                           half-increments
                           readonly

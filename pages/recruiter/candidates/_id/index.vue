@@ -909,18 +909,10 @@
                   {{ error }}
                 </div>
                 <!-- ステータスをインターン、入社予定に変更する場合 -->
-                <div v-if="tempStatus == 'インターン' || tempStatus == '入社予定'" class="text-xs-right">
+                <div v-if="tempStatus == 'インターン' || tempStatus == 'パス' || tempStatus == '入社予定'" class="text-xs-right">
                   <v-btn
                     :disabled="updateStatusButtonDisabled"
-                    @click="statusDialog = true"
-                  >
-                    更新
-                  </v-btn>
-                </div>
-                <div v-else-if="tempStatus == 'パス'" class="text-xs-right">
-                  <v-btn
-                    :disabled="updateStatusButtonDisabled"
-                    @click="passDialog = true"
+                    @click="changeStatusDialog = true"
                   >
                     更新
                   </v-btn>
@@ -1094,21 +1086,26 @@
         </v-flex>
         <!-- ステータス変更の確認 -->
         <v-dialog
-          v-model="statusDialog"
+          v-model="changeStatusDialog"
           :fullscreen="$vuetify.breakpoint.xsOnly"
           width="600"
         >
           <v-card>
             <v-card-title class="title font-weight-bold text-color">ステータス更新の確認</v-card-title>
             <v-card-text>
-              ステータスをインターンまたは採用予定に変更すると料金が発生します。
+              <span v-if="tempStatus == 'インターン' || tempStatus == '採用予定'">
+                ステータスをインターンまたは採用予定に変更すると料金が発生します。
+              </span>
+              <span v-if="tempStatus == 'パス'">
+                一度パスを発行すると取り消すことが出来ません。ご注意ください。
+              </span>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn
                 color="grey darken-1"
                 flat="flat"
-                @click="statusDialog = false"
+                @click="changeStatusDialog = false"
               >
                 キャンセル
               </v-btn>
@@ -1118,36 +1115,6 @@
                 @click="updateStatusButtonClicked"
               >
                 更新
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-        <!-- パス発行の確認 -->
-        <v-dialog
-          v-model="passDialog"
-          :fullscreen="$vuetify.breakpoint.xsOnly"
-          width="600"
-        >
-          <v-card>
-            <v-card-title class="title font-weight-bold text-color">パス発行の確認</v-card-title>
-            <v-card-text>
-              一度パスを発行すると取り消すことが出来ません。ご注意ください。
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn
-                color="grey darken-1"
-                flat="flat"
-                @click="passDialog = false"
-              >
-                キャンセル
-              </v-btn>
-              <v-btn
-                color="teal"
-                flat="flat"
-                @click="updatePassButtonClicked"
-              >
-                発行
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -1257,7 +1224,7 @@ export default {
   middleware: 'auth',
   head () {
     return {
-      title: this.user.name + ' - ' + '候補者管理',
+      title: this.userName + ' - ' + '候補者管理',
       meta: [
         { name: 'robots', content: 'noindex' },
       ],
@@ -1266,8 +1233,7 @@ export default {
   data: () => ({
     isQueried: false,
     windowHeight: 0,
-    statusDialog: false,
-    passDialog: false,
+    changeStatusDialog: false,
     snackbar: false,
     snackbarText: '',
     isMessagesQueried: false,
@@ -1287,7 +1253,6 @@ export default {
     ],
     passType: null,
     joiningYear: null,
-    expirationDate: null,
     expirationDateMenu: false,
     passOccupation: '',
     occupationRules: [
@@ -1490,6 +1455,7 @@ export default {
       lastName: state => state.profile.lastName,
       imageUrl: state => state.profile.imageUrl,
       user: state => state.candidate.user,
+      userName: state => state.candidate.userName,
       status: state => state.candidate.status,
       reviews: state => state.candidate.reviews,
       chatId: state => state.candidate.chatId,
@@ -1750,7 +1716,7 @@ export default {
       }
 
       this.updateStatus(candidateData)
-      this.statusDialog = false
+      this.changeStatusDialog = false
     },
     sendReviewButtonClicked() {
       let reviewData = {

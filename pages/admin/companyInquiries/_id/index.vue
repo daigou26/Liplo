@@ -117,7 +117,7 @@
                 <!-- 作成ボタン -->
                 <v-btn
                   :disabled="!valid"
-                  class="orange darken-1"
+                  class="teal"
                   @click="addCompanyButtonClicked"
                 >
                   <span
@@ -154,9 +154,11 @@ export default {
     windowHeight: 0,
     dialog: false,
     valid: true,
-    plan: '成功報酬',
+    plan: '採用報酬型',
     planItems: [
-      '成功報酬'
+      '採用報酬型',
+      'アルファ',
+      'ベータ'
     ]
   }),
   computed: {
@@ -199,8 +201,12 @@ export default {
   methods: {
     addCompanyButtonClicked() {
       let plan
-      if (this.plan == '成功報酬') {
+      if (this.plan == '採用報酬') {
         plan = 0
+      } else if (this.plan == 'アルファ') {
+        plan = 1
+      } else if (this.plan == 'ベータ') {
+        plan = 2
       }
       this.addCompany({
         router: this.$router,

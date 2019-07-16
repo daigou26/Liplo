@@ -288,14 +288,18 @@ export default {
       hours: null,
     },
     workweekDaysRules: [
+      v => !!v || '数字を入力してください',
       v => (v <= 5 && v >= 1) || '1 ~ 5日で指定してください',
     ],
     workweekHoursRules: [
+      v => !!v || '数字を入力してください',
+      v => (v >= 0) || '0以上で指定してください',
       v => (v <= 100) || '100時間以内で指定してください'
     ],
     tempPeriod: null,
     periodRules: [
       v => !!v || '数字を入力してください',
+      v => (v > 0) || '0以下は入力できません',
       v => (v <= 48) || '48までで指定してください'
     ],
     tempWorkday: '',
