@@ -44,6 +44,36 @@
           }"
         >
           <v-flex md10 sm8 xs10 offset-md1 offset-sm2 offset-xs1 class="text-color">
+            <!-- メアド変更 -->
+            <div class="pt-5">
+              <div
+                class="title font-weight-bold">
+                企業メールアドレスを変更する
+              </div>
+              <div class="pt-3">
+                現在のメールアドレス： {{ email }}
+              </div>
+              <div class="text-xs-right pt-4">
+                <v-btn @click="changeEmailDialog = true">
+                  メールアドレスを変更する
+                </v-btn>
+              </div>
+            </div>
+            <!-- 請求書を送るメアド変更 -->
+            <div class="py-5">
+              <div
+                class="title font-weight-bold">
+                請求書を送るメールアドレスを変更する
+              </div>
+              <div class="pt-3">
+                現在のメールアドレス： {{ invoiceEmail }}
+              </div>
+              <div class="text-xs-right pt-4">
+                <v-btn @click="changeInvoiceEmailDialog = true">
+                  メールアドレスを変更する
+                </v-btn>
+              </div>
+            </div>
             <!-- プラン変更 -->
             <div class="py-5">
               <div
@@ -58,7 +88,7 @@
                 <div v-if="plan == 0">
                   このプランは、6ヶ月ごとに自動更新されます。
                 </div>
-                自動更新の停止やプランの変更、解約などは、お手数ですが、go26dev@gmail.com までご連絡ください。
+                自動更新の停止やプランの変更、解約などは、お手数ですが、support@liplo.jp までご連絡ください。
                 <div v-if="plan != null" class="light-text-color pt-3">
                   ※ 解約されますと、候補者を採用することが出来なくなるため、採用する予定の候補者がいる場合は、
                   採用した後にご解約をお願いします。
@@ -77,26 +107,11 @@
                 </div>
               </div>
             </div>
-            <!-- 請求書を送るメアド変更 -->
-            <div class="py-5">
-              <div
-                class="title font-weight-bold">
-                請求書を送るメールアドレスを変更する
-              </div>
-              <div class="pt-3">
-                現在のメールアドレス： {{ invoiceEmail }}
-              </div>
-              <div class="text-xs-right pt-4">
-                <v-btn @click="changeInvoiceEmailDialog = true">
-                  メールアドレスを変更する
-                </v-btn>
-              </div>
-            </div>
           </v-flex>
         </v-flex>
-        <!-- changeInvoiceEmailDialog -->
+        <!-- changeEmailDialog -->
         <v-dialog
-          v-model="changeInvoiceEmailDialog"
+          v-model="changeEmailDialog"
           :fullscreen="$vuetify.breakpoint.xsOnly"
           width="500"
         >
@@ -108,7 +123,7 @@
               <div class="pb-4">
                 新しいメールアドレスを入力してください。
               </div>
-              <v-form v-model="changeInvoiceEmailValid">
+              <v-form v-model="emailValid">
                 <v-container>
                   <v-layout
                     column
@@ -127,9 +142,59 @@
                     </v-flex>
                     <!-- 変更ボタン -->
                     <v-btn
-                      :disabled="!changeInvoiceEmailValid"
+                      :disabled="!emailValid"
                       class="teal"
-                      @click="changeInvoiceEmailButtonClicked"
+                      @click="changeEmailButtonClicked"
+                    >
+                      <span
+                        class="font-weight-bold body-1"
+                        style="color: #ffffff;"
+                      >
+                        メールアドレス変更
+                      </span>
+                    </v-btn>
+                  </v-layout>
+                </v-container>
+              </v-form>
+            </div>
+          </v-card>
+        </v-dialog>
+        <!-- changeInvoiceEmailDialog -->
+        <v-dialog
+          v-model="changeInvoiceEmailDialog"
+          :fullscreen="$vuetify.breakpoint.xsOnly"
+          width="500"
+        >
+          <v-card>
+            <v-toolbar flat>
+              <span class="text-color font-weight-bold subheading">請求書の送信先変更</span>
+            </v-toolbar>
+            <div class="pa-4">
+              <div class="pb-4">
+                新しいメールアドレスを入力してください。
+              </div>
+              <v-form v-model="emailValid">
+                <v-container>
+                  <v-layout
+                    column
+                    justify-center
+                  >
+                    <v-flex xs12>
+                      <!-- メールアドレス -->
+                      <v-text-field
+                        v-model="newEmail"
+                        :rules="emailRules"
+                        label="新しいメールアドレス"
+                        append-icon="mail_outline"
+                        solo
+                        required
+                      ></v-text-field>
+                    </v-flex>
+                    <!-- 変更ボタン -->
+                    <v-btn
+                      :disabled="!emailValid"
+                      class="teal"
+                      @click="changeEmailButtonClicked"
                     >
                       <span
                         class="font-weight-bold body-1"
@@ -166,18 +231,13 @@ export default {
     isQueried: false,
     snackbar: false,
     snackbarText: '',
+    changeEmailDialog: false,
     changeInvoiceEmailDialog: false,
-    changeInvoiceEmailValid: true,
+    emailValid: true,
     newEmail: '',
     emailRules: [
       v => !!v || 'メールアドレスを入力してください',
       v => /.+@.+/.test(v) || '無効なメールアドレスです'
-    ],
-    passwordShow: false,
-    password: '',
-    passwordRules: [
-      v => !!v || 'パスワードを入力してください',
-      v => (v && v.length >= 8) || '最低8文字必要です'
     ],
   }),
   computed: {
@@ -205,6 +265,8 @@ export default {
       uid: state => state.uid,
       type: state => state.profile.type,
       companyId: state => state.profile.companyId,
+      companyName: state => state.company.companyName,
+      email: state => state.company.email,
       plan: state => state.company.plan,
       invoiceEmail: state => state.company.invoiceEmail,
     }),
@@ -222,14 +284,21 @@ export default {
     },
   },
   methods: {
-    changeInvoiceEmailButtonClicked() {
-      this.updateInvoiceEmail({companyId: this.companyId, email: this.newEmail})
-      this.changeInvoiceEmailDialog = false
+    changeEmailButtonClicked() {
+      if (this.changeEmailDialog) {
+        this.updateCompanyEmail({companyId: this.companyId, companyName: this.companyName, email: this.newEmail})
+        this.changeEmailDialog = false
+      } else if (this.changeInvoiceEmailDialog) {
+        this.updateInvoiceEmail({companyId: this.companyId, companyName: this.companyName, email: this.newEmail})
+        this.changeInvoiceEmailDialog = false
+      }
+      this.newEmail = ''
       this.snackbar = true
       this.snackbarText = 'メールアドレスを更新しました！ 変更完了メールが届いているかご確認ください。（届くのに少々時間がかかる場合がございます）'
     },
     ...mapActions({
       queryCompanyInfo: 'company/queryCompanyInfo',
+      updateCompanyEmail: 'company/updateCompanyEmail',
       updateInvoiceEmail: 'company/updateCompanyInvoiceEmail',
     }),
   }

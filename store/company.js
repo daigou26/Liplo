@@ -464,12 +464,15 @@ export const actions = {
   updatePlan({commit}, plan) {
     commit('setPlan', plan)
   },
+  // 企業設定画面
   queryCompanyInfo({commit}, companyId) {
     firestore.collection('companies')
       .doc(companyId)
       .get()
       .then(function(doc) {
         if (doc.exists) {
+          commit('setCompanyName', doc.data()['companyName'])
+          commit('setEmail', doc.data()['email'])
           commit('setPlan', doc.data()['plan'])
           commit('setInvoiceEmail', doc.data()['invoiceEmail'])
         }
@@ -478,7 +481,32 @@ export const actions = {
         console.log("Error getting document:", error)
       })
   },
-  updateCompanyInvoiceEmail({commit}, {companyId, email}) {
+  updateCompanyEmail({commit}, {companyId, companyName, email}) {
+    const batch = firestore.batch()
+    const companyRef = firestore.collection('companies').doc(companyId)
+    batch.update(companyRef, {
+      email: email
+    })
+    const companyDetailRef = firestore.collection('companies')
+      .doc(companyId).collection('detail').doc(companyId)
+    batch.update(companyDetailRef, {
+      email: email
+    })
+
+    batch.commit()
+      .then(() => {
+        commit('setEmail', email)
+        var sendChangeEmailConfirmation = functions.httpsCallable("sendChangeEmailConfirmation")
+        sendChangeEmailConfirmation({
+          companyName: companyName,
+          newEmail: email
+        })
+      })
+      .catch((error) => {
+        console.log("Error", error)
+      })
+  },
+  updateCompanyInvoiceEmail({commit}, {companyId, companyName, email}) {
     const batch = firestore.batch()
     const companyRef = firestore.collection('companies').doc(companyId)
     batch.update(companyRef, {
@@ -495,7 +523,7 @@ export const actions = {
         commit('setInvoiceEmail', email)
         var sendChangeInvoiceEmailConfirmation = functions.httpsCallable("sendChangeInvoiceEmailConfirmation")
         sendChangeInvoiceEmailConfirmation({
-          companyId: companyId,
+          companyName: companyName,
           newEmail: email
         })
       })
