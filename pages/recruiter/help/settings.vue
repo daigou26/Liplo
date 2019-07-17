@@ -21,27 +21,15 @@
       }"
     >
       <div class="title font-weight-bold">
-        メールアドレスについて
+        メール受信設定について
       </div>
       <div class="pt-5 subheading font-weight-bold">
-        企業のメールアドレスを変更するには？
-      </div>
-      <div class="pt-3">
-        サイドバーの設定から企業のメールアドレスを変更することが出来ます。
-        <div>
-          変更が完了したら確認のメールが届きます。もし、時間が経っても届かない場合は、
-          指定したメールアドレスが合っているかご確認ください。
-        </div>
-      </div>
-      <div class="pt-5 subheading font-weight-bold">
-        個人のメールアドレスを変更するには？
+        メールの通知を切るには？
       </div>
       <div class="pt-3">
         ツールバーのプロフィール画像をクリックし、設定をクリックしてください。
-        設定メニューのアカウント設定から変更することが出来ます。
         <div>
-          変更が完了したら確認のメールが届きます。もし、時間が経っても届かない場合は、
-          指定したメールアドレスが合っているかご確認ください。
+          メール受信設定の画面になるので、そこからメール受信設定の変更が可能です。
         </div>
       </div>
       <div style="padding: 100px 0;">
@@ -63,7 +51,7 @@ export default {
   middleware: 'auth',
   head () {
     return {
-      title: 'メールアドレス - ヘルプ',
+      title: 'メール受信設定 - ヘルプ',
       meta: [
         { name: 'robots', content: 'noindex' },
       ],
