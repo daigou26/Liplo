@@ -951,7 +951,12 @@
                     ></v-text-field>
                   </v-flex>
                   <div class="caption text-color py-2 pl-2 pb-3 text-xs-left">
-                    登録前に<a href="/terms" target="_blank">利用規約</a>をご確認ください。
+                    登録前に
+                    <a class="hidden-xs-only" href="/terms" target="_blank">利用規約</a>
+                    <nuxt-link to="/terms" @click.native="dialog = false" class="hidden-sm-and-up">
+                      利用規約
+                    </nuxt-link>
+                    をご確認ください。
                     <div>
                       登録すると利用規約に同意したことになります。
                     </div>

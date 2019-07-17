@@ -119,8 +119,13 @@
               <span class="text-color font-weight-bold subheading">メールアドレス変更</span>
             </v-toolbar>
             <div class="pa-4">
-              <div class="pb-4">
+              <div class="pb-4 text-color">
                 新しいメールアドレスを入力してください。
+                <div class="pt-2">
+                  ※ 変更後、新しいメールアドレスに確認メールが届きますのでご確認をお願い致します。
+                  届かない場合は、指定したメールアドレスが正しいかご確認ください。
+                  （確認メールが届くのに少々時間がかかる場合がございます）
+                </div>
               </div>
               <v-form v-model="emailValid">
                 <v-container>
@@ -169,8 +174,13 @@
               <span class="text-color font-weight-bold subheading">請求書の送信先変更</span>
             </v-toolbar>
             <div class="pa-4">
-              <div class="pb-4">
+              <div class="pb-4 text-color">
                 新しいメールアドレスを入力してください。
+                <div class="pt-2">
+                  ※ 変更後、新しいメールアドレスに確認メールが届きますのでご確認をお願い致します。
+                  届かない場合は、指定したメールアドレスが正しいかご確認ください。
+                  （確認メールが届くのに少々時間がかかる場合がございます）
+                </div>
               </div>
               <v-form v-model="emailValid">
                 <v-container>
@@ -293,7 +303,7 @@ export default {
       }
       this.newEmail = ''
       this.snackbar = true
-      this.snackbarText = 'メールアドレスを更新しました！ 変更完了メールが届いているかご確認ください。（届くのに少々時間がかかる場合がございます）'
+      this.snackbarText = '更新しました！ 確認のメールが届いているかご確認ください（少々時間がかかる場合がございます）'
     },
     ...mapActions({
       queryCompanyInfo: 'company/queryCompanyInfo',
