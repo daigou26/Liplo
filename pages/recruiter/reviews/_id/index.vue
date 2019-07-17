@@ -47,8 +47,8 @@
               <v-flex xs5 sm6 text-sm-left text-xs-right>
                 <v-rating
                   v-model="job"
-                  background-color="pink"
-                  color="pink darken-1"
+                  background-color="#FF5A5F"
+                  color="#FF5A5F"
                   small
                   half-increments
                   readonly
@@ -62,8 +62,8 @@
               <v-flex xs5 sm6 text-sm-left text-xs-right>
                 <v-rating
                   v-model="discretion"
-                  background-color="pink"
-                  color="pink darken-1"
+                  background-color="#FF5A5F"
+                  color="#FF5A5F"
                   small
                   half-increments
                   readonly
@@ -77,8 +77,8 @@
               <v-flex xs5 sm6 text-sm-left text-xs-right>
                 <v-rating
                   v-model="workingHours"
-                  background-color="pink"
-                  color="pink darken-1"
+                  background-color="#FF5A5F"
+                  color="#FF5A5F"
                   small
                   half-increments
                   readonly
@@ -92,8 +92,8 @@
               <v-flex xs5 sm6 text-sm-left text-xs-right>
                 <v-rating
                   v-model="environment"
-                  background-color="pink"
-                  color="pink darken-1"
+                  background-color="#FF5A5F"
+                  color="#FF5A5F"
                   small
                   half-increments
                   readonly
@@ -107,8 +107,8 @@
               <v-flex xs5 sm6 text-sm-left text-xs-right>
                 <v-rating
                   v-model="atmosphere"
-                  background-color="pink"
-                  color="pink darken-1"
+                  background-color="#FF5A5F"
+                  color="#FF5A5F"
                   small
                   half-increments
                   readonly
