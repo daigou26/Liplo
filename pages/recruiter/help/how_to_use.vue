@@ -24,12 +24,29 @@
         >
           <!-- スカウト -->
           <v-timeline-item
+            color="indigo"
+            small
+          >
+            <v-layout pt-3>
+              <v-flex>
+                <strong class="text-color">1. 企業情報入力、募集作成</strong>
+                <div class="pt-2 light-text-color">
+                  まずはじめに、企業情報を入力しましょう。
+                  <div>
+                    企業情報を入力したら、募集を作成し、応募が来るのを待ちましょう。
+                  </div>
+                </div>
+              </v-flex>
+            </v-layout>
+          </v-timeline-item>
+          <!-- スカウト -->
+          <v-timeline-item
             color="blue"
             small
           >
             <v-layout pt-3>
               <v-flex>
-                <strong class="text-color">1. スカウト</strong>
+                <strong class="text-color">2. スカウト</strong>
                 <div class="pt-2 light-text-color">
                   ユーザー検索画面で、気になる求職者を見つけたら、スカウトを送りましょう。
                   <div>
@@ -46,7 +63,7 @@
           >
             <v-layout pt-3>
               <v-flex>
-                <strong class="text-color">2. 選考</strong>
+                <strong class="text-color">3. 選考</strong>
                 <div class="pt-2 light-text-color">
                   候補者から返信が来たら、選考を始めましょう。
                   <div>
@@ -63,7 +80,7 @@
           >
             <v-layout pt-3>
               <v-flex>
-                <strong class="text-color">3. インターン採用</strong>
+                <strong class="text-color">4. インターン採用</strong>
                 <div class="pt-2 light-text-color">
                   選考を終え、インターンに採用することに決めたら、
                   候補者管理画面でステータスをインターンに変更してください。
@@ -78,7 +95,7 @@
           >
             <v-layout pt-3>
               <v-flex>
-                <strong class="text-color">4. フィードバック</strong>
+                <strong class="text-color">5. フィードバック</strong>
                 <div class="pt-2 light-text-color">
                   インターン終了後、候補者にフィードバックを送りましょう。
                   <div>
@@ -97,7 +114,7 @@
           >
             <v-layout pt-3>
               <v-flex>
-                <strong class="text-color">5. パスの発行</strong>
+                <strong class="text-color">6. パスの発行</strong>
                 <div class="pt-2 light-text-color">
                   インターン終了後、魅力的な候補者にパスを送りましょう。
                   <div>
@@ -115,7 +132,7 @@
           >
             <v-layout pt-3>
               <v-flex>
-                <strong class="text-color">6. 契約</strong>
+                <strong class="text-color">7. 契約</strong>
                 <div class="pt-2 light-text-color">
                   候補者がパスを使用したら、契約（内定契約、雇用契約など）をしてください。
                   <div>
@@ -136,7 +153,7 @@
           >
             <v-layout pt-3>
               <v-flex>
-                <strong class="text-color">7. 入社</strong>
+                <strong class="text-color">8. 入社</strong>
                 <div class="pt-2 light-text-color">
                   候補者が入社しましたら、ステータスを入社に変更してください。
                   ステータスを変更すると、その候補者は、候補者リストに表示されなくなります。
