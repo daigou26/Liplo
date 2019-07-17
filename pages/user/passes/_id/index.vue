@@ -78,14 +78,6 @@
                 この企業に入社することを決めたらメッセージを記入し、使用ボタンを押してください。
               </div>
             </v-alert>
-            <div
-              v-if="!isContracted && !isAccepted && isValid && !isExpired && !(type == 'limited' && limit && limit <= usedCount)"
-              class="pt-3 text-color"
-            >
-              ※ 担当者とのメッセージにて労働条件（給料や労働時間、仕事内容、勤務開始日など）を確認し、同意の上、慎重に使用してください。
-              （労働条件は変更される可能性があるので、過去に一度確認している場合でも、パスの使用前に必ず確認してください）
-              <div v-if="type == 'hiring'">また、入社パスを使用する場合は、メッセージにて、勤務開始日の希望を担当者に伝え、日程のすり合わせを行ってください。</div>
-            </div>
             <!-- 使用済み & 未契約 -->
             <v-alert
               v-if="!isContracted && isAccepted && isValid"
@@ -222,6 +214,14 @@
                   </v-btn>
                 </v-form>
               </div>
+              <div
+                v-if="!isContracted && !isAccepted && isValid && !isExpired && !(type == 'limited' && limit && limit <= usedCount)"
+                class="py-4 light-text-color"
+              >
+                ※ 担当者とのメッセージにて労働条件（給料や労働時間、仕事内容、勤務開始日など）を確認し、同意の上、慎重に使用してください。
+                （労働条件は変更される可能性があるので、過去に一度確認している場合でも、パスの使用前に必ず確認してください）
+                <div v-if="type == 'hiring'">また、入社パスを使用する場合は、メッセージにて、勤務開始日の希望を担当者に伝え、日程のすり合わせを行ってください。</div>
+              </div>
             </div>
           </v-flex>
         </v-flex>
@@ -234,7 +234,7 @@
     >
       <v-card>
         <v-card-title class="title font-weight-bold text-color">パス使用の確認</v-card-title>
-        <v-card-text>
+        <v-card-text class="text-color">
           パスを使用すると、入社を取り消しすることは出来ません。使用前に、
           担当者とのメッセージにて労働条件（給料や労働時間、仕事内容、勤務開始日など）を確認し、
           同意の上、慎重に使用してください。
@@ -242,7 +242,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-            color="grey"
+            color="grey darken-1"
             flat="flat"
             @click="acceptDialog = false"
           >
