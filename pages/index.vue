@@ -9,7 +9,7 @@
       </v-layout>
     </v-flex>
     <v-flex v-else-if="isInitialLoading" xs12 :style="{ height: windowHeight + 'px' }">
-      <v-layout align-center justify-center column fill-height>
+      <v-layout align-center justify-center column fill-height style="padding-top: 150px">
         Now Loading...
       </v-layout>
     </v-flex>
@@ -150,7 +150,7 @@
                                   readonly
                                 />
                                 <span v-if="job.rating" class="pl-1 pr-3 text-color">{{ job.rating.count }}</span>
-                                <span v-show="hover" class="caption green--text">企業情報を確認する</span>
+                                <span v-show="hover" class="caption green--text hidden-xs-only">企業情報を確認する</span>
                               </v-card-actions>
                             </v-list-tile-sub-title>
                           </v-list-tile-content>

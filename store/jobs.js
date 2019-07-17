@@ -516,7 +516,7 @@ export const actions = {
       commit('updateAverage20s', false)
       commit('updateWorktime', false)
     }
-    
+
     if (workweekParams != null) {
       commit('setWorkweek', workweekParams)
     } else {
