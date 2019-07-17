@@ -44,12 +44,6 @@
           指定したメールアドレスが合っているかご確認ください。
         </div>
       </div>
-      <div class="pt-5 subheading font-weight-bold">
-        送ったフィードバックを確認するには？
-      </div>
-      <div class="pt-3">
-        サイドバーのフィードバックから確認が出来ます。
-      </div>
       <div style="padding: 100px 0;">
         <div>
           <nuxt-link to="/contact" class="help-link font-weight-bold teal--text">お問い合わせ</nuxt-link>
