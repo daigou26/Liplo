@@ -2237,6 +2237,10 @@ exports.postJob = functions.region('asia-northeast1')
           const welfare = doc.data().welfare
           const feedback = doc.data().feedback
           const points = doc.data().points
+          const employeesCount = doc.data().employeesCount
+          const url = doc.data().url
+          const location = doc.data().location
+          const foundedDate = doc.data().foundedDate
 
           var jobData = {
             companyName: companyName,
@@ -2292,6 +2296,18 @@ exports.postJob = functions.region('asia-northeast1')
           }
           if (welfare) {
             jobDetailData.welfare = welfare
+          }
+          if (employeesCount) {
+            jobDetailData.employeesCount = employeesCount
+          }
+          if (url) {
+            jobDetailData.url = url
+          }
+          if (location) {
+            jobDetailData.location = location
+          }
+          if (foundedDate) {
+            jobDetailData.foundedDate = foundedDate
           }
 
           const jobDetailRef = admin.firestore().collection('jobs').doc(jobId).collection('detail').doc(jobId)

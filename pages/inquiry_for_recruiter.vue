@@ -349,7 +349,11 @@
           >
             Liplo が実現したいこと
           </div>
-          <v-flex xs12 sm8 md6 offset-sm2 offset-md3 pt-5>
+          <v-flex xs12 sm8 md6 offset-sm2 offset-md3 pt-5
+            :class="{
+              'px-4': $vuetify.breakpoint.xsOnly,
+            }"
+          >
             <div class="text-color subheading">
               現在、新卒で入社した人の３割が３年以内に離職していると言われています。
               これは、ネット上で確認できる企業の情報や面接、ワークショップだけでは、
