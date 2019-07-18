@@ -47,7 +47,7 @@
               'px-3': $vuetify.breakpoint.xsOnly,
               'padding-left-sm': $vuetify.breakpoint.smOnly,
               'padding-left-md': $vuetify.breakpoint.mdOnly,
-              'padding-left-lg': $vuetify.breakpoint.lgOnly,
+              'padding-left-lg': $vuetify.breakpoint.lgAndUp,
             }"
           >
             <div class="text-xs-left white--text">

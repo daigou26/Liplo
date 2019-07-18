@@ -2945,7 +2945,7 @@ exports.editProfile = functions.region('asia-northeast1')
         canSearch = true
       }
 
-      admin.firestore()
+      return admin.firestore()
         .collection('users')
         .doc(uid)
         .update({
@@ -2958,46 +2958,6 @@ exports.editProfile = functions.region('asia-northeast1')
         .catch((error) => {
           console.error("Error updating document", error)
         })
-
-      if (
-        firstName != previousValue.firstName ||
-        lastName != previousValue.lastName ||
-        imageUrl != previousValue.imageUrl
-      ) {
-        var userData = {
-          userName: lastName + ' ' + firstName,
-        }
-        if (imageUrl) {
-          userData.profileImageUrl = imageUrl
-        }
-
-        // chats 更新
-        return admin.firestore()
-          .collection('chats')
-          .where('uid', '==', uid)
-          .get()
-          .then(function(snapshot) {
-            const batch = admin.firestore().batch()
-
-            snapshot.forEach(function(doc) {
-              const chatRef = admin.firestore().collection('chats').doc(doc.id)
-              batch.update(chatRef, userData)
-            })
-
-            batch.commit()
-              .then(() => {
-                console.log('update chat completed.')
-              })
-              .catch((error) => {
-                console.error("Error", error)
-              })
-          })
-          .catch((error) => {
-            console.error("Error getting document: ", error)
-          })
-      } else {
-        return 0
-      }
     } else if (companyId && type == 'recruiter') {
       // recruiter
       // name, imageUrl, position, selfIntro どれも変わっていない場合はreturn
