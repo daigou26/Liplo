@@ -362,6 +362,15 @@ export const actions = {
               batch.commit()
                 .then(() => {
                   commit('setStatus', newStatus)
+                  // analytics
+                  if (state.pass && state.pass.occupation) {
+                    event({
+                      eventCategory: 'user',
+                      eventAction: 'contracted',
+                      eventLabel: state.pass.occupation
+                    })
+                  }
+
                 })
                 .catch((error) => {
                   console.error("Error", error)
@@ -472,18 +481,22 @@ export const actions = {
           if (newStatus.intern) {
             commit('setCareerId', careerId)
             // analytics
-            event({
-              eventCategory: 'user',
-              eventAction: 'hire',
-              eventLabel: 'intern'
-            })
+            if (occupation) {
+              event({
+                eventCategory: 'user',
+                eventAction: 'intern',
+                eventLabel: occupation
+              })
+            }
           } else if (newStatus.hired) {
             // analytics
-            event({
-              eventCategory: 'user',
-              eventAction: 'hire',
-              eventLabel: 'employ'
-            })
+            if (state.pass && state.pass.occupation) {
+              event({
+                eventCategory: 'user',
+                eventAction: 'hired',
+                eventLabel: state.pass.occupation
+              })
+            }
           }
           if (newStatus.pass) {
             commit('setPass', pass)
