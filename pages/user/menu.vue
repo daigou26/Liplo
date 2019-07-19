@@ -4,14 +4,9 @@
     row
     wrap
   >
-    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
-      <v-layout justify-center>
-        Now Loading...
-      </v-layout>
-    </v-flex>
     <v-flex xs10 offset-xs1 v-if="uid && uid != ''">
       <!-- user name, image -->
-      <v-card flat class="py-3">
+      <v-card flat class="py-4">
         <v-list-tile to="/user/profile">
           <v-list-tile-avatar color="grey darken-3">
             <v-img

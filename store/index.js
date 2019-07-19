@@ -638,7 +638,7 @@ export const actions = {
               }
               // メールアドレスの確認が済んでいない場合はメール送信
               if (!doc.data()['isEmailVerified'] && !user.emailVerified && !state.sentVerifyEmail) {
-                if (route.path !== '/' && route.name !== 'jobs-id' && route.path !== '/user/settings/account') {
+                if (route.path !== '/' && route.name !== 'jobs-id' && route.name !== 'user-settings-account') {
                   router.push('/')
                 }
                 commit('updateSentVerifyEmail', true)

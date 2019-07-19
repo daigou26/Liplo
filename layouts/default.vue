@@ -1,39 +1,40 @@
 <template>
   <v-app light>
-    <admin-drawer v-if="path.includes('/admin')"></admin-drawer>
-    <drawer v-if="path.includes('/recruiter') || path.includes('/users')"></drawer>
-    <toolbar></toolbar>
+    <no-ssr>
+      <admin-drawer v-if="path.includes('/admin')"></admin-drawer>
+      <drawer v-if="path.includes('/recruiter') || path.includes('/users')"></drawer>
+      <toolbar></toolbar>
+    </no-ssr>
     <v-content class="white">
       <v-container fluid pa-0>
         <nuxt />
       </v-container>
-      <footer-content
-        v-if="
-          routeName == 'jobs-id' ||
-          routeName == 'companies-id' ||
-          path == '/inquiry_for_recruiter' ||
-          path == '/how_to_use' ||
-          path == '/terms' ||
-          path == '/privacy_policy' ||
-          path == '/contact' ||
-          path == '/feedback' ||
-          (path == '/user/profile' && uid) ||
-          (path.includes('/user/settings') && uid)
-        "
-        class="hidden-xs-only"
-      ></footer-content>
+      <no-ssr>
+        <footer-content
+          v-if="
+            routeName == 'jobs-id' ||
+            routeName == 'companies-id' ||
+            routeName == 'inquiry_for_recruiter' ||
+            routeName == 'how_to_use' ||
+            routeName == 'terms' ||
+            routeName == 'privacy_policy' ||
+            routeName == 'contact' ||
+            routeName == 'feedback' ||
+            (routeName == 'user-profile' && uid) ||
+            (path.includes('/user/settings') && uid)
+          "
+          class="hidden-xs-only"
+        ></footer-content>
+      </no-ssr>
       <v-footer
         v-if="
           uid &&
           type == 'user' &&
           (
             path == '/' ||
-            path == '/user/notifications' ||
-            path == '/user/notifications/' ||
-            path == '/messages' ||
-            path == '/messages/' ||
-            path == '/user/menu' ||
-            path == '/user/menu/'
+            routeName == 'user-notifications' ||
+            routeName == 'messages' ||
+            routeName == 'user-menu'
           )
         "
         class="shadow-top hidden-sm-and-up"
