@@ -317,7 +317,7 @@
                       </v-chip>
                     </div>
                     <!-- 志望する職種の編集画面 -->
-                    <div v-show="isEditingDesiredOccupations">
+                    <div v-show="isEditingDesiredOccupations" class="text-xs-right">
                       <v-select
                         v-model="tempDesiredOccupations"
                         :items="desiredOccupationsItems"
@@ -381,7 +381,7 @@
                       </div>
                     </v-card-text>
                     <!-- 自己紹介の編集画面 -->
-                    <div v-show="isEditingSelfIntro">
+                    <div v-show="isEditingSelfIntro" class="text-xs-right">
                       <v-form v-model="editSelfIntroValid">
                         <v-textarea
                           solo
@@ -444,7 +444,7 @@
                       <p class="return">{{ whatWantToDo }}</p>
                     </v-card-text>
                     <!-- やりたいことの編集画面 -->
-                    <div v-show="isEditingWhatWantToDo">
+                    <div v-show="isEditingWhatWantToDo" class="text-xs-right">
                       <v-form v-model="editWhatWantToDoValid">
                         <v-textarea
                           solo
@@ -502,7 +502,7 @@
                   </v-flex>
                   <v-flex xs12 sm10>
                     <!-- ポートフォリオ表示 -->
-                    <v-list v-show="!isEditingPortfolio && this.portfolio != null" class="pl-4">
+                    <v-list v-show="!isEditingPortfolio && this.portfolio != null">
                       <template v-for="(item, index) in this.portfolio">
                         <v-layout v-if="!xsWidth" layout class="pt-4 pb-3">
                           <v-flex xs4 sm3 lg2>
@@ -512,11 +512,7 @@
                             xs8
                             sm9
                             lg10
-                            class="break"
-                            :class="{
-                              'px-4': $vuetify.breakpoint.smAndUp,
-                              'pl-4': $vuetify.breakpoint.xsOnly,
-                            }"
+                            class="break px-4"
                           >
                             <div>
                               <span class="font-weight-bold subheading text-color">{{ item.title }}</span>
@@ -533,8 +529,8 @@
                             <a v-if="item.url" :href="item.url" target="_blank">{{ item.url }}</a>
                           </v-flex>
                         </v-layout>
-                        <div v-else class="pt-4 pb-3">
-                          <v-img :src="item.imageUrl" aspect-ratio="1.5" max-height="100" max-width="160"></v-img>
+                        <div v-else class="pt-4 pb-3 px-3">
+                          <v-img :src="item.imageUrl" aspect-ratio="1.5" max-height="100"></v-img>
                           <div>
                             <span class="font-weight-bold subheading text-color">{{ item.title }}</span>
                             <v-btn
@@ -555,7 +551,7 @@
                     <div v-show="isEditingPortfolio">
                       <v-form v-model="editPortfolioValid">
                         <div class="d-flex pb-3">
-                          <v-flex xs12 sm10 class="px-4 break">
+                          <v-flex xs12 sm10 class="px-4 break text-xs-right">
                             <div class="py-3">
                               <v-img :src="tempPortfolioItemImageUrl" height="200" class="grey lighten-3"/>
                               <input type="file" v-on:change="onFileChange">
@@ -676,7 +672,7 @@
                     <div v-if="isEditingSkills">
                       <v-form v-model="editSkillsValid">
                         <div class="d-flex pb-3">
-                          <v-flex xs12 class="px-4 break">
+                          <v-flex xs12 class="px-4 break text-xs-right">
                             <v-combobox
                               v-model="tempSkills"
                               chips
@@ -775,7 +771,7 @@
                     <div v-show="isEditingLinks">
                       <v-form v-model="editLinksValid">
                         <div class="d-flex pb-3">
-                          <v-flex xs12 sm10 class="px-4 break">
+                          <v-flex xs12 sm10 class="px-4 break text-xs-right">
                             <v-text-field
                               solo
                               label="タイトル"
@@ -887,7 +883,7 @@
                       ※ 卒業予定日は、採用担当者がパスの有効期間を決める際に参考にするため、入力をお願いします。
                     </div>
                     <!-- 基本情報の編集画面 -->
-                    <div v-show="isEditingUserInfo">
+                    <div v-show="isEditingUserInfo" class="text-xs-right">
                       <v-form v-model="editUserInfoValid">
                         <v-text-field
                           solo
