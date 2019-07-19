@@ -587,7 +587,7 @@ export const actions = {
         return firestore.collection('chats').doc(chatId)
           .collection('messages')
           .orderBy("createdAt", "desc")
-          .limit(10)
+          .limit(20)
           .get()
           .then(function(snapshot) {
             var docCount = 0
@@ -689,7 +689,7 @@ export const actions = {
           .collection('messages')
           .orderBy('createdAt', 'desc')
           .startAfter(lastDate)
-          .limit(10)
+          .limit(20)
           .get()
           .then(function(snapshot) {
             var docCount = 0

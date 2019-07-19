@@ -52,7 +52,7 @@
               ref="messagesScroll"
             >
               <infinite-loading
-                v-if="showInfiniteLoading && messages && messages.length >= 10 && !isLoading"
+                v-if="showInfiniteLoading && messages && messages.length >= 20 && !isLoading"
                 direction="top"
                 spinner="waveDots"
                 @infinite="infiniteHandler">
@@ -206,7 +206,7 @@ export default {
     },
     messages(messages) {
       // 最下部へスクロール
-      if (messages != null && messages.length != 0 && (messages.length <= 10 || this.isNewMessage)) {
+      if (messages != null && messages.length != 0 && (messages.length <= 20 || this.isNewMessage)) {
         this.$nextTick(() => {
           if (this.$refs.messagesScroll) {
             this.$refs.messagesScroll.scrollTop = this.$refs.messagesScroll.scrollHeight

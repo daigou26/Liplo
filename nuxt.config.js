@@ -27,7 +27,6 @@ module.exports = {
       { hid: 'og:image', property: 'og:image', content: baseUrl + '/icon.png' },
       // pwa iOS
       { name: 'apple-mobile-web-app-capable', content: 'yes' },
-      { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
       // twitter
       { hid: 'twitter:card', name: 'twitter:card', content: 'summary' },
       { hid: 'twitter:site', name: 'twitter:site', content: baseUrl },
