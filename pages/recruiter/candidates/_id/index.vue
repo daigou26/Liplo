@@ -901,7 +901,7 @@
                 </div>
                 <!-- ステータスが contracted の時 -->
                 <div v-if="status.contracted && tempStatus != '不採用'">
-                  候補者と雇用契約を結び次第、ステータスを<span class="font-weight-bold purple--text text--lighten-1">入社</span>に変更してください。
+                  候補者が入社しましたら、ステータスを<span class="font-weight-bold purple--text text--lighten-1">入社</span>に変更してください。
                   ステータスを変更すると、候補者一覧に表示されなくなります。
                 </div>
                 <div v-if="error && error != ''" class="pt-3 red--text">
@@ -1092,8 +1092,8 @@
           <v-card>
             <v-card-title class="title font-weight-bold text-color">ステータス更新の確認</v-card-title>
             <v-card-text>
-              <span v-if="tempStatus == 'インターン' || tempStatus == '採用予定'">
-                ステータスをインターンまたは採用予定に変更すると料金が発生します。
+              <span v-if="tempStatus == 'インターン' || tempStatus == '入社予定'">
+                ステータスをインターンまたは入社予定に変更すると料金が発生します。
               </span>
               <span v-if="tempStatus == 'パス'">
                 一度パスを発行すると取り消すことが出来ません。ご注意ください。
