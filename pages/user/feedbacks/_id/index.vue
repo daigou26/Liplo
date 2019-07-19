@@ -89,7 +89,7 @@ export default {
   },
   head () {
     return {
-      title: this.companyName + ' - ' + 'フィードバック',
+      title: 'フィードバック',
       meta: [
         { name: 'robots', content: 'noindex' },
       ],

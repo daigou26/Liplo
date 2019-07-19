@@ -160,7 +160,7 @@ export default {
   },
   head () {
     return {
-      title: this.companyName + ' - ' + 'レビュー',
+      title: 'レビュー',
       meta: [
         { name: 'robots', content: 'noindex' },
       ],

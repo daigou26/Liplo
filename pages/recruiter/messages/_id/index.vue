@@ -126,7 +126,7 @@ export default {
   middleware: 'auth',
   head () {
     return {
-      title: this.userName + ' - ' + 'メッセージ',
+      title: 'メッセージ',
       meta: [
         { name: 'robots', content: 'noindex' },
       ],

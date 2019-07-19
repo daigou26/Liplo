@@ -273,7 +273,7 @@ export default {
   },
   head () {
     return {
-      title: this.companyName + ' - ' + 'パス',
+      title: this.companyName ? this.companyName + ' - ' + 'パス' : 'パス',
       meta: [
         { name: 'robots', content: 'noindex' },
       ],

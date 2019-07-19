@@ -392,7 +392,7 @@ export default {
   middleware: 'auth',
   head () {
     return {
-      title: this.userLastName + this.userFirstName + ' - ' + 'プロフィール',
+      title: this.name ? this.name + ' - ' + 'プロフィール' : 'プロフィール',
       meta: [
         { name: 'robots', content: 'noindex' },
       ],

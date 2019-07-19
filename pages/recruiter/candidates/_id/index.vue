@@ -1220,7 +1220,7 @@ export default {
   middleware: 'auth',
   head () {
     return {
-      title: this.userName + ' - ' + '候補者管理',
+      title: this.userName ? this.userName + ' - ' + '候補者管理' : '候補者管理',
       meta: [
         { name: 'robots', content: 'noindex' },
       ],
