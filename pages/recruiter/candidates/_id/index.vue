@@ -999,10 +999,7 @@
               </div>
               <!-- messages -->
               <v-card v-if="item.value == 'messages' && isShowMessage" flat>
-                <div v-if="isMessagesLoading" class="pt-5 text-xs-center">
-                  Now Loading...
-                </div>
-                <div v-else>
+                <div>
                   <v-layout
                     row
                     align-center
@@ -1038,7 +1035,7 @@
                                   class="grey lighten-3 mx-2"
                                   :size="40"
                                 >
-                                  <img v-if="message.user.imageUrl" :src="message.user.imageUrl">
+                                  <img v-if="user.imageUrl" :src="user.imageUrl">
                                 </v-avatar>
                               </div>
                               <!-- message -->
@@ -1046,7 +1043,7 @@
                                 :class="{ 'message-right': message.pic != null }"
                               >
                                 <div v-if="message.user != null" class="light-text-color">
-                                  {{ message.user.name }}
+                                  {{ user.name }}
                                 </div>
                                 <div
                                   class="px-3 py-2 white message-border-radius return text-xs-left"
