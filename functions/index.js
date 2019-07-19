@@ -180,6 +180,19 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
                     align="center"
                     style="
                       color: #777777;
+                      padding: 32px;
+                      font-size: 14px;
+                      line-height: 24px;
+                    "
+                  >
+                    <p style="margin: 0;"> このメールに心当たりがない方は、お手数をおかけしますがこのメールを破棄してください。</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    align="center"
+                    style="
+                      color: #777777;
                       padding: 28px;
                       font-size: 14px;
                       line-height: 24px;
@@ -3294,9 +3307,10 @@ exports.sendChangeEmailConfirmation = functions
     mailOptions.subject = `[ご確認] 企業メールアドレス変更のお知らせ`
     mailOptions.html = `
       <p>${data.companyName} 様</p>
-      <p>お世話になっております。株式会社Liploでございます。</p>
+      <p>日頃から Liplo をご利用いただき、ありがとうございます。</p>
       <p>企業メールアドレスの変更が正常に行われたことをお知らせいたします。</p>
       <p>引き続き、Liploをよろしくお願い致します。</p>
+      <p style="margin-top: 40px">このメールに心当たりがない方は、お手数をおかけしますがこのメールを破棄してください。</p>
     `
     mailTransport.sendMail(mailOptions, (err, info) => {
       if (err) {
@@ -3317,9 +3331,10 @@ exports.sendChangeInvoiceEmailConfirmation = functions
     mailOptions.subject = `[ご確認] 請求書の送信先変更のお知らせ`
     mailOptions.html = `
       <p>${data.companyName} 様</p>
-      <p>お世話になっております。株式会社Liploでございます。</p>
+      <p>日頃から Liplo をご利用いただき、ありがとうございます。</p>
       <p>請求書の送信先の変更が正常に行われたことをお知らせいたします。</p>
       <p>引き続き、Liploをよろしくお願い致します。</p>
+      <p style="margin-top: 40px">このメールに心当たりがない方は、お手数をおかけしますがこのメールを破棄してください。</p>
     `
     mailTransport.sendMail(mailOptions, (err, info) => {
       if (err) {
