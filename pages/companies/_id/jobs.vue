@@ -134,17 +134,17 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-
+const baseUrl = process.env.BASE_URL || 'https://liplo.jp'
 export default {
   head () {
     return {
-      title: '募集一覧 - ' + this.companyName,
+      title: this.companyName ? '募集一覧 - ' + this.companyName : '募集一覧',
       meta: [
         { hid: 'description', name: 'description', content: null },
         { hid: 'og:type', property: 'og:type', content: 'article' },
         { hid: 'og:title', property: 'og:title', content: '募集一覧 - ' + this.companyName + ' - Liplo' },
         { hid: 'og:description', property: 'og:description', content: null },
-        { hid: 'og:url', property: 'og:url', content: 'https://liplo.jp' + this.$route.path },
+        { hid: 'og:url', property: 'og:url', content: baseUrl + this.$route.path },
         { hid: 'og:image', property: 'og:image', content: this.companyImageUrl },
         { hid: 'twitter:image', name: 'twitter:image', content: this.companyImageUrl },
         { hid: 'twitter:title', name: 'twitter:title', content: '募集一覧 - ' + this.companyName + ' - Liplo' },

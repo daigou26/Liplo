@@ -96,19 +96,19 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex'
-
+const baseUrl = process.env.BASE_URL || 'https://liplo.jp'
 export default {
   head () {
     return {
       title: 'お問い合わせ',
       meta: [
-        { hid: 'description', name: 'description', content: null },
+        { hid: 'description', name: 'description', content: 'お問い合わせはこちらからお願いします。Liploについてのフィードバックやバグの報告はフィードバックフォームからお願いします。' },
         { hid: 'og:type', property: 'og:type', content: 'article' },
         { hid: 'og:title', property: 'og:title', content: 'お問い合わせ' + ' - Liplo' },
-        { hid: 'og:description', property: 'og:description', content: null },
-        { hid: 'og:url', property: 'og:url', content: 'https://liplo.jp' + this.$route.path },
+        { hid: 'og:description', property: 'og:description', content: 'お問い合わせはこちらからお願いします。Liploについてのフィードバックやバグの報告はフィードバックフォームからお願いします。' },
+        { hid: 'og:url', property: 'og:url', content: baseUrl + this.$route.path },
         { hid: 'twitter:title', name: 'twitter:title', content: 'お問い合わせ' + ' - Liplo' },
-        { hid: 'twitter:description', name: 'twitter:description', content: null },
+        { hid: 'twitter:description', name: 'twitter:description', content: 'お問い合わせはこちらからお願いします。Liploについてのフィードバックやバグの報告はフィードバックフォームからお願いします。' },
       ],
     }
   },

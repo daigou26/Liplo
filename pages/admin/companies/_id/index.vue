@@ -120,7 +120,7 @@ export default {
   middleware: 'auth',
   head () {
     return {
-      title: this.companyName,
+      title: this.companyName ? this.companyName : '',
       meta: [
         { name: 'robots', content: 'noindex' },
       ],
