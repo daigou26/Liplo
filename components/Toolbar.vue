@@ -1288,9 +1288,9 @@ export default {
           this.dropdownMenu = !this.dropdownMenu
         } else if (
           this.routeName != null &&
-          this.path != '/user/notifications' &&
-          this.path != '/messages' &&
-          this.path != '/user/menu'
+          this.routeName != 'user-notifications' &&
+          this.routeName != 'messages' &&
+          this.routeName != 'user-menu'
         ) {
           this.$router.back()
         }
