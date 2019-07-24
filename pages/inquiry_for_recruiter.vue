@@ -32,8 +32,8 @@
         <v-layout
           align-center
           row
-          :style="{ height: windowHeight + 'px' }"
           style="
+            padding: 100px 0px;
             background-color: #e0f7fa;
             background-image: linear-gradient(315deg, #e0f7fa 0%, #009688 73%);
           "
@@ -97,7 +97,7 @@
               <div class="title font-weight-bold teal--text">
                 企業にマッチした学生を採用できる
               </div>
-              <div class="subheading light-text-color pt-2">
+              <div class="subheading light-text-color pt-4">
                 独自のパス制度により、長期インターンを終えた魅力的な学生の採用機会を
                 増やすことが出来ます。
               </div>
@@ -136,7 +136,7 @@
               <div class="title font-weight-bold teal--text">
                 パスとは
               </div>
-              <div class="subheading light-text-color pt-2">
+              <div class="subheading light-text-color pt-4">
                 インターン後、企業が採用したいと思う候補者にパスを渡すことが出来ます。
                 パスを発行することで、候補者に入社や内定取得の権利を与えることができます。
                 （有効期間などは設定可能）
@@ -192,7 +192,7 @@
               <div class="title font-weight-bold teal--text">
                 募集
               </div>
-              <div class="subheading light-text-color pt-2">
+              <div class="subheading light-text-color pt-4">
                 募集を作成して企業や仕事の魅力を伝えましょう。
               </div>
             </v-flex>
@@ -233,7 +233,7 @@
               <div class="title font-weight-bold teal--text">
                 スカウト
               </div>
-              <div class="subheading light-text-color pt-2">
+              <div class="subheading light-text-color pt-4">
                 気になる求職者がいたらスカウトをしてアプローチすることが出来ます。
               </div>
             </v-flex>
@@ -274,7 +274,7 @@
               <div class="title font-weight-bold teal--text">
                 レビュー
               </div>
-              <div class="subheading light-text-color pt-2">
+              <div class="subheading light-text-color pt-4">
                 インターン後、候補者にレビューをしてもらえます。これにより、候補者から見た
                 企業の良い点や改善すべき点などを知ることが出来ます。また、良いレビューをもらえると
                 検索で上位に表示されるため、求職者に認知されやすくなります。
