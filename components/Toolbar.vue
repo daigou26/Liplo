@@ -1130,7 +1130,7 @@
 </template>
 
 <script>
-import { firestore, auth } from '@/plugins/firebase'
+import { auth } from '@/plugins/firebase'
 import { mapActions, mapState, mapGetters } from 'vuex'
 import FilterExtension from '~/components/FilterExtension'
 

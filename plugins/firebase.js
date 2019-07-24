@@ -1,6 +1,8 @@
-import firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/auth'
 import 'firebase/firestore'
 import 'firebase/storage'
+import 'firebase/functions'
 
 // dev
 let config = {
@@ -37,7 +39,7 @@ let config = {
 
 !firebase.apps.length ? firebase.initializeApp(config) : ''
 
-export const GoogleProvider = new firebase.auth.GoogleAuthProvider()
+// export const GoogleProvider = new firebase.auth.GoogleAuthProvider()
 export const auth = firebase.auth()
 export const firestore = firebase.firestore()
 export const storage = firebase.storage()

@@ -1,6 +1,5 @@
 export const strict = false
-import firebase from 'firebase'
-import { firestore, functions, auth, GoogleProvider } from '@/plugins/firebase'
+import { firestore, functions, auth } from '@/plugins/firebase'
 import { event } from 'vue-analytics'
 
 
