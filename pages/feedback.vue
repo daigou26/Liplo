@@ -49,6 +49,9 @@
               ご質問やサポートが必要な方は、
               <nuxt-link to="/contact" class="teal--text">お問い合わせ</nuxt-link>でご対応させて頂きます。
             </div>
+            <div v-if="!uid" class="pt-3 font-weight-bold">
+              フィードバックはログインしていないと送れません。
+            </div>
           </div>
           <!-- フォーム -->
           <div class="pt-3">
@@ -77,7 +80,7 @@
                   </v-flex>
                   <!-- 送信ボタン -->
                   <v-btn
-                    :disabled="!valid"
+                    :disabled="!valid || !uid"
                     class="teal"
                     @click="sendButtonClicked"
                   >
@@ -144,6 +147,7 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
+      uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
       isLoading: state => state.appFeedback.isLoading,
       errorMessage: state => state.appFeedback.errorMessage,

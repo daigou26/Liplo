@@ -692,15 +692,6 @@ export const actions = {
   updateIsRefreshing({commit}, isRefreshing) {
     commit('updateIsRefreshing', isRefreshing)
   },
-  // お問い合わせ
-  sendContact({commit}, {name, email, content}) {
-    var sendContact = functions.httpsCallable("sendContact")
-    sendContact({
-      name: name,
-      email: email,
-      content: content
-    })
-  },
   resetState({commit}) {
     commit('setUid', '')
     commit('updateIsVerified', true)

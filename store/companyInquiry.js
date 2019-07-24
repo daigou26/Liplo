@@ -77,31 +77,29 @@ export const actions = {
   },
   // 問い合わせを追加
   addInquiry({commit}, {companyName, companyEmail, userName, email, position, type, content}) {
-    firestore.collection('companyInquiries')
-      .add({
-        companyName: companyName,
-        companyEmail: companyEmail,
-        userName: userName,
-        email: email,
-        position: position,
-        type: type,
-        content: content,
-        createdAt: new Date()
-      })
-      .then(() => {
-        var sendCompanyInquiryMail = functions.httpsCallable("sendCompanyInquiryMail")
-        sendCompanyInquiryMail({
-          companyName: companyName,
-          userName: userName,
-          email: email,
-          position: position,
-          type: type,
-          content: content
-        })
-      })
-      .catch((error) => {
-        console.error("Error", error)
-      })
+    let createdAt = new Date()
+    let timestamp
+    let year  = createdAt.getFullYear()
+    let month = createdAt.getMonth() + 1
+    let day  = createdAt.getDate()
+    let hours = createdAt.getHours()
+    let minutes = createdAt.getMinutes()
+    if (minutes < 10) {
+      minutes = '0' + String(minutes)
+    }
+    timestamp = `${year}/${month}/${day} ${hours}:${minutes}`
+
+    var sendCompanyInquiryMail = functions.httpsCallable("sendCompanyInquiryMail")
+    sendCompanyInquiryMail({
+      companyEmail: companyEmail,
+      companyName: companyName,
+      email: email,
+      userName: userName,
+      position: position,
+      type: type,
+      content: content,
+      timestamp: timestamp
+    })
   },
   updateIsLoading({commit}, isLoading) {
     commit('updateIsLoading', isLoading)

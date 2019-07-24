@@ -3245,55 +3245,85 @@ exports.sendMessage = functions.region('asia-northeast1')
 exports.sendCompanyInquiryMail = functions
   .https
   .onCall((data, context) => {
-    var type
-    if (data.type == 0) {
-      type = '資料請求'
-    } else if (data.type == 1) {
-      type = '詳しく聞きたい'
-    } else if (data.type == 2) {
-      type = 'すぐに導入したい'
-    }
-    const mailOptions = {
-      from: `Liplo <noreply@liplo.jp>`,
-      to: 'go26dev@gmail.com',
-    }
-    mailOptions.subject = `${data.companyName}の${data.userName}様からのお問い合わせ`
-    mailOptions.html = `
-      <p><b>CompanyName: </b>${data.companyName}</p>
-      <p><b>Name: </b>${data.userName} 様</p>
-      <p><b>Position: </b>${data.position} </p>
-      <p><b>Email: </b>${data.email}</p>
-      <p><b>Type: </b>${type}</p>
-      <p><b>Content: </b>${data.content}</p>
-    `
-    mailTransport.sendMail(mailOptions, (err, info) => {
-      if (err) {
-        console.log(err)
-      }
-      console.log('completed.')
-    })
+    return admin.firestore().collection('companyInquiries')
+      .add({
+        companyName: data.companyName,
+        companyEmail: data.companyEmail,
+        userName: data.userName,
+        email: data.email,
+        position: data.position,
+        type: data.type,
+        content: data.content,
+        createdAt: new Date()
+      })
+      .then(() => {
+        var type
+        if (data.type == 0) {
+          type = '資料請求'
+        } else if (data.type == 1) {
+          type = '詳しく聞きたい'
+        } else if (data.type == 2) {
+          type = 'すぐに導入したい'
+        }
+        const mailOptions = {
+          from: `Liplo <noreply@liplo.jp>`,
+          to: 'go26dev@gmail.com',
+        }
+        mailOptions.subject = `${data.companyName}の${data.userName}様からのお問い合わせ`
+        mailOptions.html = `
+          <p><b>CompanyName: </b>${data.companyName}</p>
+          <p><b>Name: </b>${data.userName} 様</p>
+          <p><b>Position: </b>${data.position} </p>
+          <p><b>Email: </b>${data.email}</p>
+          <p><b>Type: </b>${type}</p>
+          <p><b>Content: </b>${data.content}</p>
+          <p><b>Date: </b>${data.timestamp}</p>
+        `
+        mailTransport.sendMail(mailOptions, (err, info) => {
+          if (err) {
+            console.log(err)
+          }
+          console.log('completed.')
+        })
+      })
+      .catch((error) => {
+        console.error("Error", error)
+      })
   })
 
 // 問い合わせがあった時
 exports.sendContact = functions
   .https
   .onCall((data, context) => {
-    const mailOptions = {
-      from: `Liplo <noreply@liplo.jp>`,
-      to: 'go26dev@gmail.com',
-    }
-    mailOptions.subject = `お問い合わせ`
-    mailOptions.html = `
-      <p><b>Name: </b>${data.name}</p>
-      <p><b>Email: </b>${data.email}</p>
-      <p><b>Content: </b>${data.content}</p>
-    `
-    mailTransport.sendMail(mailOptions, (err, info) => {
-      if (err) {
-        console.log(err)
-      }
-      console.log('completed.')
-    })
+    return admin.firestore().collection('inquiries')
+      .add({
+        name: data.name,
+        email: data.email,
+        content: data.content,
+        createdAt: new Date()
+      })
+      .then(() => {
+        const mailOptions = {
+          from: `Liplo <noreply@liplo.jp>`,
+          to: 'go26dev@gmail.com',
+        }
+        mailOptions.subject = `お問い合わせ`
+        mailOptions.html = `
+          <p><b>Name: </b>${data.name}</p>
+          <p><b>Email: </b>${data.email}</p>
+          <p><b>Content: </b>${data.content}</p>
+          <p><b>Date: </b>${data.timestamp}</p>
+        `
+        mailTransport.sendMail(mailOptions, (err, info) => {
+          if (err) {
+            console.log(err)
+          }
+          console.log('completed.')
+        })
+      })
+      .catch((error) => {
+        console.error("Error", error)
+      })
   })
 
 // 企業メアドが変更された時
