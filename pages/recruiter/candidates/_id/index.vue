@@ -1215,6 +1215,7 @@
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex'
 import { firestore, auth, storage, storageRef } from '@/plugins/firebase'
+import SimpleCrypto from "simple-crypto-js"
 
 export default {
   middleware: 'auth',
@@ -1637,6 +1638,9 @@ export default {
       // 更新中はボタンを押せないようにする
       // this.updateStatusValid = false
 
+      // encrypt
+      var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+
       let newStatus = {
         scouted: false,
         inbox: false,
@@ -1679,10 +1683,13 @@ export default {
           case '先着パス': passType = 'limited'; break
         }
 
+        // encrypt
+        var cipherPassMessage = simpleCrypto.encrypt(this.passMessage)
+
         let pass = {
           type: passType,
           expirationDate: new Date(expirationDateArr[0], expirationDateArr[1] - 1, expirationDateArr[2]),
-          message: this.passMessage,
+          message: cipherPassMessage,
           occupation: this.passOccupation,
           pic: {
             uid: this.uid,
@@ -1703,10 +1710,10 @@ export default {
       if (this.status.intern == true && (this.goodPoint != '' || this.advice != '')) {
         let feedback = {}
         if (this.goodPoint != '') {
-          feedback.goodPoint = this.goodPoint
+          feedback.goodPoint = simpleCrypto.encrypt(this.goodPoint)
         }
         if (this.advice != '') {
-          feedback.advice = this.advice
+          feedback.advice = simpleCrypto.encrypt(this.advice)
         }
         candidateData.feedback = feedback
       }

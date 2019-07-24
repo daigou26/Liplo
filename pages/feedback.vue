@@ -81,7 +81,7 @@
                   <!-- 送信ボタン -->
                   <v-btn
                     :disabled="!valid || !uid"
-                    class="teal"
+                    class="teal lighten-1"
                     @click="sendButtonClicked"
                   >
                     <span

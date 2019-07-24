@@ -162,7 +162,7 @@
                     <!-- 変更ボタン -->
                     <v-btn
                       :disabled="!changeEmailValid || loading"
-                      class="teal"
+                      class="teal lighten-1"
                       @click="changeEmailDialogButtonClicked"
                     >
                       <span
@@ -233,7 +233,7 @@
                     <!-- 削除ボタン -->
                     <v-btn
                       :disabled="!deleteAccountValid || loading"
-                      class="teal"
+                      class="teal lighten-1"
                       @click="deleteAccountDialogButtonClicked"
                     >
                       <span

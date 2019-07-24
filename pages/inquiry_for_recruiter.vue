@@ -465,7 +465,7 @@
                     <!-- 送信ボタン -->
                     <v-btn
                       :disabled="!valid"
-                      class="teal"
+                      class="teal lighten-1"
                       @click="sendButtonClicked"
                     >
                       <span

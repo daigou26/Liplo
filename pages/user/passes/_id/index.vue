@@ -207,7 +207,7 @@
                   <v-btn
                     :disabled="!acceptOfferValid || isAccepted"
                     class="mt-3 white--text"
-                    color="teal"
+                    color="teal lighten-1"
                     style="width: 150px"
                     @click="acceptDialog = true">
                     <span class="font-weight-bold">使用する</span>
@@ -250,7 +250,7 @@
           </v-btn>
 
           <v-btn
-            color="teal"
+            color="teal lighten-1"
             flat="flat"
             @click="acceptButtonClicked"
           >

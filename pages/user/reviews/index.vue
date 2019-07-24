@@ -73,7 +73,7 @@
                 <div>
                   レビューを書ける企業がありません。インターンに行きましょう！
                 </div>
-                <v-btn class="mt-4 font-weight-bold white--text" color="teal" to="/">募集を探す</v-btn>
+                <v-btn class="mt-4 font-weight-bold white--text" color="teal lighten-1" to="/">募集を探す</v-btn>
               </div>
             </div>
 

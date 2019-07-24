@@ -114,7 +114,7 @@
                 <div class="pt-3 light-text-color">
                   企業が募集を投稿した場合はこちらに表示されます
                 </div>
-                <v-btn class="mt-4 font-weight-bold white--text" color="teal" to="/">他の企業の募集を探す</v-btn>
+                <v-btn class="mt-4 font-weight-bold white--text" color="teal lighten-1" to="/">他の企業の募集を探す</v-btn>
               </div>
             </v-card>
             <infinite-loading

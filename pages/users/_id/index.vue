@@ -315,7 +315,7 @@
           <v-btn
             large
             :disabled="(companyId == null || companyId == '') || isCandidate || plan == null"
-            color="teal"
+            color="teal lighten-1"
             class="white--text"
             id="user-scout"
             @click="scoutDialogButtonClicked"
@@ -363,7 +363,7 @@
                         <!-- スカウトボタン -->
                         <v-btn
                           :disabled="!valid || !companyId || plan == null"
-                          color="teal"
+                          color="teal lighten-1"
                           @click="scoutButtonClicked"
                         >
                           <span

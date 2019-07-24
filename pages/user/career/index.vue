@@ -144,7 +144,7 @@
                 <div class="pt-3 light-text-color">
                   企業に採用された場合はこちらに表示されます
                 </div>
-                <v-btn class="mt-3 font-weight-bold" color="warning" to="/">募集を探す</v-btn>
+                <v-btn class="mt-3 font-weight-bold white--text" color="teal lighten-1" to="/">募集を探す</v-btn>
               </div>
             </v-card>
           </v-flex>

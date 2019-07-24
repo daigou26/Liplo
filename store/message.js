@@ -1,5 +1,6 @@
 export const strict = false
 import { firestore } from '@/plugins/firebase'
+import SimpleCrypto from "simple-crypto-js"
 
 export const actions = {
   postMessageFromUser({commit}, {params, message, uid, imageUrl, name}) {
@@ -11,11 +12,14 @@ export const actions = {
     if (imageUrl) {
       user.imageUrl = imageUrl
     }
+    // encrypt
+    var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+    var cipherText = simpleCrypto.encrypt(message)
 
     return firestore.collection('chats').doc(chatId)
       .collection('messages')
       .add({
-        message: message,
+        message: cipherText,
         user: user,
         createdAt: new Date(),
       })
@@ -34,11 +38,14 @@ export const actions = {
     if (imageUrl) {
       pic.imageUrl = imageUrl
     }
+    // encrypt
+    var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+    var cipherText = simpleCrypto.encrypt(message)
 
     return firestore.collection('chats').doc(chatId)
       .collection('messages')
       .add({
-        message: message,
+        message: cipherText,
         pic: pic,
         createdAt: new Date(),
       })

@@ -147,7 +147,7 @@
                     <!-- 変更ボタン -->
                     <v-btn
                       :disabled="!emailValid"
-                      class="teal"
+                      class="teal lighten-1"
                       @click="changeEmailButtonClicked"
                     >
                       <span
@@ -202,7 +202,7 @@
                     <!-- 変更ボタン -->
                     <v-btn
                       :disabled="!emailValid"
-                      class="teal"
+                      class="teal lighten-1"
                       @click="changeEmailButtonClicked"
                     >
                       <span

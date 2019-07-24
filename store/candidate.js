@@ -1,6 +1,7 @@
 export const strict = false
 import { firestore, storageRef } from '@/plugins/firebase'
 import { event } from 'vue-analytics'
+import SimpleCrypto from "simple-crypto-js"
 
 export const state = () => ({
   user: null,
@@ -605,8 +606,15 @@ export const actions = {
                 minutes = '0' + String(minutes)
               }
 
+              // decrypt
+              var decipherText = ''
+              if (doc.data()['message']) {
+                var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+                decipherText = simpleCrypto.decrypt(doc.data()['message'])
+              }
+
               const message = {
-                message: doc.data()['message'],
+                message: decipherText,
                 createdAt: doc.data()['createdAt'],
                 date: `${year}/${month}/${day}`,
                 time: `${hours}:${minutes}`,
@@ -665,8 +673,15 @@ export const actions = {
                       minutes = '0' + String(minutes)
                     }
 
+                    // decrypt
+                    var decipherText = ''
+                    if (change.doc.data()['message']) {
+                      var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+                      decipherText = simpleCrypto.decrypt(change.doc.data()['message'])
+                    }
+
                     const message = {
-                      message: change.doc.data()['message'],
+                      message: decipherText,
                       createdAt: change.doc.data()['createdAt'],
                       date: `${year}/${month}/${day}`,
                       time: `${hours}:${minutes}`,
@@ -707,8 +722,15 @@ export const actions = {
                 minutes = '0' + String(minutes)
               }
 
+              // decrypt
+              var decipherText = ''
+              if (doc.data()['message']) {
+                var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+                decipherText = simpleCrypto.decrypt(doc.data()['message'])
+              }
+              
               const message = {
-                message: doc.data()['message'],
+                message: decipherText,
                 createdAt: doc.data()['createdAt'],
                 date: `${year}/${month}/${day}`,
                 time: `${hours}:${minutes}`,

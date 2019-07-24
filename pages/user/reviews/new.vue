@@ -166,7 +166,7 @@
                     <v-btn
                       :disabled="!reviewValid || notReviewedCompany.isWritten"
                       class="white--text"
-                      color="teal"
+                      color="teal lighten-1"
                       @click="reviewButtonClicked">
                       レビューを送信
                     </v-btn>

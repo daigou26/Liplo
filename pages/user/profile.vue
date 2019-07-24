@@ -98,7 +98,7 @@
                           キャンセル
                         </v-btn>
                         <v-btn
-                          color="teal"
+                          color="teal lighten-1"
                           flat
                           :disabled ="selectedImage == null || !imageFileSizeValid"
                           @click="updateProfileImage({uid: uid, imageFile: imageFile})"
@@ -150,7 +150,7 @@
                           キャンセル
                         </v-btn>
                         <v-btn
-                          color="teal"
+                          color="teal lighten-1"
                           flat
                           :disabled="!editUserNameValid"
                           @click="updateUserName({uid: uid, firstName: tempFirstName, lastName: tempLastName})"
