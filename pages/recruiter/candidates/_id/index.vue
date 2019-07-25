@@ -192,7 +192,7 @@
             </v-flex>
             <v-flex v-show="!isEditingPass" class="px-3 break text-xs-left text-color">
               <div class="pt-2 pb-3">
-                タイプ：　<span class="font-weight-bold light-text-color">{{ passTypeText }}</span>
+                タイプ：　<span class="font-weight-bold light-text-color">{{ passType }}</span>
                 <div>
                   <v-btn
                     small
@@ -208,11 +208,11 @@
               <div class="pb-2">
                 職種:　{{ passOccupation }}
               </div>
-              <div v-if="passType != 'hiring'" class="pb-2">
+              <div v-if="passType != '入社パス'" class="pb-2">
                 入社年度:　{{ joiningYear }}年度
               </div>
               <div>
-                有効期限:　{{ passExpirationDate }}
+                有効期限:　{{ expirationDate }}
               </div>
             </v-flex>
             <!-- pass編集 -->
@@ -231,7 +231,7 @@
               ></v-text-field>
               <!-- 入社年度 -->
               <v-text-field
-                v-if="passType != 'hiring'"
+                v-if="passType != '入社パス'"
                 v-model="tempJoiningYear"
                 class="pt-3"
                 label="入社年度"
@@ -271,7 +271,7 @@
                 ></v-date-picker>
               </v-menu>
               <div
-                v-show="passType == 'offer' || passType == 'limited'"
+                v-show="passType == '内定パス' || passType == '先着パス'"
                 class=" light-text-color pb-3"
                 style="font-size: 13px"
               >
@@ -281,7 +281,7 @@
                   卒業予定日は、学生のプロフィールから確認できます。プロフィールに卒業予定日が設定されていない場合は、学生とのメッセージにてご確認ください。
                 </div>
               </div>
-              <div v-show="passType == 'hiring'" class="caption light-text-color pb-3">
+              <div v-show="passType == '入社パス'" class="caption light-text-color pb-3">
                 有効期限は、最低でも卒業予定日以降である必要があり、卒業日から1,2年を推奨しています。
               </div>
               <div class="text-xs-right">
@@ -501,7 +501,7 @@
                   </v-flex>
                   <v-flex v-show="!isEditingPass" class="px-3 break text-xs-left text-color">
                     <div class="pt-2 pb-3">
-                      タイプ：　<span class="font-weight-bold light-text-color">{{ passTypeText }}</span>
+                      タイプ：　<span class="font-weight-bold light-text-color">{{ passType }}</span>
                       <div>
                         <v-btn
                           small
@@ -517,11 +517,11 @@
                     <div class="pb-2">
                       職種:　{{ passOccupation }}
                     </div>
-                    <div v-if="passType != 'hiring'" class="pb-2">
+                    <div v-if="passType != '入社パス'" class="pb-2">
                       入社年度:　{{ joiningYear }}年度
                     </div>
                     <div>
-                      有効期限:　{{ passExpirationDate }}
+                      有効期限:　{{ expirationDate }}
                     </div>
                   </v-flex>
                   <!-- pass編集 -->
@@ -540,7 +540,7 @@
                     ></v-text-field>
                     <!-- 入社年度 -->
                     <v-text-field
-                      v-if="passType != 'hiring'"
+                      v-if="passType != '入社パス'"
                       v-model="tempJoiningYear"
                       class="pt-3"
                       label="入社年度"
@@ -580,7 +580,7 @@
                       ></v-date-picker>
                     </v-menu>
                     <div
-                      v-show="passType == 'offer' || passType == 'limited'"
+                      v-show="passType == '内定パス' || passType == '先着パス'"
                       class=" light-text-color pb-3"
                       style="font-size: 13px"
                     >
@@ -589,7 +589,7 @@
                         卒業予定日は、学生のプロフィールから確認できます。プロフィールに卒業予定日が設定されていない場合は、学生とのメッセージにてご確認ください。
                       </div>
                     </div>
-                    <div v-show="passType == 'hiring'" class="caption light-text-color pb-3">
+                    <div v-show="passType == '入社パス'" class="caption light-text-color pb-3">
                       有効期限は、最低でも卒業予定日以降である必要があり、卒業日から1,2年を推奨しています。
                     </div>
                     <div class="text-xs-right">
@@ -1248,8 +1248,9 @@ export default {
       v => !!v || '入力されていません',
       v => (v && v.length <= 2000) || '2000字以内で入力してください'
     ],
-    passType: null,
+    passType: '',
     joiningYear: null,
+    expirationDate: null,
     expirationDateMenu: false,
     passOccupation: '',
     occupationRules: [
@@ -1295,24 +1296,6 @@ export default {
         v => (String(v).length == 4) || '4桁で指定してください',
         v => (v >= year.getFullYear() - 1) || `${year.getFullYear() - 1}以上で指定してください`,
       ]
-    },
-    passTypeText() {
-      if (this.passType == 'hiring') {
-        return '入社パス'
-      } else if (this.passType == 'offer') {
-        return '内定パス'
-      } else if (this.passType == 'limited') {
-        return '先着パス'
-      }
-    },
-    passExpirationDate() {
-      if (this.expirationDate) {
-        const date = this.expirationDate
-        let year  = date.getFullYear()
-        let month = date.getMonth() + 1
-        let day  = date.getDate()
-        return `${year}/${month}/${day}`
-      }
     },
     isReviewed() {
       if (this.reviews) {
@@ -1565,10 +1548,21 @@ export default {
     },
     pass(pass) {
       if (pass) {
-        this.passType = pass.type
-        this.expirationDate = pass.expirationDate
-        this.passOccupation = pass.occupation
+        if (pass.type == 'hiring') {
+          this.passType = '入社パス'
+        } else if (pass.type == 'offer') {
+          this.passType = '内定パス'
+        } else if (pass.type == 'limited') {
+          this.passType = '先着パス'
+        }
 
+        const date = pass.expirationDate
+        let year  = date.getFullYear()
+        let month = date.getMonth() + 1
+        let day  = date.getDate()
+        this.expirationDate = `${year}/${month}/${day}`
+
+        this.passOccupation = pass.occupation
         if (pass.type == 'offer' || pass.type == 'limited') {
           this.joiningYear = pass.joiningYear
         }
@@ -1600,20 +1594,20 @@ export default {
     },
     editPassButtonClicked() {
       // パスの種類
-      switch (this.passType) {
-        case 'hiring': this.tempPassType = '入社パス'; break
-        case 'offer': this.tempPassType = '内定パス'; break
-        case 'limited': this.tempPassType = '先着パス'; break
-      }
+      this.tempPassType = this.passType
       // 入社年度（内定パス、先着パス）
-      if (this.passType != 'hiring') {
+      if (this.passType != '入社パス') {
         this.tempJoiningYear = this.joiningYear
       }
       // 有効期間
-      this.tempExpirationDate =
-        String(this.expirationDate.getFullYear()) + '-' +
-        String(this.expirationDate.getMonth() + 1) + '-' +
-        String(this.expirationDate.getDate())
+      if (pass.expirationDate) {
+        let expirationDate = pass.expirationDate
+        this.tempExpirationDate =
+          String(expirationDate.getFullYear()) + '-' +
+          String(expirationDate.getMonth() + 1) + '-' +
+          String(expirationDate.getDate())
+      }
+
       // 職種
       this.tempPassOccupation = this.passOccupation
       this.updateIsEditingPass(true)
@@ -1783,7 +1777,7 @@ export default {
       var expirationDateArr = this.tempExpirationDate.split('-')
       var expirationDate = new Date(expirationDateArr[0], expirationDateArr[1] - 1, expirationDateArr[2])
 
-      if (this.passType == 'hiring') {
+      if (this.passType == '入社パス') {
         this.updatePass({
           params: this.params,
           companyId: this.companyId,
