@@ -342,15 +342,6 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
               allCandidates: allCandidates,
             }
 
-            if (hiringPassCount) {
-              companyData.hiringPassCount = hiringPassCount
-            }
-
-            // hiringPassCount
-            if ((newStatus.hired || newStatus.rejected) && passType == 'hiring') {
-              companyData.hiringPassCount -= 1
-            }
-
             // company feedback all 更新
             if (beforeStatus.intern) {
               companyFeedbackData.all += 1
@@ -383,7 +374,6 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
         const companyName = companyData.companyName
         const companyImageUrl = companyData.imageUrl
         let allCandidates = companyData.allCandidates
-        let hiringPassCount = companyData.hiringPassCount
         let companyFeedbackData = companyData.feedback
         const invoiceEmail = companyData.invoiceEmail
 
@@ -731,7 +721,6 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
         const companyName = companyData.companyName
         const companyImageUrl = companyData.imageUrl
         let allCandidates = companyData.allCandidates
-        let hiringPassCount = companyData.hiringPassCount
         let companyFeedbackData = companyData.feedback
 
         const batch = admin.firestore().batch()
@@ -1049,6 +1038,7 @@ exports.passHasChanged = functions.region('asia-northeast1')
     const occupation = newValue.occupation
     const candidateId = newValue.candidateId
     const isAccepted = newValue.isAccepted
+    const isValid = newValue.isValid
     const passId = context.params.passId
 
     if (isAccepted == true && previousValue.isAccepted == false) {
@@ -1296,6 +1286,24 @@ exports.passHasChanged = functions.region('asia-northeast1')
       }).catch(function(error) {
         console.error(error)
       })
+    } else if (
+      type == 'hiring' &&
+      isAccepted == false &&
+      isValid == false &&
+      previousValue.isValid == true
+    ) {
+      return admin.firestore()
+        .collection('companies')
+        .doc(companyId)
+        .update({
+          hiringPassCount: admin.firestore.FieldValue.increment(-1)
+        })
+        .then(() => {
+          console.log('update hiringPassCount completed.')
+        })
+        .catch((error) => {
+          console.error("Error updating document", error)
+        })
     } else if (
       type != 'hiring' &&
       joiningYear &&
