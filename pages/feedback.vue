@@ -6,7 +6,6 @@
   >
     <v-snackbar
       v-model="snackbar"
-      class="px-5"
       color="teal lighten-1"
       :multi-line="true"
       :timeout="6000"
@@ -50,6 +49,9 @@
               ご質問やサポートが必要な方は、
               <nuxt-link to="/contact" class="teal--text">お問い合わせ</nuxt-link>でご対応させて頂きます。
             </div>
+            <div v-if="!uid" class="pt-3 font-weight-bold">
+              フィードバックはログインしていないと送れません。
+            </div>
           </div>
           <!-- フォーム -->
           <div class="pt-3">
@@ -78,8 +80,8 @@
                   </v-flex>
                   <!-- 送信ボタン -->
                   <v-btn
-                    :disabled="!valid"
-                    class="teal"
+                    :disabled="!valid || !uid"
+                    class="teal lighten-1"
                     @click="sendButtonClicked"
                   >
                     <span
@@ -104,19 +106,19 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex'
-
+const baseUrl = process.env.BASE_URL || 'https://liplo.jp'
 export default {
   head () {
     return {
       title: 'フィードバック',
       meta: [
-        { hid: 'description', name: 'description', content: null },
+        { hid: 'description', name: 'description', content: '良かった点、改善点について、みなさまの率直なご意見をお待ちしております。個別に対応することはできませんが、いただいた貴重なご意見は真摯に受け止め改善に努めてまいります。' },
         { hid: 'og:type', property: 'og:type', content: 'article' },
         { hid: 'og:title', property: 'og:title', content: 'フィードバック' + ' - Liplo' },
-        { hid: 'og:description', property: 'og:description', content: null },
-        { hid: 'og:url', property: 'og:url', content: 'https://liplo.jp' + this.$route.path },
+        { hid: 'og:description', property: 'og:description', content: '良かった点、改善点について、みなさまの率直なご意見をお待ちしております。個別に対応することはできませんが、いただいた貴重なご意見は真摯に受け止め改善に努めてまいります。' },
+        { hid: 'og:url', property: 'og:url', content: baseUrl + this.$route.path },
         { hid: 'twitter:title', name: 'twitter:title', content: 'フィードバック' + ' - Liplo' },
-        { hid: 'twitter:description', name: 'twitter:description', content: null },
+        { hid: 'twitter:description', name: 'twitter:description', content: '良かった点、改善点について、みなさまの率直なご意見をお待ちしております。個別に対応することはできませんが、いただいた貴重なご意見は真摯に受け止め改善に努めてまいります。' },
       ],
     }
   },
@@ -145,6 +147,7 @@ export default {
       return this.$vuetify.breakpoint.name
     },
     ...mapState({
+      uid: state => state.uid,
       isRefreshing: state => state.isRefreshing,
       isLoading: state => state.appFeedback.isLoading,
       errorMessage: state => state.appFeedback.errorMessage,

@@ -24,7 +24,7 @@
     <!-- Top Image -->
     <v-flex xs12 sm10 offset-sm1 class="py-3">
       <div class="pb-2 light-text-color">
-        トップ画像
+        トップ画像（必須）
       </div>
       <v-img
         v-if="selectedImage"
@@ -159,6 +159,7 @@
               mask="time"
               label="勤務可能時間（終わり）"
               placeholder="19:00"
+              :rules="worktimeRules"
               required
               ></v-text-field>
           </v-flex>
@@ -306,7 +307,8 @@ export default {
     },
     worktimeRules: [
       v => !!v || '数字を入力してください',
-      v => (v <= 2400) || '時間を指定してください'
+      v => (v <= 2400) || '時間を指定してください',
+      v => (v.length == 4) || '4桁で指定してください'
     ],
     workdayItems: [
       '平日のみ',

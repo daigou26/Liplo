@@ -71,7 +71,7 @@ export default {
   middleware: 'auth',
   head () {
     return {
-      title: this.userName + ' - ' + 'フィードバック',
+      title: 'フィードバック',
       meta: [
         { name: 'robots', content: 'noindex' },
       ],

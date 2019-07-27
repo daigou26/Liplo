@@ -1,7 +1,8 @@
 const pkg = require('./package')
 const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
-
 const baseUrl = process.env.BASE_URL || 'https://liplo.jp'
+
+require('dotenv').config()
 
 module.exports = {
   mode: 'universal',
@@ -27,7 +28,6 @@ module.exports = {
       { hid: 'og:image', property: 'og:image', content: baseUrl + '/icon.png' },
       // pwa iOS
       { name: 'apple-mobile-web-app-capable', content: 'yes' },
-      { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
       // twitter
       { hid: 'twitter:card', name: 'twitter:card', content: 'summary' },
       { hid: 'twitter:site', name: 'twitter:site', content: baseUrl },
@@ -95,7 +95,13 @@ module.exports = {
   modules: [,
     '@nuxtjs/pwa',
     '@nuxtjs/google-analytics',
+    '@nuxtjs/dotenv',
   ],
+
+  // dotenv
+  env: {
+    SECRET_KEY: process.env.SECRET_KEY,
+  },
 
   // googleAnalytics
   // dev

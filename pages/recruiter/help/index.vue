@@ -126,6 +126,10 @@ export default {
         url: '/recruiter/help/email'
       },
       {
+        title: 'メール通知設定',
+        url: '/recruiter/help/settings'
+      },
+      {
         title: '料金プラン',
         url: '/recruiter/help/plan'
       },

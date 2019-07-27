@@ -1,6 +1,7 @@
 export const strict = false
 import { firestore, storageRef } from '@/plugins/firebase'
 import { event } from 'vue-analytics'
+import SimpleCrypto from "simple-crypto-js"
 
 export const state = () => ({
   user: null,
@@ -362,6 +363,15 @@ export const actions = {
               batch.commit()
                 .then(() => {
                   commit('setStatus', newStatus)
+                  // analytics
+                  if (state.pass && state.pass.occupation) {
+                    event({
+                      eventCategory: 'user',
+                      eventAction: 'contracted',
+                      eventLabel: state.pass.occupation
+                    })
+                  }
+
                 })
                 .catch((error) => {
                   console.error("Error", error)
@@ -472,18 +482,22 @@ export const actions = {
           if (newStatus.intern) {
             commit('setCareerId', careerId)
             // analytics
-            event({
-              eventCategory: 'user',
-              eventAction: 'hire',
-              eventLabel: 'intern'
-            })
+            if (occupation) {
+              event({
+                eventCategory: 'user',
+                eventAction: 'intern',
+                eventLabel: occupation
+              })
+            }
           } else if (newStatus.hired) {
             // analytics
-            event({
-              eventCategory: 'user',
-              eventAction: 'hire',
-              eventLabel: 'employ'
-            })
+            if (state.pass && state.pass.occupation) {
+              event({
+                eventCategory: 'user',
+                eventAction: 'hired',
+                eventLabel: state.pass.occupation
+              })
+            }
           }
           if (newStatus.pass) {
             commit('setPass', pass)
@@ -574,7 +588,7 @@ export const actions = {
         return firestore.collection('chats').doc(chatId)
           .collection('messages')
           .orderBy("createdAt", "desc")
-          .limit(10)
+          .limit(20)
           .get()
           .then(function(snapshot) {
             var docCount = 0
@@ -592,8 +606,15 @@ export const actions = {
                 minutes = '0' + String(minutes)
               }
 
+              // decrypt
+              var decipherText = ''
+              if (doc.data()['message']) {
+                var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+                decipherText = simpleCrypto.decrypt(doc.data()['message'])
+              }
+
               const message = {
-                message: doc.data()['message'],
+                message: decipherText,
                 createdAt: doc.data()['createdAt'],
                 date: `${year}/${month}/${day}`,
                 time: `${hours}:${minutes}`,
@@ -652,8 +673,15 @@ export const actions = {
                       minutes = '0' + String(minutes)
                     }
 
+                    // decrypt
+                    var decipherText = ''
+                    if (change.doc.data()['message']) {
+                      var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+                      decipherText = simpleCrypto.decrypt(change.doc.data()['message'])
+                    }
+
                     const message = {
-                      message: change.doc.data()['message'],
+                      message: decipherText,
                       createdAt: change.doc.data()['createdAt'],
                       date: `${year}/${month}/${day}`,
                       time: `${hours}:${minutes}`,
@@ -676,7 +704,7 @@ export const actions = {
           .collection('messages')
           .orderBy('createdAt', 'desc')
           .startAfter(lastDate)
-          .limit(10)
+          .limit(20)
           .get()
           .then(function(snapshot) {
             var docCount = 0
@@ -694,8 +722,15 @@ export const actions = {
                 minutes = '0' + String(minutes)
               }
 
+              // decrypt
+              var decipherText = ''
+              if (doc.data()['message']) {
+                var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+                decipherText = simpleCrypto.decrypt(doc.data()['message'])
+              }
+              
               const message = {
-                message: doc.data()['message'],
+                message: decipherText,
                 createdAt: doc.data()['createdAt'],
                 date: `${year}/${month}/${day}`,
                 time: `${hours}:${minutes}`,

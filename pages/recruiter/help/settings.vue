@@ -21,33 +21,16 @@
       }"
     >
       <div class="title font-weight-bold">
-        フィードバックについて
+        メール受信設定について
       </div>
       <div class="pt-5 subheading font-weight-bold">
-        フィードバックとは？
+        メールの通知を切るには？
       </div>
       <div class="pt-3">
-        フィードバックは、候補者のインターン終了後に、候補者に対して企業が送ることが出来ます。
+        ツールバーのプロフィール画像をクリックし、設定をクリックしてください。
         <div>
-          インターン中の候補者の良かった点、アドバイスなどの項目があります。
-          フィードバックの記入率はダッシュボードに表示されます。
+          メール受信設定の画面になるので、そこからメール受信設定の変更が可能です。
         </div>
-      </div>
-      <div class="pt-5 subheading font-weight-bold">
-        フィードバックを送るには？
-      </div>
-      <div class="pt-3">
-        候補者のステータスをインターンから変更するときに、フィードバックのフォームが表示されるので、
-        そこに入力することで、ステータスの変更と共に送信されます。
-        <div>
-          後から入力する場合は、サイドバーのフィードバックから送信することが出来ます。
-        </div>
-      </div>
-      <div class="pt-5 subheading font-weight-bold">
-        送ったフィードバックを確認するには？
-      </div>
-      <div class="pt-3">
-        サイドバーのフィードバックから確認が出来ます。
       </div>
       <div style="padding: 100px 0;">
         <div>
@@ -68,7 +51,7 @@ export default {
   middleware: 'auth',
   head () {
     return {
-      title: 'フィードバック - ヘルプ',
+      title: 'メール受信設定 - ヘルプ',
       meta: [
         { name: 'robots', content: 'noindex' },
       ],

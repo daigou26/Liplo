@@ -10,7 +10,6 @@ const mailTransport = nodemailer.createTransport({
         pass: gmailPassword
     }
 })
-const rp = require('request-promise')
 // const slack_url = functions.config().slack.webhook_url
 const admin = require('firebase-admin')
 
@@ -180,6 +179,19 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
                     align="center"
                     style="
                       color: #777777;
+                      padding: 32px;
+                      font-size: 14px;
+                      line-height: 24px;
+                    "
+                  >
+                    <p style="margin: 0;"> このメールに心当たりがない方は、お手数をおかけしますがこのメールを破棄してください。</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    align="center"
+                    style="
+                      color: #777777;
                       padding: 28px;
                       font-size: 14px;
                       line-height: 24px;
@@ -330,15 +342,6 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
               allCandidates: allCandidates,
             }
 
-            if (hiringPassCount) {
-              companyData.hiringPassCount = hiringPassCount
-            }
-
-            // hiringPassCount
-            if ((newStatus.hired || newStatus.rejected) && passType == 'hiring') {
-              companyData.hiringPassCount -= 1
-            }
-
             // company feedback all 更新
             if (beforeStatus.intern) {
               companyFeedbackData.all += 1
@@ -371,7 +374,6 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
         const companyName = companyData.companyName
         const companyImageUrl = companyData.imageUrl
         let allCandidates = companyData.allCandidates
-        let hiringPassCount = companyData.hiringPassCount
         let companyFeedbackData = companyData.feedback
         const invoiceEmail = companyData.invoiceEmail
 
@@ -719,7 +721,6 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
         const companyName = companyData.companyName
         const companyImageUrl = companyData.imageUrl
         let allCandidates = companyData.allCandidates
-        let hiringPassCount = companyData.hiringPassCount
         let companyFeedbackData = companyData.feedback
 
         const batch = admin.firestore().batch()
@@ -1037,6 +1038,7 @@ exports.passHasChanged = functions.region('asia-northeast1')
     const occupation = newValue.occupation
     const candidateId = newValue.candidateId
     const isAccepted = newValue.isAccepted
+    const isValid = newValue.isValid
     const passId = context.params.passId
 
     if (isAccepted == true && previousValue.isAccepted == false) {
@@ -1284,6 +1286,24 @@ exports.passHasChanged = functions.region('asia-northeast1')
       }).catch(function(error) {
         console.error(error)
       })
+    } else if (
+      type == 'hiring' &&
+      isAccepted == false &&
+      isValid == false &&
+      previousValue.isValid == true
+    ) {
+      return admin.firestore()
+        .collection('companies')
+        .doc(companyId)
+        .update({
+          hiringPassCount: admin.firestore.FieldValue.increment(-1)
+        })
+        .then(() => {
+          console.log('update hiringPassCount completed.')
+        })
+        .catch((error) => {
+          console.error("Error updating document", error)
+        })
     } else if (
       type != 'hiring' &&
       joiningYear &&
@@ -2237,6 +2257,10 @@ exports.postJob = functions.region('asia-northeast1')
           const welfare = doc.data().welfare
           const feedback = doc.data().feedback
           const points = doc.data().points
+          const employeesCount = doc.data().employeesCount
+          const url = doc.data().url
+          const location = doc.data().location
+          const foundedDate = doc.data().foundedDate
 
           var jobData = {
             companyName: companyName,
@@ -2292,6 +2316,18 @@ exports.postJob = functions.region('asia-northeast1')
           }
           if (welfare) {
             jobDetailData.welfare = welfare
+          }
+          if (employeesCount) {
+            jobDetailData.employeesCount = employeesCount
+          }
+          if (url) {
+            jobDetailData.url = url
+          }
+          if (location) {
+            jobDetailData.location = location
+          }
+          if (foundedDate) {
+            jobDetailData.foundedDate = foundedDate
           }
 
           const jobDetailRef = admin.firestore().collection('jobs').doc(jobId).collection('detail').doc(jobId)
@@ -2929,7 +2965,7 @@ exports.editProfile = functions.region('asia-northeast1')
         canSearch = true
       }
 
-      admin.firestore()
+      return admin.firestore()
         .collection('users')
         .doc(uid)
         .update({
@@ -2942,46 +2978,6 @@ exports.editProfile = functions.region('asia-northeast1')
         .catch((error) => {
           console.error("Error updating document", error)
         })
-
-      if (
-        firstName != previousValue.firstName ||
-        lastName != previousValue.lastName ||
-        imageUrl != previousValue.imageUrl
-      ) {
-        var userData = {
-          userName: lastName + ' ' + firstName,
-        }
-        if (imageUrl) {
-          userData.profileImageUrl = imageUrl
-        }
-
-        // chats 更新
-        return admin.firestore()
-          .collection('chats')
-          .where('uid', '==', uid)
-          .get()
-          .then(function(snapshot) {
-            const batch = admin.firestore().batch()
-
-            snapshot.forEach(function(doc) {
-              const chatRef = admin.firestore().collection('chats').doc(doc.id)
-              batch.update(chatRef, userData)
-            })
-
-            batch.commit()
-              .then(() => {
-                console.log('update chat completed.')
-              })
-              .catch((error) => {
-                console.error("Error", error)
-              })
-          })
-          .catch((error) => {
-            console.error("Error getting document: ", error)
-          })
-      } else {
-        return 0
-      }
     } else if (companyId && type == 'recruiter') {
       // recruiter
       // name, imageUrl, position, selfIntro どれも変わっていない場合はreturn
@@ -3256,55 +3252,85 @@ exports.sendMessage = functions.region('asia-northeast1')
 exports.sendCompanyInquiryMail = functions
   .https
   .onCall((data, context) => {
-    var type
-    if (data.type == 0) {
-      type = '資料請求'
-    } else if (data.type == 1) {
-      type = '詳しく聞きたい'
-    } else if (data.type == 2) {
-      type = 'すぐに導入したい'
-    }
-    const mailOptions = {
-      from: `Liplo <noreply@liplo.jp>`,
-      to: 'go26dev@gmail.com',
-    }
-    mailOptions.subject = `${data.companyName}の${data.userName}様からのお問い合わせ`
-    mailOptions.html = `
-      <p><b>CompanyName: </b>${data.companyName}</p>
-      <p><b>Name: </b>${data.userName} 様</p>
-      <p><b>Position: </b>${data.position} </p>
-      <p><b>Email: </b>${data.email}</p>
-      <p><b>Type: </b>${type}</p>
-      <p><b>Content: </b>${data.content}</p>
-    `
-    mailTransport.sendMail(mailOptions, (err, info) => {
-      if (err) {
-        console.log(err)
-      }
-      console.log('completed.')
-    })
+    return admin.firestore().collection('companyInquiries')
+      .add({
+        companyName: data.companyName,
+        companyEmail: data.companyEmail,
+        userName: data.userName,
+        email: data.email,
+        position: data.position,
+        type: data.type,
+        content: data.content,
+        createdAt: new Date()
+      })
+      .then(() => {
+        var type
+        if (data.type == 0) {
+          type = '資料請求'
+        } else if (data.type == 1) {
+          type = '詳しく聞きたい'
+        } else if (data.type == 2) {
+          type = 'すぐに導入したい'
+        }
+        const mailOptions = {
+          from: `Liplo <noreply@liplo.jp>`,
+          to: 'go26dev@gmail.com',
+        }
+        mailOptions.subject = `${data.companyName}の${data.userName}様からのお問い合わせ`
+        mailOptions.html = `
+          <p><b>CompanyName: </b>${data.companyName}</p>
+          <p><b>Name: </b>${data.userName} 様</p>
+          <p><b>Position: </b>${data.position} </p>
+          <p><b>Email: </b>${data.email}</p>
+          <p><b>Type: </b>${type}</p>
+          <p><b>Content: </b>${data.content}</p>
+          <p><b>Date: </b>${data.timestamp}</p>
+        `
+        mailTransport.sendMail(mailOptions, (err, info) => {
+          if (err) {
+            console.log(err)
+          }
+          console.log('completed.')
+        })
+      })
+      .catch((error) => {
+        console.error("Error", error)
+      })
   })
 
 // 問い合わせがあった時
 exports.sendContact = functions
   .https
   .onCall((data, context) => {
-    const mailOptions = {
-      from: `Liplo <noreply@liplo.jp>`,
-      to: 'go26dev@gmail.com',
-    }
-    mailOptions.subject = `お問い合わせ`
-    mailOptions.html = `
-      <p><b>Name: </b>${data.name}</p>
-      <p><b>Email: </b>${data.email}</p>
-      <p><b>Content: </b>${data.content}</p>
-    `
-    mailTransport.sendMail(mailOptions, (err, info) => {
-      if (err) {
-        console.log(err)
-      }
-      console.log('completed.')
-    })
+    return admin.firestore().collection('inquiries')
+      .add({
+        name: data.name,
+        email: data.email,
+        content: data.content,
+        createdAt: new Date()
+      })
+      .then(() => {
+        const mailOptions = {
+          from: `Liplo <noreply@liplo.jp>`,
+          to: 'go26dev@gmail.com',
+        }
+        mailOptions.subject = `お問い合わせ`
+        mailOptions.html = `
+          <p><b>Name: </b>${data.name}</p>
+          <p><b>Email: </b>${data.email}</p>
+          <p><b>Content: </b>${data.content}</p>
+          <p><b>Date: </b>${data.timestamp}</p>
+        `
+        mailTransport.sendMail(mailOptions, (err, info) => {
+          if (err) {
+            console.log(err)
+          }
+          console.log('completed.')
+        })
+      })
+      .catch((error) => {
+        console.error("Error", error)
+      })
   })
 
 // 企業メアドが変更された時
@@ -3318,9 +3344,10 @@ exports.sendChangeEmailConfirmation = functions
     mailOptions.subject = `[ご確認] 企業メールアドレス変更のお知らせ`
     mailOptions.html = `
       <p>${data.companyName} 様</p>
-      <p>お世話になっております。株式会社Liploでございます。</p>
+      <p>日頃から Liplo をご利用いただき、ありがとうございます。</p>
       <p>企業メールアドレスの変更が正常に行われたことをお知らせいたします。</p>
       <p>引き続き、Liploをよろしくお願い致します。</p>
+      <p style="margin-top: 40px">このメールに心当たりがない方は、お手数をおかけしますがこのメールを破棄してください。</p>
     `
     mailTransport.sendMail(mailOptions, (err, info) => {
       if (err) {
@@ -3341,9 +3368,10 @@ exports.sendChangeInvoiceEmailConfirmation = functions
     mailOptions.subject = `[ご確認] 請求書の送信先変更のお知らせ`
     mailOptions.html = `
       <p>${data.companyName} 様</p>
-      <p>お世話になっております。株式会社Liploでございます。</p>
+      <p>日頃から Liplo をご利用いただき、ありがとうございます。</p>
       <p>請求書の送信先の変更が正常に行われたことをお知らせいたします。</p>
       <p>引き続き、Liploをよろしくお願い致します。</p>
+      <p style="margin-top: 40px">このメールに心当たりがない方は、お手数をおかけしますがこのメールを破棄してください。</p>
     `
     mailTransport.sendMail(mailOptions, (err, info) => {
       if (err) {

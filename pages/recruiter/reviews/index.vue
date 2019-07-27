@@ -28,8 +28,8 @@
             <td style="min-width: 150px" class="text-xs-left">
               <v-rating
                 :value="props.item.all == null ? 0 : props.item.all"
-                background-color="pink"
-                color="pink darken-1"
+                background-color="#FF5A5F"
+                color="#FF5A5F"
                 small
                 half-increments
                 readonly

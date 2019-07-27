@@ -321,7 +321,7 @@
                       <!-- 招待ボタン -->
                       <v-btn
                         :disabled="!addMemberValid || addMemberLoading || plan == null"
-                        class="teal"
+                        class="teal lighten-1"
                         @click="inviteMember"
                       >
                         <span

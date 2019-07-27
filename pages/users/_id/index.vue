@@ -19,7 +19,6 @@
         <!-- snackbar -->
         <v-snackbar
           v-model="snackbar"
-          class="px-5"
           color="teal lighten-1"
           :multi-line="true"
           :timeout="6000"
@@ -316,7 +315,7 @@
           <v-btn
             large
             :disabled="(companyId == null || companyId == '') || isCandidate || plan == null"
-            color="teal"
+            color="teal lighten-1"
             class="white--text"
             id="user-scout"
             @click="scoutDialogButtonClicked"
@@ -364,7 +363,7 @@
                         <!-- スカウトボタン -->
                         <v-btn
                           :disabled="!valid || !companyId || plan == null"
-                          color="teal"
+                          color="teal lighten-1"
                           @click="scoutButtonClicked"
                         >
                           <span
@@ -393,7 +392,7 @@ export default {
   middleware: 'auth',
   head () {
     return {
-      title: this.userLastName + this.userFirstName + ' - ' + 'プロフィール',
+      title: this.name ? this.name + ' - ' + 'プロフィール' : 'プロフィール',
       meta: [
         { name: 'robots', content: 'noindex' },
       ],

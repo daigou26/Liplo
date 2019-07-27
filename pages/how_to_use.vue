@@ -106,9 +106,6 @@
                     </no-ssr>
                     から確認できます。
                   </span>
-                  <div class="pt-2 font-weight-bold">
-                    ※ 本サービス外で提示されたパスは、保証されない可能性があるのでご注意ください。
-                  </div>
                 </div>
               </v-flex>
             </v-layout>
@@ -125,7 +122,7 @@
                   パスを使用したら、企業の採用担当者から連絡が来ます。
                   （来ない場合は、メッセージにて連絡を取ってください）
                   <div>
-                    労働条件や入社日などを確認し、雇用契約を結んでください。
+                    労働条件や入社日などを確認し、内定契約などを結んでください。
                   </div>
                 </div>
               </v-flex>
@@ -139,18 +136,19 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+const baseUrl = process.env.BASE_URL || 'https://liplo.jp'
 export default {
   head () {
     return {
       title: 'サービスの使い方',
       meta: [
-        { hid: 'description', name: 'description', content: null },
+        { hid: 'description', name: 'description', content: 'サービスの使い方' },
         { hid: 'og:type', property: 'og:type', content: 'article' },
         { hid: 'og:title', property: 'og:title', content: 'サービスの使い方' + ' - Liplo' },
-        { hid: 'og:description', property: 'og:description', content: null },
-        { hid: 'og:url', property: 'og:url', content: 'https://liplo.jp' + this.$route.path },
+        { hid: 'og:description', property: 'og:description', content: 'サービスの使い方' },
+        { hid: 'og:url', property: 'og:url', content: baseUrl + this.$route.path },
         { hid: 'twitter:title', name: 'twitter:title', content: 'サービスの使い方' + ' - Liplo' },
-        { hid: 'twitter:description', name: 'twitter:description', content: null },
+        { hid: 'twitter:description', name: 'twitter:description', content: 'サービスの使い方' },
       ],
     }
   },

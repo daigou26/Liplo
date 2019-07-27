@@ -21,7 +21,6 @@
         <!-- snackbar -->
         <v-snackbar
           v-model="snackbar"
-          class="px-5"
           color="teal lighten-1"
           :multi-line="true"
           :timeout="6000"
@@ -193,7 +192,7 @@
             </v-flex>
             <v-flex v-show="!isEditingPass" class="px-3 break text-xs-left text-color">
               <div class="pt-2 pb-3">
-                タイプ：　<span class="font-weight-bold light-text-color">{{ passTypeText }}</span>
+                タイプ：　<span class="font-weight-bold light-text-color">{{ passType }}</span>
                 <div>
                   <v-btn
                     small
@@ -209,11 +208,11 @@
               <div class="pb-2">
                 職種:　{{ passOccupation }}
               </div>
-              <div v-if="passType != 'hiring'" class="pb-2">
+              <div v-if="passType != '入社パス'" class="pb-2">
                 入社年度:　{{ joiningYear }}年度
               </div>
               <div>
-                有効期限:　{{ passExpirationDate }}
+                有効期限:　{{ expirationDate }}
               </div>
             </v-flex>
             <!-- pass編集 -->
@@ -232,7 +231,7 @@
               ></v-text-field>
               <!-- 入社年度 -->
               <v-text-field
-                v-if="passType != 'hiring'"
+                v-if="passType != '入社パス'"
                 v-model="tempJoiningYear"
                 class="pt-3"
                 label="入社年度"
@@ -272,7 +271,7 @@
                 ></v-date-picker>
               </v-menu>
               <div
-                v-show="passType == 'offer' || passType == 'limited'"
+                v-show="passType == '内定パス' || passType == '先着パス'"
                 class=" light-text-color pb-3"
                 style="font-size: 13px"
               >
@@ -282,7 +281,7 @@
                   卒業予定日は、学生のプロフィールから確認できます。プロフィールに卒業予定日が設定されていない場合は、学生とのメッセージにてご確認ください。
                 </div>
               </div>
-              <div v-show="passType == 'hiring'" class="caption light-text-color pb-3">
+              <div v-show="passType == '入社パス'" class="caption light-text-color pb-3">
                 有効期限は、最低でも卒業予定日以降である必要があり、卒業日から1,2年を推奨しています。
               </div>
               <div class="text-xs-right">
@@ -502,7 +501,7 @@
                   </v-flex>
                   <v-flex v-show="!isEditingPass" class="px-3 break text-xs-left text-color">
                     <div class="pt-2 pb-3">
-                      タイプ：　<span class="font-weight-bold light-text-color">{{ passTypeText }}</span>
+                      タイプ：　<span class="font-weight-bold light-text-color">{{ passType }}</span>
                       <div>
                         <v-btn
                           small
@@ -518,11 +517,11 @@
                     <div class="pb-2">
                       職種:　{{ passOccupation }}
                     </div>
-                    <div v-if="passType != 'hiring'" class="pb-2">
+                    <div v-if="passType != '入社パス'" class="pb-2">
                       入社年度:　{{ joiningYear }}年度
                     </div>
                     <div>
-                      有効期限:　{{ passExpirationDate }}
+                      有効期限:　{{ expirationDate }}
                     </div>
                   </v-flex>
                   <!-- pass編集 -->
@@ -541,7 +540,7 @@
                     ></v-text-field>
                     <!-- 入社年度 -->
                     <v-text-field
-                      v-if="passType != 'hiring'"
+                      v-if="passType != '入社パス'"
                       v-model="tempJoiningYear"
                       class="pt-3"
                       label="入社年度"
@@ -581,7 +580,7 @@
                       ></v-date-picker>
                     </v-menu>
                     <div
-                      v-show="passType == 'offer' || passType == 'limited'"
+                      v-show="passType == '内定パス' || passType == '先着パス'"
                       class=" light-text-color pb-3"
                       style="font-size: 13px"
                     >
@@ -590,7 +589,7 @@
                         卒業予定日は、学生のプロフィールから確認できます。プロフィールに卒業予定日が設定されていない場合は、学生とのメッセージにてご確認ください。
                       </div>
                     </div>
-                    <div v-show="passType == 'hiring'" class="caption light-text-color pb-3">
+                    <div v-show="passType == '入社パス'" class="caption light-text-color pb-3">
                       有効期限は、最低でも卒業予定日以降である必要があり、卒業日から1,2年を推奨しています。
                     </div>
                     <div class="text-xs-right">
@@ -902,7 +901,7 @@
                 </div>
                 <!-- ステータスが contracted の時 -->
                 <div v-if="status.contracted && tempStatus != '不採用'">
-                  候補者と雇用契約を結び次第、ステータスを<span class="font-weight-bold purple--text text--lighten-1">入社</span>に変更してください。
+                  候補者が入社しましたら、ステータスを<span class="font-weight-bold purple--text text--lighten-1">入社</span>に変更してください。
                   ステータスを変更すると、候補者一覧に表示されなくなります。
                 </div>
                 <div v-if="error && error != ''" class="pt-3 red--text">
@@ -1000,10 +999,7 @@
               </div>
               <!-- messages -->
               <v-card v-if="item.value == 'messages' && isShowMessage" flat>
-                <div v-if="isMessagesLoading" class="pt-5 text-xs-center">
-                  Now Loading...
-                </div>
-                <div v-else>
+                <div>
                   <v-layout
                     row
                     align-center
@@ -1018,7 +1014,7 @@
                       ref="messagesScroll"
                     >
                       <infinite-loading
-                        v-if="showInfiniteLoading && messages && messages.length >= 10 && !isMessagesLoading"
+                        v-if="showInfiniteLoading && messages && messages.length >= 20 && !isMessagesLoading"
                         direction="top"
                         spinner="waveDots"
                         @infinite="infiniteHandler">
@@ -1039,7 +1035,7 @@
                                   class="grey lighten-3 mx-2"
                                   :size="40"
                                 >
-                                  <img v-if="message.user.imageUrl" :src="message.user.imageUrl">
+                                  <img v-if="user.imageUrl" :src="user.imageUrl">
                                 </v-avatar>
                               </div>
                               <!-- message -->
@@ -1047,7 +1043,7 @@
                                 :class="{ 'message-right': message.pic != null }"
                               >
                                 <div v-if="message.user != null" class="light-text-color">
-                                  {{ message.user.name }}
+                                  {{ user.name }}
                                 </div>
                                 <div
                                   class="px-3 py-2 white message-border-radius return text-xs-left"
@@ -1093,8 +1089,8 @@
           <v-card>
             <v-card-title class="title font-weight-bold text-color">ステータス更新の確認</v-card-title>
             <v-card-text>
-              <span v-if="tempStatus == 'インターン' || tempStatus == '採用予定'">
-                ステータスをインターンまたは採用予定に変更すると料金が発生します。
+              <span v-if="tempStatus == 'インターン' || tempStatus == '入社予定'">
+                ステータスをインターンまたは入社予定に変更すると料金が発生します。
               </span>
               <span v-if="tempStatus == 'パス'">
                 一度パスを発行すると取り消すことが出来ません。ご注意ください。
@@ -1219,12 +1215,13 @@
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex'
 import { firestore, auth, storage, storageRef } from '@/plugins/firebase'
+import SimpleCrypto from "simple-crypto-js"
 
 export default {
   middleware: 'auth',
   head () {
     return {
-      title: this.userName + ' - ' + '候補者管理',
+      title: this.userName ? this.userName + ' - ' + '候補者管理' : '候補者管理',
       meta: [
         { name: 'robots', content: 'noindex' },
       ],
@@ -1251,8 +1248,9 @@ export default {
       v => !!v || '入力されていません',
       v => (v && v.length <= 2000) || '2000字以内で入力してください'
     ],
-    passType: null,
+    passType: '',
     joiningYear: null,
+    expirationDate: null,
     expirationDateMenu: false,
     passOccupation: '',
     occupationRules: [
@@ -1298,24 +1296,6 @@ export default {
         v => (String(v).length == 4) || '4桁で指定してください',
         v => (v >= year.getFullYear() - 1) || `${year.getFullYear() - 1}以上で指定してください`,
       ]
-    },
-    passTypeText() {
-      if (this.passType == 'hiring') {
-        return '入社パス'
-      } else if (this.passType == 'offer') {
-        return '内定パス'
-      } else if (this.passType == 'limited') {
-        return '先着パス'
-      }
-    },
-    passExpirationDate() {
-      if (this.expirationDate) {
-        const date = this.expirationDate
-        let year  = date.getFullYear()
-        let month = date.getMonth() + 1
-        let day  = date.getDate()
-        return `${year}/${month}/${day}`
-      }
     },
     isReviewed() {
       if (this.reviews) {
@@ -1568,10 +1548,21 @@ export default {
     },
     pass(pass) {
       if (pass) {
-        this.passType = pass.type
-        this.expirationDate = pass.expirationDate
-        this.passOccupation = pass.occupation
+        if (pass.type == 'hiring') {
+          this.passType = '入社パス'
+        } else if (pass.type == 'offer') {
+          this.passType = '内定パス'
+        } else if (pass.type == 'limited') {
+          this.passType = '先着パス'
+        }
 
+        const date = pass.expirationDate
+        let year  = date.getFullYear()
+        let month = date.getMonth() + 1
+        let day  = date.getDate()
+        this.expirationDate = `${year}/${month}/${day}`
+
+        this.passOccupation = pass.occupation
         if (pass.type == 'offer' || pass.type == 'limited') {
           this.joiningYear = pass.joiningYear
         }
@@ -1579,7 +1570,7 @@ export default {
     },
     messages(messages) {
       // 最下部へスクロール
-      if (messages.length <= 10 || this.isNewMessage) {
+      if (messages != null && messages.length != 0 && (messages.length <= 20 || this.isNewMessage)) {
         this.$nextTick(() => {
           if (this.$refs.messagesScroll) {
             this.$refs.messagesScroll[0].scrollTop = this.$refs.messagesScroll[0].scrollHeight
@@ -1603,20 +1594,20 @@ export default {
     },
     editPassButtonClicked() {
       // パスの種類
-      switch (this.passType) {
-        case 'hiring': this.tempPassType = '入社パス'; break
-        case 'offer': this.tempPassType = '内定パス'; break
-        case 'limited': this.tempPassType = '先着パス'; break
-      }
+      this.tempPassType = this.passType
       // 入社年度（内定パス、先着パス）
-      if (this.passType != 'hiring') {
+      if (this.passType != '入社パス') {
         this.tempJoiningYear = this.joiningYear
       }
       // 有効期間
-      this.tempExpirationDate =
-        String(this.expirationDate.getFullYear()) + '-' +
-        String(this.expirationDate.getMonth() + 1) + '-' +
-        String(this.expirationDate.getDate())
+      if (pass.expirationDate) {
+        let expirationDate = pass.expirationDate
+        this.tempExpirationDate =
+          String(expirationDate.getFullYear()) + '-' +
+          String(expirationDate.getMonth() + 1) + '-' +
+          String(expirationDate.getDate())
+      }
+
       // 職種
       this.tempPassOccupation = this.passOccupation
       this.updateIsEditingPass(true)
@@ -1640,6 +1631,9 @@ export default {
       this.resetError()
       // 更新中はボタンを押せないようにする
       // this.updateStatusValid = false
+
+      // encrypt
+      var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
 
       let newStatus = {
         scouted: false,
@@ -1683,10 +1677,13 @@ export default {
           case '先着パス': passType = 'limited'; break
         }
 
+        // encrypt
+        var cipherPassMessage = simpleCrypto.encrypt(this.passMessage)
+
         let pass = {
           type: passType,
           expirationDate: new Date(expirationDateArr[0], expirationDateArr[1] - 1, expirationDateArr[2]),
-          message: this.passMessage,
+          message: cipherPassMessage,
           occupation: this.passOccupation,
           pic: {
             uid: this.uid,
@@ -1707,10 +1704,10 @@ export default {
       if (this.status.intern == true && (this.goodPoint != '' || this.advice != '')) {
         let feedback = {}
         if (this.goodPoint != '') {
-          feedback.goodPoint = this.goodPoint
+          feedback.goodPoint = simpleCrypto.encrypt(this.goodPoint)
         }
         if (this.advice != '') {
-          feedback.advice = this.advice
+          feedback.advice = simpleCrypto.encrypt(this.advice)
         }
         candidateData.feedback = feedback
       }
@@ -1780,7 +1777,7 @@ export default {
       var expirationDateArr = this.tempExpirationDate.split('-')
       var expirationDate = new Date(expirationDateArr[0], expirationDateArr[1] - 1, expirationDateArr[2])
 
-      if (this.passType == 'hiring') {
+      if (this.passType == '入社パス') {
         this.updatePass({
           params: this.params,
           companyId: this.companyId,

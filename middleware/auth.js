@@ -2,14 +2,12 @@ export default function ({ store, route, redirect }) {
   // ユーザーが認証されていないとき
   if (store.state.uid == null) {
     if (route.path !== '/' &&
-      route.path !== '/signup' &&
-      route.path !== '/inquiry_for_recruiter' &&
-      route.path !== '/how_to_use' &&
-      route.path !== '/privacy_policy' &&
-      route.path !== '/terms' &&
-      route.path !== '/company_registration' &&
-      route.path !== '/contact' &&
-      route.path !== '/feedback' &&
+      route.name !== 'inquiry_for_recruiter' &&
+      route.name !== 'how_to_use' &&
+      route.name !== 'privacy_policy' &&
+      route.name !== 'terms' &&
+      route.name !== 'contact' &&
+      route.name !== 'feedback' &&
       route.name !== 'jobs-id' &&
       route.name !== 'companies-id' &&
       route.name !== 'companies-id-jobs' &&

@@ -1,5 +1,6 @@
 export const strict = false
 import { firestore } from '@/plugins/firebase'
+import SimpleCrypto from "simple-crypto-js"
 
 export const state = () => ({
   companyId: null,
@@ -96,12 +97,19 @@ export const actions = {
             commit('setExpirationDate', expirationDate)
           }
 
+          // decrypt
+          var decipherText = ''
+          if (doc.data()['picMessage']) {
+            var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+            decipherText = simpleCrypto.decrypt(doc.data()['picMessage'])
+          }
+
           commit('setCompanyId', doc.data()['companyId'])
           commit('setCompanyImageUrl', doc.data()['companyImageUrl'])
           commit('setCompanyName', doc.data()['companyName'])
           commit('setType', doc.data()['type'])
           commit('setJoiningYear', doc.data()['joiningYear'])
-          commit('setMessage', doc.data()['picMessage'])
+          commit('setMessage', decipherText)
           commit('setOccupation', doc.data()['occupation'])
           commit('setIsAccepted', doc.data()['isAccepted'])
           commit('setIsContracted', doc.data()['isContracted'])
@@ -145,10 +153,13 @@ export const actions = {
   },
   acceptOffer({commit}, {params, message, joiningYear}) {
     const passId = params.id
+    // encrypt
+    var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+    var cipherText = simpleCrypto.encrypt(message)
 
     var passData = {
       isAccepted: true,
-      userMessage: message,
+      userMessage: cipherText,
       acceptedDate: new Date()
     }
 

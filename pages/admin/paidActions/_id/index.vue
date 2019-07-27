@@ -73,7 +73,7 @@ export default {
   middleware: 'auth',
   head () {
     return {
-      title: this.companyName + ' - ' + '請求',
+      title: this.companyName ? this.companyName + ' - ' + '請求' : '請求',
       meta: [
         { name: 'robots', content: 'noindex' },
       ],

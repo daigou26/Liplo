@@ -57,24 +57,25 @@ export const actions = {
   },
   // 問い合わせを追加
   addInquiry({commit}, {name, email, content}) {
-    firestore.collection('inquiries')
-      .add({
-        name: name,
-        email: email,
-        content: content,
-        createdAt: new Date()
-      })
-      .then(() => {
-        var sendContact = functions.httpsCallable("sendContact")
-        sendContact({
-          name: name,
-          email: email,
-          content: content,
-        })
-      })
-      .catch((error) => {
-        console.error("Error", error)
-      })
+    let createdAt = new Date()
+    let timestamp
+    let year  = createdAt.getFullYear()
+    let month = createdAt.getMonth() + 1
+    let day  = createdAt.getDate()
+    let hours = createdAt.getHours()
+    let minutes = createdAt.getMinutes()
+    if (minutes < 10) {
+      minutes = '0' + String(minutes)
+    }
+    timestamp = `${year}/${month}/${day} ${hours}:${minutes}`
+
+    var sendContact = functions.httpsCallable("sendContact")
+    sendContact({
+      name: name,
+      email: email,
+      content: content,
+      timestamp: timestamp
+    })
   },
   updateIsLoading({commit}, isLoading) {
     commit('updateIsLoading', isLoading)

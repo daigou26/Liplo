@@ -1,6 +1,7 @@
 export const strict = false
 import { firestore, storageRef } from '@/plugins/firebase'
 import { event } from 'vue-analytics'
+import SimpleCrypto from "simple-crypto-js"
 
 export const state = () => ({
   imageUrl: '',
@@ -158,9 +159,13 @@ export const actions = {
       rejected: false,
     }
 
+    // encrypt
+    var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+    var cipherText = simpleCrypto.encrypt(message)
+
     const scout = {
       pic: pic,
-      message: message,
+      message: cipherText,
     }
 
     firestore.collection('companies').doc(companyId)

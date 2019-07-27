@@ -1,5 +1,6 @@
 export const strict = false
 import { firestore } from '@/plugins/firebase'
+import SimpleCrypto from "simple-crypto-js"
 
 export const state = () => ({
   feedbacks: [],
@@ -67,6 +68,19 @@ export const actions = {
               let day  = date.getDate()
               timestamp = `${year}/${month}/${day}`
             }
+
+            // decrypt
+            var decipherGoodPoint = ''
+            if (doc.data()['goodPoint']) {
+              var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+              decipherGoodPoint = simpleCrypto.decrypt(doc.data()['goodPoint'])
+            }
+            var decipherAdvice = ''
+            if (doc.data()['advice']) {
+              var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+              decipherAdvice = simpleCrypto.decrypt(doc.data()['advice'])
+            }
+
             const feedback = {
               feedbackId: doc.id,
               companyImageUrl: doc.data()['companyImageUrl'],
@@ -74,8 +88,8 @@ export const actions = {
               profileImageUrl: doc.data()['profileImageUrl'],
               userName: doc.data()['userName'],
               occupation: doc.data()['occupation'],
-              goodPoint: doc.data()['goodPoint'],
-              advice: doc.data()['advice'],
+              goodPoint: decipherGoodPoint,
+              advice: decipherAdvice,
               createdAt: doc.data()['createdAt'],
               timestamp: timestamp,
             }
@@ -112,6 +126,19 @@ export const actions = {
               let day  = date.getDate()
               timestamp = `${year}/${month}/${day}`
             }
+
+            // decrypt
+            var decipherGoodPoint = ''
+            if (doc.data()['goodPoint']) {
+              var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+              decipherGoodPoint = simpleCrypto.decrypt(doc.data()['goodPoint'])
+            }
+            var decipherAdvice = ''
+            if (doc.data()['advice']) {
+              var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+              decipherAdvice = simpleCrypto.decrypt(doc.data()['advice'])
+            }
+
             const feedback = {
               feedbackId: doc.id,
               companyImageUrl: doc.data()['companyImageUrl'],
@@ -119,8 +146,8 @@ export const actions = {
               profileImageUrl: doc.data()['profileImageUrl'],
               userName: doc.data()['userName'],
               occupation: doc.data()['occupation'],
-              goodPoint: doc.data()['goodPoint'],
-              advice: doc.data()['advice'],
+              goodPoint: decipherGoodPoint,
+              advice: decipherAdvice,
               createdAt: doc.data()['createdAt'],
               timestamp: timestamp,
             }

@@ -10,7 +10,7 @@
       </v-layout>
     </v-flex>
     <v-flex v-else-if="isInitialLoading" xs12 :style="{ height: windowHeight + 'px' }">
-      <v-layout align-center justify-center column fill-height>
+      <v-layout align-center justify-center column fill-height style="padding-top: 150px">
         Now Loading...
       </v-layout>
     </v-flex>

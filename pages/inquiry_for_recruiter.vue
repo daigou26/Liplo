@@ -6,7 +6,6 @@
   >
     <v-snackbar
       v-model="snackbar"
-      class="px-5"
       color="teal lighten-1"
       :multi-line="true"
       :timeout="6000"
@@ -33,8 +32,8 @@
         <v-layout
           align-center
           row
-          :style="{ height: windowHeight + 'px' }"
           style="
+            padding: 100px 0px;
             background-color: #e0f7fa;
             background-image: linear-gradient(315deg, #e0f7fa 0%, #009688 73%);
           "
@@ -48,7 +47,7 @@
               'px-3': $vuetify.breakpoint.xsOnly,
               'padding-left-sm': $vuetify.breakpoint.smOnly,
               'padding-left-md': $vuetify.breakpoint.mdOnly,
-              'padding-left-lg': $vuetify.breakpoint.lgOnly,
+              'padding-left-lg': $vuetify.breakpoint.lgAndUp,
             }"
           >
             <div class="text-xs-left white--text">
@@ -98,7 +97,7 @@
               <div class="title font-weight-bold teal--text">
                 企業にマッチした学生を採用できる
               </div>
-              <div class="subheading light-text-color pt-2">
+              <div class="subheading light-text-color pt-4">
                 独自のパス制度により、長期インターンを終えた魅力的な学生の採用機会を
                 増やすことが出来ます。
               </div>
@@ -137,7 +136,7 @@
               <div class="title font-weight-bold teal--text">
                 パスとは
               </div>
-              <div class="subheading light-text-color pt-2">
+              <div class="subheading light-text-color pt-4">
                 インターン後、企業が採用したいと思う候補者にパスを渡すことが出来ます。
                 パスを発行することで、候補者に入社や内定取得の権利を与えることができます。
                 （有効期間などは設定可能）
@@ -193,7 +192,7 @@
               <div class="title font-weight-bold teal--text">
                 募集
               </div>
-              <div class="subheading light-text-color pt-2">
+              <div class="subheading light-text-color pt-4">
                 募集を作成して企業や仕事の魅力を伝えましょう。
               </div>
             </v-flex>
@@ -234,7 +233,7 @@
               <div class="title font-weight-bold teal--text">
                 スカウト
               </div>
-              <div class="subheading light-text-color pt-2">
+              <div class="subheading light-text-color pt-4">
                 気になる求職者がいたらスカウトをしてアプローチすることが出来ます。
               </div>
             </v-flex>
@@ -275,7 +274,7 @@
               <div class="title font-weight-bold teal--text">
                 レビュー
               </div>
-              <div class="subheading light-text-color pt-2">
+              <div class="subheading light-text-color pt-4">
                 インターン後、候補者にレビューをしてもらえます。これにより、候補者から見た
                 企業の良い点や改善すべき点などを知ることが出来ます。また、良いレビューをもらえると
                 検索で上位に表示されるため、求職者に認知されやすくなります。
@@ -349,7 +348,11 @@
           >
             Liplo が実現したいこと
           </div>
-          <v-flex xs12 sm8 md6 offset-sm2 offset-md3 pt-5>
+          <v-flex xs12 sm8 md6 offset-sm2 offset-md3 pt-5
+            :class="{
+              'px-4': $vuetify.breakpoint.xsOnly,
+            }"
+          >
             <div class="text-color subheading">
               現在、新卒で入社した人の３割が３年以内に離職していると言われています。
               これは、ネット上で確認できる企業の情報や面接、ワークショップだけでは、
@@ -462,7 +465,7 @@
                     <!-- 送信ボタン -->
                     <v-btn
                       :disabled="!valid"
-                      class="teal"
+                      class="teal lighten-1"
                       @click="sendButtonClicked"
                     >
                       <span
@@ -485,19 +488,19 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex'
-
+const baseUrl = process.env.BASE_URL || 'https://liplo.jp'
 export default {
   head () {
     return {
       title: '採用担当者様はこちら',
       meta: [
-        { hid: 'description', name: 'description', content: null },
+        { hid: 'description', name: 'description', content: '採用担当者様はこちら' },
         { hid: 'og:type', property: 'og:type', content: 'article' },
         { hid: 'og:title', property: 'og:title', content: '採用担当者様はこちら' + ' - Liplo' },
-        { hid: 'og:description', property: 'og:description', content: null },
-        { hid: 'og:url', property: 'og:url', content: 'https://liplo.jp' + this.$route.path },
+        { hid: 'og:description', property: 'og:description', content: '採用担当者様はこちら' },
+        { hid: 'og:url', property: 'og:url', content: baseUrl + this.$route.path },
         { hid: 'twitter:title', name: 'twitter:title', content: '採用担当者様はこちら' + ' - Liplo' },
-        { hid: 'twitter:description', name: 'twitter:description', content: null },
+        { hid: 'twitter:description', name: 'twitter:description', content: '採用担当者様はこちら' },
       ],
       link: [
         {

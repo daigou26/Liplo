@@ -1,5 +1,6 @@
 export const strict = false
 import { firestore } from '@/plugins/firebase'
+import SimpleCrypto from "simple-crypto-js"
 
 export const state = () => ({
   chats: [],
@@ -82,6 +83,13 @@ export const actions = {
               timestamp = `${year}/${month}/${day}`
             }
 
+            // decrypt
+            var decipherText = ''
+            if (doc.data()['lastMessage']) {
+              var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+              decipherText = simpleCrypto.decrypt(doc.data()['lastMessage'])
+            }
+
             const chat = {
               chatId: doc.id,
               uid: doc.data()['uid'],
@@ -90,7 +98,7 @@ export const actions = {
               companyId: doc.data()['companyId'],
               companyImageUrl: doc.data()['companyImageUrl'],
               companyName: doc.data()['companyName'],
-              lastMessage: doc.data()['lastMessage'],
+              lastMessage: decipherText,
               picUnreadCount: doc.data()['picUnreadCount'],
               userUnreadCount: doc.data()['userUnreadCount'],
               updatedAt: doc.data()['updatedAt'],
@@ -138,6 +146,13 @@ export const actions = {
               timestamp = `${year}/${month}/${day}`
             }
 
+            // decrypt
+            var decipherText = ''
+            if (doc.data()['lastMessage']) {
+              var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+              decipherText = simpleCrypto.decrypt(doc.data()['lastMessage'])
+            }
+
             const chat = {
               chatId: doc.id,
               uid: doc.data()['uid'],
@@ -146,7 +161,7 @@ export const actions = {
               companyId: doc.data()['companyId'],
               companyImageUrl: doc.data()['companyImageUrl'],
               companyName: doc.data()['companyName'],
-              lastMessage: doc.data()['lastMessage'],
+              lastMessage: decipherText,
               picUnreadCount: doc.data()['picUnreadCount'],
               userUnreadCount: doc.data()['userUnreadCount'],
               updatedAt: doc.data()['updatedAt'],

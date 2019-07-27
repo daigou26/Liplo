@@ -102,7 +102,7 @@
                   <v-btn
                     small
                     flat
-                    color="teal"
+                    color="teal lighten-1"
                     @click="openUpdatePassLimitDialogButtonClicked(yearPass.year)"
                   >
                     設定する
@@ -225,7 +225,7 @@
             </div>
             <v-btn
               class="mt-3 font-weight-bold white--text"
-              color="teal"
+              color="teal lighten-1"
               :disabled="plan == null"
               @click="openAddYearDialogButtonClicked"
             >
@@ -307,7 +307,7 @@
                 <!-- 追加ボタン -->
                 <v-btn
                   :disabled="!addYearValid || plan == null"
-                  class="teal"
+                  class="teal lighten-1"
                   @click="addYearButtonClicked"
                 >
                   <span
@@ -379,7 +379,7 @@
                 <!-- 更新ボタン -->
                 <v-btn
                   :disabled="!updatePassLimitValid || plan == null"
-                  class="teal"
+                  class="teal lighten-1"
                   @click="updatePassLimitButtonClicked"
                 >
                   <span

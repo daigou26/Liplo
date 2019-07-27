@@ -1,6 +1,7 @@
 export const strict = false
 import { firestore } from '@/plugins/firebase'
 import { event } from 'vue-analytics'
+import SimpleCrypto from "simple-crypto-js"
 
 export const state = () => ({
   uid: null,
@@ -72,9 +73,17 @@ export const actions = {
           commit('setCompanyId', doc.data()['companyId'])
           commit('setCompanyImageUrl', doc.data()['companyImageUrl'])
           commit('setCompanyName', doc.data()['companyName'])
-          commit('setGoodPoint', doc.data()['goodPoint'])
-          commit('setAdvice', doc.data()['advice'])
           commit('setCreatedAt', doc.data()['createdAt'])
+
+          // decrypt
+          if (doc.data()['goodPoint']) {
+            var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+            commit('setGoodPoint', simpleCrypto.decrypt(doc.data()['goodPoint']))
+          }
+          if (doc.data()['advice']) {
+            var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+            commit('setAdvice', simpleCrypto.decrypt(doc.data()['advice']))
+          }
 
           var timestamp = doc.data()['createdAt']
           if (timestamp) {
@@ -116,9 +125,13 @@ export const actions = {
   },
   sendFeedback({commit, state}, {router, params, goodPoint, advice}) {
     const feedbackId = params.id
+
+    // encrypt
+    var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
+    
     const feedbackData = {
-      goodPoint: goodPoint,
-      advice: advice,
+      goodPoint: simpleCrypto.encrypt(goodPoint),
+      advice: simpleCrypto.encrypt(advice),
       createdAt: new Date(),
       isWritten: true
     }

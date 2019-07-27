@@ -5,13 +5,8 @@
     wrap
   >
     <!-- loading -->
-    <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
-      <v-layout justify-center>
-        Now Loading...
-      </v-layout>
-    </v-flex>
     <v-flex
-      v-else-if="isInitialLoading"
+      v-if="isInitialLoading"
       xs12
       :style="{ height: windowHeight + 'px' }"
     >
@@ -57,7 +52,7 @@
               ref="messagesScroll"
             >
               <infinite-loading
-                v-if="showInfiniteLoading && messages && messages.length >= 10 && !isLoading"
+                v-if="showInfiniteLoading && messages && messages.length >= 20 && !isLoading"
                 direction="top"
                 spinner="waveDots"
                 @infinite="infiniteHandler">
@@ -78,7 +73,7 @@
                           class="grey lighten-3 mx-2"
                           :size="40"
                         >
-                          <img v-if="message.user.imageUrl" :src="message.user.imageUrl">
+                          <img v-if="profileImageUrl" :src="profileImageUrl">
                         </v-avatar>
                       </div>
                       <!-- message -->
@@ -86,7 +81,7 @@
                         :class="{ 'message-right': message.pic != null }"
                       >
                         <div v-if="message.user != null" class="light-text-color">
-                          {{ message.user.name }}
+                          {{ userName }}
                         </div>
                         <div
                           class="px-3 py-2 white message-border-radius return text-xs-left"
@@ -131,7 +126,7 @@ export default {
   middleware: 'auth',
   head () {
     return {
-      title: this.userName + ' - ' + 'メッセージ',
+      title: 'メッセージ',
       meta: [
         { name: 'robots', content: 'noindex' },
       ],
@@ -211,7 +206,7 @@ export default {
     },
     messages(messages) {
       // 最下部へスクロール
-      if (messages.length <= 10 || this.isNewMessage) {
+      if (messages != null && messages.length != 0 && (messages.length <= 20 || this.isNewMessage)) {
         this.$nextTick(() => {
           if (this.$refs.messagesScroll) {
             this.$refs.messagesScroll.scrollTop = this.$refs.messagesScroll.scrollHeight
@@ -228,7 +223,6 @@ export default {
           this.count += 1
           this.updateIsLoading(true)
           this.queryMessages({params: this.params, infiniteState: $state})
-
           if (this.count > 20) {
             $state.complete()
           }

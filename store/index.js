@@ -1,6 +1,5 @@
 export const strict = false
-import firebase from 'firebase'
-import { firestore, functions, auth, GoogleProvider } from '@/plugins/firebase'
+import { firestore, functions, auth } from '@/plugins/firebase'
 import { event } from 'vue-analytics'
 
 
@@ -638,7 +637,7 @@ export const actions = {
               }
               // メールアドレスの確認が済んでいない場合はメール送信
               if (!doc.data()['isEmailVerified'] && !user.emailVerified && !state.sentVerifyEmail) {
-                if (route.path !== '/' && route.name !== 'jobs-id' && route.path !== '/user/settings/account') {
+                if (route.path !== '/' && route.name !== 'jobs-id' && route.name !== 'user-settings-account') {
                   router.push('/')
                 }
                 commit('updateSentVerifyEmail', true)
@@ -692,15 +691,6 @@ export const actions = {
   },
   updateIsRefreshing({commit}, isRefreshing) {
     commit('updateIsRefreshing', isRefreshing)
-  },
-  // お問い合わせ
-  sendContact({commit}, {name, email, content}) {
-    var sendContact = functions.httpsCallable("sendContact")
-    sendContact({
-      name: name,
-      email: email,
-      content: content
-    })
   },
   resetState({commit}) {
     commit('setUid', '')

@@ -33,22 +33,50 @@
                 <!-- エンジニア -->
                 <v-list-tile @click="tempJobsEngineerFilter=!tempJobsEngineerFilter">
                   <v-checkbox v-model="tempJobsEngineerFilter" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">エンジニア</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    エンジニア
+                  </v-list-tile-title>
                 </v-list-tile>
                 <!-- デザイナー -->
                 <v-list-tile @click="tempJobsDesignerFilter=!tempJobsDesignerFilter">
                   <v-checkbox v-model="tempJobsDesignerFilter" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">デザイナー</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    デザイナー
+                  </v-list-tile-title>
                 </v-list-tile>
                 <!-- 営業 -->
                 <v-list-tile @click="tempJobsSalesFilter=!tempJobsSalesFilter">
                   <v-checkbox v-model="tempJobsSalesFilter" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">営業</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    営業
+                  </v-list-tile-title>
                 </v-list-tile>
                 <!-- マーケター -->
                 <v-list-tile @click="tempJobsMarketerFilter=!tempJobsMarketerFilter">
                   <v-checkbox v-model="tempJobsMarketerFilter" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">マーケター</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    マーケター
+                  </v-list-tile-title>
                 </v-list-tile>
               </v-list>
             </v-flex>
@@ -57,17 +85,38 @@
                 <!-- 企画 -->
                 <v-list-tile @click="tempJobsPlannerFilter=!tempJobsPlannerFilter">
                   <v-checkbox v-model="tempJobsPlannerFilter" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">企画</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    企画
+                  </v-list-tile-title>
                 </v-list-tile>
                 <!-- ライター -->
                 <v-list-tile @click="tempJobsWriterFilter=!tempJobsWriterFilter">
                   <v-checkbox v-model="tempJobsWriterFilter" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">ライター</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    ライター
+                  </v-list-tile-title>
                 </v-list-tile>
                 <!-- その他 -->
                 <v-list-tile @click="tempJobsOthersFilter=!tempJobsOthersFilter">
                   <v-checkbox v-model="tempJobsOthersFilter" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">その他</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    その他
+                  </v-list-tile-title>
                 </v-list-tile>
               </v-list>
             </v-flex>
@@ -106,27 +155,62 @@
                 <!-- 未経験ok -->
                 <v-list-tile @click="tempExperience=!tempExperience">
                   <v-checkbox v-model="tempExperience" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">未経験歓迎</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    未経験歓迎
+                  </v-list-tile-title>
                 </v-list-tile>
                 <!-- 資金調達あり -->
                 <v-list-tile @click="tempFunding=!tempFunding">
                   <v-checkbox v-model="tempFunding" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">資金調達をしている</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    資金調達している
+                  </v-list-tile-title>
                 </v-list-tile>
                 <!-- メディア掲載 -->
                 <v-list-tile @click="tempMedia=!tempMedia">
                   <v-checkbox v-model="tempMedia" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">メディア掲載実績あり</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    メディア掲載実績あり
+                  </v-list-tile-title>
                 </v-list-tile>
                 <!-- 海外進出 -->
                 <v-list-tile @click="tempOverseas=!tempOverseas">
                   <v-checkbox v-model="tempOverseas" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">海外進出している</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    海外進出している
+                  </v-list-tile-title>
                 </v-list-tile>
                 <!-- 友人と応募ok -->
                 <v-list-tile @click="tempFriend=!tempFriend">
                   <v-checkbox v-model="tempFriend" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">友人と応募OK</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    友人と応募OK
+                  </v-list-tile-title>
                 </v-list-tile>
               </v-list>
             </v-flex>
@@ -135,22 +219,50 @@
                 <!-- 土日ok -->
                 <v-list-tile @click="tempWeekend=!tempWeekend">
                   <v-checkbox v-model="tempWeekend" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">土日OK</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    土日OK
+                  </v-list-tile-title>
                 </v-list-tile>
                 <!-- シフト自由 -->
                 <v-list-tile @click="tempShift=!tempShift">
                   <v-checkbox v-model="tempShift" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">シフト自由</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    シフト自由
+                  </v-list-tile-title>
                 </v-list-tile>
                 <!-- 平均年齢20代 -->
                 <v-list-tile @click="tempAverage20s=!tempAverage20s">
                   <v-checkbox v-model="tempAverage20s" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">平均年齢が20代</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    平均年齢が20代
+                  </v-list-tile-title>
                 </v-list-tile>
                 <!-- 19時以降勤務可能 -->
                 <v-list-tile @click="tempWorktime=!tempWorktime">
                   <v-checkbox v-model="tempWorktime" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">19時以降勤務可能</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    19時以降勤務可能
+                  </v-list-tile-title>
                 </v-list-tile>
               </v-list>
             </v-flex>
@@ -226,22 +338,50 @@
                 <!-- エンジニア -->
                 <v-list-tile @click="engineerButtonClicked">
                   <v-checkbox v-model="tempUsersEngineerFilter" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">エンジニア</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    エンジニア
+                  </v-list-tile-title>
                 </v-list-tile>
                 <!-- デザイナー -->
                 <v-list-tile @click="designerButtonClicked">
                   <v-checkbox v-model="tempUsersDesignerFilter" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">デザイナー</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    デザイナー
+                  </v-list-tile-title>
                 </v-list-tile>
                 <!-- 営業 -->
                 <v-list-tile @click="salesButtonClicked">
                   <v-checkbox v-model="tempUsersSalesFilter" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">営業</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    営業
+                  </v-list-tile-title>
                 </v-list-tile>
                 <!-- マーケター -->
                 <v-list-tile @click="marketerButtonClicked">
                   <v-checkbox v-model="tempUsersMarketerFilter" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">マーケター</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    マーケター
+                  </v-list-tile-title>
                 </v-list-tile>
               </v-list>
             </v-flex>
@@ -250,17 +390,38 @@
                 <!-- 企画 -->
                 <v-list-tile @click="plannerButtonClicked">
                   <v-checkbox v-model="tempUsersPlannerFilter" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">企画</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    企画
+                  </v-list-tile-title>
                 </v-list-tile>
                 <!-- ライター -->
                 <v-list-tile @click="writerButtonClicked">
                   <v-checkbox v-model="tempUsersWriterFilter" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">ライター</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    ライター
+                  </v-list-tile-title>
                 </v-list-tile>
                 <!-- その他 -->
                 <v-list-tile @click="othersButtonClicked">
                   <v-checkbox v-model="tempUsersOthersFilter" readonly color="teal"></v-checkbox>
-                  <v-list-tile-title class="pl-3">その他</v-list-tile-title>
+                  <v-list-tile-title
+                    class="pl-3"
+                    :class="{
+                      'body-1': $vuetify.breakpoint.xsOnly,
+                    }"
+                  >
+                    その他
+                  </v-list-tile-title>
                 </v-list-tile>
               </v-list>
             </v-flex>
@@ -324,7 +485,7 @@ export default {
     },
     featuresMenuWidth() {
       switch (this.$vuetify.breakpoint.name) {
-        case 'xs': return 320
+        case 'xs': return 260
         default: return 600
       }
     },

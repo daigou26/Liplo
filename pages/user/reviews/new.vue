@@ -32,7 +32,6 @@
         <!-- snackbar -->
         <v-snackbar
           v-model="snackbar"
-          class="px-5"
           color="teal lighten-1"
           :multi-line="true"
           :timeout="6000"
@@ -167,7 +166,7 @@
                     <v-btn
                       :disabled="!reviewValid || notReviewedCompany.isWritten"
                       class="white--text"
-                      color="teal"
+                      color="teal lighten-1"
                       @click="reviewButtonClicked">
                       レビューを送信
                     </v-btn>

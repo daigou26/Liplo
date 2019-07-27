@@ -47,7 +47,7 @@
         <template v-slot:items="props">
           <n-link
             class="clickable"
-            :class="{'highlight-row': !props.item.isContracted && props.item.isAccepted}"
+            :class="{'highlight-row': !props.item.isContracted && props.item.isAccepted && props.item.isValid}"
             tag="tr"
             :to="'/recruiter/candidates/' + props.item.candidateId"
           >
@@ -122,8 +122,8 @@ export default {
           value: 'name'
         },
         { text: '職種', value: 'occupation', sortable: false },
-        { text: '使用済みか', value: 'isAccepted', sortable: false },
-        { text: '契約済みか', value: 'isContracted', sortable: false},
+        { text: '使用済み', value: 'isAccepted', sortable: false },
+        { text: '契約済み', value: 'isContracted', sortable: false},
         { text: '使用日', value: 'acceptedDate' },
       ],
       pagination: {
