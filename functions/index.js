@@ -118,13 +118,12 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
       <body>
         <table border="0" cellpadding="0" cellspacing="0" width="100%">
           <tr>
-            <td align="center" style="margin: 40px 0;">
+            <td align="center">
               <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                 <tr>
                   <td
-                    align="center"
                     style="
-                      padding: 24px;
+                      padding: 12px;
                       font-size: 16px;
                       line-height: 32px;
                     "
@@ -133,7 +132,7 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
                       style="
                         color: #555555;
                         margin: 14px 12px 40px;
-                        font-size: 22px;
+                        font-size: 20px;
                         font-weight: 400;
                         line-height: 24px;
                       "
@@ -165,7 +164,7 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
                                     text-decoration: none;
                                     border-radius: 6px;
                                   "
-                                >サインアップする</a>
+                                >サインアップ</a>
                               </td>
                             </tr>
                           </table>
@@ -179,12 +178,13 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
                     align="center"
                     style="
                       color: #777777;
-                      padding: 32px;
-                      font-size: 14px;
+                      padding: 60px 12px 0px;
+                      font-size: 12px;
                       line-height: 24px;
                     "
                   >
-                    <p style="margin: 0;"> このメールに心当たりがない方は、お手数をおかけしますがこのメールを破棄してください。</p>
+                    <hr size=1 color="#dddddd">
+                    <p style="margin: 0; padding-top: 12px"> このメールに心当たりがない方は、お手数をおかけしますがこのメールを破棄してください。</p>
                   </td>
                 </tr>
                 <tr>
@@ -192,7 +192,7 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
                     align="center"
                     style="
                       color: #777777;
-                      padding: 28px;
+                      padding: 20px;
                       font-size: 14px;
                       line-height: 24px;
                     "
@@ -856,13 +856,12 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
                       <body>
                         <table border="0" cellpadding="0" cellspacing="0" width="100%">
                           <tr>
-                            <td align="center" style="margin: 40px 0;">
+                            <td align="center">
                               <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                                 <tr>
                                   <td
-                                    align="center"
                                     style="
-                                      padding: 24px;
+                                      padding: 12px;
                                       font-size: 16px;
                                       line-height: 32px;
                                     "
@@ -871,7 +870,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
                                       style="
                                         color: #555555;
                                         margin: 14px 12px 40px;
-                                        font-size: 22px;
+                                        font-size: 20px;
                                         font-weight: 400;
                                         line-height: 24px;
                                       "
@@ -880,7 +879,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
                                       <div style="padding-top: 6px">${companyName}から${passTypeText}が届いています！</div>
                                     </h1>
                                     <div style="margin: 0 16px 60px; color: #555555">
-                                      下のボタンからパスを確認できます。有効期限などが設定されているので、早めにご確認ください。
+                                      下のボタンからパスを確認できます。有効期限が設定されているので、早めにご確認ください。
                                     </div>
                                   </td>
                                 </tr>
@@ -918,12 +917,13 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
                                     align="center"
                                     style="
                                       color: #777777;
-                                      padding: 28px;
+                                      padding: 60px 12px 20px;
                                       font-size: 14px;
                                       line-height: 24px;
                                     "
                                   >
-                                    <p style="margin: 0;"> Liplo Inc.</p>
+                                    <hr size=1 color="#dddddd">
+                                    <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
                                   </td>
                                 </tr>
                               </table>
@@ -1191,13 +1191,12 @@ exports.passHasChanged = functions.region('asia-northeast1')
                   <body>
                     <table border="0" cellpadding="0" cellspacing="0" width="100%">
                       <tr>
-                        <td align="center" style="margin: 40px 0;">
+                        <td align="center">
                           <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                             <tr>
                               <td
-                                align="center"
                                 style="
-                                  padding: 24px;
+                                  padding: 12px;
                                   font-size: 16px;
                                   line-height: 32px;
                                 "
@@ -1206,7 +1205,7 @@ exports.passHasChanged = functions.region('asia-northeast1')
                                   style="
                                     color: #555555;
                                     margin: 14px 12px 40px;
-                                    font-size: 22px;
+                                    font-size: 20px;
                                     font-weight: 400;
                                     line-height: 24px;
                                   "
@@ -1252,12 +1251,13 @@ exports.passHasChanged = functions.region('asia-northeast1')
                                 align="center"
                                 style="
                                   color: #777777;
-                                  padding: 28px;
+                                  padding: 60px 12px 20px;
                                   font-size: 14px;
                                   line-height: 24px;
                                 "
                               >
-                                <p style="margin: 0;"> Liplo Inc.</p>
+                                <hr size=1 color="#dddddd">
+                                <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
                               </td>
                             </tr>
                           </table>
@@ -1588,13 +1588,12 @@ exports.scoutUser = functions.region('asia-northeast1')
                               <body>
                                 <table border="0" cellpadding="0" cellspacing="0" width="100%">
                                   <tr>
-                                    <td align="center" style="margin: 40px 0;">
+                                    <td align="center">
                                       <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                                         <tr>
                                           <td
-                                            align="center"
                                             style="
-                                              padding: 24px;
+                                              padding: 12px;
                                               font-size: 16px;
                                               line-height: 32px;
                                             "
@@ -1603,7 +1602,7 @@ exports.scoutUser = functions.region('asia-northeast1')
                                               style="
                                                 color: #555555;
                                                 margin: 14px 12px 50px;
-                                                font-size: 22px;
+                                                font-size: 20px;
                                                 font-weight: 400;
                                                 line-height: 24px;
                                               "
@@ -1650,12 +1649,13 @@ exports.scoutUser = functions.region('asia-northeast1')
                                             align="center"
                                             style="
                                               color: #777777;
-                                              padding: 28px;
+                                              padding: 60px 12px 20px;
                                               font-size: 14px;
                                               line-height: 24px;
                                             "
                                           >
-                                            <p style="margin: 0;"> Liplo Inc.</p>
+                                            <hr size=1 color="#dddddd">
+                                            <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
                                           </td>
                                         </tr>
                                       </table>
@@ -1750,13 +1750,12 @@ exports.scoutUser = functions.region('asia-northeast1')
                           <body>
                             <table border="0" cellpadding="0" cellspacing="0" width="100%">
                               <tr>
-                                <td align="center" style="margin: 40px 0;">
+                                <td align="center">
                                   <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                                     <tr>
                                       <td
-                                        align="center"
                                         style="
-                                          padding: 24px;
+                                          padding: 12px;
                                           font-size: 16px;
                                           line-height: 32px;
                                         "
@@ -1765,7 +1764,7 @@ exports.scoutUser = functions.region('asia-northeast1')
                                           style="
                                             color: #555555;
                                             margin: 14px 12px 50px;
-                                            font-size: 22px;
+                                            font-size: 20px;
                                             font-weight: 400;
                                             line-height: 24px;
                                           "
@@ -1812,12 +1811,13 @@ exports.scoutUser = functions.region('asia-northeast1')
                                         align="center"
                                         style="
                                           color: #777777;
-                                          padding: 28px;
+                                          padding: 60px 12px 20px;
                                           font-size: 14px;
                                           line-height: 24px;
                                         "
                                       >
-                                        <p style="margin: 0;"> Liplo Inc.</p>
+                                        <hr size=1 color="#dddddd">
+                                        <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
                                       </td>
                                     </tr>
                                   </table>
@@ -1994,13 +1994,12 @@ exports.applyForJob = functions.region('asia-northeast1')
                           <body>
                             <table border="0" cellpadding="0" cellspacing="0" width="100%">
                               <tr>
-                                <td align="center" style="margin: 40px 0;">
+                                <td align="center">
                                   <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                                     <tr>
                                       <td
-                                        align="center"
                                         style="
-                                          padding: 24px;
+                                          padding: 12px;
                                           font-size: 16px;
                                           line-height: 32px;
                                         "
@@ -2009,7 +2008,7 @@ exports.applyForJob = functions.region('asia-northeast1')
                                           style="
                                             color: #555555;
                                             margin: 14px 12px 50px;
-                                            font-size: 22px;
+                                            font-size: 20px;
                                             font-weight: 400;
                                             line-height: 24px;
                                           "
@@ -2056,12 +2055,13 @@ exports.applyForJob = functions.region('asia-northeast1')
                                         align="center"
                                         style="
                                           color: #777777;
-                                          padding: 28px;
+                                          padding: 60px 12px 20px;
                                           font-size: 14px;
                                           line-height: 24px;
                                         "
                                       >
-                                        <p style="margin: 0;"> Liplo Inc.</p>
+                                        <hr size=1 color="#dddddd">
+                                        <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
                                       </td>
                                     </tr>
                                   </table>
@@ -2125,13 +2125,12 @@ exports.applyForJob = functions.region('asia-northeast1')
                       <body>
                         <table border="0" cellpadding="0" cellspacing="0" width="100%">
                           <tr>
-                            <td align="center" style="margin: 40px 0;">
-                              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                            <td align="center">
+                              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;>
                                 <tr>
                                   <td
-                                    align="center"
                                     style="
-                                      padding: 24px;
+                                      padding: 12px;
                                       font-size: 16px;
                                       line-height: 32px;
                                     "
@@ -2140,7 +2139,7 @@ exports.applyForJob = functions.region('asia-northeast1')
                                       style="
                                         color: #555555;
                                         margin: 14px 12px 50px;
-                                        font-size: 22px;
+                                        font-size: 20px;
                                         font-weight: 400;
                                         line-height: 24px;
                                       "
@@ -2187,12 +2186,13 @@ exports.applyForJob = functions.region('asia-northeast1')
                                     align="center"
                                     style="
                                       color: #777777;
-                                      padding: 28px;
+                                      padding: 60px 12px 20px;
                                       font-size: 14px;
                                       line-height: 24px;
                                     "
                                   >
-                                    <p style="margin: 0;"> Liplo Inc.</p>
+                                    <hr size=1 color="#dddddd">
+                                    <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
                                   </td>
                                 </tr>
                               </table>
