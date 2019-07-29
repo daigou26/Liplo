@@ -185,14 +185,14 @@ export default {
       uid: state => state.uid,
       isAdmin: state => state.profile.isAdmin,
       isRefreshing: state => state.isRefreshing,
-      isLoading: state => state.company.isLoading,
-      plan: state => state.company.plan,
-      isDeleted: state => state.company.isDeleted,
-      imageUrl: state => state.company.companyImageUrl,
-      companyId: state => state.company.companyId,
-      companyName: state => state.company.companyName,
-      email: state => state.company.email,
-      invoiceEmail: state => state.company.invoiceEmail,
+      isLoading: state => state.companyInfo.isLoading,
+      plan: state => state.companyInfo.plan,
+      isDeleted: state => state.companyInfo.isDeleted,
+      imageUrl: state => state.companyInfo.companyImageUrl,
+      companyId: state => state.companyInfo.companyId,
+      companyName: state => state.companyInfo.companyName,
+      email: state => state.companyInfo.email,
+      invoiceEmail: state => state.companyInfo.invoiceEmail,
     }),
   },
   mounted() {
@@ -242,9 +242,9 @@ export default {
       this.isEditingPlan = false
     },
     ...mapActions({
-      queryCompanyFromAdmin: 'company/queryCompanyFromAdmin',
-      updateIsLoading: 'company/updateIsLoading',
-      resetState: 'company/resetState',
+      queryCompanyFromAdmin: 'companyInfo/queryCompanyFromAdmin',
+      updateIsLoading: 'companyInfo/updateIsLoading',
+      resetState: 'companyInfo/resetState',
       updatePlan: 'admin/updatePlan'
     }),
   }

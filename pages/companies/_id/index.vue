@@ -796,7 +796,6 @@ export default {
       companyId: state => state.company.companyId,
       companyName: state => state.company.companyName,
       companyImageUrl: state => state.company.companyImageUrl,
-      email: state => state.company.email,
       members: state => state.company.members,
       location: state => state.company.location,
       foundedDate: state => state.company.foundedDate,

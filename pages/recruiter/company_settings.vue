@@ -274,10 +274,10 @@ export default {
       uid: state => state.uid,
       type: state => state.profile.type,
       companyId: state => state.profile.companyId,
-      companyName: state => state.company.companyName,
-      email: state => state.company.email,
-      plan: state => state.company.plan,
-      invoiceEmail: state => state.company.invoiceEmail,
+      companyName: state => state.companyInfo.companyName,
+      email: state => state.companyInfo.email,
+      plan: state => state.companyInfo.plan,
+      invoiceEmail: state => state.companyInfo.invoiceEmail,
     }),
   },
   mounted() {
@@ -306,9 +306,9 @@ export default {
       this.snackbarText = '更新しました！ 確認のメールが届いているかご確認ください（少々時間がかかる場合がございます）'
     },
     ...mapActions({
-      queryCompanyInfo: 'company/queryCompanyInfo',
-      updateCompanyEmail: 'company/updateCompanyEmail',
-      updateInvoiceEmail: 'company/updateCompanyInvoiceEmail',
+      queryCompanyInfo: 'companyInfo/queryCompanyInfo',
+      updateCompanyEmail: 'companyInfo/updateCompanyEmail',
+      updateInvoiceEmail: 'companyInfo/updateCompanyInvoiceEmail',
     }),
   }
 }

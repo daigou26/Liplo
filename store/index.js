@@ -113,6 +113,8 @@ export const actions = {
     } else if (recruiterType == 'initial') {
       firestore.collection('companies')
         .doc(companyId)
+        .collection('info')
+        .doc(companyId)
         .get()
         .then(function(doc) {
           if (doc.exists) {
@@ -427,6 +429,8 @@ export const actions = {
                     .then(() => {
                       // 契約しているか(recruiter)
                       firestore.collection('companies')
+                        .doc(companyId)
+                        .collection('info')
                         .doc(companyId)
                         .get()
                         .then(companyDoc => {

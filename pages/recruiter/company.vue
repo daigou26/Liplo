@@ -1286,7 +1286,6 @@ export default {
       isEditingWelfare: state => state.companyProfile.isEditingWelfare,
       location: state => state.companyProfile.location,
       foundedDate: state => state.companyProfile.foundedDate,
-      email: state => state.companyProfile.email,
       url: state => state.companyProfile.url,
       employeesCount: state => state.companyProfile.employeesCount,
       isEditingCompanyInfo: state => state.companyProfile.isEditingCompanyInfo,

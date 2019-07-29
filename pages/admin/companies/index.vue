@@ -65,11 +65,8 @@
               </td>
               <td style="min-width: 150px">{{ props.item.companyName }}</td>
               <td style="min-width: 150px">
-                <span v-if="props.item.isDeleted" class="orange--text font-weight-bold">削除済み</span>
-                <span v-else-if="props.item.plan == 0" class="teal--text font-weight-bold">採用報酬型</span>
-                <span v-else-if="props.item.plan == 1" class="red--text font-weight-bold">アルファ</span>
-                <span v-else-if="props.item.plan == 2" class="blue--text font-weight-bold">ベータ</span>
-                <span v-else-if="props.item.plan == null" class="grey--text font-weight-bold">未契約</span>
+                <v-icon v-if="props.item.isDeleted">remove</v-icon>
+                <v-icon v-else color="green">check</v-icon>
               </td>
             </n-link>
           </template>
@@ -118,7 +115,7 @@ export default {
           value: 'companyName'
         },
         {
-          text: 'ステータス',
+          text: 'ステータス（企業アカウントがあるか）',
           align: 'left',
           sortable: false,
           value: 'status'

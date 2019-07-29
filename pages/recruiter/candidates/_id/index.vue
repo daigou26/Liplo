@@ -39,7 +39,7 @@
         <!-- user image & name (sm, xs) -->
         <v-flex xs12 hidden-md-and-up>
           <v-card v-if="user" flat>
-            <v-list two-line>
+            <v-list two-line class="py-0">
               <v-list-tile :to="'/users/' + user.uid">
                 <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
                   <v-img
@@ -411,8 +411,7 @@
             <v-tab-item
               v-for="item in tabItems"
               :key="item.value"
-              class="mt-3"
-              :class="{'scroll-y': $vuetify.breakpoint.mdAndUp}"
+              class="mt-3 scroll-y"
               :style="{ height: tabItemHeight + 'px' }"
             >
               <!-- summary -->
@@ -1600,8 +1599,8 @@ export default {
         this.tempJoiningYear = this.joiningYear
       }
       // 有効期間
-      if (pass.expirationDate) {
-        let expirationDate = pass.expirationDate
+      if (this.pass.expirationDate) {
+        let expirationDate = this.pass.expirationDate
         this.tempExpirationDate =
           String(expirationDate.getFullYear()) + '-' +
           String(expirationDate.getMonth() + 1) + '-' +
