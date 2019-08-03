@@ -1,4 +1,5 @@
 export const strict = false
+import firebase from 'firebase/app'
 import { firestore, functions, auth } from '@/plugins/firebase'
 import { event } from 'vue-analytics'
 
