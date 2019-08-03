@@ -399,6 +399,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+const baseUrl = process.env.BASE_URL || 'https://liplo.jp'
 
 export default {
   head () {

@@ -114,7 +114,7 @@ export const actions = {
     } else if (recruiterType == 'initial') {
       firestore.collection('companies')
         .doc(companyId)
-        .collection('info')
+        .collection('detail')
         .doc(companyId)
         .get()
         .then(function(doc) {
