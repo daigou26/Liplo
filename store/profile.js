@@ -182,7 +182,7 @@ export const actions = {
           }
 
           commit('setPoints', doc.data()['points'])
-          commit('setPosition', doc.data()['position'])
+          commit('setPosition', doc.data()['position'] ? doc.data()['position'] : '')
           commit('setFirstName', doc.data()['firstName'])
           commit('setLastName', doc.data()['lastName'])
           commit('setDesiredOccupations', doc.data()['desiredOccupations'])
@@ -747,6 +747,8 @@ export const actions = {
   setCompaniesListener({commit}, companyId) {
     if (!state.unsubscribe) {
       const listener = firestore.collection('companies')
+        .doc(companyId)
+        .collection('info')
         .doc(companyId)
         .onSnapshot(function(doc) {
           commit('setPlan', doc.data()['plan'])

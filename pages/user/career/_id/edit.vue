@@ -56,7 +56,7 @@
               </v-list-tile-content>
             </v-card-actions>
           </v-card>
-          <v-form v-model="valid">
+          <v-form v-model="valid" @submit.prevent="">
             <div class="pt-3">
               <span class="font-weight-bold text-color">職種</span>
               <p v-if="occupation" class="light-text-color body-text return">{{ occupation }}</p>

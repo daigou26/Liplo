@@ -16,6 +16,10 @@ service cloud.firestore {
       allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
       	== companyId || exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid))
     }
+    match /companies/{companyId}/info/{companyInfoId} {
+      allow read, write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== companyId || exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid))
+    }
     match /companies/{companyId}/detail/{companyDetailId} {
       allow read;
       allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId

@@ -10,7 +10,6 @@ export const state = () => ({
   isEditingCompanyName: false,
   companyImageUrl: '',
   isEditingCompanyImage: false,
-  email: '',
   members: null,
   location: '',
   foundedDate: '',
@@ -69,9 +68,6 @@ export const mutations = {
   },
   updateIsEditingCompanyImage(state, isEditing) {
     state.isEditingCompanyImage = isEditing
-  },
-  setEmail(state, email) {
-    state.email = email
   },
   setMembers(state, members) {
     state.members = members
@@ -186,7 +182,6 @@ export const actions = {
           commit('setCompanyId', doc.id)
           commit('setCompanyName', doc.data()['companyName'])
           commit('setCompanyImageUrl', doc.data()['companyImageUrl'])
-          commit('setEmail', doc.data()['email'] ? doc.data()['email'] : '')
           commit('setMembers', doc.data()['members'])
           commit('setLocation', doc.data()['location'] ? doc.data()['location'] : '')
           commit('setFoundedDate', foundedDate)
@@ -266,14 +261,23 @@ export const actions = {
         batch.update(companyRef, {
           imageUrl: downloadURL
         })
+
         const companyDetailRef = firestore.collection('companies')
           .doc(companyId)
           .collection('detail')
           .doc(companyId)
-
         batch.update(companyDetailRef, {
           companyImageUrl: downloadURL
         })
+
+        const companyInfoRef = firestore.collection('companies')
+          .doc(companyId)
+          .collection('info')
+          .doc(companyId)
+        batch.update(companyInfoRef, {
+          companyImageUrl: downloadURL
+        })
+
         batch.commit()
           .then(() => {
             commit('updateIsEditingCompanyImage', false)
@@ -294,6 +298,7 @@ export const actions = {
     batch.update(companyRef, {
       companyName: companyName
     })
+
     const companyDetailRef = firestore.collection('companies')
       .doc(companyId)
       .collection('detail')
@@ -301,6 +306,15 @@ export const actions = {
     batch.update(companyDetailRef, {
       companyName: companyName
     })
+
+    const companyInfoRef = firestore.collection('companies')
+      .doc(companyId)
+      .collection('info')
+      .doc(companyId)
+    batch.update(companyInfoRef, {
+      companyName: companyName
+    })
+
     batch.commit()
       .then(() => {
         commit('setCompanyName', companyName)
@@ -690,7 +704,6 @@ export const actions = {
     commit('setCompanyName', '')
     commit('setCompanyImageUrl', '')
     commit('updateIsEditingCompanyImage', false)
-    commit('setEmail', '')
     commit('setMembers', null)
     commit('setLocation', '')
     commit('setFoundedDate', '')

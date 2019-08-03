@@ -39,6 +39,10 @@
         {
           "fieldPath": "isReviewWritten",
           "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "endedAt",
+          "order": "DESCENDING"
         }
       ]
     },

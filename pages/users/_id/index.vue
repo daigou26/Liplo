@@ -334,9 +334,18 @@
           >
             <v-card class="pt-5 pb-3 px-3">
               <v-toolbar flat color="white hidden-sm-and-up">
-                <v-toolbar-side-icon
-                  @click="dialog=false"
-                ></v-toolbar-side-icon>
+                <v-btn icon @click="scoutDialog=false">
+                  <v-icon>close</v-icon>
+                </v-btn>
+                <span
+                  class="pl-3 text-color font-weight-bold"
+                  :class="{
+                    'title': $vuetify.breakpoint.smAndUp,
+                    'subheading': $vuetify.breakpoint.xsOnly
+                  }"
+                >
+                  スカウト
+                </span>
               </v-toolbar>
               <v-flex
                 xs12
@@ -344,7 +353,7 @@
                 :class="{'px-2': $vuetify.breakpoint.smAndUp, 'px-3 mt-4': $vuetify.breakpoint.xsOnly}"
               >
                 <!-- フォーム -->
-                  <v-form v-model="valid">
+                  <v-form v-model="valid" @submit.prevent="">
                     <v-container>
                       <v-layout
                         column

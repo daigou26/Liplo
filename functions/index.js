@@ -118,13 +118,12 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
       <body>
         <table border="0" cellpadding="0" cellspacing="0" width="100%">
           <tr>
-            <td align="center" style="margin: 40px 0;">
+            <td align="center">
               <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                 <tr>
                   <td
-                    align="center"
                     style="
-                      padding: 24px;
+                      padding: 12px;
                       font-size: 16px;
                       line-height: 32px;
                     "
@@ -133,7 +132,7 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
                       style="
                         color: #555555;
                         margin: 14px 12px 40px;
-                        font-size: 22px;
+                        font-size: 20px;
                         font-weight: 400;
                         line-height: 24px;
                       "
@@ -165,7 +164,7 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
                                     text-decoration: none;
                                     border-radius: 6px;
                                   "
-                                >サインアップする</a>
+                                >サインアップ</a>
                               </td>
                             </tr>
                           </table>
@@ -179,12 +178,13 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
                     align="center"
                     style="
                       color: #777777;
-                      padding: 32px;
-                      font-size: 14px;
+                      padding: 60px 12px 0px;
+                      font-size: 12px;
                       line-height: 24px;
                     "
                   >
-                    <p style="margin: 0;"> このメールに心当たりがない方は、お手数をおかけしますがこのメールを破棄してください。</p>
+                    <hr size=1 color="#dddddd">
+                    <p style="margin: 0; padding-top: 12px"> このメールに心当たりがない方は、お手数をおかけしますがこのメールを破棄してください。</p>
                   </td>
                 </tr>
                 <tr>
@@ -192,7 +192,7 @@ exports.sendMailToInvitedMember = functions.region('asia-northeast1')
                     align="center"
                     style="
                       color: #777777;
-                      padding: 28px;
+                      padding: 20px;
                       font-size: 14px;
                       line-height: 24px;
                     "
@@ -269,19 +269,20 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
     }
 
     // company の候補者カウント, hiringPassCount 更新
-    const companyRef = admin.firestore().collection('companies').doc(companyId)
+    const companyInfoRef = admin.firestore().collection('companies').doc(companyId)
+      .collection('info').doc(companyId)
 
     if (!(beforeStatus.intern && newStatus.pass)) {
       return admin.firestore().runTransaction(function(transaction) {
-        return transaction.get(companyRef).then(function(companyDoc) {
-          if (companyDoc.exists) {
-            const companyName = companyDoc.data().companyName
-            const companyImageUrl = companyDoc.data().imageUrl
-            let currentCandidates = companyDoc.data().currentCandidates
-            let allCandidates = companyDoc.data().allCandidates
-            let hiringPassCount = companyDoc.data().hiringPassCount
-            let companyFeedbackData = companyDoc.data().feedback
-            const invoiceEmail = companyDoc.data().invoiceEmail
+        return transaction.get(companyInfoRef).then(function(companyInfoDoc) {
+          if (companyInfoDoc.exists) {
+            const companyName = companyInfoDoc.data().companyName
+            const companyImageUrl = companyInfoDoc.data().imageUrl
+            let currentCandidates = companyInfoDoc.data().currentCandidates
+            let allCandidates = companyInfoDoc.data().allCandidates
+            let hiringPassCount = companyInfoDoc.data().hiringPassCount
+            let companyFeedbackData = companyInfoDoc.data().feedback
+            const invoiceEmail = companyInfoDoc.data().invoiceEmail
 
             // candidate count 更新
             if (beforeStatus.scouted) {
@@ -357,7 +358,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
               })
             }
 
-            transaction.update(companyRef, companyData)
+            transaction.update(companyInfoRef, companyData)
 
             companyData.invoiceEmail = invoiceEmail
             companyData.companyName = companyName
@@ -593,22 +594,23 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
       })
     }
     if (beforeStatus.intern && newStatus.pass) {
-      const companyRef = admin.firestore().collection('companies').doc(companyId)
+      const companyInfoRef = admin.firestore().collection('companies').doc(companyId)
+      .collection('info').doc(companyId)
       const yearPassRef = admin.firestore().collection('companies').doc(companyId)
         .collection('yearPasses').doc(String(pass.joiningYear))
 
       return admin.firestore().runTransaction(function(transaction) {
-        return transaction.getAll(companyRef, yearPassRef).then(function(docs) {
-          const companyDoc = docs[0]
+        return transaction.getAll(companyInfoRef, yearPassRef).then(function(docs) {
+          const companyInfoDoc = docs[0]
           const yearPassDoc = docs[1]
 
-          if (companyDoc.exists) {
-            const companyName = companyDoc.data().companyName
-            const companyImageUrl = companyDoc.data().imageUrl
-            let currentCandidates = companyDoc.data().currentCandidates
-            let allCandidates = companyDoc.data().allCandidates
-            let hiringPassCount = companyDoc.data().hiringPassCount
-            let companyFeedbackData = companyDoc.data().feedback
+          if (companyInfoDoc.exists) {
+            const companyName = companyInfoDoc.data().companyName
+            const companyImageUrl = companyInfoDoc.data().imageUrl
+            let currentCandidates = companyInfoDoc.data().currentCandidates
+            let allCandidates = companyInfoDoc.data().allCandidates
+            let hiringPassCount = companyInfoDoc.data().hiringPassCount
+            let companyFeedbackData = companyInfoDoc.data().feedback
 
             // candidate count 更新
             currentCandidates.intern -= 1
@@ -705,7 +707,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
               }
             }
 
-            transaction.update(companyRef, companyData)
+            transaction.update(companyInfoRef, companyData)
 
             companyData.companyName = companyName
             if (companyImageUrl) {
@@ -854,13 +856,12 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
                       <body>
                         <table border="0" cellpadding="0" cellspacing="0" width="100%">
                           <tr>
-                            <td align="center" style="margin: 40px 0;">
+                            <td align="center">
                               <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                                 <tr>
                                   <td
-                                    align="center"
                                     style="
-                                      padding: 24px;
+                                      padding: 12px;
                                       font-size: 16px;
                                       line-height: 32px;
                                     "
@@ -869,7 +870,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
                                       style="
                                         color: #555555;
                                         margin: 14px 12px 40px;
-                                        font-size: 22px;
+                                        font-size: 20px;
                                         font-weight: 400;
                                         line-height: 24px;
                                       "
@@ -878,7 +879,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
                                       <div style="padding-top: 6px">${companyName}から${passTypeText}が届いています！</div>
                                     </h1>
                                     <div style="margin: 0 16px 60px; color: #555555">
-                                      下のボタンからパスを確認できます。有効期限などが設定されているので、早めにご確認ください。
+                                      下のボタンからパスを確認できます。有効期限が設定されているので、早めにご確認ください。
                                     </div>
                                   </td>
                                 </tr>
@@ -916,12 +917,13 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
                                     align="center"
                                     style="
                                       color: #777777;
-                                      padding: 28px;
+                                      padding: 60px 12px 20px;
                                       font-size: 14px;
                                       line-height: 24px;
                                     "
                                   >
-                                    <p style="margin: 0;"> Liplo Inc.</p>
+                                    <hr size=1 color="#dddddd">
+                                    <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
                                   </td>
                                 </tr>
                               </table>
@@ -972,15 +974,14 @@ exports.updateCompanyFeedbackCount = functions.region('asia-northeast1')
 
     if (isWritten && !previousValue.isWritten) {
       // company feedback writtenCount 更新
-      const companyRef = admin.firestore().collection('companies').doc(companyId)
-
+      const companyInfoRef = admin.firestore().collection('companies').doc(companyId)
+        .collection('info').doc(companyId)
       return admin.firestore().runTransaction(function(transaction) {
-        return transaction.get(companyRef).then(function(companyDoc) {
-          var feedback = companyDoc.data().feedback
+        return transaction.get(companyInfoRef).then(function(companyInfoDoc) {
+          var feedback = companyInfoDoc.data().feedback
           feedback.writtenCount += 1
 
-          const companyRef = admin.firestore().collection('companies').doc(companyId)
-          transaction.update(companyRef, {
+          transaction.update(companyInfoRef, {
             feedback: feedback
           })
           const companyDetailRef = admin.firestore().collection('companies')
@@ -1065,20 +1066,21 @@ exports.passHasChanged = functions.region('asia-northeast1')
         typeText = '先着パス'
       }
 
-      const companyRef = admin.firestore().collection('companies').doc(companyId)
+      const companyInfoRef = admin.firestore().collection('companies').doc(companyId)
+        .collection('info').doc(companyId)
       const yearPassRef = admin.firestore().collection('companies').doc(companyId)
         .collection('yearPasses').doc(String(joiningYear))
 
       return admin.firestore().runTransaction(function(transaction) {
-        return transaction.getAll(companyRef, yearPassRef).then(function(docs) {
-          const companyDoc = docs[0]
+        return transaction.getAll(companyInfoRef, yearPassRef).then(function(docs) {
+          const companyInfoDoc = docs[0]
           const yearPassDoc = docs[1]
 
-          if (companyDoc.exists) {
+          if (companyInfoDoc.exists) {
             // hiringPassCount 更新
             if (type == 'hiring') {
-              transaction.update(companyRef, {
-                hiringPassCount: companyDoc.data().hiringPassCount - 1
+              transaction.update(companyInfoRef, {
+                hiringPassCount: companyInfoDoc.data().hiringPassCount - 1
               })
             }
           }
@@ -1123,8 +1125,13 @@ exports.passHasChanged = functions.region('asia-northeast1')
 
             transaction.set(yearPassRef, passData)
           }
+
+          let companyData = {
+            members: companyInfoDoc.data().members
+          }
+          return companyData
         })
-      }).then(() => {
+      }).then(companyData => {
         console.log("update pass count completed.")
 
         // メッセージを messages に追加
@@ -1155,133 +1162,122 @@ exports.passHasChanged = functions.region('asia-northeast1')
           })
 
         // 通知
-        admin.firestore()
-          .collection('companies')
-          .doc(companyId)
-          .get()
-          .then(doc => {
-            if (doc.exists) {
-              const candidateUrl = '/recruiter/candidates/' + candidateId
-              const members = doc.data().members
-              const batch = admin.firestore().batch()
-              members.forEach((member, i) => {
-                const notificationRef = admin.firestore().collection('users').doc(member.uid)
-                  .collection('notifications').doc()
-                batch.set(notificationRef, {
-                  type: 'normal',
-                  isImportant: true,
-                  content: `${userName}さんが${typeText}（${joiningYear}年度入社）を使用しました！ 契約が済みましたら、ステータスを採用予定に変更してください。`,
-                  createdAt: new Date(),
-                  url: candidateUrl,
-                  isUnread: true,
-                })
-              })
-              batch.commit()
-                .then(() => {
-                  // パスが使用されたら担当者にメール送信
-                  members.forEach((member, i) => {
-                    if (member.notificationsSetting == null || member.notificationsSetting.acceptPass) {
-                      const mailOptions = {
-                        from: `Liplo <noreply@liplo.jp>`,
-                        to: member.email,
-                      }
-                      mailOptions.subject = `[パス] ${userName}さんが${typeText}を使用しました。`
-                      mailOptions.html = `
-                        <body>
-                          <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        const candidateUrl = '/recruiter/candidates/' + candidateId
+        const members = companyData.members
+        const batch = admin.firestore().batch()
+        members.forEach((member, i) => {
+          const notificationRef = admin.firestore().collection('users').doc(member.uid)
+            .collection('notifications').doc()
+          batch.set(notificationRef, {
+            type: 'normal',
+            isImportant: true,
+            content: `${userName}さんが${typeText}（${joiningYear}年度入社）を使用しました！ 契約が済みましたら、ステータスを採用予定に変更してください。`,
+            createdAt: new Date(),
+            url: candidateUrl,
+            isUnread: true,
+          })
+        })
+        batch.commit()
+          .then(() => {
+            // パスが使用されたら担当者にメール送信
+            members.forEach((member, i) => {
+              if (member.notificationsSetting == null || member.notificationsSetting.acceptPass) {
+                const mailOptions = {
+                  from: `Liplo <noreply@liplo.jp>`,
+                  to: member.email,
+                }
+                mailOptions.subject = `[パス] ${userName}さんが${typeText}を使用しました。`
+                mailOptions.html = `
+                  <body>
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td align="center">
+                          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                             <tr>
-                              <td align="center" style="margin: 40px 0;">
-                                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                              <td
+                                style="
+                                  padding: 12px;
+                                  font-size: 16px;
+                                  line-height: 32px;
+                                "
+                              >
+                                <h1
+                                  style="
+                                    color: #555555;
+                                    margin: 14px 12px 40px;
+                                    font-size: 20px;
+                                    font-weight: 400;
+                                    line-height: 24px;
+                                  "
+                                >
+                                  ${userName}さんが${typeText}（${joiningYear}年度入社）を使用しました。
+                                </h1>
+                                <div style="margin: 0 16px 60px; color: #555555">
+                                  下のボタンから確認ができます。 契約が済みましたら、ステータスを採用予定に変更してください。
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td align="left" bgcolor="#ffffff">
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%">
                                   <tr>
-                                    <td
-                                      align="center"
-                                      style="
-                                        padding: 24px;
-                                        font-size: 16px;
-                                        line-height: 32px;
-                                      "
-                                    >
-                                      <h1
-                                        style="
-                                          color: #555555;
-                                          margin: 14px 12px 40px;
-                                          font-size: 22px;
-                                          font-weight: 400;
-                                          line-height: 24px;
-                                        "
-                                      >
-                                        ${userName}さんが${typeText}（${joiningYear}年度入社）を使用しました。
-                                      </h1>
-                                      <div style="margin: 0 16px 60px; color: #555555">
-                                        下のボタンから確認ができます。 契約が済みましたら、ステータスを採用予定に変更してください。
-                                      </div>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td align="left" bgcolor="#ffffff">
-                                      <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                    <td align="center" bgcolor="#ffffff" style="padding: 20px;">
+                                      <table border="0" cellpadding="0" cellspacing="0">
                                         <tr>
-                                          <td align="center" bgcolor="#ffffff" style="padding: 20px;">
-                                            <table border="0" cellpadding="0" cellspacing="0">
-                                              <tr>
-                                                <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
-                                                  <a
-                                                    href="${appUrl}${candidateUrl}"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    style="
-                                                      display: inline-block;
-                                                      padding: 10px 50px;
-                                                      font-size: 16px;
-                                                      color: #ffffff;
-                                                      text-decoration: none;
-                                                      border-radius: 6px;
-                                                    "
-                                                  >確認する</a>
-                                                </td>
-                                              </tr>
-                                            </table>
+                                          <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
+                                            <a
+                                              href="${appUrl}${candidateUrl}"
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              style="
+                                                display: inline-block;
+                                                padding: 10px 50px;
+                                                font-size: 16px;
+                                                color: #ffffff;
+                                                text-decoration: none;
+                                                border-radius: 6px;
+                                              "
+                                            >確認する</a>
                                           </td>
                                         </tr>
                                       </table>
                                     </td>
                                   </tr>
-                                  <tr>
-                                    <td
-                                      align="center"
-                                      style="
-                                        color: #777777;
-                                        padding: 28px;
-                                        font-size: 14px;
-                                        line-height: 24px;
-                                      "
-                                    >
-                                      <p style="margin: 0;"> Liplo Inc.</p>
-                                    </td>
-                                  </tr>
                                 </table>
                               </td>
                             </tr>
+                            <tr>
+                              <td
+                                align="center"
+                                style="
+                                  color: #777777;
+                                  padding: 60px 12px 20px;
+                                  font-size: 14px;
+                                  line-height: 24px;
+                                "
+                              >
+                                <hr size=1 color="#dddddd">
+                                <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
+                              </td>
+                            </tr>
                           </table>
-                        </body>
-                      `
-                      mailTransport.sendMail(mailOptions, (err, info) => {
-                        if (err) {
-                          console.log(err)
-                        }
-                        console.log('New accept pass email sent to:', member.email)
-                      })
-                    }
-                  })
-                  console.log('send notification, mail to recruiter complete.')
+                        </td>
+                      </tr>
+                    </table>
+                  </body>
+                `
+                mailTransport.sendMail(mailOptions, (err, info) => {
+                  if (err) {
+                    console.log(err)
+                  }
+                  console.log('New accept pass email sent to:', member.email)
                 })
-                .catch((error) => {
-                  console.error("Error", error)
-                })
-            }
+              }
+            })
+            console.log('send notification, mail to recruiter complete.')
           })
-          .catch(error => {
-            console.log('Error getting document', error)
+          .catch((error) => {
+            console.error("Error", error)
           })
       }).catch(function(error) {
         console.error(error)
@@ -1294,6 +1290,8 @@ exports.passHasChanged = functions.region('asia-northeast1')
     ) {
       return admin.firestore()
         .collection('companies')
+        .doc(companyId)
+        .collection('info')
         .doc(companyId)
         .update({
           hiringPassCount: admin.firestore.FieldValue.increment(-1)
@@ -1453,16 +1451,17 @@ exports.scoutUser = functions.region('asia-northeast1')
     const candidateId = context.params.candidateId
 
     // company の応募者数の更新、応募者の情報格納, スカウトメッセージ送信
-    const companyRef = admin.firestore().collection('companies').doc(companyId)
+    const companyInfoRef = admin.firestore().collection('companies').doc(companyId)
+      .collection('info').doc(companyId)
 
     return admin.firestore().runTransaction(function(transaction) {
-      return transaction.get(companyRef).then(function(companyDoc) {
-        if (companyDoc.exists) {
-          const companyName = companyDoc.data().companyName
-          const companyImageUrl = companyDoc.data().imageUrl
-          const members = companyDoc.data().members
-          var currentCandidates = companyDoc.data().currentCandidates
-          var allCandidates = companyDoc.data().allCandidates
+      return transaction.get(companyInfoRef).then(function(companyInfoDoc) {
+        if (companyInfoDoc.exists) {
+          const companyName = companyInfoDoc.data().companyName
+          const companyImageUrl = companyInfoDoc.data().imageUrl
+          const members = companyInfoDoc.data().members
+          var currentCandidates = companyInfoDoc.data().currentCandidates
+          var allCandidates = companyInfoDoc.data().allCandidates
 
           // company の応募者数の更新、応募者の情報格納
           if (currentCandidates) {
@@ -1501,20 +1500,19 @@ exports.scoutUser = functions.region('asia-northeast1')
           }
 
           // 候補者カウント更新
-          const companyRef = admin.firestore().collection('companies').doc(companyId)
-          transaction.update(companyRef, {
+          transaction.update(companyInfoRef, {
             currentCandidates: currentCandidates,
             allCandidates: allCandidates,
           })
-          return companyDoc
+          return companyInfoDoc
         }
       })
-    }).then((companyDoc) => {
+    }).then((companyInfoDoc) => {
       console.log('update candidates count completed.')
 
-      const companyName = companyDoc.data().companyName
-      const companyImageUrl = companyDoc.data().imageUrl
-      const members = companyDoc.data().members
+      const companyName = companyInfoDoc.data().companyName
+      const companyImageUrl = companyInfoDoc.data().imageUrl
+      const members = companyInfoDoc.data().members
 
       // scoutedUsersに追加
       admin.firestore()
@@ -1590,13 +1588,12 @@ exports.scoutUser = functions.region('asia-northeast1')
                               <body>
                                 <table border="0" cellpadding="0" cellspacing="0" width="100%">
                                   <tr>
-                                    <td align="center" style="margin: 40px 0;">
+                                    <td align="center">
                                       <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                                         <tr>
                                           <td
-                                            align="center"
                                             style="
-                                              padding: 24px;
+                                              padding: 12px;
                                               font-size: 16px;
                                               line-height: 32px;
                                             "
@@ -1605,7 +1602,7 @@ exports.scoutUser = functions.region('asia-northeast1')
                                               style="
                                                 color: #555555;
                                                 margin: 14px 12px 50px;
-                                                font-size: 22px;
+                                                font-size: 20px;
                                                 font-weight: 400;
                                                 line-height: 24px;
                                               "
@@ -1652,12 +1649,13 @@ exports.scoutUser = functions.region('asia-northeast1')
                                             align="center"
                                             style="
                                               color: #777777;
-                                              padding: 28px;
+                                              padding: 60px 12px 20px;
                                               font-size: 14px;
                                               line-height: 24px;
                                             "
                                           >
-                                            <p style="margin: 0;"> Liplo Inc.</p>
+                                            <hr size=1 color="#dddddd">
+                                            <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
                                           </td>
                                         </tr>
                                       </table>
@@ -1752,13 +1750,12 @@ exports.scoutUser = functions.region('asia-northeast1')
                           <body>
                             <table border="0" cellpadding="0" cellspacing="0" width="100%">
                               <tr>
-                                <td align="center" style="margin: 40px 0;">
+                                <td align="center">
                                   <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                                     <tr>
                                       <td
-                                        align="center"
                                         style="
-                                          padding: 24px;
+                                          padding: 12px;
                                           font-size: 16px;
                                           line-height: 32px;
                                         "
@@ -1767,7 +1764,7 @@ exports.scoutUser = functions.region('asia-northeast1')
                                           style="
                                             color: #555555;
                                             margin: 14px 12px 50px;
-                                            font-size: 22px;
+                                            font-size: 20px;
                                             font-weight: 400;
                                             line-height: 24px;
                                           "
@@ -1814,12 +1811,13 @@ exports.scoutUser = functions.region('asia-northeast1')
                                         align="center"
                                         style="
                                           color: #777777;
-                                          padding: 28px;
+                                          padding: 60px 12px 20px;
                                           font-size: 14px;
                                           line-height: 24px;
                                         "
                                       >
-                                        <p style="margin: 0;"> Liplo Inc.</p>
+                                        <hr size=1 color="#dddddd">
+                                        <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
                                       </td>
                                     </tr>
                                   </table>
@@ -1871,16 +1869,16 @@ exports.applyForJob = functions.region('asia-northeast1')
     const createdAt = snap.data().createdAt
 
     // company の応募者数の更新、応募者の情報格納
-    const companyRef = admin.firestore().collection('companies').doc(companyId)
-
+    const companyInfoRef = admin.firestore().collection('companies').doc(companyId)
+      .collection('info').doc(companyId)
     return admin.firestore().runTransaction(function(transaction) {
-      return transaction.get(companyRef).then(function(companyDoc) {
-        if (companyDoc.exists) {
-          const companyName = companyDoc.data().companyName
-          const companyImageUrl = companyDoc.data().imageUrl
-          const members = companyDoc.data().members
-          var currentCandidates = companyDoc.data().currentCandidates
-          var allCandidates = companyDoc.data().allCandidates
+      return transaction.get(companyInfoRef).then(function(companyInfoDoc) {
+        if (companyInfoDoc.exists) {
+          const companyName = companyInfoDoc.data().companyName
+          const companyImageUrl = companyInfoDoc.data().imageUrl
+          const members = companyInfoDoc.data().members
+          var currentCandidates = companyInfoDoc.data().currentCandidates
+          var allCandidates = companyInfoDoc.data().allCandidates
 
           if (currentCandidates) {
             currentCandidates.inbox += 1
@@ -1918,20 +1916,19 @@ exports.applyForJob = functions.region('asia-northeast1')
           }
 
           // 候補者カウント更新
-          const companyRef = admin.firestore().collection('companies').doc(companyId)
-          transaction.update(companyRef, {
+          transaction.update(companyInfoRef, {
             currentCandidates: currentCandidates,
             allCandidates: allCandidates,
           })
-          return companyDoc
+          return companyInfoDoc
         }
       })
-    }).then((companyDoc) => {
+    }).then((companyInfoDoc) => {
       console.log('update candidates count completed.')
 
-      const companyName = companyDoc.data().companyName
-      const companyImageUrl = companyDoc.data().imageUrl
-      const members = companyDoc.data().members
+      const companyName = companyInfoDoc.data().companyName
+      const companyImageUrl = companyInfoDoc.data().imageUrl
+      const members = companyInfoDoc.data().members
 
       const batch = admin.firestore().batch()
       // applicantsに追加
@@ -1997,13 +1994,12 @@ exports.applyForJob = functions.region('asia-northeast1')
                           <body>
                             <table border="0" cellpadding="0" cellspacing="0" width="100%">
                               <tr>
-                                <td align="center" style="margin: 40px 0;">
+                                <td align="center">
                                   <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                                     <tr>
                                       <td
-                                        align="center"
                                         style="
-                                          padding: 24px;
+                                          padding: 12px;
                                           font-size: 16px;
                                           line-height: 32px;
                                         "
@@ -2012,7 +2008,7 @@ exports.applyForJob = functions.region('asia-northeast1')
                                           style="
                                             color: #555555;
                                             margin: 14px 12px 50px;
-                                            font-size: 22px;
+                                            font-size: 20px;
                                             font-weight: 400;
                                             line-height: 24px;
                                           "
@@ -2059,12 +2055,13 @@ exports.applyForJob = functions.region('asia-northeast1')
                                         align="center"
                                         style="
                                           color: #777777;
-                                          padding: 28px;
+                                          padding: 60px 12px 20px;
                                           font-size: 14px;
                                           line-height: 24px;
                                         "
                                       >
-                                        <p style="margin: 0;"> Liplo Inc.</p>
+                                        <hr size=1 color="#dddddd">
+                                        <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
                                       </td>
                                     </tr>
                                   </table>
@@ -2128,13 +2125,12 @@ exports.applyForJob = functions.region('asia-northeast1')
                       <body>
                         <table border="0" cellpadding="0" cellspacing="0" width="100%">
                           <tr>
-                            <td align="center" style="margin: 40px 0;">
-                              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                            <td align="center">
+                              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;>
                                 <tr>
                                   <td
-                                    align="center"
                                     style="
-                                      padding: 24px;
+                                      padding: 12px;
                                       font-size: 16px;
                                       line-height: 32px;
                                     "
@@ -2143,7 +2139,7 @@ exports.applyForJob = functions.region('asia-northeast1')
                                       style="
                                         color: #555555;
                                         margin: 14px 12px 50px;
-                                        font-size: 22px;
+                                        font-size: 20px;
                                         font-weight: 400;
                                         line-height: 24px;
                                       "
@@ -2190,12 +2186,13 @@ exports.applyForJob = functions.region('asia-northeast1')
                                     align="center"
                                     style="
                                       color: #777777;
-                                      padding: 28px;
+                                      padding: 60px 12px 20px;
                                       font-size: 14px;
                                       line-height: 24px;
                                     "
                                   >
-                                    <p style="margin: 0;"> Liplo Inc.</p>
+                                    <hr size=1 color="#dddddd">
+                                    <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
                                   </td>
                                 </tr>
                               </table>
@@ -2355,13 +2352,9 @@ exports.updateJobStatusToPrivate = functions.region('asia-northeast1')
     const newValue = change.after.data()
     const companyId = context.params.companyId
     const isDeleted = newValue.isDeleted
-    const plan = newValue.plan
 
     // 変化がない場合は終了
-    if (isDeleted == previousValue.isDeleted && plan == previousValue.plan ) {
-      return 0
-    }
-    if (isDeleted != true && plan != null) {
+    if (isDeleted != true || previousValue.isDeleted == true) {
       return 0
     }
 
@@ -2726,6 +2719,7 @@ exports.createRecruiter = functions.region('asia-northeast1')
     // 企業の member 内の情報更新
     return admin.firestore()
       .collection('companies').doc(companyId)
+      .collection('info').doc(companyId)
       .get()
       .then(doc => {
         if (doc.exists) {
@@ -2753,11 +2747,13 @@ exports.createRecruiter = functions.region('asia-northeast1')
 
           // members更新
           const batch = admin.firestore().batch()
-          const companyRef = admin.firestore().collection('companies').doc(companyId)
-          batch.update(companyRef, {
+          const companyInfoRef = admin.firestore().collection('companies').doc(companyId)
+            .collection('info').doc(companyId)
+          batch.update(companyInfoRef, {
             members: members,
           })
-          const companyDetailRef = admin.firestore().collection('companies').doc(companyId).collection('detail').doc(companyId)
+          const companyDetailRef = admin.firestore().collection('companies').doc(companyId)
+            .collection('detail').doc(companyId)
           batch.update(companyDetailRef, {
             members: members,
           })
@@ -2802,6 +2798,7 @@ exports.editRecruiterSetting = functions.region('asia-northeast1')
       // 企業の member 内の情報更新
       return admin.firestore()
         .collection('companies').doc(companyId)
+        .collection('info').doc(companyId)
         .get()
         .then(doc => {
           if (doc.exists) {
@@ -2819,11 +2816,13 @@ exports.editRecruiterSetting = functions.region('asia-northeast1')
 
             // members更新
             const batch = admin.firestore().batch()
-            const companyRef = admin.firestore().collection('companies').doc(companyId)
-            batch.update(companyRef, {
+            const companyInfoRef = admin.firestore().collection('companies').doc(companyId)
+              .collection('info').doc(companyId)
+            batch.update(companyInfoRef, {
               members: members,
             })
-            const companyDetailRef = admin.firestore().collection('companies').doc(companyId).collection('detail').doc(companyId)
+            const companyDetailRef = admin.firestore().collection('companies').doc(companyId)
+              .collection('detail').doc(companyId)
             batch.update(companyDetailRef, {
               members: members,
             })
@@ -2844,18 +2843,26 @@ exports.editRecruiterSetting = functions.region('asia-northeast1')
       // 企業の member 内の情報更新
       return admin.firestore()
         .collection('companies').doc(companyId)
+        .collection('info').doc(companyId)
         .get()
         .then(doc => {
           if (doc.exists) {
             var companyData
+            var companyDetail
             var members = doc.data().members
+            var isCompanyDeleted = false
 
             if (members.length <= 1) {
+              isCompanyDeleted = true
               members = []
               companyData = {
                 members: members,
                 isDeleted: true,
                 plan: null,
+              }
+              companyDetailData = {
+                members: members,
+                isDeleted: true,
               }
             } else {
               var index
@@ -2868,14 +2875,26 @@ exports.editRecruiterSetting = functions.region('asia-northeast1')
               companyData = {
                 members: members,
               }
+              companyDetailData = {
+                members: members,
+              }
             }
 
-            // members更新
+            // members, isDeleted 更新
             const batch = admin.firestore().batch()
-            const companyRef = admin.firestore().collection('companies').doc(companyId)
-            batch.update(companyRef, companyData)
-            const companyDetailRef = admin.firestore().collection('companies').doc(companyId).collection('detail').doc(companyId)
-            batch.update(companyDetailRef, companyData)
+            if (isCompanyDeleted) {
+              const companyRef = admin.firestore().collection('companies').doc(companyId)
+              batch.update(companyRef, {
+                isDeleted: true
+              })
+            }
+
+            const companyInfoRef = admin.firestore().collection('companies').doc(companyId)
+              .collection('info').doc(companyId)
+            batch.update(companyInfoRef, companyData)
+            const companyDetailRef = admin.firestore().collection('companies').doc(companyId)
+              .collection('detail').doc(companyId)
+            batch.update(companyDetailRef, companyDetailData)
             batch.commit()
               .then(() => {
                 console.log('completed.')
@@ -2995,6 +3014,7 @@ exports.editProfile = functions.region('asia-northeast1')
       // 企業の member 内の情報更新
       return admin.firestore()
         .collection('companies').doc(companyId)
+        .collection('info').doc(companyId)
         .get()
         .then(doc => {
           if (doc.exists) {
@@ -3020,11 +3040,13 @@ exports.editProfile = functions.region('asia-northeast1')
 
             // members更新
             const batch = admin.firestore().batch()
-            const companyRef = admin.firestore().collection('companies').doc(companyId)
-            batch.update(companyRef, {
+            const companyInfoRef = admin.firestore().collection('companies').doc(companyId)
+              .collection('info').doc(companyId)
+            batch.update(companyInfoRef, {
               members: members,
             })
-            const companyDetailRef = admin.firestore().collection('companies').doc(companyId).collection('detail').doc(companyId)
+            const companyDetailRef = admin.firestore().collection('companies').doc(companyId)
+              .collection('detail').doc(companyId)
             batch.update(companyDetailRef, {
               members: members,
             })
@@ -3165,6 +3187,13 @@ exports.sendReview = functions.region('asia-northeast1')
           // company rating, points 更新
           const companyRef = admin.firestore().collection('companies').doc(companyId)
           transaction.update(companyRef, {
+            rating: rating,
+            points: points
+          })
+          // company info rating, points 更新
+          const companyInfoRef = admin.firestore().collection('companies').doc(companyId)
+            .collection('info').doc(companyId)
+          transaction.update(companyInfoRef, {
             rating: rating,
             points: points
           })

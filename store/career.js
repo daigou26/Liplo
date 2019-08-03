@@ -110,6 +110,7 @@ export const actions = {
       .collection('career')
       .where('end', '==', true)
       .where('isReviewWritten', '==', false)
+      .orderBy("endedAt", "desc")
       .get()
       .then(function(snapshot) {
         const data = []

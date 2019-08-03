@@ -101,7 +101,7 @@
           </v-dialog>
         </div>
         <!-- UserName編集 -->
-        <v-form v-model="editUserNameValid">
+        <v-form v-model="editUserNameValid" @submit.prevent="">
           <v-dialog
             :value="isEditingUserName"
             :fullscreen="$vuetify.breakpoint.xsOnly"
@@ -169,7 +169,7 @@
           </v-btn>
         </v-flex>
         <!-- 役職編集 -->
-        <v-form v-model="editPositionValid">
+        <v-form v-model="editPositionValid" @submit.prevent="">
           <v-dialog
             :value="isEditingPosition"
             :fullscreen="$vuetify.breakpoint.xsOnly"
@@ -250,7 +250,7 @@
             </v-card-text>
             <!-- 自己紹介の編集画面 -->
             <div v-show="isEditingSelfIntro">
-              <v-form v-model="editSelfIntroValid">
+              <v-form v-model="editSelfIntroValid" @submit.prevent="">
                 <v-textarea
                   solo
                   label="自己紹介"

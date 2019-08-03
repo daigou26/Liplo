@@ -389,7 +389,7 @@
           >
             <!-- 登録フォーム -->
             <div>
-              <v-form v-model="valid">
+              <v-form v-model="valid" @submit.prevent="">
                 <v-container>
                   <v-layout
                     column

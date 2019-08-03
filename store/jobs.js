@@ -342,6 +342,7 @@ export const actions = {
 
     if (jobs == null || jobs.length == 0) {
       firestore.collection('jobs')
+        .where('status', '==', 'published')
         .where('companyId', '==', companyId)
         .orderBy('createdAt', 'desc')
         .limit(20)
@@ -409,6 +410,7 @@ export const actions = {
       const lastDate = jobs[lastIndex].createdAt
 
       firestore.collection('jobs')
+        .where('status', '==', 'published')
         .where('companyId', '==', companyId)
         .orderBy('createdAt', 'desc')
         .startAfter(lastDate)

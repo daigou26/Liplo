@@ -269,7 +269,7 @@
           class="light-text-color"
           :class="{'px-4': $vuetify.breakpoint.smAndUp, 'px-4 mt-4': $vuetify.breakpoint.xsOnly}"
         >
-          <v-form v-model="addYearValid">
+          <v-form v-model="addYearValid" @submit.prevent="">
             <v-container>
               <v-layout
                 column
@@ -350,7 +350,7 @@
           class="light-text-color"
           :class="{'px-4': $vuetify.breakpoint.smAndUp, 'px-4 mt-4': $vuetify.breakpoint.xsOnly}"
         >
-          <v-form v-model="updatePassLimitValid">
+          <v-form v-model="updatePassLimitValid" @submit.prevent="">
             <v-container>
               <v-layout
                 column

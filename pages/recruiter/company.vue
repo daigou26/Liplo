@@ -192,7 +192,7 @@
             </v-dialog>
           </div>
           <!-- CompanyName編集 -->
-          <v-form v-model="editCompanyNameValid">
+          <v-form v-model="editCompanyNameValid" @submit.prevent="">
             <v-dialog
               :value="isEditingCompanyName"
               :fullscreen="$vuetify.breakpoint.xsOnly"
@@ -301,7 +301,7 @@
                 :class="{'px-2': $vuetify.breakpoint.smAndUp, 'px-3 mt-4': $vuetify.breakpoint.xsOnly}"
               >
                 <!-- ログインフォーム -->
-                <v-form v-model="addMemberValid">
+                <v-form v-model="addMemberValid" @submit.prevent="">
                   <v-container>
                     <v-layout
                       column
@@ -374,7 +374,7 @@
               <p class="return">{{ mission }}</p>
             </v-card-text>
             <div v-show="isEditingMission">
-              <v-form v-model="editMissionValid">
+              <v-form v-model="editMissionValid" @submit.prevent="">
                 <v-textarea
                   solo
                   label="Mission"
@@ -433,7 +433,7 @@
               <p class="return">{{ vision }}</p>
             </v-card-text>
             <div v-show="isEditingVision">
-              <v-form v-model="editVisionValid">
+              <v-form v-model="editVisionValid" @submit.prevent="">
                 <v-textarea
                   solo
                   label="Vision"
@@ -492,7 +492,7 @@
               <p class="return">{{ value }}</p>
             </v-card-text>
             <div v-show="isEditingValue">
-              <v-form v-model="editValueValid">
+              <v-form v-model="editValueValid" @submit.prevent="">
                 <v-textarea
                   solo
                   label="Value"
@@ -551,7 +551,7 @@
               <p class="return">{{ culture }}</p>
             </v-card-text>
             <div v-show="isEditingCulture">
-              <v-form v-model="editCultureValid">
+              <v-form v-model="editCultureValid" @submit.prevent="">
                 <v-textarea
                   solo
                   label="Culture"
@@ -610,7 +610,7 @@
               <p class="return">{{ system }}</p>
             </v-card-text>
             <div v-show="isEditingSystem">
-              <v-form v-model="editSystemValid">
+              <v-form v-model="editSystemValid" @submit.prevent="">
                 <v-textarea
                   solo
                   label="社内制度"
@@ -668,7 +668,7 @@
               <p class="return">{{ why }}</p>
             </v-card-text>
             <div v-show="isEditingWhy">
-              <v-form v-model="editWhyValid">
+              <v-form v-model="editWhyValid" @submit.prevent="">
                 <v-textarea
                   solo
                   label="なぜやるのか"
@@ -727,7 +727,7 @@
               <p class="return">{{ what }}</p>
             </v-card-text>
             <div v-show="isEditingWhat">
-              <v-form v-model="editWhatValid">
+              <v-form v-model="editWhatValid" @submit.prevent="">
                 <v-textarea
                   solo
                   label="何をやっているのか"
@@ -839,7 +839,7 @@
             </v-list>
             <!-- サービス編集画面 -->
             <div v-if="isEditingServices">
-              <v-form v-model="editServicesValid">
+              <v-form v-model="editServicesValid" @submit.prevent="">
                 <div class="d-flex pb-3">
                   <v-flex xs12 sm10 class="px-4 break">
                     <div class="py-3">
@@ -954,7 +954,7 @@
               <p class="return">{{ welfare }}</p>
             </v-card-text>
             <div v-show="isEditingWelfare">
-              <v-form v-model="editWelfareValid">
+              <v-form v-model="editWelfareValid" @submit.prevent="">
                 <v-textarea
                   solo
                   label="福利厚生"
@@ -1029,7 +1029,7 @@
             </v-list>
             <!-- 企業情報の編集画面 -->
             <div v-show="isEditingCompanyInfo">
-              <v-form v-model="editCompanyInfoValid">
+              <v-form v-model="editCompanyInfoValid" @submit.prevent="">
                 <!-- 設立日 -->
                 <v-menu
                   v-model="foundedDateMenu"
@@ -1286,7 +1286,6 @@ export default {
       isEditingWelfare: state => state.companyProfile.isEditingWelfare,
       location: state => state.companyProfile.location,
       foundedDate: state => state.companyProfile.foundedDate,
-      email: state => state.companyProfile.email,
       url: state => state.companyProfile.url,
       employeesCount: state => state.companyProfile.employeesCount,
       isEditingCompanyInfo: state => state.companyProfile.isEditingCompanyInfo,

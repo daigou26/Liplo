@@ -110,7 +110,7 @@
                   </v-dialog>
                 </div>
                 <!-- UserName編集 -->
-                <v-form v-show="isEditingUserName" v-model="editUserNameValid">
+                <v-form v-show="isEditingUserName" v-model="editUserNameValid" @submit.prevent="">
                   <v-dialog
                     :value="isEditingUserName"
                     :fullscreen="$vuetify.breakpoint.xsOnly"
@@ -382,7 +382,7 @@
                     </v-card-text>
                     <!-- 自己紹介の編集画面 -->
                     <div v-show="isEditingSelfIntro" class="text-xs-right">
-                      <v-form v-model="editSelfIntroValid">
+                      <v-form v-model="editSelfIntroValid" @submit.prevent="">
                         <v-textarea
                           solo
                           counter
@@ -445,7 +445,7 @@
                     </v-card-text>
                     <!-- やりたいことの編集画面 -->
                     <div v-show="isEditingWhatWantToDo" class="text-xs-right">
-                      <v-form v-model="editWhatWantToDoValid">
+                      <v-form v-model="editWhatWantToDoValid" @submit.prevent="">
                         <v-textarea
                           solo
                           label="やりたいことや興味のあることを書いてください"
@@ -549,7 +549,7 @@
                     </v-list>
                     <!-- ポートフォリオ編集画面 -->
                     <div v-show="isEditingPortfolio">
-                      <v-form v-model="editPortfolioValid">
+                      <v-form v-model="editPortfolioValid" @submit.prevent="">
                         <div class="d-flex pb-3">
                           <v-flex xs12 sm10 class="px-4 break text-xs-right">
                             <div class="py-3">
@@ -670,7 +670,7 @@
                     </div>
                     <!-- スキルの編集画面 -->
                     <div v-if="isEditingSkills">
-                      <v-form v-model="editSkillsValid">
+                      <v-form v-model="editSkillsValid" @submit.prevent="">
                         <div class="d-flex pb-3">
                           <v-flex xs12 class="px-4 break text-xs-right">
                             <v-combobox
@@ -769,7 +769,7 @@
                     </v-list>
                     <!-- 関連リンクの編集画面 -->
                     <div v-show="isEditingLinks">
-                      <v-form v-model="editLinksValid">
+                      <v-form v-model="editLinksValid" @submit.prevent="">
                         <div class="d-flex pb-3">
                           <v-flex xs12 sm10 class="px-4 break text-xs-right">
                             <v-text-field
@@ -884,7 +884,7 @@
                     </div>
                     <!-- 基本情報の編集画面 -->
                     <div v-show="isEditingUserInfo" class="text-xs-right">
-                      <v-form v-model="editUserInfoValid">
+                      <v-form v-model="editUserInfoValid" @submit.prevent="">
                         <v-text-field
                           solo
                           label="大学"

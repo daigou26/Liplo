@@ -39,7 +39,7 @@
         <!-- user image & name (sm, xs) -->
         <v-flex xs12 hidden-md-and-up>
           <v-card v-if="user" flat>
-            <v-list two-line>
+            <v-list two-line class="py-0">
               <v-list-tile :to="'/users/' + user.uid">
                 <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
                   <v-img
@@ -137,7 +137,7 @@
               </div>
             </v-flex>
             <!-- タグ編集 -->
-            <v-form v-if="isEditingTags" v-model="editTagsValid" class="pa-3">
+            <v-form v-if="isEditingTags" v-model="editTagsValid" class="pa-3" @submit.prevent="">
               <v-combobox
                 v-model="tempTags"
                 chips
@@ -221,6 +221,7 @@
               v-show="isEditingPass"
               v-model="editPassValid"
               class="pa-3"
+              @submit.prevent=""
             >
               <!-- 職種 -->
               <v-text-field
@@ -364,6 +365,7 @@
               v-if="isEditingExtendedIntern && !status.hired && !status.rejected"
               v-model="editExtendedInternValid"
               class="pa-3"
+              @submit.prevent=""
             >
               <v-text-field
                 v-if="!isInternExtended"
@@ -411,8 +413,7 @@
             <v-tab-item
               v-for="item in tabItems"
               :key="item.value"
-              class="mt-3"
-              :class="{'scroll-y': $vuetify.breakpoint.mdAndUp}"
+              class="mt-3 scroll-y"
               :style="{ height: tabItemHeight + 'px' }"
             >
               <!-- summary -->
@@ -446,7 +447,7 @@
                     </div>
                   </v-flex>
                   <!-- タグ編集 -->
-                  <v-form v-if="isEditingTags" v-model="editTagsValid">
+                  <v-form v-if="isEditingTags" v-model="editTagsValid" @submit.prevent="">
                     <v-combobox
                       v-model="tempTags"
                       chips
@@ -530,6 +531,7 @@
                     v-show="isEditingPass"
                     v-model="editPassValid"
                     class="pa-3"
+                    @submit.prevent=""
                   >
                     <!-- 職種 -->
                     <v-text-field
@@ -672,6 +674,7 @@
                     v-if="isEditingExtendedIntern && !status.hired && !status.rejected"
                     v-model="editExtendedInternValid"
                     class="pa-3"
+                    @submit.prevent=""
                   >
                     <v-text-field
                       v-if="!isInternExtended"
@@ -738,7 +741,7 @@
                     ステータスを切り替えた翌月に請求書をお送り致します。（無料枠を使い切っている場合）
                   </div>
                   <div v-if="tempStatus == 'インターン'" class="py-3">
-                    <v-form v-model="internValid">
+                    <v-form v-model="internValid" @submit.prevent="">
                       <!-- 職種 -->
                       <v-text-field
                         label="職種"
@@ -780,7 +783,7 @@
                         パスの種類について
                       </v-btn>
                     </div>
-                    <v-form v-model="passValid" class="px-2">
+                    <v-form v-model="passValid" class="px-2" @submit.prevent="">
                       <!-- 職種 -->
                       <v-text-field
                         label="職種"
@@ -861,7 +864,7 @@
                   <div class="pt-3 text-color subheading font-weight-bold">
                     フィードバック
                   </div>
-                  <v-form v-model="feedbackValid">
+                  <v-form v-model="feedbackValid" @submit.prevent="">
                     <!-- 良い点 -->
                     <v-textarea
                       label="良い点"
@@ -933,7 +936,7 @@
                 <div class="pl-3 pt-3 light-text-color">
                   このレビューは候補者には表示されません。
                 </div>
-                <v-form v-model="reviewValid" class="pa-3">
+                <v-form v-model="reviewValid" class="pa-3" @submit.prevent="">
                   <v-rating
                     v-model="rating"
                     hover
@@ -1600,8 +1603,8 @@ export default {
         this.tempJoiningYear = this.joiningYear
       }
       // 有効期間
-      if (pass.expirationDate) {
-        let expirationDate = pass.expirationDate
+      if (this.pass.expirationDate) {
+        let expirationDate = this.pass.expirationDate
         this.tempExpirationDate =
           String(expirationDate.getFullYear()) + '-' +
           String(expirationDate.getMonth() + 1) + '-' +

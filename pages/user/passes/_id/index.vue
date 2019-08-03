@@ -185,7 +185,7 @@
                   <span v-if="limit == null">採用枠： あり</span>
                   <span v-else>採用枠：　残り{{ limit - usedCount }}人</span>
                 </div>
-                <v-form v-model="acceptOfferValid" class="text-xs-right">
+                <v-form v-model="acceptOfferValid" class="text-xs-right" @submit.prevent="">
                   <!-- 入社年度 -->
                   <v-text-field
                     v-if="type == 'hiring'"

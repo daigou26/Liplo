@@ -294,6 +294,8 @@ export const actions = {
   queryHiringPassCount({commit}, companyId) {
     firestore.collection('companies')
       .doc(companyId)
+      .collection('info')
+      .doc(companyId)
       .get()
       .then(doc => {
         if (doc.exists) {

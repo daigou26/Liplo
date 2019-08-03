@@ -43,7 +43,6 @@ export const actions = {
               companyId: doc.id,
               imageUrl: doc.data()['imageUrl'],
               companyName: doc.data()['companyName'],
-              plan: doc.data()['plan'],
               createdAt: doc.data()['createdAt'],
               isDeleted: doc.data()['isDeleted'],
             }
@@ -79,11 +78,9 @@ export const actions = {
               companyId: doc.id,
               imageUrl: doc.data()['imageUrl'],
               companyName: doc.data()['companyName'],
-              plan: doc.data()['plan'],
               createdAt: doc.data()['createdAt'],
               isDeleted: doc.data()['isDeleted'],
             }
-
             commit('addCompany', company)
           })
           if (docCount == 0) {
@@ -116,14 +113,11 @@ export const actions = {
               companyId: doc.id,
               imageUrl: doc.data()['imageUrl'],
               companyName: doc.data()['companyName'],
-              plan: doc.data()['plan'],
               createdAt: doc.data()['createdAt'],
               isDeleted: doc.data()['isDeleted'],
             }
-
             commit('addCompany', company)
           })
-
           // loading
           commit('updateIsLoading', false)
         })

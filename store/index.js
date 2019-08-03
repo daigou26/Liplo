@@ -1,4 +1,5 @@
 export const strict = false
+import firebase from 'firebase/app'
 import { firestore, functions, auth } from '@/plugins/firebase'
 import { event } from 'vue-analytics'
 
@@ -112,6 +113,8 @@ export const actions = {
         })
     } else if (recruiterType == 'initial') {
       firestore.collection('companies')
+        .doc(companyId)
+        .collection('detail')
         .doc(companyId)
         .get()
         .then(function(doc) {
@@ -427,6 +430,8 @@ export const actions = {
                     .then(() => {
                       // 契約しているか(recruiter)
                       firestore.collection('companies')
+                        .doc(companyId)
+                        .collection('info')
                         .doc(companyId)
                         .get()
                         .then(companyDoc => {
