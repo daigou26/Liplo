@@ -8,7 +8,7 @@
       <div class="title text-color font-weight-bold py-3">
         企業を作成
       </div>
-      <v-form v-model="valid" class="pb-5">
+      <v-form v-model="valid" class="pb-5" @submit.prevent="">
         <!-- companyName -->
         <v-text-field
           class="pt-4"

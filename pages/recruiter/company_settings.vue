@@ -127,7 +127,7 @@
                   （確認メールが届くのに少々時間がかかる場合がございます）
                 </div>
               </div>
-              <v-form v-model="emailValid">
+              <v-form v-model="emailValid" @submit.prevent="">
                 <v-container>
                   <v-layout
                     column
@@ -182,7 +182,7 @@
                   （確認メールが届くのに少々時間がかかる場合がございます）
                 </div>
               </div>
-              <v-form v-model="emailValid">
+              <v-form v-model="emailValid" @submit.prevent="">
                 <v-container>
                   <v-layout
                     column

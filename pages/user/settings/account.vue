@@ -122,7 +122,7 @@
               <div class="pb-4">
                 新しいメールアドレスとパスワードを入力してください。
               </div>
-              <v-form v-model="changeEmailValid">
+              <v-form v-model="changeEmailValid" @submit.prevent="">
                 <v-container>
                   <v-layout
                     column
@@ -202,7 +202,10 @@
                   </div>
                 </div>
               </div>
-              <v-form v-model="deleteAccountValid">
+              <v-form
+                v-model="deleteAccountValid"
+                @submit.prevent=""
+              >
                 <v-container>
                   <v-layout
                     column

@@ -784,7 +784,7 @@
         >
           <!-- ログインフォーム -->
           <div v-show="signInDialog">
-            <v-form v-model="signInValid">
+            <v-form v-model="signInValid" @submit.prevent="">
               <v-container>
                 <v-layout
                   column
@@ -840,7 +840,7 @@
           </div>
           <!-- 登録フォーム -->
           <div v-show="!signInDialog && signUpForm">
-            <v-form v-model="signUpValid">
+            <v-form v-model="signUpValid" @submit.prevent="">
               <v-container>
                 <v-layout
                   column
@@ -1051,7 +1051,7 @@
         >
           <!-- 登録フォーム -->
           <div>
-            <v-form v-model="recruiterSignUpValid">
+            <v-form v-model="recruiterSignUpValid" @submit.prevent="">
               <v-container>
                 <v-layout
                   column

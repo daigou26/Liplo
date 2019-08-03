@@ -42,7 +42,7 @@
         </p>
       </v-flex>
       <v-flex xs12 sm10 offset-sm1 class="py-4 px-4 break">
-        <v-form v-model="valid" class="pb-5">
+        <v-form v-model="valid" class="pb-5" @submit.prevent="">
           <!-- Title -->
           <v-text-field
             class="pt-4"

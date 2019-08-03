@@ -353,7 +353,7 @@
                 :class="{'px-2': $vuetify.breakpoint.smAndUp, 'px-3 mt-4': $vuetify.breakpoint.xsOnly}"
               >
                 <!-- フォーム -->
-                  <v-form v-model="valid">
+                  <v-form v-model="valid" @submit.prevent="">
                     <v-container>
                       <v-layout
                         column

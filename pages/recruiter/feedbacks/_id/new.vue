@@ -47,7 +47,7 @@
         <div class="pt-3 subheading font-weight-bold">
           フィードバック
         </div>
-        <v-form v-model="feedbackValid">
+        <v-form v-model="feedbackValid" @submit.prevent="">
           <!-- 良かった点 -->
           <v-textarea
             label="良かった点"

@@ -146,7 +146,7 @@
                   'd-flex': $vuetify.breakpoint.smAndUp,
                 }"
               >
-                <v-form v-model="reviewValid">
+                <v-form v-model="reviewValid" @submit.prevent="">
                   <v-textarea
                     solo
                     placeholder="インターンで感じた企業の良い点、改善すべき点などを自由にお書きください。"

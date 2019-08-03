@@ -55,7 +55,7 @@
           </div>
           <!-- フォーム -->
           <div class="pt-3">
-            <v-form v-model="valid">
+            <v-form v-model="valid" @submit.prevent="">
               <v-container>
                 <v-layout
                   column
