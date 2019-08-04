@@ -639,7 +639,7 @@
                           <v-flex xs12 class="px-4 break text-xs-right">
                             <div class="py-3">
                               <v-img :src="tempPortfolioItemImageUrl" height="200" class="grey lighten-3"/>
-                              <input type="file" v-on:change="onFileChange">
+                              <input type="file" v-on:change="onFileChange" accept='image/*'>
                               <p v-if="!imageFileSizeValid" class="warning-text-color">
                                 {{ imageFileSizeWarning }}
                               </p>

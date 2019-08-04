@@ -81,7 +81,7 @@
                   <v-img v-else-if="topImageUrl" :src="topImageUrl" height="200" />
                   <div v-else class="grey lighten-3" style="height: 200px;"></div>
                 </div>
-                <input type="file" v-on:change="onFileChange">
+                <input type="file" v-on:change="onFileChange" accept='image/*'>
                 <p v-if="!imageFileSizeValid" class="warning-text-color">
                   {{ imageFileSizeWarning }}
                 </p>
@@ -165,7 +165,7 @@
                       <v-icon v-else >camera_alt</v-icon>
                     </v-avatar>
                   </div>
-                  <input type="file" v-on:change="onFileChange">
+                  <input type="file" v-on:change="onFileChange" accept='image/*'>
                   <p v-if="!imageFileSizeValid" class="warning-text-color">
                     {{ imageFileSizeWarning }}
                   </p>
@@ -844,7 +844,7 @@
                   <v-flex xs12 sm10 class="px-4 break">
                     <div class="py-3">
                       <v-img :src="tempServiceImageUrl" aspect-ratio="3" class="grey lighten-3"/>
-                      <input type="file" v-on:change="onFileChange">
+                      <input type="file" v-on:change="onFileChange" accept='image/*'>
                       <p v-if="!imageFileSizeValid" class="warning-text-color">
                         {{ imageFileSizeWarning }}
                       </p>
