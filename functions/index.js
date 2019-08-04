@@ -3409,3 +3409,27 @@ exports.sendChangeInvoiceEmailConfirmation = functions
       console.log('completed.')
     })
   })
+
+// 請求書の送信先が変更された時
+exports.sendSignUpEmail = functions
+  .https
+  .onCall((data, context) => {
+    const mailOptions = {
+      from: `Liplo <noreply@liplo.jp>`,
+      to: data.email,
+    }
+    mailOptions.subject = `サインアップのご案内`
+    mailOptions.html = `
+      <p>${data.name} 様</p>
+      <p>Liplo をご利用いただき、誠にありがとうございます。</p>
+      <p>サインアップは以下のリンクから行えます。</p>
+      <a href="${data.url}">${data.url}</a><br>
+      <p style="margin-top: 40px">引き続き、Liploをよろしくお願い致します。</p>
+    `
+    mailTransport.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.log(err)
+      }
+      console.log('completed.')
+    })
+  })

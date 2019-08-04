@@ -4,6 +4,23 @@
     white
     wrap
   >
+    <v-snackbar
+      v-model="snackbar"
+      color="teal lighten-1"
+      :multi-line="true"
+      :timeout="6000"
+      :left="true"
+      :bottom="true"
+    >
+      {{ snackbarText }}
+      <v-btn
+        color="white"
+        flat
+        @click="snackbar = false"
+      >
+        Close
+      </v-btn>
+    </v-snackbar>
     <!-- loading -->
     <v-flex v-if="isRefreshing == null || isRefreshing" xs12 py-5>
       <v-layout justify-center>
@@ -50,6 +67,15 @@
             :to="'/admin/companies/' + params.id + '/invoice'"
           >
             企業の請求一覧
+          </v-btn>
+          <!-- 初回サインアップのメール送信 -->
+          <v-btn
+            outline
+            color="pink"
+            class="ma-0 ml-3"
+            @click="signUpEmailDialog = true"
+          >
+            サインアップメール送信
           </v-btn>
         </div>
         <!-- 削除済み -->
@@ -110,6 +136,72 @@
         </div>
       </div>
     </v-flex>
+    <!-- サインアップメール dialog -->
+    <v-dialog
+      v-model="signUpEmailDialog"
+      :fullscreen="$vuetify.breakpoint.xsOnly"
+      width="500"
+    >
+      <v-card>
+        <v-toolbar flat color="white">
+          <v-btn icon @click="signUpEmailDialog=false">
+            <v-icon>close</v-icon>
+          </v-btn>
+          <span
+            class="pl-3 text-color font-weight-bold"
+            :class="{
+              'title': $vuetify.breakpoint.smAndUp,
+              'subheading': $vuetify.breakpoint.xsOnly
+            }"
+          >
+            サインアップメール送信
+          </span>
+        </v-toolbar>
+        <v-flex
+          xs12
+          py-3
+          class="light-text-color"
+          :class="{'px-4': $vuetify.breakpoint.smAndUp, 'px-4 mt-4': $vuetify.breakpoint.xsOnly}"
+        >
+          <v-form v-model="valid" @submit.prevent="">
+            <v-container>
+              <v-layout
+                column
+                justify-center
+              >
+                <v-flex xs12>
+                  <v-text-field
+                    label="メールアドレス"
+                    v-model="tempEmail"
+                    :rules="emailRules"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    label="名前"
+                    v-model="tempName"
+                    :rules="nameRules"
+                    required
+                  ></v-text-field>
+                </v-flex>
+                <!-- 送信ボタン -->
+                <v-btn
+                  :disabled="!valid"
+                  class="teal"
+                  @click="sendSignUpEmailButtonClicked"
+                >
+                  <span
+                    class="font-weight-bold body-1"
+                    style="color: #ffffff;"
+                  >
+                    送信
+                  </span>
+                </v-btn>
+              </v-layout>
+            </v-container>
+          </v-form>
+        </v-flex>
+      </v-card>
+    </v-dialog>
   </v-layout>
 </template>
 
@@ -132,6 +224,20 @@ export default {
     avatarSize: 50,
     isEditingPlan: false,
     tempPlan: null,
+    valid: true,
+    snackbar: false,
+    snackbarText: '',
+    signUpEmailDialog: false,
+    tempEmail: '',
+    tempName: '',
+    nameRules: [
+      v => !!v || '名前を入力してください',
+      v => (v && v.length <= 30) || '30文字を超えています'
+    ],
+    emailRules: [
+      v => !!v || 'メールアドレスを入力してください',
+      v => /.+@.+/.test(v) || '無効なメールアドレスです'
+    ],
   }),
   computed: {
     updatePlanButtonDisabled() {
@@ -241,11 +347,22 @@ export default {
       this.updatePlan({companyId: this.companyId, plan: tempPlan})
       this.isEditingPlan = false
     },
+    sendSignUpEmailButtonClicked() {
+      this.sendSignUpEmail({
+        companyId: this.params.id,
+        name: this.tempName,
+        email: this.tempEmail
+      })
+      this.signUpEmailDialog = false
+      this.snackbar = true
+      this.snackbarText = `お問い合わせありがとうございます。こちらからメールをお送りしますので、少々お待ちください。`
+    },
     ...mapActions({
       queryCompanyFromAdmin: 'companyInfo/queryCompanyFromAdmin',
       updateIsLoading: 'companyInfo/updateIsLoading',
       resetState: 'companyInfo/resetState',
-      updatePlan: 'admin/updatePlan'
+      updatePlan: 'admin/updatePlan',
+      sendSignUpEmail: 'sendSignUpEmail',
     }),
   }
 }

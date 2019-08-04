@@ -2,7 +2,7 @@ export const strict = false
 import firebase from 'firebase/app'
 import { firestore, functions, auth } from '@/plugins/firebase'
 import { event } from 'vue-analytics'
-
+const baseUrl = process.env.BASE_URL || 'https://liplo.jp'
 
 export const state = () => ({
   uid: '',
@@ -690,6 +690,14 @@ export const actions = {
         router.replace('/')
       }
     }
+  },
+  sendSignUpEmail({commit}, {companyId, name, email}) {
+    var sendSignUpEmail = functions.httpsCallable("sendSignUpEmail")
+    sendSignUpEmail({
+      url: baseUrl + '/?type=initial&id=' + companyId,
+      name: name,
+      email: email
+    })
   },
   updateIsRefreshed({commit}, isRefreshed) {
     commit('updateIsRefreshed', isRefreshed)
