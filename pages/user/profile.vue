@@ -83,13 +83,13 @@
                             <v-icon v-else style="font-size: 150px">person</v-icon>
                           </v-avatar>
                         </div>
-                        <input type="file" v-on:change="onFileChange">
+                        <input type="file" v-on:change="onFileChange" accept='image/*'>
                         <p v-show="!imageFileSizeValid" class="warning-text-color">
                           {{ imageFileSizeWarning }}
                         </p>
                       </v-flex>
-                      <v-divider></v-divider>
-                      <v-card-actions>
+                      <v-divider class="my-3"></v-divider>
+                      <v-card-actions class="hidden-xs-only">
                         <v-spacer></v-spacer>
                         <v-btn
                           flat
@@ -106,6 +106,22 @@
                           変更
                         </v-btn>
                       </v-card-actions>
+                      <div class="hidden-sm-and-up mx-4">
+                        <v-btn
+                          block
+                          :disabled ="selectedImage == null || !imageFileSizeValid"
+                          @click="updateProfileImage({uid: uid, imageFile: imageFile})"
+                        >
+                          変更
+                        </v-btn>
+                        <v-btn
+                          class="mt-3"
+                          block
+                          @click="updateIsEditingProfileImage(false)"
+                        >
+                          キャンセル
+                        </v-btn>
+                      </div>
                     </v-card>
                   </v-dialog>
                 </div>
@@ -140,8 +156,8 @@
                           required
                         ></v-text-field>
                       </v-flex>
-                      <v-divider></v-divider>
-                      <v-card-actions>
+                      <v-divider class="my-3"></v-divider>
+                      <v-card-actions class="hidden-xs-only">
                         <v-spacer></v-spacer>
                         <v-btn
                           flat
@@ -158,6 +174,22 @@
                           変更
                         </v-btn>
                       </v-card-actions>
+                      <div class="hidden-sm-and-up mx-4">
+                        <v-btn
+                          block
+                          :disabled="!editUserNameValid"
+                          @click="updateUserName({uid: uid, firstName: tempFirstName, lastName: tempLastName})"
+                        >
+                          変更
+                        </v-btn>
+                        <v-btn
+                          class="mt-3"
+                          block
+                          @click="updateIsEditingUserName(false)"
+                        >
+                          キャンセル
+                        </v-btn>
+                      </div>
                     </v-card>
                   </v-dialog>
                 </v-form>
@@ -326,16 +358,33 @@
                         solo
                         multiple
                       ></v-select>
-                      <v-btn
-                        @click="updateIsEditingDesiredOccupations(false)"
-                      >
-                        キャンセル
-                      </v-btn>
-                      <v-btn
-                        @click="updateDesiredOccupations({uid: uid, desiredOccupations: tempDesiredOccupations})"
-                      >
-                        更新
-                      </v-btn>
+                      <div class="hidden-xs-only">
+                        <v-btn
+                          @click="updateIsEditingDesiredOccupations(false)"
+                        >
+                          キャンセル
+                        </v-btn>
+                        <v-btn
+                          @click="updateDesiredOccupations({uid: uid, desiredOccupations: tempDesiredOccupations})"
+                        >
+                          更新
+                        </v-btn>
+                      </div>
+                      <div class="hidden-sm-and-up">
+                        <v-btn
+                          block
+                          @click="updateDesiredOccupations({uid: uid, desiredOccupations: tempDesiredOccupations})"
+                        >
+                          更新
+                        </v-btn>
+                        <v-btn
+                          class="mt-3"
+                          block
+                          @click="updateIsEditingDesiredOccupations(false)"
+                        >
+                          キャンセル
+                        </v-btn>
+                      </div>
                     </div>
                   </v-flex>
                 </div>
@@ -391,17 +440,35 @@
                           :rules="selfIntroRules"
                           required
                         ></v-textarea>
-                        <v-btn
-                          @click="updateIsEditingSelfIntro(false)"
-                        >
-                          キャンセル
-                        </v-btn>
-                        <v-btn
-                          :disabled="!editSelfIntroValid"
-                          @click="updateSelfIntro({uid: uid, selfIntro: tempSelfIntro})"
-                        >
-                          更新
-                        </v-btn>
+                        <div class="hidden-xs-only">
+                          <v-btn
+                            @click="updateIsEditingSelfIntro(false)"
+                          >
+                            キャンセル
+                          </v-btn>
+                          <v-btn
+                            :disabled="!editSelfIntroValid"
+                            @click="updateSelfIntro({uid: uid, selfIntro: tempSelfIntro})"
+                          >
+                            更新
+                          </v-btn>
+                        </div>
+                        <div class="hidden-sm-and-up">
+                          <v-btn
+                            block
+                            :disabled="!editSelfIntroValid"
+                            @click="updateSelfIntro({uid: uid, selfIntro: tempSelfIntro})"
+                          >
+                            更新
+                          </v-btn>
+                          <v-btn
+                            class="mt-3"
+                            block
+                            @click="updateIsEditingSelfIntro(false)"
+                          >
+                            キャンセル
+                          </v-btn>
+                        </div>
                       </v-form>
                     </div>
                   </v-flex>
@@ -453,17 +520,35 @@
                           :rules="whatWantToDoRules"
                           required
                         ></v-textarea>
-                        <v-btn
-                          @click="updateIsEditingWhatWantToDo(false)"
-                        >
-                          キャンセル
-                        </v-btn>
-                        <v-btn
-                          :disabled="!editWhatWantToDoValid"
-                          @click="updateWhatWantToDo({uid: uid, whatWantToDo: tempWhatWantToDo})"
-                        >
-                          更新
-                        </v-btn>
+                        <div class="hidden-xs-only">
+                          <v-btn
+                            @click="updateIsEditingWhatWantToDo(false)"
+                          >
+                            キャンセル
+                          </v-btn>
+                          <v-btn
+                            :disabled="!editWhatWantToDoValid"
+                            @click="updateWhatWantToDo({uid: uid, whatWantToDo: tempWhatWantToDo})"
+                          >
+                            更新
+                          </v-btn>
+                        </div>
+                        <div class="hidden-sm-and-up">
+                          <v-btn
+                            block
+                            :disabled="!editWhatWantToDoValid"
+                            @click="updateWhatWantToDo({uid: uid, whatWantToDo: tempWhatWantToDo})"
+                          >
+                            更新
+                          </v-btn>
+                          <v-btn
+                            class="mt-3"
+                            block
+                            @click="updateIsEditingWhatWantToDo(false)"
+                          >
+                            キャンセル
+                          </v-btn>
+                        </div>
                       </v-form>
                     </div>
                   </v-flex>
@@ -551,7 +636,7 @@
                     <div v-show="isEditingPortfolio">
                       <v-form v-model="editPortfolioValid" @submit.prevent="">
                         <div class="d-flex pb-3">
-                          <v-flex xs12 sm10 class="px-4 break text-xs-right">
+                          <v-flex xs12 class="px-4 break text-xs-right">
                             <div class="py-3">
                               <v-img :src="tempPortfolioItemImageUrl" height="200" class="grey lighten-3"/>
                               <input type="file" v-on:change="onFileChange">
@@ -580,44 +665,92 @@
                               :rules="portfolioItemUrlRules"
                               required
                             ></v-text-field>
-                            <v-btn
-                              @click="updateIsEditingPortfolio(false)"
-                            >
-                              キャンセル
-                            </v-btn>
-                            <v-btn
-                              v-show="selectedPortfolioItemIndex != null"
-                              @click="deletePortfolioItem({
-                                uid: uid,
-                                selectedIndex: selectedPortfolioItemIndex,
-                                portfolio: portfolio,
-                                tempPortfolio: tempPortfolio
-                              })"
-                            >
-                              削除
-                            </v-btn>
-                            <v-btn
-                              :disabled="
-                                !editPortfolioValid ||
-                                tempPortfolioItemImageUrl == null ||
-                                tempPortfolioItemImageUrl == '' ||
-                                !imageFileSizeValid
-                              "
-                              @click="updatePortfolio({
-                                uid: uid,
-                                isPortfolioImageChanged: isPortfolioImageChanged,
-                                selectedIndex: selectedPortfolioItemIndex,
-                                portfolio: portfolio,
-                                tempPortfolio: tempPortfolio,
-                                imageFile: tempPortfolioImageFile,
-                                imageUrl: tempPortfolioItemImageUrl,
-                                title: tempPortfolioItemTitle,
-                                content: tempPortfolioItemContent,
-                                url: tempPortfolioItemUrl
-                              })"
-                            >
-                              更新
-                            </v-btn>
+                            <div class="hidden-xs-only">
+                              <v-btn
+                                @click="updateIsEditingPortfolio(false)"
+                              >
+                                キャンセル
+                              </v-btn>
+                              <v-btn
+                                v-show="selectedPortfolioItemIndex != null"
+                                @click="deletePortfolioItem({
+                                  uid: uid,
+                                  selectedIndex: selectedPortfolioItemIndex,
+                                  portfolio: portfolio,
+                                  tempPortfolio: tempPortfolio
+                                })"
+                              >
+                                削除
+                              </v-btn>
+                              <v-btn
+                                :disabled="
+                                  !editPortfolioValid ||
+                                  tempPortfolioItemImageUrl == null ||
+                                  tempPortfolioItemImageUrl == '' ||
+                                  !imageFileSizeValid
+                                "
+                                @click="updatePortfolio({
+                                  uid: uid,
+                                  isPortfolioImageChanged: isPortfolioImageChanged,
+                                  selectedIndex: selectedPortfolioItemIndex,
+                                  portfolio: portfolio,
+                                  tempPortfolio: tempPortfolio,
+                                  imageFile: tempPortfolioImageFile,
+                                  imageUrl: tempPortfolioItemImageUrl,
+                                  title: tempPortfolioItemTitle,
+                                  content: tempPortfolioItemContent,
+                                  url: tempPortfolioItemUrl
+                                })"
+                              >
+                                更新
+                              </v-btn>
+                            </div>
+                            <div class="hidden-sm-and-up">
+                              <v-btn
+                                block
+                                :disabled="
+                                  !editPortfolioValid ||
+                                  tempPortfolioItemImageUrl == null ||
+                                  tempPortfolioItemImageUrl == '' ||
+                                  !imageFileSizeValid
+                                "
+                                @click="updatePortfolio({
+                                  uid: uid,
+                                  isPortfolioImageChanged: isPortfolioImageChanged,
+                                  selectedIndex: selectedPortfolioItemIndex,
+                                  portfolio: portfolio,
+                                  tempPortfolio: tempPortfolio,
+                                  imageFile: tempPortfolioImageFile,
+                                  imageUrl: tempPortfolioItemImageUrl,
+                                  title: tempPortfolioItemTitle,
+                                  content: tempPortfolioItemContent,
+                                  url: tempPortfolioItemUrl
+                                })"
+                              >
+                                更新
+                              </v-btn>
+                              <v-btn
+                                class="mt-3 white--text"
+                                block
+                                color="red lighten-1"
+                                v-show="selectedPortfolioItemIndex != null"
+                                @click="deletePortfolioItem({
+                                  uid: uid,
+                                  selectedIndex: selectedPortfolioItemIndex,
+                                  portfolio: portfolio,
+                                  tempPortfolio: tempPortfolio
+                                })"
+                              >
+                                削除
+                              </v-btn>
+                              <v-btn
+                                class="mt-3"
+                                block
+                                @click="updateIsEditingPortfolio(false)"
+                              >
+                                キャンセル
+                              </v-btn>
+                            </div>
                           </v-flex>
                         </div>
                       </v-form>
@@ -693,20 +826,41 @@
                                 </v-chip>
                               </template>
                             </v-combobox>
-                            <v-btn
-                              @click="updateIsEditingSkills(false)"
-                            >
-                              キャンセル
-                            </v-btn>
-                            <v-btn
-                              :disabled="!editSkillsValid"
-                              @click="updateSkills({
-                                uid: uid,
-                                skills: tempSkills,
-                              })"
-                            >
-                              更新
-                            </v-btn>
+                            <div class="hidden-xs-only">
+                              <v-btn
+                                @click="updateIsEditingSkills(false)"
+                              >
+                                キャンセル
+                              </v-btn>
+                              <v-btn
+                                :disabled="!editSkillsValid"
+                                @click="updateSkills({
+                                  uid: uid,
+                                  skills: tempSkills,
+                                })"
+                              >
+                                更新
+                              </v-btn>
+                            </div>
+                            <div class="hidden-sm-and-up">
+                              <v-btn
+                                block
+                                :disabled="!editSkillsValid"
+                                @click="updateSkills({
+                                  uid: uid,
+                                  skills: tempSkills,
+                                })"
+                              >
+                                更新
+                              </v-btn>
+                              <v-btn
+                                class="mt-3"
+                                block
+                                @click="updateIsEditingSkills(false)"
+                              >
+                                キャンセル
+                              </v-btn>
+                            </div>
                           </v-flex>
                         </div>
                       </v-form>
@@ -771,7 +925,7 @@
                     <div v-show="isEditingLinks">
                       <v-form v-model="editLinksValid" @submit.prevent="">
                         <div class="d-flex pb-3">
-                          <v-flex xs12 sm10 class="px-4 break text-xs-right">
+                          <v-flex xs12 class="px-4 break text-xs-right">
                             <v-text-field
                               solo
                               label="タイトル"
@@ -786,33 +940,70 @@
                               :rules="linkUrlRules"
                               required
                             ></v-text-field>
-                            <v-btn
-                              @click="updateIsEditingLinks(false)"
-                            >
-                              キャンセル
-                            </v-btn>
-                            <v-btn
-                              v-show="selectedLinkIndex != null"
-                              @click="deleteLink({
-                                uid: uid,
-                                selectedIndex: selectedLinkIndex,
-                                links: tempLinks
-                              })"
-                            >
-                              削除
-                            </v-btn>
-                            <v-btn
-                              :disabled="!editLinksValid"
-                              @click="updateLinks({
-                                uid: uid,
-                                selectedIndex: selectedLinkIndex,
-                                links: tempLinks,
-                                title: tempLinkTitle,
-                                url: tempLinkUrl
-                              })"
-                            >
-                              更新
-                            </v-btn>
+                            <div class="hidden-xs-only">
+                              <v-btn
+                                @click="updateIsEditingLinks(false)"
+                              >
+                                キャンセル
+                              </v-btn>
+                              <v-btn
+                                v-show="selectedLinkIndex != null"
+                                @click="deleteLink({
+                                  uid: uid,
+                                  selectedIndex: selectedLinkIndex,
+                                  links: tempLinks
+                                })"
+                              >
+                                削除
+                              </v-btn>
+                              <v-btn
+                                :disabled="!editLinksValid"
+                                @click="updateLinks({
+                                  uid: uid,
+                                  selectedIndex: selectedLinkIndex,
+                                  links: tempLinks,
+                                  title: tempLinkTitle,
+                                  url: tempLinkUrl
+                                })"
+                              >
+                                更新
+                              </v-btn>
+                            </div>
+                            <div class="hidden-sm-and-up">
+                              <v-btn
+                                block
+                                :disabled="!editLinksValid"
+                                @click="updateLinks({
+                                  uid: uid,
+                                  selectedIndex: selectedLinkIndex,
+                                  links: tempLinks,
+                                  title: tempLinkTitle,
+                                  url: tempLinkUrl
+                                })"
+                              >
+                                更新
+                              </v-btn>
+                              <v-btn
+                                class="mt-3 white--text"
+                                color="red lighten-1"
+                                block
+                                v-show="selectedLinkIndex != null"
+                                @click="deleteLink({
+                                  uid: uid,
+                                  selectedIndex: selectedLinkIndex,
+                                  links: tempLinks
+                                })"
+                              >
+                                削除
+                              </v-btn>
+                              <v-btn
+                                class="mt-3"
+                                block
+                                @click="updateIsEditingLinks(false)"
+                              >
+                                キャンセル
+                              </v-btn>
+                            </div>
                           </v-flex>
                         </div>
                       </v-form>
@@ -935,23 +1126,47 @@
                             @input="graduationDateMenu = false"
                           ></v-date-picker>
                         </v-menu>
-                        <v-btn
-                          @click="updateIsEditingUserInfo(false)"
-                        >
-                          キャンセル
-                        </v-btn>
-                        <v-btn
-                          :disabled="!editUserInfoValid || tempGraduationDate == ''"
-                          @click="updateUserInfo({
-                            uid: uid,
-                            university: tempUniversity,
-                            faculty: tempFaculty,
-                            department: tempDepartment,
-                            graduationDate: tempGraduationDate,
-                          })"
-                        >
-                          更新
-                        </v-btn>
+                        <div class="hidden-xs-only">
+                          <v-btn
+                            @click="updateIsEditingUserInfo(false)"
+                          >
+                            キャンセル
+                          </v-btn>
+                          <v-btn
+                            :disabled="!editUserInfoValid || tempGraduationDate == ''"
+                            @click="updateUserInfo({
+                              uid: uid,
+                              university: tempUniversity,
+                              faculty: tempFaculty,
+                              department: tempDepartment,
+                              graduationDate: tempGraduationDate,
+                            })"
+                          >
+                            更新
+                          </v-btn>
+                        </div>
+                        <div class="hidden-sm-and-up">
+                          <v-btn
+                            block
+                            :disabled="!editUserInfoValid || tempGraduationDate == ''"
+                            @click="updateUserInfo({
+                              uid: uid,
+                              university: tempUniversity,
+                              faculty: tempFaculty,
+                              department: tempDepartment,
+                              graduationDate: tempGraduationDate,
+                            })"
+                          >
+                            更新
+                          </v-btn>
+                          <v-btn
+                            class="mt-3"
+                            block
+                            @click="updateIsEditingUserInfo(false)"
+                          >
+                            キャンセル
+                          </v-btn>
+                        </div>
                       </v-form>
                     </div>
                   </v-flex>
