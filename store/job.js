@@ -36,6 +36,19 @@ export const state = () => ({
   location: '',
   foundedDate: '',
   employeesCount: null,
+  newGrad: null,
+  newGradResignee: null,
+  averageYearsOfService: null,
+  averageAge: null,
+  training: null,
+  selfDevSupport: null,
+  mentor: null,
+  careerSupport: null,
+  testSystem: null,
+  overtimeWork: null,
+  paidHolidays: null,
+  childcareLeave: null,
+  femaleExecutives: null,
   feedback: null,
   reviews: null,
   reviewsChartData: null,
@@ -143,6 +156,45 @@ export const mutations = {
   setEmployeesCount(state, employeesCount) {
     state.employeesCount = employeesCount
   },
+  setNewGrad(state, newGrad) {
+    state.newGrad = newGrad
+  },
+  setNewGradResignee(state, newGradResignee) {
+    state.newGradResignee = newGradResignee
+  },
+  setAverageYearsOfService(state, averageYearsOfService) {
+    state.averageYearsOfService = averageYearsOfService
+  },
+  setAverageAge(state, averageAge) {
+    state.averageAge = averageAge
+  },
+  setTraining(state, training) {
+    state.training = training
+  },
+  setSelfDevSupport(state, selfDevSupport) {
+    state.selfDevSupport = selfDevSupport
+  },
+  setMentor(state, mentor) {
+    state.mentor = mentor
+  },
+  setCareerSupport(state, careerSupport) {
+    state.careerSupport = careerSupport
+  },
+  setTestSystem(state, testSystem) {
+    state.testSystem = testSystem
+  },
+  setOvertimeWork(state, overtimeWork) {
+    state.overtimeWork = overtimeWork
+  },
+  setPaidHolidays(state, paidHolidays) {
+    state.paidHolidays = paidHolidays
+  },
+  setChildcareLeave(state, childcareLeave) {
+    state.childcareLeave = childcareLeave
+  },
+  setFemaleExecutives(state, femaleExecutives) {
+    state.femaleExecutives = femaleExecutives
+  },
   setFeedback(state, feedback) {
     state.feedback = feedback
   },
@@ -230,6 +282,23 @@ export const actions = {
             commit('setUrl', doc.data()['url'])
             commit('setLocation', doc.data()['location'])
             commit('setEmployeesCount', doc.data()['employeesCount'])
+
+            // 雇用情報
+            if (doc.data()['employmentInfo']) {
+              commit('setNewGrad', doc.data()['employmentInfo'].newGrad)
+              commit('setNewGradResignee', doc.data()['employmentInfo'].newGradResignee)
+              commit('setAverageYearsOfService', doc.data()['employmentInfo'].averageYearsOfService)
+              commit('setAverageAge', doc.data()['employmentInfo'].averageAge)
+              commit('setTraining', doc.data()['employmentInfo'].training)
+              commit('setSelfDevSupport', doc.data()['employmentInfo'].selfDevSupport)
+              commit('setMentor', doc.data()['employmentInfo'].mentor)
+              commit('setCareerSupport', doc.data()['employmentInfo'].careerSupport)
+              commit('setTestSystem', doc.data()['employmentInfo'].testSystem)
+              commit('setOvertimeWork', doc.data()['employmentInfo'].overtimeWork)
+              commit('setPaidHolidays', doc.data()['employmentInfo'].paidHolidays)
+              commit('setChildcareLeave', doc.data()['employmentInfo'].childcareLeave)
+              commit('setFemaleExecutives', doc.data()['employmentInfo'].femaleExecutives)
+            }
 
             if (doc.data()['status'] == 'published') {
               if (uid != '' && uid != null) {
@@ -410,6 +479,19 @@ export const actions = {
     commit('setFeatures', null)
     commit('setNearestStation', '')
     commit('setCreatedAt', '')
+    commit('setNewGrad', null)
+    commit('setNewGradResignee', null)
+    commit('setAverageYearsOfService', null)
+    commit('setAverageAge', null)
+    commit('setTraining', null)
+    commit('setSelfDevSupport', null)
+    commit('setMentor', null)
+    commit('setCareerSupport', null)
+    commit('setTestSystem', null)
+    commit('setOvertimeWork', null)
+    commit('setPaidHolidays', null)
+    commit('setChildcareLeave', null)
+    commit('setFemaleExecutives', null)
     commit('setFeedback', null)
     commit('setReviews', null)
     commit('setReviewsChartData', null)

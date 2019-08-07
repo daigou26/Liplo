@@ -2417,6 +2417,7 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
     const employeesCount = newValue.employeesCount
     const feedback = newValue.feedback
     const invoiceEmail = newValue.invoiceEmail
+    const employmentInfo = newValue.employmentInfo
     var isCompanyNameChanged = false
     var isCompanyImageUrlChanged = false
     var isInvoiceEmailChanged = false
@@ -2480,6 +2481,85 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
         }
       } else {
         if (previousValue.services) {
+          isChanged = true
+        }
+      }
+      // employmentInfo比較
+      if (employmentInfo) {
+        if (employmentInfo.newGrad != previousValue.employmentInfo.newGrad) {
+          isChanged = true
+        }
+        if (employmentInfo.newGradResignee != previousValue.employmentInfo.newGradResignee) {
+          isChanged = true
+        }
+        if (employmentInfo.averageYearsOfService != previousValue.employmentInfo.averageYearsOfService) {
+          isChanged = true
+        }
+        if (employmentInfo.averageAge != previousValue.employmentInfo.averageAge) {
+          isChanged = true
+        }
+        if (
+          employmentInfo.training &&
+          (employmentInfo.training.exists != previousValue.employmentInfo.training.exists ||
+            employmentInfo.training.content != previousValue.employmentInfo.training.content)
+        ) {
+          isChanged = true
+        }
+        if (
+          employmentInfo.selfDevSupport &&
+          (employmentInfo.selfDevSupport.exists != previousValue.employmentInfo.selfDevSupport.exists ||
+            employmentInfo.selfDevSupport.content != previousValue.employmentInfo.selfDevSupport.content)
+        ) {
+          isChanged = true
+        }
+        if (
+          employmentInfo.mentor &&
+          employmentInfo.mentor.exists != previousValue.employmentInfo.mentor.exists
+        ) {
+          isChanged = true
+        }
+        if (
+          employmentInfo.careerSupport &&
+          (employmentInfo.careerSupport.exists != previousValue.employmentInfo.careerSupport.exists ||
+            employmentInfo.careerSupport.content != previousValue.employmentInfo.careerSupport.content)
+        ) {
+          isChanged = true
+        }
+        if (
+          employmentInfo.testSystem &&
+          (employmentInfo.testSystem.exists != previousValue.employmentInfo.testSystem.exists ||
+            employmentInfo.testSystem.content != previousValue.employmentInfo.testSystem.content)
+        ) {
+          isChanged = true
+        }
+        if (employmentInfo.overtimeWork != previousValue.employmentInfo.overtimeWork) {
+          isChanged = true
+        }
+        if (employmentInfo.paidHolidays != previousValue.employmentInfo.paidHolidays) {
+          isChanged = true
+        }
+        if (
+          employmentInfo.childcareLeave &&
+          (
+            (
+              employmentInfo.childcareLeave.man &&
+              (
+                employmentInfo.childcareLeave.man.taken != previousValue.employmentInfo.childcareLeave.man.taken ||
+                employmentInfo.childcareLeave.man.all != previousValue.employmentInfo.childcareLeave.man.all
+              )
+            ) ||
+            (
+              employmentInfo.childcareLeave.woman &&
+              (
+                employmentInfo.childcareLeave.woman.taken != previousValue.employmentInfo.childcareLeave.woman.taken ||
+                employmentInfo.childcareLeave.woman.all != previousValue.employmentInfo.childcareLeave.woman.all
+              )
+            )
+          )
+        ) {
+          isChanged = true
+        }
+        if (employmentInfo.femaleExecutives != previousValue.employmentInfo.femaleExecutives) {
           isChanged = true
         }
       }
@@ -2569,6 +2649,9 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
           }
           if (feedback) {
             jobDetailData.feedback = feedback
+          }
+          if (employmentInfo) {
+            jobDetailData.employmentInfo = employmentInfo
           }
           jobBatch.update(jobDetailRef, jobDetailData)
         })
@@ -3401,6 +3484,30 @@ exports.sendChangeInvoiceEmailConfirmation = functions
       <p>請求書の送信先の変更が正常に行われたことをお知らせいたします。</p>
       <p>引き続き、Liploをよろしくお願い致します。</p>
       <p style="margin-top: 40px">このメールに心当たりがない方は、お手数をおかけしますがこのメールを破棄してください。</p>
+    `
+    mailTransport.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.log(err)
+      }
+      console.log('completed.')
+    })
+  })
+
+// 請求書の送信先が変更された時
+exports.sendSignUpEmail = functions
+  .https
+  .onCall((data, context) => {
+    const mailOptions = {
+      from: `Liplo <noreply@liplo.jp>`,
+      to: data.email,
+    }
+    mailOptions.subject = `サインアップのご案内`
+    mailOptions.html = `
+      <p>${data.name} 様</p>
+      <p>Liplo をご利用いただき、誠にありがとうございます。</p>
+      <p>サインアップは以下のリンクから行えます。</p>
+      <a href="${data.url}">${data.url}</a><br>
+      <p style="margin-top: 40px">引き続き、Liploをよろしくお願い致します。</p>
     `
     mailTransport.sendMail(mailOptions, (err, info) => {
       if (err) {

@@ -567,6 +567,142 @@
                 企業情報がありません
               </div>
             </div>
+            <!-- 雇用情報 -->
+            <div
+              v-if="
+                newGrad ||
+                newGradResignee ||
+                averageYearsOfService ||
+                averageAge ||
+                training ||
+                selfDevSupport ||
+                mentor ||
+                careerSupport ||
+                testSystem ||
+                overtimeWork ||
+                paidHolidays ||
+                (childcareLeave &&
+                ((childcareLeave.man && childcareLeave.man.taken) ||
+                (childcareLeave.woman && childcareLeave.woman.taken))) ||
+                femaleExecutives
+              "
+              class="py-4"
+            >
+              <p
+                class="font-weight-bold text-color"
+                :class="{
+                  'headline': $vuetify.breakpoint.smAndUp,
+                  'title': $vuetify.breakpoint.xsOnly
+                }"
+              >
+                企業の詳細情報（雇用情報）
+              </p>
+              <div>
+                <div
+                  v-if="newGrad || newGradResignee || averageYearsOfService || averageAge"
+                  class="py-4 subheading font-weight-bold text-color"
+                >
+                  社員について
+                </div>
+                <div v-if="newGrad" class="pb-2 text-color">
+                  <span>前年度の新卒採用者数:</span>
+                  <span class="pl-2">{{ newGrad }} 人</span>
+                </div>
+                <div v-if="newGradResignee" class="pb-2 text-color">
+                  <span>前年度の新卒離職者数:</span>
+                  <span class="pl-2">{{ newGradResignee }} 人</span>
+                </div>
+                <div v-if="averageYearsOfService" class="pb-2 text-color">
+                  <span>平均勤続年数:</span>
+                  <span class="pl-2">{{ averageYearsOfService }} 年</span>
+                </div>
+                <div v-if="averageAge" class="pb-2 text-color">
+                  <span>社員の平均年齢:</span>
+                  <span class="pl-2">{{ averageAge }} 歳</span>
+                </div>
+                <div v-if="femaleExecutives" class="pb-2 text-color">
+                  <span>女性管理職の割合:</span>
+                  <span class="pl-2">{{ femaleExecutives }} %</span>
+                </div>
+                <div
+                  v-if="
+                    overtimeWork ||
+                    paidHolidays ||
+                    (childcareLeave &&
+                    ((childcareLeave.man && childcareLeave.man.taken) ||
+                    (childcareLeave.woman && childcareLeave.woman.taken)))
+                  "
+                  class="py-4 subheading font-weight-bold text-color"
+                >
+                  休暇について
+                </div>
+                <div v-if="overtimeWork" class="pb-4 text-color">
+                  <span>前年度の月平均所定外時間労働:</span>
+                  <span class="pl-2">{{ overtimeWork }} 時間</span>
+                </div>
+                <div v-if="paidHolidays" class="pb-4 text-color">
+                  <span>前年度の平均有給休暇取得日数:</span>
+                  <span class="pl-2">{{ paidHolidays }} 日</span>
+                </div>
+                <div
+                  v-if="
+                    childcareLeave &&
+                    ((childcareLeave.man && childcareLeave.man.taken) ||
+                    (childcareLeave.woman && childcareLeave.woman.taken))
+                  "
+                  class="pb-4 text-color"
+                >
+                  <span>前年度の育児休暇取得者数:</span>
+                  <div v-if="childcareLeave.man.taken" class="pt-2 pl-3">
+                    <span>男性：</span>
+                    {{ childcareLeave.man.taken }}
+                    <span v-if="childcareLeave.man.all"> / {{ childcareLeave.man.all }} （育児休暇取得者数 / 配偶者の出産者数）</span>
+                  </div>
+                  <div v-if="childcareLeave.woman.taken" class="pt-2 pl-3">
+                    <span>女性：</span>
+                    {{ childcareLeave.woman.taken }}
+                    <span v-if="childcareLeave.woman.all"> / {{ childcareLeave.woman.all }} （育児休暇取得者数 / 出産者数）</span>
+                  </div>
+                </div>
+                <div
+                  v-if="training || selfDevSupport || mentor || careerSupport || testSystem"
+                  class="py-4 subheading font-weight-bold text-color"
+                >
+                  社内制度について
+                </div>
+                <ol>
+                  <li v-if="training" class="pb-4 text-color">
+                    <span>研修:</span>
+                    <span v-if="training.exists" class="pl-2 font-weight-bold">有</span>
+                    <span v-else class="pl-2 font-weight-bold">無</span>
+                    <div v-if="training.content" class="pt-2 text-color">{{ training.content }}</div>
+                  </li>
+                  <li v-if="selfDevSupport" class="pb-4 text-color">
+                    <span>資格取得支援制度:</span>
+                    <span v-if="selfDevSupport.exists" class="pl-2 font-weight-bold">有</span>
+                    <span v-else class="pl-2 font-weight-bold">無</span>
+                    <div v-if="selfDevSupport.content" class="pt-2 text-color">{{ selfDevSupport.content }}</div>
+                  </li>
+                  <li v-if="mentor" class="pb-4 text-color">
+                    <span>メンター制度:</span>
+                    <span v-if="mentor.exists" class="pl-2 font-weight-bold">有</span>
+                    <span v-else class="pl-2 font-weight-bold">無</span>
+                  </li>
+                  <li v-if="careerSupport" class="pb-4 text-color">
+                    <span>キャリアサポート:</span>
+                    <span v-if="careerSupport.exists" class="pl-2 font-weight-bold">有</span>
+                    <span v-else class="pl-2 font-weight-bold">無</span>
+                    <div v-if="careerSupport.content" class="pt-2 text-color">{{ careerSupport.content }}</div>
+                  </li>
+                  <li v-if="testSystem" class="pb-4 text-color">
+                    <span>社内検定:</span>
+                    <span v-if="testSystem.exists" class="pl-2 font-weight-bold">有</span>
+                    <span v-else class="pl-2 font-weight-bold">無</span>
+                    <div v-if="testSystem.content" class="pt-2 text-color">{{ testSystem.content }}</div>
+                  </li>
+                </ol>
+              </div>
+            </div>
           </v-flex>
           <!-- right section -->
           <v-flex xs4 pa-5 hidden-md-and-down>
@@ -1208,6 +1344,19 @@ export default {
       location: state => state.job.location,
       foundedDate: state => state.job.foundedDate,
       employeesCount: state => state.job.employeesCount,
+      newGrad: state => state.job.newGrad,
+      newGradResignee: state => state.job.newGradResignee,
+      averageYearsOfService: state => state.job.averageYearsOfService,
+      averageAge: state => state.job.averageAge,
+      training: state => state.job.training,
+      selfDevSupport: state => state.job.selfDevSupport,
+      mentor: state => state.job.mentor,
+      careerSupport: state => state.job.careerSupport,
+      testSystem: state => state.job.testSystem,
+      overtimeWork: state => state.job.overtimeWork,
+      paidHolidays: state => state.job.paidHolidays,
+      childcareLeave: state => state.job.childcareLeave,
+      femaleExecutives: state => state.job.femaleExecutives,
       feedback: state => state.job.feedback,
       applicants: state => state.job.applicants,
       reviews: state => state.job.reviews,

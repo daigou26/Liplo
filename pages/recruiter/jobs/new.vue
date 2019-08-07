@@ -32,7 +32,7 @@
         :aspect-ratio="imageRatio"
       ></v-img>
       <div v-else class="grey lighten-2" style="height: 200px;"></div>
-      <input type="file" v-on:change="onFileChange">
+      <input type="file" v-on:change="onFileChange" accept='image/*'>
       <p v-if="!imageFileSizeValid" class="warning-text-color">
         {{ imageFileSizeWarning }}
       </p>

@@ -74,7 +74,7 @@
                     <v-icon v-else style="font-size: 150px">person</v-icon>
                   </v-avatar>
                 </div>
-                <input type="file" v-on:change="onFileChange">
+                <input type="file" v-on:change="onFileChange" accept='image/*'>
                 <p v-show="!imageFileSizeValid" class="warning-text-color">
                   {{ imageFileSizeWarning }}
                 </p>

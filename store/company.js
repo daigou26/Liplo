@@ -22,6 +22,19 @@ export const state = () => ({
   what: '',
   services: null,
   welfare: null,
+  newGrad: null,
+  newGradResignee: null,
+  averageYearsOfService: null,
+  averageAge: null,
+  training: null,
+  selfDevSupport: null,
+  mentor: null,
+  careerSupport: null,
+  testSystem: null,
+  overtimeWork: null,
+  paidHolidays: null,
+  childcareLeave: null,
+  femaleExecutives: null,
   workday: 0,
   reviews: null,
   reviewsChartData: null,
@@ -90,6 +103,45 @@ export const mutations = {
   setWelfare(state, welfare) {
     state.welfare = welfare
   },
+  setNewGrad(state, newGrad) {
+    state.newGrad = newGrad
+  },
+  setNewGradResignee(state, newGradResignee) {
+    state.newGradResignee = newGradResignee
+  },
+  setAverageYearsOfService(state, averageYearsOfService) {
+    state.averageYearsOfService = averageYearsOfService
+  },
+  setAverageAge(state, averageAge) {
+    state.averageAge = averageAge
+  },
+  setTraining(state, training) {
+    state.training = training
+  },
+  setSelfDevSupport(state, selfDevSupport) {
+    state.selfDevSupport = selfDevSupport
+  },
+  setMentor(state, mentor) {
+    state.mentor = mentor
+  },
+  setCareerSupport(state, careerSupport) {
+    state.careerSupport = careerSupport
+  },
+  setTestSystem(state, testSystem) {
+    state.testSystem = testSystem
+  },
+  setOvertimeWork(state, overtimeWork) {
+    state.overtimeWork = overtimeWork
+  },
+  setPaidHolidays(state, paidHolidays) {
+    state.paidHolidays = paidHolidays
+  },
+  setChildcareLeave(state, childcareLeave) {
+    state.childcareLeave = childcareLeave
+  },
+  setFemaleExecutives(state, femaleExecutives) {
+    state.femaleExecutives = femaleExecutives
+  },
   setWorkday(state, workday) {
     state.workday = workday
   },
@@ -156,6 +208,23 @@ export const actions = {
             commit('setServices', doc.data()['services'])
             commit('setWelfare', doc.data()['welfare'])
             commit('setReviews', doc.data()['reviews'])
+
+            // 雇用情報
+            if (doc.data()['employmentInfo']) {
+              commit('setNewGrad', doc.data()['employmentInfo'].newGrad)
+              commit('setNewGradResignee', doc.data()['employmentInfo'].newGradResignee)
+              commit('setAverageYearsOfService', doc.data()['employmentInfo'].averageYearsOfService)
+              commit('setAverageAge', doc.data()['employmentInfo'].averageAge)
+              commit('setTraining', doc.data()['employmentInfo'].training)
+              commit('setSelfDevSupport', doc.data()['employmentInfo'].selfDevSupport)
+              commit('setMentor', doc.data()['employmentInfo'].mentor)
+              commit('setCareerSupport', doc.data()['employmentInfo'].careerSupport)
+              commit('setTestSystem', doc.data()['employmentInfo'].testSystem)
+              commit('setOvertimeWork', doc.data()['employmentInfo'].overtimeWork)
+              commit('setPaidHolidays', doc.data()['employmentInfo'].paidHolidays)
+              commit('setChildcareLeave', doc.data()['employmentInfo'].childcareLeave)
+              commit('setFemaleExecutives', doc.data()['employmentInfo'].femaleExecutives)
+            }
 
             if (!doc.data()['isDeleted']) {
               // chart Data
@@ -292,6 +361,19 @@ export const actions = {
     commit('setWhat', '')
     commit('setServices', null)
     commit('setWelfare', null)
+    commit('setNewGrad', null)
+    commit('setNewGradResignee', null)
+    commit('setAverageYearsOfService', null)
+    commit('setAverageAge', null)
+    commit('setTraining', null)
+    commit('setSelfDevSupport', null)
+    commit('setMentor', null)
+    commit('setCareerSupport', null)
+    commit('setTestSystem', null)
+    commit('setOvertimeWork', null)
+    commit('setPaidHolidays', null)
+    commit('setChildcareLeave', null)
+    commit('setFemaleExecutives', null)
     commit('setReviews', null)
     commit('setReviewsChartData', null)
     commit('resetJobs')
