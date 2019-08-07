@@ -1009,20 +1009,20 @@
           </v-flex>
           <v-flex xs12 sm10 class="break">
             <!-- 企業情報の表示 -->
-            <v-list v-show="!isEditingCompanyInfo" class="pl-4">
-              <div class="pb-2">
+            <v-list v-show="!isEditingCompanyInfo" class="pl-4 pt-4">
+              <div class="pb-2 text-color">
                 <span>設立日:</span>
                 <span class="pl-2">{{ founded }}</span>
               </div>
-              <div class="pb-2">
+              <div class="pb-2 text-color">
                 <span>所在地:</span>
                 <span class="pl-2">{{ location }}</span>
               </div>
-              <div class="pb-2">
+              <div class="pb-2 text-color">
                 <span>社員数:</span>
                 <span class="pl-2">{{ employeesCount }}</span>
               </div>
-              <div class="pb-2">
+              <div class="pb-2 text-color">
                 <span>ホームページ:</span>
                 <span class="pl-2">{{ url }}</span>
               </div>
@@ -1100,6 +1100,317 @@
                 >
                   更新
                 </v-btn>
+              </v-form>
+            </div>
+          </v-flex>
+        </div>
+        <!-- 雇用情報 -->
+        <div class="mb-5">
+          <v-layout
+            align-center
+            justify-space-between
+            row
+            class="pt-5"
+          >
+            <v-card-title
+              class="font-weight-bold"
+              :class="{
+                'title': $vuetify.breakpoint.smAndUp,
+                'subheading': $vuetify.breakpoint.xsOnly
+              }"
+            >
+              雇用情報
+            </v-card-title>
+            <v-btn
+              v-show="!isEditingEmploymentInfo"
+              class="text-xs-left"
+              flat
+              @click="editEmploymentInfoButtonClicked"
+            >
+              <v-icon :size="14">edit</v-icon>
+              <span class="caption teal-text-color">編集する</span>
+            </v-btn>
+          </v-layout>
+          <v-flex xs12 sm10>
+            <v-divider></v-divider>
+          </v-flex>
+          <v-flex xs12 sm10 class="break">
+            <!-- 雇用情報の表示 -->
+            <v-list v-show="!isEditingEmploymentInfo" class="pl-4 pt-4">
+              <div
+                v-if="newGrad || newGradResignee || averageYearsOfService || averageAge"
+                class="py-4 subheading font-weight-bold text-color"
+              >
+                募集・採用に関する情報
+              </div>
+              <div v-if="newGrad" class="pb-2 text-color">
+                <span>前年度の新卒採用者数:</span>
+                <span class="pl-2">{{ newGrad }} 人</span>
+              </div>
+              <div v-if="newGradResignee" class="pb-2 text-color">
+                <span>前年度の新卒離職者数:</span>
+                <span class="pl-2">{{ newGradResignee }} 人</span>
+              </div>
+              <div v-if="averageYearsOfService" class="pb-2 text-color">
+                <span>平均勤続年数:</span>
+                <span class="pl-2">{{ averageYearsOfService }} 年</span>
+              </div>
+              <div v-if="averageAge" class="pb-2 text-color">
+                <span>社員の平均年齢:</span>
+                <span class="pl-2">{{ averageAge }} 歳</span>
+              </div>
+              <div
+                v-if="training || selfDevSupport || mentor || careerSupport || testSystem"
+                class="py-4 subheading font-weight-bold text-color"
+              >
+                職業能力の開発及び向上に関する取組の実施状況
+              </div>
+              <ol>
+                <li v-if="training" class="pb-4 text-color">
+                  <span>研修:</span>
+                  <span v-if="training.exists" class="pl-2 font-weight-bold">有</span>
+                  <span v-else class="pl-2 font-weight-bold">無</span>
+                  <div v-if="training.content" class="pt-2 text-color">{{ training.content }}</div>
+                </li>
+                <li v-if="selfDevSupport" class="pb-4 text-color">
+                  <span>資格取得支援制度:</span>
+                  <span v-if="selfDevSupport.exists" class="pl-2 font-weight-bold">有</span>
+                  <span v-else class="pl-2 font-weight-bold">無</span>
+                  <div v-if="selfDevSupport.content" class="pt-2 text-color">{{ selfDevSupport.content }}</div>
+                </li>
+                <li v-if="mentor" class="pb-4 text-color">
+                  <span>メンター制度:</span>
+                  <span v-if="mentor.exists" class="pl-2 font-weight-bold">有</span>
+                  <span v-else class="pl-2 font-weight-bold">無</span>
+                </li>
+                <li v-if="careerSupport" class="pb-4 text-color">
+                  <span>キャリアサポート:</span>
+                  <span v-if="careerSupport.exists" class="pl-2 font-weight-bold">有</span>
+                  <span v-else class="pl-2 font-weight-bold">無</span>
+                  <div v-if="careerSupport.content" class="pt-2 text-color">{{ careerSupport.content }}</div>
+                </li>
+                <li v-if="testSystem" class="pb-4 text-color">
+                  <span>社内検定:</span>
+                  <span v-if="testSystem.exists" class="pl-2 font-weight-bold">有</span>
+                  <span v-else class="pl-2 font-weight-bold">無</span>
+                  <div v-if="testSystem.content" class="pt-2 text-color">{{ testSystem.content }}</div>
+                </li>
+              </ol>
+              <div
+                v-if="
+                  overtimeWork ||
+                  paidHolidays ||
+                  (childcareLeave &&
+                  ((childcareLeave.man && childcareLeave.man.taken) ||
+                  (childcareLeave.woman && childcareLeave.woman.taken))) ||
+                  femaleExecutives"
+                class="py-4 subheading font-weight-bold text-color"
+              >
+                職場への定着の促進に関する取組の実施状況
+              </div>
+              <div v-if="overtimeWork" class="pb-4 text-color">
+                <span>前年度の月平均所定外時間労働:</span>
+                <span class="pl-2">{{ overtimeWork }} 時間</span>
+              </div>
+              <div v-if="paidHolidays" class="pb-4 text-color">
+                <span>前年度の平均有給休暇取得日数:</span>
+                <span class="pl-2">{{ paidHolidays }} 日</span>
+              </div>
+              <div
+                v-if="
+                  childcareLeave &&
+                  ((childcareLeave.man && childcareLeave.man.taken) ||
+                  (childcareLeave.woman && childcareLeave.woman.taken))
+                "
+                class="pb-4 text-color"
+              >
+                <span>前年度の育児休暇取得者数:</span>
+                <div v-if="childcareLeave.man.taken" class="pt-2 pl-3">
+                  <span>男性：</span>
+                  {{ childcareLeave.man.taken }}
+                  <span v-if="childcareLeave.man.all"> / {{ childcareLeave.man.all }} （育児休暇取得者数 / 配偶者の出産者数）</span>
+                </div>
+                <div v-if="childcareLeave.woman.taken" class="pt-2 pl-3">
+                  <span>女性：</span>
+                  {{ childcareLeave.woman.taken }}
+                  <span v-if="childcareLeave.woman.all"> / {{ childcareLeave.woman.all }} （育児休暇取得者数 / 出産者数）</span>
+                </div>
+              </div>
+              <div v-if="femaleExecutives" class="pb-4 text-color">
+                <span>女性管理職の割合:</span>
+                <span class="pl-2">{{ femaleExecutives }} %</span>
+              </div>
+            </v-list>
+            <!-- 企業情報の編集画面 -->
+            <div v-show="isEditingEmploymentInfo">
+              <v-form v-model="editEmploymentInfoValid" @submit.prevent="">
+                <div class="py-4 subheading font-weight-bold text-color">
+                  1. 募集・採用に関する情報
+                </div>
+                <v-text-field
+                  label="前年度の新卒採用者数"
+                  v-model="tempNewGrad"
+                  type="number"
+                  suffix="人"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  label="前年度の新卒離職者数"
+                  v-model="tempNewGradResignee"
+                  type="number"
+                  suffix="人"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  label="平均勤続年数"
+                  v-model="tempAverageYearsOfService"
+                  type="number"
+                  suffix="年"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  label="社員の平均年齢"
+                  v-model="tempAverageAge"
+                  type="number"
+                  suffix="歳"
+                  required
+                ></v-text-field>
+                <div class="py-4 subheading font-weight-bold text-color">
+                  2. 職業能力の開発及び向上に関する取組の実施状況
+                </div>
+                <div class="pt-2 text-color">
+                  研修有無およびその内容
+                </div>
+                <v-switch v-model="tempTraining.exists" color="teal" :label="`${ tempTraining.exists ? '有' : '無'}`"></v-switch>
+                <v-textarea
+                  v-model="tempTraining.content"
+                  v-show="tempTraining.exists"
+                  label="内容"
+                  rows="3"
+                  :rules="employmentInfoRules"
+                  required
+                ></v-textarea>
+                <div class="pt-4 text-color">
+                  自己啓発支援の有無及びその内容
+                </div>
+                <v-switch v-model="tempSelfDevSupport.exists" color="teal" :label="`${ tempSelfDevSupport.exists ? '有' : '無'}`"></v-switch>
+                <v-textarea
+                  v-model="tempSelfDevSupport.content"
+                  v-show="tempSelfDevSupport.exists"
+                  label="内容"
+                  rows="3"
+                  :rules="employmentInfoRules"
+                  required
+                ></v-textarea>
+                <div class="pt-4 text-color">
+                  メンター制度の有無
+                </div>
+                <v-switch v-model="tempMentor.exists" color="teal" :label="`${ tempMentor.exists ? '有' : '無'}`" class="mt-2"></v-switch>
+                <div class="pt-4 text-color">
+                  キャリアコンサルティング制度の有無及びその内容
+                </div>
+                <v-switch v-model="tempCareerSupport.exists" color="teal" :label="`${ tempCareerSupport.exists ? '有' : '無'}`"></v-switch>
+                <v-textarea
+                  v-model="tempCareerSupport.content"
+                  v-show="tempCareerSupport.exists"
+                  label="内容"
+                  rows="3"
+                  :rules="employmentInfoRules"
+                  required
+                ></v-textarea>
+                <div class="pt-4 text-color">
+                  社内検定等の制度の有無及びその内容
+                </div>
+                <v-switch v-model="tempTestSystem.exists" color="teal" :label="`${ tempTestSystem.exists ? '有' : '無'}`"></v-switch>
+                <v-textarea
+                  v-model="tempTestSystem.content"
+                  v-show="tempTestSystem.exists"
+                  label="内容"
+                  rows="3"
+                  :rules="employmentInfoRules"
+                  required
+                ></v-textarea>
+                <div class="py-4 subheading font-weight-bold text-color">
+                  3. 職場への定着の促進に関する取組の実施状況
+                </div>
+                <v-text-field
+                  label="前年度の月平均所定外労働時間"
+                  v-model="tempOvertimeWork"
+                  type="number"
+                  suffix="時間"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  label="前年度の有給休暇の平均取得日数"
+                  v-model="tempPaidHolidays"
+                  type="number"
+                  suffix="日"
+                  required
+                ></v-text-field>
+                <v-layout row wrap>
+                <v-flex sm5 pt-4 mr-4>
+                  <v-text-field
+                    label="前年度の育児休業取得者数（男性）"
+                    v-model="tempChildcareLeave.man.taken"
+                    type="number"
+                    suffix="人"
+                    required
+                  ></v-text-field>
+                </v-flex>
+                <v-flex sm5 pt-4>
+                  <v-text-field
+                    label="前年度の配偶者の出産者数（男性）"
+                    v-model="tempChildcareLeave.man.all"
+                    :disabled="tempChildcareLeave.man.taken == null"
+                    type="number"
+                    suffix="人"
+                    :rules="childcareLeaveManRules"
+                    required
+                  ></v-text-field>
+                </v-flex>
+                </v-layout>
+                <v-layout row wrap>
+                <v-flex sm5 pt-4 mr-4>
+                  <v-text-field
+                    label="前年度の育児休業取得者数（女性）"
+                    v-model="tempChildcareLeave.woman.taken"
+                    type="number"
+                    suffix="人"
+                    required
+                  ></v-text-field>
+                </v-flex>
+                <v-flex sm5 pt-4>
+                  <v-text-field
+                    label="前年度の出産者数（女性）"
+                    v-model="tempChildcareLeave.woman.all"
+                    :disabled="tempChildcareLeave.woman.taken == null"
+                    type="number"
+                    suffix="人"
+                    :rules="childcareLeaveWomanRules"
+                    required
+                  ></v-text-field>
+                </v-flex>
+                </v-layout>
+                <v-text-field
+                  label="役員及び管理的地位にある者に占める女性の割合"
+                  v-model="tempFemaleExecutives"
+                  type="number"
+                  suffix="%"
+                  required
+                ></v-text-field>
+                <div class="mt-3 text-xs-right">
+                  <v-btn
+                    @click="updateIsEditingEmploymentInfo(false)"
+                  >
+                    キャンセル
+                  </v-btn>
+                  <v-btn
+                    :disabled="!editEmploymentInfoValid || plan == null"
+                    @click="updateEmploymentInfoButtonClicked"
+                  >
+                    更新
+                  </v-btn>
+                </div>
               </v-form>
             </div>
           </v-flex>
@@ -1220,8 +1531,58 @@ export default {
     ],
     tempEmployeesCount: null,
     editCompanyInfoValid: true,
+    editEmploymentInfoValid: true,
+    employmentInfoRules: [
+      v => (v.length <= 500) || '500字以内で入力してください'
+    ],
+    tempNewGrad: null,
+    tempNewGradResignee: null,
+    tempAverageYearsOfService: null,
+    tempAverageAge: null,
+    tempTraining: {
+      exists: false,
+      content: ''
+    },
+    tempSelfDevSupport: {
+      exists: false,
+      content: ''
+    },
+    tempMentor: {
+      exists: false
+    },
+    tempCareerSupport: {
+      exists: false,
+      content: ''
+    },
+    tempTestSystem: {
+      exists: false,
+      content: ''
+    },
+    tempOvertimeWork: null,
+    tempPaidHolidays: null,
+    tempChildcareLeave: {
+      man: {
+        all: null,
+        taken: null,
+      },
+      woman: {
+        all: null,
+        taken: null,
+      }
+    },
+    tempFemaleExecutives: null
   }),
   computed: {
+    childcareLeaveManRules() {
+      return [
+        v => (v == null || v == '' || Number(v) >= this.tempChildcareLeave.man.taken) || '育児休業取得者数より大きい値にしてください'
+      ]
+    },
+    childcareLeaveWomanRules() {
+      return [
+        v => (v == null || v == '' || Number(v) >= this.tempChildcareLeave.woman.taken) || '育児休業取得者数より大きい値にしてください'
+      ]
+    },
     avatarSize() {
       return (this.breakpoint == 'xs') ? 50 : 60
     },
@@ -1289,6 +1650,20 @@ export default {
       url: state => state.companyProfile.url,
       employeesCount: state => state.companyProfile.employeesCount,
       isEditingCompanyInfo: state => state.companyProfile.isEditingCompanyInfo,
+      newGrad: state => state.companyProfile.newGrad,
+      newGradResignee: state => state.companyProfile.newGradResignee,
+      averageYearsOfService: state => state.companyProfile.averageYearsOfService,
+      averageAge: state => state.companyProfile.averageAge,
+      training: state => state.companyProfile.training,
+      selfDevSupport: state => state.companyProfile.selfDevSupport,
+      mentor: state => state.companyProfile.mentor,
+      careerSupport: state => state.companyProfile.careerSupport,
+      testSystem: state => state.companyProfile.testSystem,
+      overtimeWork: state => state.companyProfile.overtimeWork,
+      paidHolidays: state => state.companyProfile.paidHolidays,
+      childcareLeave: state => state.companyProfile.childcareLeave,
+      femaleExecutives: state => state.companyProfile.femaleExecutives,
+      isEditingEmploymentInfo: state => state.companyProfile.isEditingEmploymentInfo,
       isLoading: state => state.companyProfile.isLoading,
     }),
   },
@@ -1455,6 +1830,110 @@ export default {
       this.tempUrl = this.url
       this.updateIsEditingCompanyInfo(true)
     },
+    // 雇用情報 編集ボタンが押された時
+    editEmploymentInfoButtonClicked() {
+      if (this.newGrad) {
+        this.tempNewGrad = this.newGrad
+      }
+      if (this.newGradResignee) {
+        this.tempNewGradResignee = this.newGradResignee
+      }
+      if (this.averageYearsOfService) {
+        this.tempAverageYearsOfService = this.averageYearsOfService
+      }
+      if (this.averageAge) {
+        this.tempAverageAge = this.averageAge
+      }
+      if (this.training) {
+        this.tempTraining = this.training
+      }
+      if (this.selfDevSupport) {
+        this.tempSelfDevSupport = this.selfDevSupport
+      }
+      if (this.mentor) {
+        this.tempMentor = this.mentor
+      }
+      if (this.careerSupport) {
+        this.tempCareerSupport = this.careerSupport
+      }
+      if (this.testSystem) {
+        this.tempTestSystem = this.testSystem
+      }
+      if (this.overtimeWork) {
+        this.tempOvertimeWork = this.overtimeWork
+      }
+      if (this.paidHolidays) {
+        this.tempPaidHolidays = this.paidHolidays
+      }
+      if (this.childcareLeave) {
+        this.tempChildcareLeave = this.childcareLeave
+      }
+      if (this.femaleExecutives) {
+        this.tempFemaleExecutives = this.femaleExecutives
+      }
+
+      this.updateIsEditingEmploymentInfo(true)
+    },
+    // 雇用情報 更新ボタンが押された時
+    updateEmploymentInfoButtonClicked() {
+      let employmentInfo = {
+        mentor: this.tempMentor
+      }
+      if (this.tempTraining.exists) {
+        employmentInfo.training = this.tempTraining
+      } else {
+        employmentInfo.training = {
+          exists: false,
+          content: ''
+        }
+      }
+      if (this.tempSelfDevSupport.exists) {
+        employmentInfo.selfDevSupport = this.tempSelfDevSupport
+      } else {
+        employmentInfo.selfDevSupport = {
+          exists: false,
+          content: ''
+        }
+      }
+      if (this.tempCareerSupport.exists) {
+        employmentInfo.careerSupport = this.tempCareerSupport
+      } else {
+        employmentInfo.careerSupport = {
+          exists: false,
+          content: ''
+        }
+      }
+      if (this.tempTestSystem.exists) {
+        employmentInfo.testSystem = this.tempTestSystem
+      } else {
+        employmentInfo.testSystem = {
+          exists: false,
+          content: ''
+        }
+      }
+      employmentInfo.newGrad = this.tempNewGrad ? Number(this.tempNewGrad) : null
+      employmentInfo.newGradResignee = this.tempNewGradResignee ? Number(this.tempNewGradResignee) : null
+      employmentInfo.averageYearsOfService = this.tempAverageYearsOfService ? Number(this.tempAverageYearsOfService) : null
+      employmentInfo.averageAge = this.tempAverageAge ? Number(this.tempAverageAge) : null
+      employmentInfo.overtimeWork = this.tempOvertimeWork ? Number(this.tempOvertimeWork) : null
+      employmentInfo.paidHolidays = this.tempPaidHolidays ? Number(this.tempPaidHolidays) : null
+      employmentInfo.femaleExecutives = this.tempFemaleExecutives ? Number(this.tempFemaleExecutives) : null
+      employmentInfo.childcareLeave = {
+        man: {
+          taken: this.tempChildcareLeave.man.taken ? Number(this.tempChildcareLeave.man.taken) : null,
+          all: this.tempChildcareLeave.man.all ? Number(this.tempChildcareLeave.man.all) : null
+        },
+        woman: {
+          taken: this.tempChildcareLeave.woman.taken ? Number(this.tempChildcareLeave.woman.taken) : null,
+          all: this.tempChildcareLeave.woman.all ? Number(this.tempChildcareLeave.woman.all) : null
+        }
+      }
+
+      this.updateEmploymentInfo({
+        companyId: this.companyId,
+        employmentInfo: employmentInfo
+      })
+    },
     ...mapActions({
       queryCompanyDetail: 'companyProfile/queryCompanyDetail',
       updateIsLoading: 'companyProfile/updateIsLoading',
@@ -1492,6 +1971,8 @@ export default {
       updateWelfare: 'companyProfile/updateWelfare',
       updateIsEditingCompanyInfo: 'companyProfile/updateIsEditingCompanyInfo',
       updateCompanyInfo: 'companyProfile/updateCompanyInfo',
+      updateIsEditingEmploymentInfo: 'companyProfile/updateIsEditingEmploymentInfo',
+      updateEmploymentInfo: 'companyProfile/updateEmploymentInfo',
     }),
   }
 }
