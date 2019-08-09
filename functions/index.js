@@ -832,7 +832,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
         batch.set(passNotificationRef, {
           type: 'normal',
           isImportant: true,
-          content: `${companyName}から${passTypeText}が送られました！ パスを使用する場合は、使用ボタンを押してから企業と連絡を取り、契約をしてください。`,
+          content: `${companyName}から${passTypeText}が送られました！ 確認してみましょう！`,
           createdAt: new Date(),
           url: passUrl,
           isUnread: true,
