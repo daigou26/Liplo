@@ -2,12 +2,11 @@
   <div class="container">
     <div v-if="error.statusCode === 404" class="text-xs-center">
       <div
-        class="teal--text font-weight-black"
+        class="font-weight-bold teal--text"
         :class="{
           'display-4 pt-5': $vuetify.breakpoint.smAndUp,
           'display-3 pt-3': $vuetify.breakpoint.xsOnly,
         }"
-        style="font-weight"
        >
         404
       </div>
@@ -40,9 +39,9 @@
       </div>
       <v-btn class="mt-3" outline color="teal" to="/">HOME</v-btn>
       <div class="pt-4">
-        <nuxt-link to="/contact" class="link-text textColor">お問い合わせ</nuxt-link>
+        <nuxt-link to="/contact" class="link-text teal--text">お問い合わせ</nuxt-link>
         <span class="light-text-color">/</span>
-        <nuxt-link to="/feedback" class="link-text textColor">フィードバック</nuxt-link>
+        <nuxt-link to="/feedback" class="link-text teal--text">フィードバック</nuxt-link>
       </div>
     </div>
   </div>
