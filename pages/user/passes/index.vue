@@ -233,22 +233,28 @@
                   <v-icon class="ml-2" color="pink lighten-2" style="font-size: 18px">bookmark</v-icon>
                 </div>
                 <div class="pt-2">
-                  有効期間内であれば、いつでも入社できるパスです。
-                  （卒業前に使用した場合、原則、卒業後に入社という形になります）
+                  有効期間内に使用することで、企業に入社することが出来ます。
+                  <div>
+                    卒業前に使用した場合、原則、卒業後に入社という形になります。
+                    入社月日は、パス使用前に、担当者に希望日を伝えてすり合わせを行ってください。
+                  </div>
                 </div>
                 <div class="pt-4 subheading font-weight-bold">
                   2. 内定パス
                   <v-icon class="ml-2" color="blue lighten-1" style="font-size: 18px">bookmark</v-icon>
                 </div>
                 <div class="pt-2">
-                  企業が定めた期間内であれば、内定を取得できるパスです。
+                  有効期間内に使用することで、内定を取得出来ます。
                 </div>
                 <div class="pt-4 subheading font-weight-bold">
                   3. 先着パス
                   <v-icon class="ml-2" color="green lighten-2" style="font-size: 18px">bookmark</v-icon>
                 </div>
                 <div class="pt-2">
-                  企業が定めた期間内であり、採用枠にあまりがある場合に限り、内定を取得できるパスです。
+                  企業が定めた期間内であり、採用枠にあまりがある場合に使用することで、内定を取得出来ます。
+                  <div>
+                    採用枠が埋まり次第、パスを使用することが出来なくなるのでご注意ください。
+                  </div>
                 </div>
                 <div class="pt-4">
                   ※ どのパスも使用したら原則、入社を取り消しすることが出来ないので、慎重に使用してください。
