@@ -71,15 +71,15 @@
           v-model="wage"
           :rules="wageRules"
           label="給料（必須）"
-          placeholder="給料について（時給や交通費を含むかどうかなど）"
+          placeholder="インターンの給料について（時給や交通費を含むかどうかなど）"
           required
         ></v-textarea>
         <v-textarea
           class="pt-5"
           v-model="requiredSkills"
           :rules="requiredSkillsRules"
-          label="必要なスキル（必須）"
-          placeholder="必要なスキルについて"
+          label="必要なスキル・経験"
+          placeholder="必要なスキル・経験について"
           required
         ></v-textarea>
         <v-textarea
@@ -142,23 +142,23 @@
             placeholder="平日のみ"
           ></v-select>
         </v-flex>
-        <v-layout row wrap pt-4>
+        <v-layout row wrap align-center pt-4>
           <v-flex sm3 class="pr-2">
             <v-text-field
               v-model="worktime.begin"
               mask="time"
-              label="勤務可能時間（始め）"
-              placeholder="10:00"
+              label="勤務可能時間（必須）"
+              placeholder="10:00（開始時間）"
               :rules="worktimeRules"
               required
               ></v-text-field>
           </v-flex>
+          <span class="px-4 hidden-xs-only">〜</span>
           <v-flex sm3 class="pl-2">
             <v-text-field
               v-model="worktime.end"
               mask="time"
-              label="勤務可能時間（終わり）"
-              placeholder="19:00"
+              placeholder="19:00（終了時間）"
               :rules="worktimeRules"
               required
               ></v-text-field>
@@ -211,6 +211,7 @@
             ></v-select>
           </v-flex>
           <v-btn
+            :loading="uploading"
             :disabled="postButtonDisabled || plan == null"
             @click="postButtonClicked"
           >
@@ -237,6 +238,7 @@ export default {
   },
   data: () => ({
     valid: true,
+    uploading: false,
     imageFileSizeValid: true,
     imageFileSizeWarning: '5MB以下の画像を選択してください',
     selectedImageSize: 200,
@@ -264,7 +266,6 @@ export default {
     ],
     requiredSkills: '',
     requiredSkillsRules: [
-      v => !!v || '必要なスキルについて入力してください',
       v => (v.length <= 2000) || '2000字以内で入力してください'
     ],
     idealSkills: '',
@@ -565,6 +566,7 @@ export default {
       })
 
       this.valid = false
+      this.uploading = true
     },
     ...mapActions({
       postJob: 'companyJob/postJob',

@@ -108,7 +108,7 @@ export const actions = {
           commit('setContent', doc.data()['content'])
           commit('setDescription', doc.data()['description'])
           commit('setWage', doc.data()['wage'])
-          commit('setRequiredSkills', doc.data()['requiredSkills'])
+          commit('setRequiredSkills', doc.data()['requiredSkills'] ? doc.data()['requiredSkills'] : '')
           commit('setIdealSkills', doc.data()['idealSkills'] ? doc.data()['idealSkills'] : '')
           commit('setEnvironment', doc.data()['environment'] ? doc.data()['environment'] : '')
           commit('setWorkweek', doc.data()['workweek'])

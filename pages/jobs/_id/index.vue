@@ -272,7 +272,7 @@
               <!-- 給与 -->
               <div v-if="wage" class="py-3">
                 <p class="job-sub-title font-weight-bold text-color">
-                  給与
+                  インターンの給料
                 </p>
                 <div>
                   <p class="body-text return">{{ wage }}</p>
@@ -281,7 +281,7 @@
               <!-- 必要スキル -->
               <div v-if="requiredSkills" class="py-3">
                 <p class="job-sub-title font-weight-bold text-color">
-                  必要スキル
+                  必要なスキル・経験
                 </p>
                 <div>
                   <p class="body-text return">{{ requiredSkills }}</p>
