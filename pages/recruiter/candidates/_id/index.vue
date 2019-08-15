@@ -1092,8 +1092,17 @@
           <v-card>
             <v-card-title class="title font-weight-bold text-color">ステータス更新の確認</v-card-title>
             <v-card-text>
-              <span v-if="tempStatus == 'インターン' || tempStatus == '入社予定'">
-                ステータスをインターンまたは入社予定に変更すると料金が発生します。
+              <span v-if="tempStatus == 'インターン'">
+                <span v-if="plan == 0">
+                  ステータスをインターンに変更すると料金が発生します。
+                </span>
+                <span v-else>ステータスをインターンに変更しますか？</span>
+              </span>
+              <span v-if="tempStatus == '入社予定'">
+                <span v-if="plan == 0 || plan == 1">
+                  ステータスを入社予定に変更すると料金が発生します。
+                </span>
+                <span v-else>ステータスを入社予定に変更しますか？</span>
               </span>
               <span v-if="tempStatus == 'パス'">
                 一度パスを発行すると取り消すことが出来ません。ご注意ください。
