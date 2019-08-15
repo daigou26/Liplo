@@ -1522,6 +1522,7 @@ exports.scoutUser = functions.region('asia-northeast1')
         .add({
           user: user,
           createdAt: createdAt,
+          candidateId: candidateId
         })
         .then(() => {
           console.log('set scoutedUsers completed.')
@@ -1937,7 +1938,8 @@ exports.applyForJob = functions.region('asia-northeast1')
       batch.set(companyApplicantsRef, {
         user: user,
         createdAt: createdAt,
-        jobId: jobId
+        jobId: jobId,
+        candidateId: candidateId
       })
       // 通知
       const candidateUrl = '/recruiter/candidates/' + candidateId

@@ -350,7 +350,8 @@ export const actions = {
 
               var data = {
                 user: user,
-                createdAt: currentDate
+                createdAt: currentDate,
+                candidateId: candidateId
               }
               if (type != null) {
                 data.type = type
@@ -465,7 +466,8 @@ export const actions = {
       if (setData) {
         var data = {
           user: user,
-          createdAt: currentDate
+          createdAt: currentDate,
+          candidateId: candidateId
         }
         if (type != null) {
           data.type = type
@@ -728,7 +730,7 @@ export const actions = {
                 var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
                 decipherText = simpleCrypto.decrypt(doc.data()['message'])
               }
-              
+
               const message = {
                 message: decipherText,
                 createdAt: doc.data()['createdAt'],
