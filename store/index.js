@@ -49,13 +49,22 @@ export const mutations = {
 }
 
 export const actions = {
-  async signUp({commit}, {email, password}) {
+  async signUp({commit}, {email, password, grade, university}) {
     auth.createUserWithEmailAndPassword(email, password)
       .then(function() {
         commit('resetLoading')
         commit('setAuthError', '')
         // analytics
-        event('user', 'signup')
+        event({
+          eventCategory: 'user',
+          eventAction: 'signUp',
+          eventLabel: grade
+        })
+        event({
+          eventCategory: 'university',
+          eventAction: 'signUp',
+          eventLabel: university
+        })
       })
       .catch(function(error) {
         console.error("Error", error)
@@ -385,6 +394,8 @@ export const actions = {
     firstName,
     lastName,
     birthDate,
+    university,
+    grade,
     graduationDate,
     companyId,
     position
@@ -488,6 +499,31 @@ export const actions = {
                     }
                   })
 
+                // 学年
+                switch (grade) {
+                  case '大学１年':
+                    grade = 'B1'
+                    break
+                  case '大学２年':
+                    grade = 'B2'
+                    break
+                  case '大学３年':
+                    grade = 'B3'
+                    break
+                  case '大学４年':
+                    grade = 'B4'
+                    break
+                  case '修士１年':
+                    grade = 'M1'
+                    break
+                  case '修士２年':
+                    grade = 'M2'
+                    break
+                  case 'その他':
+                    grade = 'others'
+                    break
+                }
+
                 // 卒業予定日
                 if (typeof graduationDate == 'string') {
                   let arr = graduationDate.split('-')
@@ -508,6 +544,8 @@ export const actions = {
                   isDeleted: false,
                   completionPercentage: 0,
                   canSearch: false,
+                  university: university,
+                  grade: grade,
                   graduationDate: graduationDate
                 })
                 // 生年月日
@@ -524,6 +562,8 @@ export const actions = {
                   points: 0,
                   email: user.email,
                   birthDate: birthDate,
+                  university: university,
+                  grade: grade,
                   graduationDate: graduationDate
                 })
                 const detailRef = firestore.collection('users')
@@ -535,6 +575,8 @@ export const actions = {
                   isDeleted: false,
                   acceptScout: true,
                   birthDate: birthDate,
+                  university: university,
+                  grade: grade,
                   graduationDate: graduationDate
                 })
                 batch.commit()

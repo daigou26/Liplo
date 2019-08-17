@@ -862,7 +862,6 @@
                       :rules="emailRules"
                       label="メールアドレス"
                       append-icon="mail_outline"
-                      solo
                       required
                     ></v-text-field>
                     <!-- 苗字 -->
@@ -871,7 +870,6 @@
                       :rules="lastNameRules"
                       label="姓"
                       append-icon="person"
-                      solo
                       required
                     ></v-text-field>
                     <!-- 名前 -->
@@ -880,7 +878,6 @@
                       :rules="firstNameRules"
                       label="名"
                       append-icon="person"
-                      solo
                       required
                     ></v-text-field>
                     <!-- 生年月日 -->
@@ -899,7 +896,6 @@
                           v-model="birthDate"
                           label="生年月日"
                           append-icon="event"
-                          solo
                           readonly
                           required
                           v-on="on"
@@ -912,6 +908,22 @@
                         @input="birthDateMenu = false"
                       ></v-date-picker>
                     </v-menu>
+                    <!-- 大学 -->
+                    <v-text-field
+                      v-model="university"
+                      :rules="universityRules"
+                      label="大学・大学院名"
+                      append-icon="school"
+                      required
+                    ></v-text-field>
+                    <!-- 学年 -->
+                    <v-select
+                      v-model="grade"
+                      class="pb-4"
+                      :items="gradeItems"
+                      hide-details
+                      label="学年"
+                    ></v-select>
                     <!-- 卒業予定日 -->
                     <v-menu
                       v-model="graduationDateMenu"
@@ -928,7 +940,6 @@
                           v-model="graduationDate"
                           label="卒業予定日"
                           append-icon="event"
-                          solo
                           readonly
                           required
                           v-on="on"
@@ -948,7 +959,6 @@
                       :rules="passwordRules"
                       :type="passwordShow ? 'text' : 'password'"
                       label="パスワード"
-                      solo
                       required
                       @click:append="passwordShow = !passwordShow"
                     ></v-text-field>
@@ -1168,6 +1178,21 @@ export default {
     ],
     birthDate: null,
     birthDateMenu: false,
+    university: '',
+    universityRules: [
+      v => !!v || '入力されていません',
+      v => (v && v.length <= 50) || '50文字を超えています'
+    ],
+    grade: '大学１年',
+    gradeItems: [
+      '大学１年',
+      '大学２年',
+      '大学３年',
+      '大学４年',
+      '修士１年',
+      '修士２年',
+      'その他'
+    ],
     graduationDate: null,
     graduationDateMenu: false,
     passwordShow: false,
@@ -1244,6 +1269,8 @@ export default {
         firstName: this.firstName,
         lastName: this.lastName,
         birthDate: this.birthDate,
+        university: this.university,
+        grade: this.grade,
         graduationDate: this.graduationDate,
         companyId: this.query.id,
         position: this.position,
@@ -1305,7 +1332,7 @@ export default {
     signUp() {
       this.$store.dispatch('setLoading')
       this.$store.dispatch('resetAuthError')
-      this.$store.dispatch('signUp', {email: this.email, password: this.password})
+      this.$store.dispatch('signUp', {email: this.email, password: this.password, grade: this.grade, university: this.university})
       this.signUpValid = false
     },
     recruiterSignUpClicked() {
@@ -1355,6 +1382,8 @@ export default {
       this.email = ''
       this.password = ''
       this.birthDate = null
+      this.university = ''
+      this.grade = '大学１年'
       this.graduationDate = null
     },
     ...mapActions({

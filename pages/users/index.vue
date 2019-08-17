@@ -80,7 +80,7 @@
                       sm2
                       xs3
                     >
-                      <div >志望する職種</div>
+                      <div class="text-color">志望する職種</div>
                     </v-flex>
                     <v-flex
                       v-if="user.desiredOccupations"
@@ -99,7 +99,7 @@
                     </v-flex>
                     <!-- 自己紹介 -->
                     <v-flex v-if="user.selfIntro" sm2 xs3 pt-4>
-                      <div >自己紹介</div>
+                      <div class="text-color">自己紹介</div>
                     </v-flex>
                     <v-flex v-if="user.selfIntro" xs8 offset-xs1 px-2 pt-4>
                       <div class="text-color break">
@@ -109,18 +109,18 @@
                     </v-flex>
                     <!-- 卒業予定日 -->
                     <v-flex v-if="user.graduationDate" sm2 xs3 pt-4>
-                      <div >卒業予定日</div>
+                      <div class="text-color">卒業予定日</div>
                     </v-flex>
                     <v-flex v-if="user.graduationDate" class="text-color" xs8 offset-xs1 px-2 pt-4>
                       {{ user.graduationDate }}
                     </v-flex>
                     <!-- スキル -->
                     <v-flex v-if="user.skills" sm2 xs3 pt-4>
-                      <div >スキル</div>
+                      <div class="text-color">スキル</div>
                     </v-flex>
                     <v-flex v-if="user.skills" xs8 offset-xs1 px-2 pt-4>
                       <template v-if="index < 5" v-for="(skill, index) in user.skills">
-                        <v-chip >{{ skill }}</v-chip>
+                        <v-chip color="#FF5A5F" outline><strong>{{ skill }}</strong></v-chip>
                       </template>
                     </v-flex>
                   </v-layout>
