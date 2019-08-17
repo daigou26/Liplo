@@ -6,7 +6,7 @@
   >
     <v-flex xs10 offset-xs1 v-if="uid && uid != ''">
       <!-- user name, image -->
-      <v-card flat class="py-4">
+      <v-card flat class="pb-4 pt-5">
         <v-list-tile to="/user/profile">
           <v-list-tile-avatar color="grey darken-3">
             <v-img

@@ -370,10 +370,6 @@
                   <span>卒業予定日:</span>
                   <span class="pl-2">{{ graduationDateText }}</span>
                 </div>
-                <div v-if="birthDateText" class="pb-2">
-                  <span>生年月日:</span>
-                  <span class="pl-2">{{ birthDateText }}</span>
-                </div>
               </v-list>
             </v-flex>
           </div>

@@ -1,7 +1,9 @@
 <template>
   <!-- メールアドレスの確認が済んでいない場合は確認してもらう -->
   <v-toolbar v-if="uid && uid != '' && !isVerified && type == 'user'" flat fixed app color="white" id="toolbar">
-    <v-toolbar-title v-if="(!path.includes('/recruiter') && !path.includes('/users'))">Application</v-toolbar-title>
+    <v-toolbar-title v-if="(!path.includes('/recruiter') && !path.includes('/users'))">
+      <span style="color: #FF5A5F">Liplo</span>
+    </v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items>
       <v-layout row wrap align-center class="pl-5">
@@ -912,27 +914,10 @@
                         justify-center
                       >
                         <v-flex xs12>
-                          <!-- 苗字 -->
-                          <v-text-field
-                            v-model="lastName"
-                            :rules="lastNameRules"
-                            label="姓"
-                            append-icon="person"
-                            required
-                          ></v-text-field>
-                          <!-- 名前 -->
-                          <v-text-field
-                            v-model="firstName"
-                            :rules="firstNameRules"
-                            label="名"
-                            append-icon="person"
-                            required
-                          ></v-text-field>
                           <!-- 生年月日 -->
                           <v-menu
                             v-model="birthDateMenu"
                             :close-on-content-click="false"
-                            :nudge-right="40"
                             lazy
                             transition="scale-transition"
                             offset-y
@@ -942,6 +927,7 @@
                             <template v-slot:activator="{ on }">
                               <v-text-field
                                 v-model="birthDate"
+                                color="teal"
                                 label="生年月日"
                                 append-icon="event"
                                 readonly
@@ -956,9 +942,28 @@
                               @input="birthDateMenu = false"
                             ></v-date-picker>
                           </v-menu>
+                          <!-- 苗字 -->
+                          <v-text-field
+                            v-model="lastName"
+                            color="teal"
+                            :rules="lastNameRules"
+                            label="姓"
+                            append-icon="person"
+                            required
+                          ></v-text-field>
+                          <!-- 名前 -->
+                          <v-text-field
+                            v-model="firstName"
+                            color="teal"
+                            :rules="firstNameRules"
+                            label="名"
+                            append-icon="person"
+                            required
+                          ></v-text-field>
                           <!-- 大学 -->
                           <v-text-field
                             v-model="university"
+                            color="teal"
                             :rules="universityRules"
                             label="大学・大学院名"
                             append-icon="school"
@@ -967,6 +972,7 @@
                           <!-- 学年 -->
                           <v-select
                             v-model="grade"
+                            color="teal"
                             class="pb-4"
                             :items="gradeItems"
                             hide-details

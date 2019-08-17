@@ -656,19 +656,21 @@ export const actions = {
               }
             } else {
               dispatch('profile/setPoints', doc.data()['points'])
-              commit('updateIsVerified',  doc.data()['isEmailVerified'])
+
+              // emailVerified が false
+              if (!user.emailVerified) {
+                commit('updateIsVerified',  false)
+              }
               // emailVerifiedを true に
               if (user.emailVerified && !doc.data()['isEmailVerified']) {
+                commit('updateIsVerified',  true)
                 firestore.collection('users')
                   .doc(user.uid)
                   .update({
                     isEmailVerified: true,
                   })
-                  .then(() => {
-                    commit('updateIsVerified',  true)
-                  })
                   .catch((error) => {
-                    console.error("Error adding document: ", error)
+                    console.error("Error updating document: ", error)
                   })
               }
               // メールアドレスの確認が済んでいない場合はメール送信
