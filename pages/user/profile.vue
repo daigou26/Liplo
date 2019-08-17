@@ -1121,7 +1121,7 @@
                       v-show="!isEditingUserInfo"
                       class="pl-4 caption light-text-color"
                     >
-                      ※ 卒業予定日は、採用担当者がパスの有効期間を決める際に参考にするため、入力をお願いします。
+                      ※ 卒業予定日は、採用担当者がパスの有効期間を決める際に必要になるため、入力をお願いします。
                     </div>
                     <!-- 基本情報の編集画面 -->
                     <div v-show="isEditingUserInfo" class="text-xs-right">
@@ -1194,7 +1194,7 @@
                             キャンセル
                           </v-btn>
                           <v-btn
-                            :disabled="!editUserInfoValid || tempGraduationDate == ''"
+                            :disabled="!editUserInfoValid"
                             @click="updateUserInfo({
                               uid: uid,
                               university: tempUniversity,
@@ -1211,7 +1211,7 @@
                         <div class="hidden-sm-and-up">
                           <v-btn
                             block
-                            :disabled="!editUserInfoValid || tempGraduationDate == ''"
+                            :disabled="!editUserInfoValid"
                             @click="updateUserInfo({
                               uid: uid,
                               university: tempUniversity,

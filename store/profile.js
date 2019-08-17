@@ -733,6 +733,13 @@ export const actions = {
     commit('updateIsEditingUserInfo', isEditing)
   },
   updateUserInfo({commit}, {uid, university, faculty, department, laboratory, grade, graduationDate}) {
+    let userData = {
+      university: university,
+      faculty: faculty,
+      department: department,
+      laboratory: laboratory,
+    }
+
     // 学年
     let gradeData
     switch (grade) {
@@ -758,40 +765,25 @@ export const actions = {
         gradeData = 'others'
         break
     }
+    userData.grade = gradeData
 
-    var graduationDateArr = graduationDate.split('-')
-    graduationDate = new Date(graduationDateArr[0], graduationDateArr[1] - 1, graduationDateArr[2])
+
+    if (graduationDate) {
+      var graduationDateArr = graduationDate.split('-')
+      graduationDate = new Date(graduationDateArr[0], graduationDateArr[1] - 1, graduationDateArr[2])
+      userData.graduationDate = graduationDate
+    }
 
     const batch = firestore.batch()
     const userRef = firestore.collection('users').doc(uid)
-    batch.update(userRef, {
-      university: university,
-      faculty: faculty,
-      department: department,
-      laboratory: laboratory,
-      grade: gradeData,
-      graduationDate: graduationDate
-    })
+    batch.update(userRef, userData)
     const profileRef = firestore.collection('users')
       .doc(uid).collection('profile').doc(uid)
-    batch.update(profileRef, {
-      university: university,
-      faculty: faculty,
-      department: department,
-      laboratory: laboratory,
-      grade: gradeData,
-      graduationDate: graduationDate
-    })
+    batch.update(profileRef, userData)
     const detailRef = firestore.collection('users')
       .doc(uid).collection('detail').doc(uid)
-    batch.update(detailRef, {
-      university: university,
-      faculty: faculty,
-      department: department,
-      laboratory: laboratory,
-      grade: gradeData,
-      graduationDate: graduationDate
-    })
+    batch.update(detailRef, userData)
+
     batch.commit()
       .then(() => {
         commit('setUniversity', university)
@@ -799,7 +791,9 @@ export const actions = {
         commit('setDepartment', department)
         commit('setLaboratory', laboratory)
         commit('setGrade', grade)
-        commit('setGraduationDate', graduationDate)
+        if (graduationDate) {
+          commit('setGraduationDate', graduationDate)
+        }
         commit('updateIsEditingUserInfo', false)
       })
       .catch((error) => {

@@ -396,7 +396,6 @@ export const actions = {
     birthDate,
     university,
     grade,
-    graduationDate,
     companyId,
     position
   }) {
@@ -470,7 +469,6 @@ export const actions = {
                 // メールアドレスの確認が済んでいない場合はメール送信
                 commit('updateIsVerified',  user.emailVerified)
                 if (!user.emailVerified && !state.sentVerifyEmail) {
-                  console.log('email not verified');
                   if (route.path !== '/' && route.name !== 'jobs-id') {
                     router.push('/')
                   }
@@ -524,12 +522,6 @@ export const actions = {
                     break
                 }
 
-                // 卒業予定日
-                if (typeof graduationDate == 'string') {
-                  let arr = graduationDate.split('-')
-                  graduationDate = new Date(arr[0], arr[1] - 1, arr[2])
-                }
-
                 const batch = firestore.batch()
                 const userRef = firestore.collection('users').doc(user.uid)
                 batch.set(userRef, {
@@ -546,7 +538,6 @@ export const actions = {
                   canSearch: false,
                   university: university,
                   grade: grade,
-                  graduationDate: graduationDate
                 })
                 // 生年月日
                 if (typeof birthDate == 'string') {
@@ -564,7 +555,6 @@ export const actions = {
                   birthDate: birthDate,
                   university: university,
                   grade: grade,
-                  graduationDate: graduationDate
                 })
                 const detailRef = firestore.collection('users')
                   .doc(user.uid).collection('detail').doc(user.uid)
@@ -577,7 +567,6 @@ export const actions = {
                   birthDate: birthDate,
                   university: university,
                   grade: grade,
-                  graduationDate: graduationDate
                 })
                 batch.commit()
                   .then(() => {
