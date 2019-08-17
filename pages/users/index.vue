@@ -107,6 +107,27 @@
                         {{ user.selfIntro.length > 100 ? '...' : '' }}
                       </div>
                     </v-flex>
+                    <!-- 所属 -->
+                    <v-flex v-if="user.university" sm2 xs3 pt-4>
+                      <div class="text-color">所属</div>
+                    </v-flex>
+                    <v-flex v-if="user.university" class="text-color" xs8 offset-xs1 px-2 pt-4>
+                      {{ user.university }}
+                      <span v-if="user.faculty" class="pl-2">{{ user.faculty}}</span>
+                      <span v-if="user.department" class="pl-2">{{ user.department}}</span>
+                    </v-flex>
+                    <!-- 学年 -->
+                    <v-flex v-if="user.grade && user.grade != 'others'" sm2 xs3 pt-4>
+                      <div class="text-color">学年</div>
+                    </v-flex>
+                    <v-flex v-if="user.grade && user.grade != 'others'" class="text-color" xs8 offset-xs1 px-2 pt-4>
+                      <span v-if="user.grade == 'B1'">大学１年</span>
+                      <span v-else-if="user.grade == 'B2'">大学２年</span>
+                      <span v-else-if="user.grade == 'B3'">大学３年</span>
+                      <span v-else-if="user.grade == 'B4'">大学４年</span>
+                      <span v-else-if="user.grade == 'M1'">修士１年</span>
+                      <span v-else-if="user.grade == 'M2'">修士２年</span>
+                    </v-flex>
                     <!-- 卒業予定日 -->
                     <v-flex v-if="user.graduationDate" sm2 xs3 pt-4>
                       <div class="text-color">卒業予定日</div>
