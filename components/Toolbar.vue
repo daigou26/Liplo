@@ -273,13 +273,6 @@
   <!-- user & 未ログイン -->
   <v-toolbar v-else-if="path != '/user/menu' && path != '/user/menu/'" flat color="white" class="toolbar-fixed border-bottom" id="toolbar">
     <v-toolbar-side-icon
-      v-if="uid == null && path == '/'"
-      @click="iconClicked"
-      class="toolbar-side-icon hidden-sm-and-up"
-    >
-      <v-icon style="font-size: 16px; color: #555555;">menu</v-icon>
-    </v-toolbar-side-icon>
-    <v-toolbar-side-icon
       v-if="
         this.routeName != null &&
         this.path != '/' &&
@@ -308,11 +301,16 @@
           <v-flex xs12>
             <v-card style="height: 100%;">
               <v-toolbar flat color="white">
-                <v-toolbar-side-icon
-                  @click="iconClicked"
-                  class="ml-2"
-                  style="color: #555555;"
-                ></v-toolbar-side-icon>
+                <v-toolbar-title class="font-weight-bold ml-0">
+                  <no-ssr>
+                    <nuxt-link to="/" @click.native="iconClicked" class="toolbar-title hidden-sm-and-up">
+                      <v-card-actions class="px-0">
+                        <span style="color: #FF5A5F">Liplo</span>
+                        <v-icon v-if="uid == null"  style="font-size: 16px; color: #555555;">expand_more</v-icon>
+                      </v-card-actions>
+                    </nuxt-link>
+                  </no-ssr>
+                </v-toolbar-title>
               </v-toolbar>
               <v-list class="py-0">
                 <!-- ホーム -->
@@ -434,10 +432,16 @@
             <span style="color: #FF5A5F">Liplo</span>
           </v-card-actions>
         </nuxt-link>
-        <nuxt-link v-if="path == '/'" to="/" class="toolbar-title hidden-sm-and-up">
+        <nuxt-link v-if="uid && uid != '' && path == '/'" to="/" class="toolbar-title hidden-sm-and-up">
           <v-card-actions class="px-0">
-            <img class="mr-2" src="/icon.png" width="30" height="30"/>
             <span style="color: #FF5A5F">Liplo</span>
+          </v-card-actions>
+        </nuxt-link>
+        <!-- 未ログイン -->
+        <nuxt-link v-if="uid == null && path == '/'" to="/" @click.native="iconClicked" class="toolbar-title hidden-sm-and-up">
+          <v-card-actions class="px-0">
+            <span style="color: #FF5A5F">Liplo</span>
+            <v-icon v-if="uid == null"  style="font-size: 16px; color: #555555;">expand_less</v-icon>
           </v-card-actions>
         </nuxt-link>
         <div class="hidden-sm-and-up">
