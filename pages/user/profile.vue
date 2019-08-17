@@ -1,4 +1,4 @@
-<template>
+自己紹介<template>
   <v-container grid-list-md pa-0>
     <v-layout
       row
@@ -326,26 +326,54 @@
                   </v-flex>
                   <v-flex xs12 sm10 class="break">
                     <div v-if="!isEditingDesiredOccupations && desiredOccupations">
-                      <v-chip v-if="desiredOccupations.engineer">
-                        <span>エンジニア</span>
+                      <v-chip
+                        v-if="desiredOccupations.engineer"
+                        color="#FF5A5F"
+                        outline
+                      >
+                        <strong>エンジニア</strong>
                       </v-chip>
-                      <v-chip v-if="desiredOccupations.designer">
-                        <span>デザイナー</span>
+                      <v-chip
+                        v-if="desiredOccupations.designer"
+                        color="#FF5A5F"
+                        outline
+                      >
+                        <strong>デザイナー</strong>
                       </v-chip>
-                      <v-chip v-if="desiredOccupations.sales">
-                        <span>営業</span>
+                      <v-chip
+                        v-if="desiredOccupations.sales"
+                        color="#FF5A5F"
+                        outline
+                      >
+                        <strong>営業</strong>
                       </v-chip>
-                      <v-chip v-if="desiredOccupations.marketer">
-                        <span>マーケター</span>
+                      <v-chip
+                        v-if="desiredOccupations.marketer"
+                        color="#FF5A5F"
+                        outline
+                      >
+                        <strong>マーケター</strong>
                       </v-chip>
-                      <v-chip v-if="desiredOccupations.planner">
-                        <span>企画</span>
+                      <v-chip
+                        v-if="desiredOccupations.planner"
+                        color="#FF5A5F"
+                        outline
+                      >
+                        <strong>企画</strong>
                       </v-chip>
-                      <v-chip v-if="desiredOccupations.writer">
-                        <span>ライター</span>
+                      <v-chip
+                        v-if="desiredOccupations.writer"
+                        color="#FF5A5F"
+                        outline
+                      >
+                        <strong>ライター</strong>
                       </v-chip>
-                      <v-chip v-if="desiredOccupations.others">
-                        <span>その他</span>
+                      <v-chip
+                        v-if="desiredOccupations.others"
+                        color="#FF5A5F"
+                        outline
+                      >
+                        <strong>その他</strong>
                       </v-chip>
                     </div>
                     <!-- 志望する職種の編集画面 -->
@@ -357,7 +385,15 @@
                         chips
                         solo
                         multiple
-                      ></v-select>
+                      >
+                        <template slot="selection" slot-scope="data">
+                          <v-chip
+                            outline
+                          >
+                            <strong>{{ data.item }}</strong>
+                          </v-chip>
+                        </template>
+                      </v-select>
                       <div class="hidden-xs-only">
                         <v-btn
                           @click="updateIsEditingDesiredOccupations(false)"
@@ -388,7 +424,7 @@
                     </div>
                   </v-flex>
                 </div>
-                <!-- 紹介文 -->
+                <!-- 自己紹介 -->
                 <div class="px-2">
                   <v-layout
                     align-center
@@ -405,7 +441,7 @@
                           'title': $vuetify.breakpoint.smAndUp,
                         }"
                       >
-                        紹介文
+                        自己紹介
                       </v-card-title>
                     </v-flex>
                     <v-flex xs4 sm2 v-show="!isEditingSelfIntro">
@@ -436,6 +472,7 @@
                           solo
                           counter
                           label="自己紹介"
+                          placeholder="これまでやってきたこと・研究内容などを記入してください"
                           v-model="tempSelfIntro"
                           :rules="selfIntroRules"
                           required
@@ -793,8 +830,11 @@
                     <!-- スキル表示 -->
                     <v-list v-if="!isEditingSkills && skills != null" class="pl-4">
                       <template v-for="(item, index) in skills">
-                        <v-chip>
-                          <span>{{ item }}</span>
+                        <v-chip
+                          color="#FF5A5F"
+                          outline
+                        >
+                          <strong>{{ item }}</strong>
                         </v-chip>
                       </template>
                     </v-list>
@@ -811,15 +851,17 @@
                               chips
                               clearable
                               solo
+                              placeholder="例： python, AWS （エンジニアの場合）"
                               multiple
                               hide-no-data
-                              hint="スキルを入力後、enterを押すことで入力が確定します"
+                              hint="スキルを１つ入力したら、enterを押して入力を確定してください"
                               :rules="skillRules"
                               required
                             >
                               <template v-slot:selection="data">
                                 <v-chip
                                   close
+                                  outline
                                   @input="removeSkill(data.item)"
                                 >
                                   <strong>{{ data.item }}</strong>
@@ -1059,6 +1101,14 @@
                         <span class="pl-2">{{ department }}</span>
                       </div>
                       <div class="pb-2">
+                        <span>研究室:</span>
+                        <span class="pl-2">{{ laboratory }}</span>
+                      </div>
+                      <div class="pb-2">
+                        <span>学年:</span>
+                        <span class="pl-2">{{ grade }}</span>
+                      </div>
+                      <div class="pb-2">
                         <span>卒業予定日:</span>
                         <span class="pl-2">{{ graduationDateText }}</span>
                       </div>
@@ -1071,37 +1121,48 @@
                       v-show="!isEditingUserInfo"
                       class="pl-4 caption light-text-color"
                     >
-                      ※ 卒業予定日は、採用担当者がパスの有効期間を決める際に参考にするため、入力をお願いします。
+                      ※ 卒業予定日は、採用担当者がパスの有効期間を決める際に必要になるため、入力をお願いします。
                     </div>
                     <!-- 基本情報の編集画面 -->
                     <div v-show="isEditingUserInfo" class="text-xs-right">
                       <v-form v-model="editUserInfoValid" @submit.prevent="">
                         <v-text-field
-                          solo
                           label="大学"
                           v-model="tempUniversity"
                           :rules="userInfoRules"
                           required
                         ></v-text-field>
                         <v-text-field
-                          solo
                           label="学部"
                           v-model="tempFaculty"
                           :rules="userInfoRules"
                           required
                         ></v-text-field>
                         <v-text-field
-                          solo
                           label="学科"
                           v-model="tempDepartment"
                           :rules="userInfoRules"
                           required
                         ></v-text-field>
+                        <!-- 研究室 -->
+                        <v-text-field
+                          label="研究室"
+                          v-model="tempLaboratory"
+                          :rules="userInfoRules"
+                          required
+                        ></v-text-field>
+                        <!-- 学年 -->
+                        <v-select
+                          v-model="tempGrade"
+                          class="pb-4"
+                          :items="gradeItems"
+                          hide-details
+                          label="学年"
+                        ></v-select>
                         <!-- 卒業予定日 -->
                         <v-menu
                           v-model="graduationDateMenu"
                           :close-on-content-click="false"
-                          :nudge-right="40"
                           lazy
                           transition="scale-transition"
                           offset-y
@@ -1113,7 +1174,6 @@
                               v-model="tempGraduationDate"
                               label="卒業予定日"
                               append-icon="event"
-                              solo
                               readonly
                               required
                               v-on="on"
@@ -1133,12 +1193,14 @@
                             キャンセル
                           </v-btn>
                           <v-btn
-                            :disabled="!editUserInfoValid || tempGraduationDate == ''"
+                            :disabled="!editUserInfoValid"
                             @click="updateUserInfo({
                               uid: uid,
                               university: tempUniversity,
                               faculty: tempFaculty,
                               department: tempDepartment,
+                              laboratory: tempLaboratory,
+                              grade: tempGrade,
                               graduationDate: tempGraduationDate,
                             })"
                           >
@@ -1148,12 +1210,14 @@
                         <div class="hidden-sm-and-up">
                           <v-btn
                             block
-                            :disabled="!editUserInfoValid || tempGraduationDate == ''"
+                            :disabled="!editUserInfoValid"
                             @click="updateUserInfo({
                               uid: uid,
                               university: tempUniversity,
                               faculty: tempFaculty,
                               department: tempDepartment,
+                              laboratory: tempLaboratory,
+                              grade: tempGrade,
                               graduationDate: tempGraduationDate,
                             })"
                           >
@@ -1300,6 +1364,17 @@ export default {
     tempUniversity: '',
     tempFaculty: '',
     tempDepartment: '',
+    tempLaboratory: '',
+    tempGrade: '',
+    gradeItems: [
+      '大学１年',
+      '大学２年',
+      '大学３年',
+      '大学４年',
+      '修士１年',
+      '修士２年',
+      'その他'
+    ],
     graduationDateMenu: false,
     tempGraduationDate: '',
     userInfoRules: [
@@ -1412,6 +1487,8 @@ export default {
       university: state => state.profile.university,
       faculty: state => state.profile.faculty,
       department: state => state.profile.department,
+      grade: state => state.profile.grade,
+      laboratory: state => state.profile.laboratory,
       graduationDate: state => state.profile.graduationDate,
       birthDate: state => state.profile.birthDate,
       isEditingUserInfo: state => state.profile.isEditingUserInfo,
@@ -1572,6 +1649,8 @@ export default {
       this.tempUniversity = this.university
       this.tempFaculty = this.faculty
       this.tempDepartment = this.department
+      this.tempLaboratory = this.laboratory
+      this.tempGrade = this.grade
 
       if (this.graduationDate) {
         let date = this.graduationDate

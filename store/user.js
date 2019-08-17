@@ -16,6 +16,8 @@ export const state = () => ({
   university: '',
   faculty: '',
   department: '',
+  laboratory: '',
+  grade: '',
   graduationDate: '',
   birthDate: '',
   desiredOccupations: null,
@@ -61,6 +63,12 @@ export const mutations = {
   setDepartment(state, department) {
     state.department = department
   },
+  setLaboratory(state, laboratory) {
+    state.laboratory = laboratory
+  },
+  setGrade(state, grade) {
+    state.grade = grade
+  },
   setGraduationDate(state, graduationDate) {
     state.graduationDate = graduationDate
   },
@@ -102,9 +110,36 @@ export const actions = {
           commit('setUniversity', doc.data()['university'])
           commit('setFaculty', doc.data()['faculty'])
           commit('setDepartment', doc.data()['department'])
+          commit('setLaboratory', doc.data()['laboratory'])
           commit('setGraduationDate', doc.data()['graduationDate'])
           commit('setBirthDate', doc.data()['birthDate'])
           commit('setDesiredOccupatins', doc.data()['desiredOccupations'])
+
+          let grade
+          switch (doc.data()['grade']) {
+            case 'B1':
+              grade = '大学１年'
+              break
+            case 'B2':
+              grade = '大学２年'
+              break
+            case 'B3':
+              grade = '大学３年'
+              break
+            case 'B4':
+              grade = '大学４年'
+              break
+            case 'M1':
+              grade = '修士１年'
+              break
+            case 'M2':
+              grade = '修士２年'
+              break
+            case 'others':
+              grade = 'その他'
+              break
+          }
+          commit('setGrade', grade)
 
           // スカウトを許可しているか、アカウントが削除されているか
           if (!doc.data()['acceptScout'] || doc.data()['isDeleted']) {
@@ -182,7 +217,11 @@ export const actions = {
       .then(() => {
         commit('updateIsCandidate', true)
         // analytics
-        event('user', 'scout')
+        event({
+          eventCategory: 'user',
+          eventAction: 'scout',
+          eventLabel: user.uid
+        })
       })
       .catch((error) => {
         console.error("Error adding document: ", error)
@@ -204,6 +243,8 @@ export const actions = {
     commit('setUniversity', '')
     commit('setFaculty', '')
     commit('setDepartment', '')
+    commit('setLaboratory')
+    commit('setGrade', '')
     commit('setGraduationDate', '')
     commit('setBirthDate', '')
     commit('setDesiredOccupatins', null)

@@ -49,13 +49,22 @@ export const mutations = {
 }
 
 export const actions = {
-  async signUp({commit}, {email, password}) {
+  async signUp({commit}, {email, password, grade, university}) {
     auth.createUserWithEmailAndPassword(email, password)
       .then(function() {
         commit('resetLoading')
         commit('setAuthError', '')
         // analytics
-        event('user', 'signup')
+        event({
+          eventCategory: 'user',
+          eventAction: 'signUp',
+          eventLabel: grade
+        })
+        event({
+          eventCategory: 'university',
+          eventAction: 'signUp',
+          eventLabel: university
+        })
       })
       .catch(function(error) {
         console.error("Error", error)
@@ -385,7 +394,8 @@ export const actions = {
     firstName,
     lastName,
     birthDate,
-    graduationDate,
+    university,
+    grade,
     companyId,
     position
   }) {
@@ -459,7 +469,6 @@ export const actions = {
                 // メールアドレスの確認が済んでいない場合はメール送信
                 commit('updateIsVerified',  user.emailVerified)
                 if (!user.emailVerified && !state.sentVerifyEmail) {
-                  console.log('email not verified');
                   if (route.path !== '/' && route.name !== 'jobs-id') {
                     router.push('/')
                   }
@@ -488,10 +497,29 @@ export const actions = {
                     }
                   })
 
-                // 卒業予定日
-                if (typeof graduationDate == 'string') {
-                  let arr = graduationDate.split('-')
-                  graduationDate = new Date(arr[0], arr[1] - 1, arr[2])
+                // 学年
+                switch (grade) {
+                  case '大学１年':
+                    grade = 'B1'
+                    break
+                  case '大学２年':
+                    grade = 'B2'
+                    break
+                  case '大学３年':
+                    grade = 'B3'
+                    break
+                  case '大学４年':
+                    grade = 'B4'
+                    break
+                  case '修士１年':
+                    grade = 'M1'
+                    break
+                  case '修士２年':
+                    grade = 'M2'
+                    break
+                  case 'その他':
+                    grade = 'others'
+                    break
                 }
 
                 const batch = firestore.batch()
@@ -508,7 +536,8 @@ export const actions = {
                   isDeleted: false,
                   completionPercentage: 0,
                   canSearch: false,
-                  graduationDate: graduationDate
+                  university: university,
+                  grade: grade,
                 })
                 // 生年月日
                 if (typeof birthDate == 'string') {
@@ -524,7 +553,8 @@ export const actions = {
                   points: 0,
                   email: user.email,
                   birthDate: birthDate,
-                  graduationDate: graduationDate
+                  university: university,
+                  grade: grade,
                 })
                 const detailRef = firestore.collection('users')
                   .doc(user.uid).collection('detail').doc(user.uid)
@@ -535,7 +565,8 @@ export const actions = {
                   isDeleted: false,
                   acceptScout: true,
                   birthDate: birthDate,
-                  graduationDate: graduationDate
+                  university: university,
+                  grade: grade,
                 })
                 batch.commit()
                   .then(() => {
@@ -625,19 +656,21 @@ export const actions = {
               }
             } else {
               dispatch('profile/setPoints', doc.data()['points'])
-              commit('updateIsVerified',  doc.data()['isEmailVerified'])
+
+              // emailVerified が false
+              if (!user.emailVerified) {
+                commit('updateIsVerified',  false)
+              }
               // emailVerifiedを true に
               if (user.emailVerified && !doc.data()['isEmailVerified']) {
+                commit('updateIsVerified',  true)
                 firestore.collection('users')
                   .doc(user.uid)
                   .update({
                     isEmailVerified: true,
                   })
-                  .then(() => {
-                    commit('updateIsVerified',  true)
-                  })
                   .catch((error) => {
-                    console.error("Error adding document: ", error)
+                    console.error("Error updating document: ", error)
                   })
               }
               // メールアドレスの確認が済んでいない場合はメール送信

@@ -37,6 +37,8 @@ export const state = () => ({
   university: '',
   faculty: '',
   department: '',
+  laboratory: '',
+  grade: '',
   graduationDate: '',
   birthDate: '',
   isEditingUserInfo: false,
@@ -148,6 +150,12 @@ export const mutations = {
   setDepartment(state, department) {
     state.department = department
   },
+  setLaboratory(state, laboratory) {
+    state.laboratory = laboratory
+  },
+  setGrade(state, grade) {
+    state.grade = grade
+  },
   setGraduationDate(state, graduationDate) {
     state.graduationDate = graduationDate
   },
@@ -175,6 +183,31 @@ export const actions = {
       .get()
       .then(function(doc) {
         if (doc.exists) {
+          let grade
+          switch (doc.data()['grade']) {
+            case 'B1':
+              grade = '大学１年'
+              break
+            case 'B2':
+              grade = '大学２年'
+              break
+            case 'B3':
+              grade = '大学３年'
+              break
+            case 'B4':
+              grade = '大学４年'
+              break
+            case 'M1':
+              grade = '修士１年'
+              break
+            case 'M2':
+              grade = '修士２年'
+              break
+            case 'others':
+              grade = 'その他'
+              break
+          }
+
           let graduationDate = doc.data()['graduationDate']
           if (graduationDate) {
             let date = new Date( graduationDate.seconds * 1000 )
@@ -195,6 +228,8 @@ export const actions = {
           commit('setUniversity', doc.data()['university'] != null ? doc.data()['university'] : '')
           commit('setFaculty', doc.data()['faculty'] != null ? doc.data()['faculty'] : '')
           commit('setDepartment', doc.data()['department'] != null ? doc.data()['department'] : '')
+          commit('setLaboratory', doc.data()['laboratory'] != null ? doc.data()['laboratory'] : '')
+          commit('setGrade', grade)
           commit('setGraduationDate', graduationDate)
           commit('setBirthDate', doc.data()['birthDate'])
           commit('setAcceptedOffers', doc.data()['acceptedOffers'])
@@ -697,47 +732,69 @@ export const actions = {
   updateIsEditingUserInfo({commit}, isEditing) {
     commit('updateIsEditingUserInfo', isEditing)
   },
-  updateUserInfo({commit}, {uid, university, faculty, department, graduationDate}) {
-    var graduationDateArr = graduationDate.split('-')
-    graduationDate = new Date(graduationDateArr[0], graduationDateArr[1] - 1, graduationDateArr[2])
+  updateUserInfo({commit}, {uid, university, faculty, department, laboratory, grade, graduationDate}) {
+    let userData = {
+      university: university,
+      faculty: faculty,
+      department: department,
+      laboratory: laboratory,
+    }
+
+    // 学年
+    let gradeData
+    switch (grade) {
+      case '大学１年':
+        gradeData = 'B1'
+        break
+      case '大学２年':
+        gradeData = 'B2'
+        break
+      case '大学３年':
+        gradeData = 'B3'
+        break
+      case '大学４年':
+        gradeData = 'B4'
+        break
+      case '修士１年':
+        gradeData = 'M1'
+        break
+      case '修士２年':
+        gradeData = 'M2'
+        break
+      case 'その他':
+        gradeData = 'others'
+        break
+    }
+    userData.grade = gradeData
+
+
+    if (graduationDate) {
+      var graduationDateArr = graduationDate.split('-')
+      graduationDate = new Date(graduationDateArr[0], graduationDateArr[1] - 1, graduationDateArr[2])
+      userData.graduationDate = graduationDate
+    }
 
     const batch = firestore.batch()
     const userRef = firestore.collection('users').doc(uid)
-    batch.update(userRef, {
-      graduationDate: graduationDate
-    })
+    batch.update(userRef, userData)
     const profileRef = firestore.collection('users')
       .doc(uid).collection('profile').doc(uid)
-    batch.update(profileRef, {
-      university: university,
-      faculty: faculty,
-      department: department,
-      graduationDate: graduationDate
-    })
+    batch.update(profileRef, userData)
     const detailRef = firestore.collection('users')
       .doc(uid).collection('detail').doc(uid)
-    batch.update(detailRef, {
-      university: university,
-      faculty: faculty,
-      department: department,
-      graduationDate: graduationDate
-    })
+    batch.update(detailRef, userData)
+
     batch.commit()
       .then(() => {
         commit('setUniversity', university)
         commit('setFaculty', faculty)
         commit('setDepartment', department)
-        commit('setGraduationDate', graduationDate)
-        commit('updateIsEditingUserInfo', false)
-
-        if (university && university != '') {
-          // analytics
-          event({
-            eventCategory: 'university',
-            eventAction: 'signup',
-            eventLabel: university
-          })
+        commit('setLaboratory', laboratory)
+        commit('setGrade', grade)
+        if (graduationDate) {
+          commit('setGraduationDate', graduationDate)
         }
+        commit('updateIsEditingUserInfo', false)
       })
       .catch((error) => {
         console.error("Error", error)
@@ -786,6 +843,8 @@ export const actions = {
     commit('setUniversity', '')
     commit('setFaculty', '')
     commit('setDepartment', '')
+    commit('setLaboratory')
+    commit('setGrade', '')
     commit('setGraduationDate', '')
     commit('setBirthDate', '')
     commit('updateIsEditingUserInfo', null)

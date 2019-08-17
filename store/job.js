@@ -439,7 +439,11 @@ export const actions = {
       .then(() => {
         commit('updateIsCandidate', true)
         // analytics
-        event('user', 'apply')
+        event({
+          eventCategory: 'user',
+          eventAction: 'apply',
+          eventLabel: companyId
+        })
       })
       .catch((error) => {
         console.error("Error adding document: ", error)

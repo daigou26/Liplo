@@ -80,57 +80,113 @@
                 px-2
                 :class="{'pb-4': $vuetify.breakpoint.xsOnly}"
               >
-                <v-chip v-if="desiredOccupations.engineer">
-                  <span>エンジニア</span>
+                <v-chip
+                  v-if="desiredOccupations.engineer"
+                  color="#FF5A5F"
+                  outline
+                >
+                  <strong>エンジニア</strong>
                 </v-chip>
-                <v-chip v-if="desiredOccupations.designer">
-                  <span>デザイナー</span>
+                <v-chip
+                  v-if="desiredOccupations.designer"
+                  color="#FF5A5F"
+                  outline
+                >
+                  <strong>デザイナー</strong>
                 </v-chip>
-                <v-chip v-if="desiredOccupations.sales">
-                  <span>営業</span>
+                <v-chip
+                  v-if="desiredOccupations.sales"
+                  color="#FF5A5F"
+                  outline
+                >
+                  <strong>営業</strong>
                 </v-chip>
-                <v-chip v-if="desiredOccupations.marketer">
-                  <span>マーケター</span>
+                <v-chip
+                  v-if="desiredOccupations.marketer"
+                  color="#FF5A5F"
+                  outline
+                >
+                  <strong>マーケター</strong>
                 </v-chip>
-                <v-chip v-if="desiredOccupations.planner">
-                  <span>企画</span>
+                <v-chip
+                  v-if="desiredOccupations.planner"
+                  color="#FF5A5F"
+                  outline
+                >
+                  <strong>企画</strong>
                 </v-chip>
-                <v-chip v-if="desiredOccupations.writer">
-                  <span>ライター</span>
+                <v-chip
+                  v-if="desiredOccupations.writer"
+                  color="#FF5A5F"
+                  outline
+                >
+                  <strong>ライター</strong>
                 </v-chip>
-                <v-chip v-if="desiredOccupations.others">
-                  <span>その他</span>
+                <v-chip
+                  v-if="desiredOccupations.others"
+                  color="#FF5A5F"
+                  outline
+                >
+                  <strong>その他</strong>
                 </v-chip>
               </v-flex>
             </v-layout>
             <div class="hidden-sm-and-up pl-4">
               <div class="text-color font-weight-bold">志望する職種</div>
               <div>
-                <v-chip v-if="desiredOccupations.engineer">
-                  <span>エンジニア</span>
+                <v-chip
+                  v-if="desiredOccupations.engineer"
+                  color="#FF5A5F"
+                  outline
+                >
+                  <strong>エンジニア</strong>
                 </v-chip>
-                <v-chip v-if="desiredOccupations.designer">
-                  <span>デザイナー</span>
+                <v-chip
+                  v-if="desiredOccupations.designer"
+                  color="#FF5A5F"
+                  outline
+                >
+                  <strong>デザイナー</strong>
                 </v-chip>
-                <v-chip v-if="desiredOccupations.sales">
-                  <span>営業</span>
+                <v-chip
+                  v-if="desiredOccupations.sales"
+                  color="#FF5A5F"
+                  outline
+                >
+                  <strong>営業</strong>
                 </v-chip>
-                <v-chip v-if="desiredOccupations.marketer">
-                  <span>マーケター</span>
+                <v-chip
+                  v-if="desiredOccupations.marketer"
+                  color="#FF5A5F"
+                  outline
+                >
+                  <strong>マーケター</strong>
                 </v-chip>
-                <v-chip v-if="desiredOccupations.planner">
-                  <span>企画</span>
+                <v-chip
+                  v-if="desiredOccupations.planner"
+                  color="#FF5A5F"
+                  outline
+                >
+                  <strong>企画</strong>
                 </v-chip>
-                <v-chip v-if="desiredOccupations.writer">
-                  <span>ライター</span>
+                <v-chip
+                  v-if="desiredOccupations.writer"
+                  color="#FF5A5F"
+                  outline
+                >
+                  <strong>ライター</strong>
                 </v-chip>
-                <v-chip v-if="desiredOccupations.others">
-                  <span>その他</span>
+                <v-chip
+                  v-if="desiredOccupations.others"
+                  color="#FF5A5F"
+                  outline
+                >
+                  <strong>その他</strong>
                 </v-chip>
               </div>
             </div>
           </div>
-          <!-- 紹介文 -->
+          <!-- 自己紹介 -->
           <div v-if="selfIntro">
             <v-layout
               align-center
@@ -140,7 +196,7 @@
             >
               <!-- タイトル&編集ボタン -->
               <v-flex xs8 sm10>
-                <v-card-title class="title font-weight-bold">紹介文</v-card-title>
+                <v-card-title class="title font-weight-bold">自己紹介</v-card-title>
               </v-flex>
             </v-layout>
             <v-flex xs12 sm10>
@@ -233,8 +289,11 @@
               <!-- スキル表示 -->
               <v-list class="pl-4">
                 <template v-for="(item, index) in skills">
-                  <v-chip>
-                    <span>{{ item }}</span>
+                  <v-chip
+                    color="#FF5A5F"
+                    outline
+                  >
+                    <strong>{{ item }}</strong>
                   </v-chip>
                 </template>
               </v-list>
@@ -299,13 +358,17 @@
                   <span>学科:</span>
                   <span class="pl-2">{{ department }}</span>
                 </div>
+                <div v-if="laboratory" class="pb-2">
+                  <span>研究室:</span>
+                  <span class="pl-2">{{ laboratory }}</span>
+                </div>
+                <div v-if="grade" class="pb-2">
+                  <span>学年:</span>
+                  <span class="pl-2">{{ grade }}</span>
+                </div>
                 <div v-if="graduationDateText" class="pb-2">
                   <span>卒業予定日:</span>
                   <span class="pl-2">{{ graduationDateText }}</span>
-                </div>
-                <div v-if="birthDateText" class="pb-2">
-                  <span>生年月日:</span>
-                  <span class="pl-2">{{ birthDateText }}</span>
                 </div>
               </v-list>
             </v-flex>
@@ -476,6 +539,8 @@ export default {
       university: state => state.user.university,
       faculty: state => state.user.faculty,
       department: state => state.user.department,
+      laboratory: state => state.user.laboratory,
+      grade: state => state.user.grade,
       graduationDate: state => state.user.graduationDate,
       birthDate: state => state.user.birthDate,
       desiredOccupations: state => state.user.desiredOccupations,

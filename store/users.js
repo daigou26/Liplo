@@ -133,6 +133,10 @@ export const actions = {
               desiredOccupations: doc.data()['desiredOccupations'],
               skills: doc.data()['skills'],
               points: doc.data()['points'],
+              university: doc.data()['university'],
+              faculty: doc.data()['faculty'],
+              department: doc.data()['department'],
+              grade: doc.data()['grade'],
               graduationDate: graduationDate,
               completionPercentage: doc.data()['completionPercentage']
             }
@@ -185,6 +189,10 @@ export const actions = {
               desiredOccupations: doc.data()['desiredOccupations'],
               skills: doc.data()['skills'],
               points: doc.data()['points'],
+              university: doc.data()['university'],
+              faculty: doc.data()['faculty'],
+              department: doc.data()['department'],
+              grade: doc.data()['grade'],
               graduationDate: graduationDate,
               completionPercentage: doc.data()['completionPercentage']
             }
