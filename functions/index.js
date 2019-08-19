@@ -395,7 +395,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
             paidActionData.companyImageUrl = companyImageUrl
           }
           if (plan == 0) {
-            let isFree = allCandidates.intern.all > 2 ? false : true
+            let isFree = allCandidates.intern.all > 1 ? false : true
             paidActionData.isFree = isFree
           } else {
             paidActionData.isFree = false

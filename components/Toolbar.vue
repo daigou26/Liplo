@@ -308,7 +308,7 @@
                     <nuxt-link to="/" @click.native="iconClicked" class="toolbar-title hidden-sm-and-up">
                       <v-card-actions class="px-0">
                         <span style="color: #FF5A5F">Liplo</span>
-                        <v-icon v-if="uid == null"  style="font-size: 16px; color: #555555;">expand_more</v-icon>
+                        <v-icon v-if="uid == null"  style="font-size: 16px; color: #555555;">expand_less</v-icon>
                       </v-card-actions>
                     </nuxt-link>
                   </no-ssr>
@@ -443,7 +443,7 @@
         <nuxt-link v-if="uid == null && path == '/'" to="/" @click.native="iconClicked" class="toolbar-title hidden-sm-and-up">
           <v-card-actions class="px-0">
             <span style="color: #FF5A5F">Liplo</span>
-            <v-icon v-if="uid == null"  style="font-size: 16px; color: #555555;">expand_less</v-icon>
+            <v-icon v-if="uid == null"  style="font-size: 16px; color: #555555;">expand_more</v-icon>
           </v-card-actions>
         </nuxt-link>
         <div class="hidden-sm-and-up">
@@ -914,34 +914,6 @@
                         justify-center
                       >
                         <v-flex xs12>
-                          <!-- 生年月日 -->
-                          <v-menu
-                            v-model="birthDateMenu"
-                            :close-on-content-click="false"
-                            lazy
-                            transition="scale-transition"
-                            offset-y
-                            full-width
-                            min-width="290px"
-                          >
-                            <template v-slot:activator="{ on }">
-                              <v-text-field
-                                v-model="birthDate"
-                                color="teal"
-                                label="生年月日"
-                                append-icon="event"
-                                readonly
-                                required
-                                v-on="on"
-                              ></v-text-field>
-                            </template>
-                            <v-date-picker
-                              v-model="birthDate"
-                              color="teal"
-                              locale="ja"
-                              @input="birthDateMenu = false"
-                            ></v-date-picker>
-                          </v-menu>
                           <!-- 苗字 -->
                           <v-text-field
                             v-model="lastName"
@@ -978,6 +950,34 @@
                             hide-details
                             label="学年"
                           ></v-select>
+                          <!-- 生年月日 -->
+                          <v-menu
+                            v-model="birthDateMenu"
+                            :close-on-content-click="false"
+                            lazy
+                            transition="scale-transition"
+                            offset-y
+                            full-width
+                            min-width="290px"
+                          >
+                            <template v-slot:activator="{ on }">
+                              <v-text-field
+                                v-model="birthDate"
+                                color="teal"
+                                label="生年月日"
+                                append-icon="event"
+                                readonly
+                                required
+                                v-on="on"
+                              ></v-text-field>
+                            </template>
+                            <v-date-picker
+                              v-model="birthDate"
+                              color="teal"
+                              locale="ja"
+                              @input="birthDateMenu = false"
+                            ></v-date-picker>
+                          </v-menu>
                           <!-- 利用規約 -->
                           <div class="caption text-color py-3 text-xs-left">
                             登録前に

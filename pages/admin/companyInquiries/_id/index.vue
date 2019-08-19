@@ -154,11 +154,11 @@ export default {
     windowHeight: 0,
     dialog: false,
     valid: true,
-    plan: '採用報酬型',
+    plan: 'ベーシック',
     planItems: [
-      '採用報酬型',
-      'アルファ',
-      'ベータ'
+      'ベーシック',
+      'スタンダード',
+      'アドバンス'
     ]
   }),
   computed: {
@@ -201,11 +201,11 @@ export default {
   methods: {
     addCompanyButtonClicked() {
       let plan
-      if (this.plan == '採用報酬') {
+      if (this.plan == 'ベーシック') {
         plan = 0
-      } else if (this.plan == 'アルファ') {
+      } else if (this.plan == 'スタンダード') {
         plan = 1
-      } else if (this.plan == 'ベータ') {
+      } else if (this.plan == 'アドバンス') {
         plan = 2
       }
       this.addCompany({

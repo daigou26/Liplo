@@ -30,28 +30,60 @@
       <v-flex xs12>
         <!-- 見出し -->
         <v-layout
-          align-center
+          class="main-boder main-bg"
           row
-          style="
-            padding: 100px 0px;
-            background-color: #e0f7fa;
-            background-image: linear-gradient(315deg, #e0f7fa 0%, #009688 73%);
-          "
-        >
-          <v-flex
-            xs12
-            sm9
-            md7
-            class=" text-xs-center"
-            :class="{
-              'px-3': $vuetify.breakpoint.xsOnly,
-              'padding-left-sm': $vuetify.breakpoint.smOnly,
-              'padding-left-md': $vuetify.breakpoint.mdOnly,
-              'padding-left-lg': $vuetify.breakpoint.lgAndUp,
-            }"
-          >
-            <div class="text-xs-left white--text">
-              <h1 class="display-1 font-weight-bold mb-3">Liplo</h1>
+          wrap
+          justify-center
+          align-center
+          px-3
+          :class="{
+            'main-padding-top-sm': $vuetify.breakpoint.smAndDown,
+            'main-padding-top-md': $vuetify.breakpoint.mdOnly,
+            'main-padding-top-lg': $vuetify.breakpoint.lgAndUp,
+          }">
+          <v-flex xs12>
+            <div class="white--text font-weight-bold text-xs-center pb-5 display-3 hidden-xs-only">
+              Liplo
+            </div>
+            <div class="white--text font-weight-bold text-xs-left pl-3 display-2 hidden-sm-and-up">
+              Liplo
+            </div>
+          </v-flex>
+          <v-flex white--text xs12 hidden-sm-and-up class="pt-4 px-3">
+            <h1
+              class="pt-4 font-weight-bold mb-3"
+              :class="{
+                'heading-font-size-xs': $vuetify.breakpoint.xsOnly,
+                'heading-font-size-sm': $vuetify.breakpoint.smAndUp,
+              }"
+              style="max-width: 500px; padding:0 0 20px 0"
+            >
+              <div>
+                長期インターンで
+              </div>
+              <div>
+                採用に変化を
+              </div>
+            </h1>
+            Liplo は長期インターンを通して、 求人者と求職者をマッチングする 採用プラットフォームです。 企業の雰囲気や文化、求職者の働き方や性格など 実際に働いてみないと分からないことをお互いが知ることで、 ミスマッチを減らし、より良い採用が出来るようサポートします。
+          </v-flex>
+          <v-flex xs10 sm4 class="pt-4 hidden-sm-and-up img-shadow">
+            <v-card
+              elevation="3"
+            >
+              <v-img
+                max-height="400"
+                v-bind:src="require('@/assets/images/inquiry/job_view.png')"
+              ></v-img>
+            </v-card>
+          </v-flex>
+          <v-img
+            class="mr-5 hidden-xs-only img-shadow"
+            max-height="400"
+            max-width="400"
+            v-bind:src="require('@/assets/images/inquiry/job_view.png')"
+          ></v-img>
+          <v-flex white--text sm6 md4 hidden-xs-only class="pt-4 pl-5">
               <h1
                 class="pt-4 font-weight-bold mb-3"
                 :class="{
@@ -60,26 +92,15 @@
                 }"
                 style="max-width: 500px;"
               >
-                <div>
-                  長期インターンで
-                </div>
-                <div>
-                  採用に変化を
-                </div>
-              </h1>
-              <h4 class="pt-4 subheading font-weight-bold" style="max-width: 500px">
-                Liplo は長期インターンを通して、
-                求人者と求職者をマッチングする
-                採用プラットフォームです。
-                企業の雰囲気や文化、求職者の働き方や性格など
-                実際に働いてみないと分からないことをお互いが知ることで、
-                ミスマッチを減らし、より良い採用が出来るようサポートします。
-              </h4>
-            </div>
+              <div>
+                長期インターンで
+              </div>
+              <div>
+                採用に変化を
+              </div>
+            </h1>
+            Liplo は長期インターンを通して、 求人者と求職者をマッチングする 採用プラットフォームです。 企業の雰囲気や文化、求職者の働き方や性格など 実際に働いてみないと分からないことをお互いが知ることで、 ミスマッチを減らし、より良い採用が出来るようサポートします。
           </v-flex>
-          <!-- <v-flex xs5>
-            <v-img max-width="400" v-bind:src="require('@/assets/images/aurora.png')"/>
-          </v-flex> -->
         </v-layout>
         <!-- メリット -->
         <div style="padding-top: 150px">
@@ -325,12 +346,21 @@
           >
             料金プラン
           </div>
-          <v-flex xs12 sm8 md6 offset-sm2 offset-md3>
-            <v-img v-bind:src="require('@/assets/images/inquiry/fee.png')"></v-img>
+          <v-flex xs12 sm8 offset-sm2 hidden-sm-and-up>
+            <v-img v-bind:src="require('@/assets/images/inquiry/fee_basic.svg')"></v-img>
+          </v-flex>
+          <v-flex xs12 sm8 offset-sm2 hidden-sm-and-up>
+            <v-img v-bind:src="require('@/assets/images/inquiry/fee_standard.svg')"></v-img>
+          </v-flex>
+          <v-flex xs12 sm8 offset-sm2 hidden-sm-and-up>
+            <v-img v-bind:src="require('@/assets/images/inquiry/fee_advanced.svg')"></v-img>
+          </v-flex>
+          <v-flex xs12 sm10 md8 offset-sm1 offset-md2>
+            <v-img class="hidden-xs-only" v-bind:src="require('@/assets/images/inquiry/fee_all.svg')"></v-img>
             <div
-              class="text-xs-right text-color pt-2 px-4"
+              class="text-color pt-2"
               :class="{
-                'caption': $vuetify.breakpoint.smOnly,
+                'caption pl-3': $vuetify.breakpoint.smAndDown,
               }"
             >
               ※ 料金について詳しく知りたい方は、資料請求をお願いします。
@@ -607,6 +637,24 @@ export default {
 }
 </script>
 <style>
+.main-bg{
+  background-color:rgba(255, 90, 95,0.9);
+}
+.img-shadow{
+  filter: drop-shadow(10px 10px 10px rgba(0,0,0,0.6));
+}
+.main-boder{
+  border-radius: 60px 60px 60px 60px / 60px 60px 60px 60px;
+}
+.main-padding-top-sm{
+  padding:90px 0;
+}
+.main-padding-top-md{
+  padding:100px 0;
+}
+.main-padding-top-lg{
+  padding:180px 0;
+}
 .title-font-size-md {
   font-size: 30px;
 }
