@@ -53,7 +53,7 @@
           <v-btn
             color="teal"
             flat
-            to="/"
+            @click.native="homeButtonClicked"
           >
             <span style="font-size: 10px;">探す</span>
             <v-icon>search</v-icon>
@@ -163,6 +163,17 @@ export default {
       hasNewMessage: state => state.chats.hasNewMessage,
     })
   },
+  methods: {
+    homeButtonClicked() {
+      if (this.$route.name != 'index') {
+        this.resetJobsState()
+        this.$router.push('/')
+      }
+    },
+    ...mapActions({
+      resetJobsState: 'jobs/resetState',
+    }),
+  }
 }
 </script>
 

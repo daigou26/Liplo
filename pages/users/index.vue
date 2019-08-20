@@ -72,7 +72,7 @@
                 </v-list-tile-action>
               </v-list-tile>
               <v-layout v-if="user.desiredOccupations || user.selfIntro || user.skills" row wrap pb-4>
-                <v-flex sm10 offset-sm1>
+                <v-flex sm10 offset-sm1 :class="{'pt-3 pl-3': $vuetify.breakpoint.xsOnly}">
                   <v-layout row wrap>
                     <!-- 志望する職種 -->
                     <v-flex
@@ -201,7 +201,6 @@ export default {
   data: () => ({
     count: 0,
     windowHeight: 0,
-    isQueried: false,
     showInfiniteLoading: false,
   }),
   computed: {
@@ -216,7 +215,6 @@ export default {
       isInitialLoading: state => state.users.isInitialLoading,
       isLoading: state => state.users.isLoading,
       allUsersQueried: state => state.users.allUsersQueried,
-      acceptScout: state => state.settings.acceptScout,
     }),
   },
   mounted() {
@@ -233,22 +231,25 @@ export default {
   watchQuery: ['occupation'],
   fetch(context) {
     const store = context.store
-    if (store.state.profile.companyId && store.state.profile.companyId != '') {
+    const users = store.state.users.users
+
+    if (store.state.profile.companyId &&
+      store.state.profile.companyId != '' &&
+      ((context.from && context.from.path == '/users') || users == null || (users && users.length == 0))) {
       store.dispatch('users/setFilter', context.query)
       store.dispatch('users/resetState')
       store.dispatch('users/updateIsInitialLoading', true)
       store.dispatch('users/updateIsLoading', true)
-      store.dispatch('users/queryUsers', {queryParams: context.query, acceptScout: store.state.settings.acceptScout})
+      store.dispatch('users/queryUsers', context.query)
     }
   },
   watch: {
     companyId(companyId) {
       if (companyId != null && companyId != '') {
-        this.isQueried = true
         this.resetState()
         this.updateIsInitialLoading(true)
         this.updateIsLoading(true)
-        this.queryUsers({queryParams: this.$route.query, acceptScout: this.acceptScout})
+        this.queryUsers(this.$route.query)
       }
     }
   },
@@ -258,7 +259,7 @@ export default {
         if (!this.isLoading && this.companyId != null && this.companyId != '') {
           this.count += 1
           this.updateIsLoading(true)
-          this.queryUsers({queryParams: this.$route.query, acceptScout: this.acceptScout})
+          this.queryUsers(this.$route.query)
 
           if (this.count > 20) {
             $state.complete()

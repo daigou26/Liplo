@@ -103,7 +103,8 @@
       <no-ssr>
         <nuxt-link
           v-if="!path.includes('/recruiter')　&& !path.includes('/users')"
-          to="/"
+          to=""
+          @click.native="homeButtonClicked"
           class="toolbar-title hidden-xs-only"
         >
           <v-card-actions>
@@ -132,7 +133,7 @@
     </v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items>
-      <v-btn flat active-class to="/users" class="hidden-xs-only">
+      <v-btn flat active-class @click.native="searchUsersButtonClicked" class="hidden-xs-only">
         <span class="font-weight-bold text-color">ユーザー検索</span>
       </v-btn>
       <v-btn flat active-class to="/recruiter/dashboard" class="ml-3 hidden-xs-only">
@@ -234,7 +235,7 @@
                 <v-icon v-else>person</v-icon>
               </v-avatar>
               <v-list>
-                <v-list-tile to="/users" class="hidden-sm-and-up">
+                <v-list-tile @click.native="searchUsersButtonClicked" class="hidden-sm-and-up">
                   <v-list-tile-title class="text-color">ユーザー検索</v-list-tile-title>
                 </v-list-tile>
                 <v-divider class="hidden-sm-and-up"></v-divider>
@@ -318,8 +319,7 @@
                 <!-- ホーム -->
                 <v-list-tile
                   class="px-3"
-                  to="/"
-                  @click="dropdownMenu=false"
+                  @click="homeButtonClicked; dropdownMenu = false;"
                 >
                   <v-list-tile-content>
                     <v-list-tile-title class="text-color">ホーム</v-list-tile-title>
@@ -428,13 +428,13 @@
     </v-flex>
     <v-toolbar-title class="font-weight-bold ml-0">
       <no-ssr>
-        <nuxt-link to="/" class="toolbar-title hidden-xs-only">
+        <nuxt-link to='' @click.native="homeButtonClicked" class="toolbar-title hidden-xs-only">
           <v-card-actions>
             <img class="mr-2" src="/icon.png" width="34" height="34"/>
             <span style="color: #FF5A5F">Liplo</span>
           </v-card-actions>
         </nuxt-link>
-        <nuxt-link v-if="uid && uid != '' && path == '/'" to="/" class="toolbar-title hidden-sm-and-up">
+        <nuxt-link v-if="uid && uid != '' && path == '/'" to='' @click.native="homeButtonClicked" class="toolbar-title hidden-sm-and-up">
           <v-card-actions class="px-0">
             <span style="color: #FF5A5F">Liplo</span>
           </v-card-actions>
@@ -1405,6 +1405,18 @@ export default {
       this.university = ''
       this.grade = '大学１年'
     },
+    homeButtonClicked() {
+      if (this.$route.name != 'index') {
+        this.resetJobsState()
+        this.$router.push('/')
+      }
+    },
+    searchUsersButtonClicked() {
+      if (this.$route.name != 'users') {
+        this.resetUsersState()
+        this.$router.push('/users')
+      }
+    },
     ...mapActions({
       recruiterSignUp: 'recruiterSignUp',
       setLoading: 'setLoading',
@@ -1420,6 +1432,8 @@ export default {
       setAuthInfo: 'setAuthInfo',
       updateIsRefreshed: 'updateIsRefreshed',
       resetState: 'resetState',
+      resetJobsState: 'jobs/resetState',
+      resetUsersState: 'users/resetState'
     }),
   }
 }

@@ -49,7 +49,7 @@
             <span
               :class="{
                 'teal--text text--darken-1 font-weight-bold': order == 'rating',
-                'text-color': order != 'recent',
+                'text-color': order != 'rating',
               }"
             >
               評価順
@@ -372,8 +372,10 @@ export default {
   },
   watchQuery: ['occupation', 'features', 'workweek', 'order'],
   async fetch(context) {
-    if (context.route.path == '/') {
-      const store = context.store
+    const store = context.store
+    const jobs = store.state.jobs.jobs
+
+    if ((context.from && context.from.path == '/') || jobs == null || (jobs && jobs.length == 0)) {
       await store.dispatch('jobs/resetState')
       await store.dispatch('jobs/updateIsInitialLoading', true)
       await store.dispatch('jobs/updateIsLoading', true)
@@ -388,17 +390,15 @@ export default {
   watch: {
     isRefreshed(isRefreshed) {
       if (isRefreshed == true) {
-        if (this.$route.path == '/') {
-          this.resetState()
-          this.updateIsInitialLoading(true)
-          this.updateIsLoading(true)
-          // filter set
-          this.setFilter(this.$route.query)
-          // order set
-          this.setOrder(this.$route.query)
-          // query jobs
-          this.queryJobs(this.$route.query)
-        }
+        this.resetState()
+        this.updateIsInitialLoading(true)
+        this.updateIsLoading(true)
+        // filter set
+        this.setFilter(this.$route.query)
+        // order set
+        this.setOrder(this.$route.query)
+        // query jobs
+        this.queryJobs(this.$route.query)
       }
     },
   },

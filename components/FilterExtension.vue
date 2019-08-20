@@ -15,6 +15,7 @@
         :close-on-content-click="false"
         :class="{
           'xs-filter': $vuetify.breakpoint.xsOnly,
+          'sm-filter': $vuetify.breakpoint.smAndUp,
         }"
       >
         <v-btn
@@ -137,6 +138,7 @@
         :close-on-content-click="false"
         :class="{
           'xs-filter': $vuetify.breakpoint.xsOnly,
+          'sm-filter': $vuetify.breakpoint.smAndUp,
         }"
       >
         <v-btn
@@ -282,6 +284,7 @@
         :close-on-content-click="false"
         :class="{
           'xs-filter': $vuetify.breakpoint.xsOnly,
+          'sm-filter': $vuetify.breakpoint.smAndUp,
         }"
       >
         <v-btn
@@ -321,6 +324,9 @@
         fixed
         offset-y
         :close-on-content-click="false"
+        :class="{
+          'xs-filter': $vuetify.breakpoint.xsOnly,
+        }"
       >
         <v-btn
           slot="activator"
@@ -897,7 +903,7 @@ export default {
 </script>
 <style>
 .filter .v-btn {
-  border-radius: 10px;
+  border-radius: 6px;
 }
 .xs-filter .v-btn {
   min-width: 0;
@@ -906,5 +912,13 @@ export default {
   margin-left: 4px;
   margin-right: 4px;
   font-size: 12px;
+}
+.sm-filter .v-btn {
+  min-width: 0;
+  padding-left: 14px;
+  padding-right: 14px;
+  margin-left: 4px;
+  margin-right: 4px;
+  font-size: 14px;
 }
 </style>

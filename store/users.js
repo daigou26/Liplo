@@ -86,7 +86,7 @@ export const mutations = {
 }
 
 export const actions = {
-  queryUsers({commit, state}, {queryParams, acceptScout}) {
+  queryUsers({commit, state}, queryParams) {
     const users = state.users
     const occupationParams = queryParams.occupation
 
@@ -101,7 +101,7 @@ export const actions = {
     }
 
     if (users.length == 0) {
-      return usersRef
+      usersRef
         .where('acceptScout', '==', true)
         .where('canSearch', '==', true)
         .where('type', '==', 'user')
@@ -156,7 +156,7 @@ export const actions = {
     } else {
       const lastIndex = users.length - 1
       const points = users[lastIndex].points
-      return usersRef
+      usersRef
         .where('acceptScout', '==', true)
         .where('canSearch', '==', true)
         .where('type', '==', 'user')
@@ -229,6 +229,14 @@ export const actions = {
       commit('updatePlanner', occupationParams.includes('planner'))
       commit('updateWriter', occupationParams.includes('writer'))
       commit('updateOthers', occupationParams.includes('others'))
+    } else {
+      commit('updateEngineer', false)
+      commit('updateDesigner', false)
+      commit('updateSales', false)
+      commit('updateMarketer', false)
+      commit('updatePlanner', false)
+      commit('updateWriter', false)
+      commit('updateOthers', false)
     }
   },
   setToolbarExtension({commit}) {
