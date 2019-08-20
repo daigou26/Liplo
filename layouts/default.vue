@@ -52,15 +52,19 @@
           <!-- 募集一覧 -->
           <v-btn
             color="teal"
+            class="font-weight-bold"
             flat
             @click.native="homeButtonClicked"
           >
-            <span style="font-size: 10px;">探す</span>
-            <v-icon>search</v-icon>
+            <span v-if="routeName != 'index'" style="font-size: 10px;">探す</span>
+            <span v-else class="teal--text" style="font-size: 10px;">探す</span>
+            <v-icon v-if="routeName != 'index'">search</v-icon>
+            <v-icon v-else class="teal--text">search</v-icon>
           </v-btn>
           <!-- 通知 -->
           <v-btn
             color="teal"
+            class="font-weight-bold"
             flat
             to="/user/notifications"
           >
@@ -79,6 +83,7 @@
           <!-- メッセージ -->
           <v-btn
             color="teal"
+            class="font-weight-bold"
             flat
             to="/messages"
           >
@@ -97,6 +102,7 @@
           <!-- プロフィール -->
           <v-btn
             color="teal"
+            class="font-weight-bold"
             flat
             to="/user/menu"
           >
