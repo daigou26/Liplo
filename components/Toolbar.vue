@@ -380,6 +380,8 @@
                 <!-- 運営会社 -->
                 <v-list-tile
                   class="px-3"
+                  href="https://hp.liplo.jp"
+                  target="_blank"
                   @click="dropdownMenu=false"
                 >
                   <v-list-tile-content>

@@ -225,17 +225,12 @@
                   <nuxt-link to="/feedback" class="font-weight-bold text-color">フィードバックを送る</nuxt-link>
                 </div>
                 <div class="pb-2">
-                  <nuxt-link to="/" class="font-weight-bold text-color">運営会社</nuxt-link>
+                  <a href="https://hp.liplo.jp" target="_blank" class="font-weight-bold text-color">運営会社</a>
                 </div>
               </v-flex>
               <v-flex xs5>
                 <div class="pb-3 text-color">
-                  <v-btn flat small icon color="grey" class="ma-0 mr-3">
-                    <v-icon>fab fa-facebook</v-icon>
-                  </v-btn>
-                  <v-btn flat small icon color="grey" class="ma-0">
-                    <v-icon>fab fa-twitter</v-icon>
-                  </v-btn>
+                  <a href="https://twitter.com/liplo_jp" target="_blank"><v-icon color="grey">fab fa-twitter</v-icon></a>
                 </div>
                 <div class="pb-2">
                   <nuxt-link to="/terms" class="font-weight-bold text-color">利用規約</nuxt-link>
