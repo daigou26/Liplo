@@ -1419,7 +1419,7 @@ export default {
       this.birthDate = null
       this.university = ''
       this.grade = '大学１年'
-      this.type = '理系'
+      this.studentType = '理系'
     },
     homeButtonClicked() {
       if (this.$route.name != 'index') {
