@@ -278,6 +278,7 @@
     <v-toolbar-side-icon
       v-if="
         this.routeName != null &&
+        !this.path.includes('admin') &&
         this.path != '/' &&
         this.path != '/user/notifications' &&
         this.path != '/user/notifications/' &&
@@ -436,7 +437,7 @@
             <span style="color: #FF5A5F">Liplo</span>
           </v-card-actions>
         </nuxt-link>
-        <nuxt-link v-if="uid && uid != '' && path == '/'" to='' @click.native="homeButtonClicked" class="toolbar-title hidden-sm-and-up">
+        <nuxt-link v-if="uid && uid != '' && (path == '/' || path.includes('/admin'))" to='' @click.native="homeButtonClicked" class="toolbar-title hidden-sm-and-up">
           <v-card-actions class="px-0">
             <span style="color: #FF5A5F">Liplo</span>
           </v-card-actions>
@@ -449,7 +450,7 @@
           </v-card-actions>
         </nuxt-link>
         <div class="hidden-sm-and-up">
-          <span v-if="path == '/'"　class="toolbar-title" style="color: #FF5A5F"></span>
+          <span v-if="path == '/' || path.includes('/admin')"　class="toolbar-title" style="color: #FF5A5F"></span>
           <span v-else-if="routeName == 'jobs-id' || routeName == 'companies-id'"　class="toolbar-title-small"></span>
           <span v-else-if="routeName == 'companies-id-jobs'"　class="toolbar-title-small">募集一覧</span>
           <span v-else-if="routeName == 'user-profile'" class="toolbar-title-small">プロフィール</span>
