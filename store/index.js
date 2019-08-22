@@ -49,7 +49,7 @@ export const mutations = {
 }
 
 export const actions = {
-  async signUp({commit}, {email, password, grade, university}) {
+  async signUp({commit}, {email, password, grade, university, type}) {
     auth.createUserWithEmailAndPassword(email, password)
       .then(function() {
         commit('resetLoading')
@@ -64,6 +64,16 @@ export const actions = {
           eventCategory: 'university',
           eventAction: 'signUp',
           eventLabel: university
+        })
+        event({
+          eventCategory: 'type',
+          eventAction: 'signUp',
+          eventLabel: type
+        })
+        event({
+          eventCategory: 'grade & type',
+          eventAction: 'signUp',
+          eventLabel: grade + type
         })
       })
       .catch(function(error) {

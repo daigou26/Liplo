@@ -917,6 +917,34 @@
                         justify-center
                       >
                         <v-flex xs12>
+                          <!-- 生年月日 -->
+                          <v-menu
+                            v-model="birthDateMenu"
+                            :close-on-content-click="false"
+                            lazy
+                            transition="scale-transition"
+                            offset-y
+                            full-width
+                            min-width="290px"
+                          >
+                            <template v-slot:activator="{ on }">
+                              <v-text-field
+                                v-model="birthDate"
+                                color="teal"
+                                label="生年月日"
+                                append-icon="event"
+                                readonly
+                                required
+                                v-on="on"
+                              ></v-text-field>
+                            </template>
+                            <v-date-picker
+                              v-model="birthDate"
+                              color="teal"
+                              locale="ja"
+                              @input="birthDateMenu = false"
+                            ></v-date-picker>
+                          </v-menu>
                           <!-- 苗字 -->
                           <v-text-field
                             v-model="lastName"
@@ -953,36 +981,13 @@
                             hide-details
                             label="学年"
                           ></v-select>
-                          <!-- 生年月日 -->
-                          <v-menu
-                            v-model="birthDateMenu"
-                            :close-on-content-click="false"
-                            lazy
-                            transition="scale-transition"
-                            offset-y
-                            full-width
-                            min-width="290px"
-                          >
-                            <template v-slot:activator="{ on }">
-                              <v-text-field
-                                v-model="birthDate"
-                                color="teal"
-                                label="生年月日"
-                                append-icon="event"
-                                readonly
-                                required
-                                v-on="on"
-                              ></v-text-field>
-                            </template>
-                            <v-date-picker
-                              v-model="birthDate"
-                              color="teal"
-                              locale="ja"
-                              @input="birthDateMenu = false"
-                            ></v-date-picker>
-                          </v-menu>
+                          <!-- 理系文系 -->
+                          <v-radio-group v-model="studentType" row>
+                            <v-radio label="理系" value="理系" color="teal"></v-radio>
+                            <v-radio label="文系" value="文系" color="teal"></v-radio>
+                          </v-radio-group>
                           <!-- 利用規約 -->
-                          <div class="caption text-color py-3 text-xs-left">
+                          <div class="caption text-color py-4 text-xs-left">
                             登録前に
                             <a class="hidden-xs-only" href="/terms" target="_blank">利用規約</a>
                             <nuxt-link to="/terms" @click.native="dialog = false" class="hidden-sm-and-up">
@@ -1218,6 +1223,7 @@ export default {
       '修士２年',
       'その他'
     ],
+    studentType: '理系',
     passwordShow: false,
     password: '',
     passwordRules: [
@@ -1355,7 +1361,13 @@ export default {
     signUp() {
       this.$store.dispatch('setLoading')
       this.$store.dispatch('resetAuthError')
-      this.$store.dispatch('signUp', {email: this.email, password: this.password, grade: this.grade, university: this.university})
+      this.$store.dispatch('signUp', {
+        email: this.email,
+        password: this.password,
+        grade: this.grade,
+        university: this.university,
+        type: this.studentType
+      })
       this.signUpValid = false
     },
     recruiterSignUpClicked() {
@@ -1407,6 +1419,7 @@ export default {
       this.birthDate = null
       this.university = ''
       this.grade = '大学１年'
+      this.studentType = '理系'
     },
     homeButtonClicked() {
       if (this.$route.name != 'index') {
