@@ -49,7 +49,7 @@
             <span
               :class="{
                 'teal--text text--darken-1 font-weight-bold': order == 'rating',
-                'text-color': order != 'recent',
+                'text-color': order != 'rating',
               }"
             >
               評価順
@@ -225,17 +225,12 @@
                   <nuxt-link to="/feedback" class="font-weight-bold text-color">フィードバックを送る</nuxt-link>
                 </div>
                 <div class="pb-2">
-                  <nuxt-link to="/" class="font-weight-bold text-color">運営会社</nuxt-link>
+                  <a href="https://hp.liplo.jp" target="_blank" class="font-weight-bold text-color">運営会社</a>
                 </div>
               </v-flex>
               <v-flex xs5>
                 <div class="pb-3 text-color">
-                  <v-btn flat small icon color="grey" class="ma-0 mr-3">
-                    <v-icon>fab fa-facebook</v-icon>
-                  </v-btn>
-                  <v-btn flat small icon color="grey" class="ma-0">
-                    <v-icon>fab fa-twitter</v-icon>
-                  </v-btn>
+                  <a href="https://twitter.com/liplo_jp" target="_blank"><v-icon color="grey">fab fa-twitter</v-icon></a>
                 </div>
                 <div class="pb-2">
                   <nuxt-link to="/terms" class="font-weight-bold text-color">利用規約</nuxt-link>
@@ -372,8 +367,10 @@ export default {
   },
   watchQuery: ['occupation', 'features', 'workweek', 'order'],
   async fetch(context) {
-    if (context.route.path == '/') {
-      const store = context.store
+    const store = context.store
+    const jobs = store.state.jobs.jobs
+
+    if ((context.from && context.from.path == '/') || jobs == null || (jobs && jobs.length == 0)) {
       await store.dispatch('jobs/resetState')
       await store.dispatch('jobs/updateIsInitialLoading', true)
       await store.dispatch('jobs/updateIsLoading', true)
@@ -388,17 +385,15 @@ export default {
   watch: {
     isRefreshed(isRefreshed) {
       if (isRefreshed == true) {
-        if (this.$route.path == '/') {
-          this.resetState()
-          this.updateIsInitialLoading(true)
-          this.updateIsLoading(true)
-          // filter set
-          this.setFilter(this.$route.query)
-          // order set
-          this.setOrder(this.$route.query)
-          // query jobs
-          this.queryJobs(this.$route.query)
-        }
+        this.resetState()
+        this.updateIsInitialLoading(true)
+        this.updateIsLoading(true)
+        // filter set
+        this.setFilter(this.$route.query)
+        // order set
+        this.setOrder(this.$route.query)
+        // query jobs
+        this.queryJobs(this.$route.query)
       }
     },
   },

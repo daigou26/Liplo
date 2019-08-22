@@ -102,9 +102,9 @@
           <span class="text-color font-weight-bold pr-3">
             プラン:
           </span>
-          <span v-if="plan == 0" class="teal--text font-weight-bold">採用報酬型</span>
-          <span v-if="plan == 1" class="red--text font-weight-bold">アルファ</span>
-          <span v-if="plan == 2" class="blue--text font-weight-bold">ベータ</span>
+          <span v-if="plan == 0" class="teal--text font-weight-bold">ベーシック</span>
+          <span v-if="plan == 1" class="red--text font-weight-bold">スタンダード</span>
+          <span v-if="plan == 2" class="blue--text font-weight-bold">アドバンス</span>
           <span v-else-if="plan == null" class="grey--text font-weight-bold">未契約</span>
           <v-btn
             v-show="!isEditingPlan"
@@ -249,11 +249,11 @@ export default {
       if (this.plan == null) {
         currentPlan = '未契約'
       } else if (this.plan == 0) {
-        currentPlan = '採用報酬型'
+        currentPlan = 'ベーシック'
       } else if (this.plan == 1) {
-        currentPlan = 'アルファ'
+        currentPlan = 'スタンダード'
       } else if (this.plan == 2) {
-        currentPlan = 'ベータ'
+        currentPlan = 'アドバンス'
       }
 
       if (currentPlan == this.tempPlan) {
@@ -267,15 +267,15 @@ export default {
       if (this.plan == null) {
         items = [
           '未契約',
-          '採用報酬型',
-          'アルファ',
-          'ベータ'
+          'ベーシック',
+          'スタンダード',
+          'アドバンス'
         ]
       } else {
         items = [
-          '採用報酬型',
-          'アルファ',
-          'ベータ',
+          'ベーシック',
+          'スタンダード',
+          'アドバンス',
           '解約'
         ]
       }
@@ -324,21 +324,21 @@ export default {
       if (this.plan == null) {
         this.tempPlan = '未契約'
       } else if (this.plan == 0) {
-        this.tempPlan = '採用報酬型'
+        this.tempPlan = 'ベーシック'
       } else if (this.plan == 1) {
-        this.tempPlan = 'アルファ'
+        this.tempPlan = 'スタンダード'
       } else if (this.plan == 2) {
-        this.tempPlan = 'ベータ'
+        this.tempPlan = 'アドバンス'
       }
       this.isEditingPlan = true
     },
     updatePlanButtonClicked() {
       let tempPlan
-      if (this.tempPlan == '採用報酬型') {
+      if (this.tempPlan == 'ベーシック') {
         tempPlan = 0
-      } else if (this.tempPlan == 'アルファ') {
+      } else if (this.tempPlan == 'スタンダード') {
         tempPlan = 1
-      } else if (this.tempPlan == 'ベータ') {
+      } else if (this.tempPlan == 'アドバンス') {
         tempPlan = 2
       } else if (this.tempPlan == '解約') {
         tempPlan = null

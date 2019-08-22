@@ -12,7 +12,7 @@
     }"
   >
     <v-toolbar flat>
-      <v-list-tile to="/">
+      <v-list-tile @click.native="homeButtonClicked">
         <v-list-tile-action>
           <v-icon>home</v-icon>
         </v-list-tile-action>
@@ -44,6 +44,7 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex'
 export default {
   data () {
     return {
@@ -68,6 +69,17 @@ export default {
   mounted() {
     this.showDrawer = true
   },
+  methods: {
+    homeButtonClicked() {
+      if (this.$route.name != 'index') {
+        this.resetJobsState()
+        this.$router.push('/')
+      }
+    },
+    ...mapActions({
+      resetJobsState: 'jobs/resetState',
+    }),
+  }
 }
 </script>
 

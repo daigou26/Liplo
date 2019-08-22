@@ -103,7 +103,8 @@
       <no-ssr>
         <nuxt-link
           v-if="!path.includes('/recruiter')　&& !path.includes('/users')"
-          to="/"
+          to=""
+          @click.native="homeButtonClicked"
           class="toolbar-title hidden-xs-only"
         >
           <v-card-actions>
@@ -132,7 +133,7 @@
     </v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items>
-      <v-btn flat active-class to="/users" class="hidden-xs-only">
+      <v-btn flat active-class @click.native="searchUsersButtonClicked" class="hidden-xs-only">
         <span class="font-weight-bold text-color">ユーザー検索</span>
       </v-btn>
       <v-btn flat active-class to="/recruiter/dashboard" class="ml-3 hidden-xs-only">
@@ -234,7 +235,7 @@
                 <v-icon v-else>person</v-icon>
               </v-avatar>
               <v-list>
-                <v-list-tile to="/users" class="hidden-sm-and-up">
+                <v-list-tile @click.native="searchUsersButtonClicked" class="hidden-sm-and-up">
                   <v-list-tile-title class="text-color">ユーザー検索</v-list-tile-title>
                 </v-list-tile>
                 <v-divider class="hidden-sm-and-up"></v-divider>
@@ -277,6 +278,7 @@
     <v-toolbar-side-icon
       v-if="
         this.routeName != null &&
+        !this.path.includes('admin') &&
         this.path != '/' &&
         this.path != '/user/notifications' &&
         this.path != '/user/notifications/' &&
@@ -308,7 +310,7 @@
                     <nuxt-link to="/" @click.native="iconClicked" class="toolbar-title hidden-sm-and-up">
                       <v-card-actions class="px-0">
                         <span style="color: #FF5A5F">Liplo</span>
-                        <v-icon v-if="uid == null"  style="font-size: 16px; color: #555555;">expand_more</v-icon>
+                        <v-icon v-if="uid == null"  style="font-size: 16px; color: #555555;">expand_less</v-icon>
                       </v-card-actions>
                     </nuxt-link>
                   </no-ssr>
@@ -318,8 +320,7 @@
                 <!-- ホーム -->
                 <v-list-tile
                   class="px-3"
-                  to="/"
-                  @click="dropdownMenu=false"
+                  @click="homeButtonClicked; dropdownMenu = false;"
                 >
                   <v-list-tile-content>
                     <v-list-tile-title class="text-color">ホーム</v-list-tile-title>
@@ -380,6 +381,8 @@
                 <!-- 運営会社 -->
                 <v-list-tile
                   class="px-3"
+                  href="https://hp.liplo.jp"
+                  target="_blank"
                   @click="dropdownMenu=false"
                 >
                   <v-list-tile-content>
@@ -428,13 +431,13 @@
     </v-flex>
     <v-toolbar-title class="font-weight-bold ml-0">
       <no-ssr>
-        <nuxt-link to="/" class="toolbar-title hidden-xs-only">
+        <nuxt-link to='' @click.native="homeButtonClicked" class="toolbar-title hidden-xs-only">
           <v-card-actions>
             <img class="mr-2" src="/icon.png" width="34" height="34"/>
             <span style="color: #FF5A5F">Liplo</span>
           </v-card-actions>
         </nuxt-link>
-        <nuxt-link v-if="uid && uid != '' && path == '/'" to="/" class="toolbar-title hidden-sm-and-up">
+        <nuxt-link v-if="uid && uid != '' && (path == '/' || path.includes('/admin'))" to='' @click.native="homeButtonClicked" class="toolbar-title hidden-sm-and-up">
           <v-card-actions class="px-0">
             <span style="color: #FF5A5F">Liplo</span>
           </v-card-actions>
@@ -443,11 +446,11 @@
         <nuxt-link v-if="uid == null && path == '/'" to="/" @click.native="iconClicked" class="toolbar-title hidden-sm-and-up">
           <v-card-actions class="px-0">
             <span style="color: #FF5A5F">Liplo</span>
-            <v-icon v-if="uid == null"  style="font-size: 16px; color: #555555;">expand_less</v-icon>
+            <v-icon v-if="uid == null"  style="font-size: 16px; color: #555555;">expand_more</v-icon>
           </v-card-actions>
         </nuxt-link>
         <div class="hidden-sm-and-up">
-          <span v-if="path == '/'"　class="toolbar-title" style="color: #FF5A5F"></span>
+          <span v-if="path == '/' || path.includes('/admin')"　class="toolbar-title" style="color: #FF5A5F"></span>
           <span v-else-if="routeName == 'jobs-id' || routeName == 'companies-id'"　class="toolbar-title-small"></span>
           <span v-else-if="routeName == 'companies-id-jobs'"　class="toolbar-title-small">募集一覧</span>
           <span v-else-if="routeName == 'user-profile'" class="toolbar-title-small">プロフィール</span>
@@ -914,34 +917,6 @@
                         justify-center
                       >
                         <v-flex xs12>
-                          <!-- 生年月日 -->
-                          <v-menu
-                            v-model="birthDateMenu"
-                            :close-on-content-click="false"
-                            lazy
-                            transition="scale-transition"
-                            offset-y
-                            full-width
-                            min-width="290px"
-                          >
-                            <template v-slot:activator="{ on }">
-                              <v-text-field
-                                v-model="birthDate"
-                                color="teal"
-                                label="生年月日"
-                                append-icon="event"
-                                readonly
-                                required
-                                v-on="on"
-                              ></v-text-field>
-                            </template>
-                            <v-date-picker
-                              v-model="birthDate"
-                              color="teal"
-                              locale="ja"
-                              @input="birthDateMenu = false"
-                            ></v-date-picker>
-                          </v-menu>
                           <!-- 苗字 -->
                           <v-text-field
                             v-model="lastName"
@@ -978,6 +953,34 @@
                             hide-details
                             label="学年"
                           ></v-select>
+                          <!-- 生年月日 -->
+                          <v-menu
+                            v-model="birthDateMenu"
+                            :close-on-content-click="false"
+                            lazy
+                            transition="scale-transition"
+                            offset-y
+                            full-width
+                            min-width="290px"
+                          >
+                            <template v-slot:activator="{ on }">
+                              <v-text-field
+                                v-model="birthDate"
+                                color="teal"
+                                label="生年月日"
+                                append-icon="event"
+                                readonly
+                                required
+                                v-on="on"
+                              ></v-text-field>
+                            </template>
+                            <v-date-picker
+                              v-model="birthDate"
+                              color="teal"
+                              locale="ja"
+                              @input="birthDateMenu = false"
+                            ></v-date-picker>
+                          </v-menu>
                           <!-- 利用規約 -->
                           <div class="caption text-color py-3 text-xs-left">
                             登録前に
@@ -1405,6 +1408,18 @@ export default {
       this.university = ''
       this.grade = '大学１年'
     },
+    homeButtonClicked() {
+      if (this.$route.name != 'index') {
+        this.resetJobsState()
+        this.$router.push('/')
+      }
+    },
+    searchUsersButtonClicked() {
+      if (this.$route.name != 'users') {
+        this.resetUsersState()
+        this.$router.push('/users')
+      }
+    },
     ...mapActions({
       recruiterSignUp: 'recruiterSignUp',
       setLoading: 'setLoading',
@@ -1420,6 +1435,8 @@ export default {
       setAuthInfo: 'setAuthInfo',
       updateIsRefreshed: 'updateIsRefreshed',
       resetState: 'resetState',
+      resetJobsState: 'jobs/resetState',
+      resetUsersState: 'users/resetState'
     }),
   }
 }

@@ -347,7 +347,7 @@
             class="pt-4"
           >
             <v-card-title
-              class="font-weight-bold"
+              class="font-weight-bold text-color"
               :class="{
                 'title': $vuetify.breakpoint.smAndUp,
                 'subheading': $vuetify.breakpoint.xsOnly
@@ -371,7 +371,7 @@
           </v-flex>
           <v-flex xs12 sm10 class="break">
             <v-card-text v-show="!isEditingMission">
-              <p class="return">{{ mission }}</p>
+              <p class="return text-color">{{ mission }}</p>
             </v-card-text>
             <div v-show="isEditingMission">
               <v-form v-model="editMissionValid" @submit.prevent="">
@@ -406,7 +406,7 @@
             class="pt-4"
           >
             <v-card-title
-              class="font-weight-bold"
+              class="font-weight-bold text-color"
               :class="{
                 'title': $vuetify.breakpoint.smAndUp,
                 'subheading': $vuetify.breakpoint.xsOnly
@@ -430,7 +430,7 @@
           </v-flex>
           <v-flex xs12 sm10 class="break">
             <v-card-text v-show="!isEditingVision">
-              <p class="return">{{ vision }}</p>
+              <p class="return text-color">{{ vision }}</p>
             </v-card-text>
             <div v-show="isEditingVision">
               <v-form v-model="editVisionValid" @submit.prevent="">
@@ -465,7 +465,7 @@
             class="pt-4"
           >
             <v-card-title
-              class="font-weight-bold"
+              class="font-weight-bold text-color"
               :class="{
                 'title': $vuetify.breakpoint.smAndUp,
                 'subheading': $vuetify.breakpoint.xsOnly
@@ -489,7 +489,7 @@
           </v-flex>
           <v-flex xs12 sm10 class="break">
             <v-card-text v-show="!isEditingValue">
-              <p class="return">{{ value }}</p>
+              <p class="return text-color">{{ value }}</p>
             </v-card-text>
             <div v-show="isEditingValue">
               <v-form v-model="editValueValid" @submit.prevent="">
@@ -524,7 +524,7 @@
             class="pt-4"
           >
             <v-card-title
-              class="font-weight-bold"
+              class="font-weight-bold text-color"
               :class="{
                 'title': $vuetify.breakpoint.smAndUp,
                 'subheading': $vuetify.breakpoint.xsOnly
@@ -548,7 +548,7 @@
           </v-flex>
           <v-flex xs12 sm10 class="break">
             <v-card-text v-show="!isEditingCulture">
-              <p class="return">{{ culture }}</p>
+              <p class="return text-color">{{ culture }}</p>
             </v-card-text>
             <div v-show="isEditingCulture">
               <v-form v-model="editCultureValid" @submit.prevent="">
@@ -583,7 +583,7 @@
             class="pt-4"
           >
             <v-card-title
-              class="font-weight-bold"
+              class="font-weight-bold text-color"
               :class="{
                 'title': $vuetify.breakpoint.smAndUp,
                 'subheading': $vuetify.breakpoint.xsOnly
@@ -607,7 +607,7 @@
           </v-flex>
           <v-flex xs12 sm10 class="break">
             <v-card-text v-show="!isEditingSystem">
-              <p class="return">{{ system }}</p>
+              <p class="return text-color">{{ system }}</p>
             </v-card-text>
             <div v-show="isEditingSystem">
               <v-form v-model="editSystemValid" @submit.prevent="">
@@ -642,7 +642,7 @@
             class="pt-4"
           >
             <v-card-title
-              class="font-weight-bold"
+              class="font-weight-bold text-color"
               :class="{
                 'title': $vuetify.breakpoint.smAndUp,
               }"
@@ -665,7 +665,7 @@
           </v-flex>
           <v-flex xs12 sm10 class="break">
             <v-card-text v-show="!isEditingWhy">
-              <p class="return">{{ why }}</p>
+              <p class="return text-color">{{ why }}</p>
             </v-card-text>
             <div v-show="isEditingWhy">
               <v-form v-model="editWhyValid" @submit.prevent="">
@@ -700,7 +700,7 @@
             class="pt-4"
           >
             <v-card-title
-              class="font-weight-bold"
+              class="font-weight-bold text-color"
               :class="{
                 'title': $vuetify.breakpoint.smAndUp,
                 'subheading': $vuetify.breakpoint.xsOnly
@@ -724,7 +724,7 @@
           </v-flex>
           <v-flex xs12 sm10 class="break">
             <v-card-text v-show="!isEditingWhat">
-              <p class="return">{{ what }}</p>
+              <p class="return text-color">{{ what }}</p>
             </v-card-text>
             <div v-show="isEditingWhat">
               <v-form v-model="editWhatValid" @submit.prevent="">
@@ -759,7 +759,7 @@
             class="pt-4"
           >
             <v-card-title
-              class="font-weight-bold"
+              class="font-weight-bold text-color"
               :class="{
                 'title': $vuetify.breakpoint.smAndUp,
                 'subheading': $vuetify.breakpoint.xsOnly
@@ -927,7 +927,7 @@
             class="pt-4"
           >
             <v-card-title
-              class="font-weight-bold"
+              class="font-weight-bold text-color"
               :class="{
                 'title': $vuetify.breakpoint.smAndUp,
                 'subheading': $vuetify.breakpoint.xsOnly
@@ -951,7 +951,7 @@
           </v-flex>
           <v-flex xs12 sm10 class="break">
             <v-card-text v-show="!isEditingWelfare">
-              <p class="return">{{ welfare }}</p>
+              <p class="return text-color">{{ welfare }}</p>
             </v-card-text>
             <div v-show="isEditingWelfare">
               <v-form v-model="editWelfareValid" @submit.prevent="">
@@ -986,7 +986,7 @@
             class="pt-5"
           >
             <v-card-title
-              class="font-weight-bold"
+              class="font-weight-bold text-color"
               :class="{
                 'title': $vuetify.breakpoint.smAndUp,
                 'subheading': $vuetify.breakpoint.xsOnly
@@ -1113,7 +1113,7 @@
             class="pt-5"
           >
             <v-card-title
-              class="font-weight-bold"
+              class="font-weight-bold text-color"
               :class="{
                 'title': $vuetify.breakpoint.smAndUp,
                 'subheading': $vuetify.breakpoint.xsOnly
@@ -1133,6 +1133,9 @@
           </v-layout>
           <v-flex xs12 sm10>
             <v-divider></v-divider>
+            <div class="pl-3 pt-2 text-color">
+              ※ 年度が変わりましたら随時情報を更新してください
+            </div>
           </v-flex>
           <v-flex xs12 sm10 class="break">
             <!-- 雇用情報の表示 -->

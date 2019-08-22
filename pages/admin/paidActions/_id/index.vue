@@ -86,11 +86,11 @@ export default {
   computed: {
     planText() {
       if (this.plan == 0) {
-        return '採用報酬型'
+        return 'ベーシック'
       } else if (this.plan == 1) {
-        return 'アルファ（掲載課金型）'
+        return 'スタンダード'
       } else if (this.plan == 2) {
-        return 'ベータ（掲載課金型）'
+        return 'アドバンス'
       }
     },
     breakpoint() {
