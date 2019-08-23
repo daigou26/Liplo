@@ -4,7 +4,7 @@ import { firestore, functions } from '@/plugins/firebase'
 export const state = () => ({
   isLoading: false,
   companyName: '',
-  companyEmail: '',
+  department: '',
   userName: '',
   email: '',
   position: '',
@@ -20,8 +20,8 @@ export const mutations = {
   setCompanyName(state, name) {
     state.companyName = name
   },
-  setCompanyEmail(state, email) {
-    state.companyEmail = email
+  setDepartment(state, department) {
+    state.department = department
   },
   setUserName(state, name) {
     state.userName = name
@@ -51,7 +51,7 @@ export const actions = {
       .then(function(doc) {
         if (doc.exists) {
           commit('setCompanyName', doc.data()['companyName'])
-          commit('setCompanyEmail', doc.data()['companyEmail'])
+          commit('setDepartment', doc.data()['department'])
           commit('setUserName', doc.data()['userName'])
           commit('setEmail', doc.data()['email'])
           commit('setPosition', doc.data()['position'])
@@ -76,7 +76,7 @@ export const actions = {
       })
   },
   // 問い合わせを追加
-  addInquiry({commit}, {companyName, companyEmail, userName, email, position, type, content}) {
+  addInquiry({commit}, {companyName, department, userName, email, position, type, content}) {
     let createdAt = new Date()
     let timestamp
     let year  = createdAt.getFullYear()
@@ -91,8 +91,8 @@ export const actions = {
 
     var sendCompanyInquiryMail = functions.httpsCallable("sendCompanyInquiryMail")
     sendCompanyInquiryMail({
-      companyEmail: companyEmail,
       companyName: companyName,
+      department: department,
       email: email,
       userName: userName,
       position: position,
@@ -106,7 +106,7 @@ export const actions = {
   },
   resetState({commit}) {
     commit('setCompanyName', '')
-    commit('setCompanyEmail', '')
+    commit('setDepartment', '')
     commit('setUserName', '')
     commit('setEmail', '')
     commit('setPosition', '')

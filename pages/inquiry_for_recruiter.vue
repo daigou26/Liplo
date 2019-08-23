@@ -434,12 +434,12 @@
                         label="企業名（必須）"
                         required
                       ></v-text-field>
-                      <!-- 企業メールアドレス -->
+                      <!-- 部署名 -->
                       <v-text-field
-                        v-model="companyEmail"
+                        v-model="department"
                         class="py-2"
-                        :rules="emailRules"
-                        label="企業メールアドレス（必須）"
+                        :rules="departmentRules"
+                        label="部署名"
                         required
                       ></v-text-field>
                       <!-- 苗字 -->
@@ -463,7 +463,7 @@
                         v-model="email"
                         class="py-2"
                         :rules="emailRules"
-                        label="メールアドレス（必須）"
+                        label="担当者メールアドレス（必須）"
                         required
                       ></v-text-field>
                       <!-- 役職 -->
@@ -550,10 +550,9 @@ export default {
       v => !!v || '企業名を入力してください',
       v => (v && v.length <= 100) || '100文字を超えています'
     ],
-    companyEmail: '',
-    companyEmailRules: [
-      v => !!v || '企業のメールアドレスを入力してください',
-      v => /.+@.+/.test(v) || '無効なメールアドレスです'
+    department: '',
+    departmentRules: [
+      v => (v.length <= 30) || '30文字を超えています'
     ],
     firstName: '',
     lastName: '',
@@ -575,11 +574,12 @@ export default {
       v => !!v || '入力されていません',
       v => (v && v.length <= 30) || '30文字を超えています'
     ],
-    type: '資料請求',
+    type: '資料請求したい',
     typeItems: [
-      '資料請求',
-      '詳しく聞きたい',
-      'すぐにサービスを導入したい'
+      '資料請求したい',
+      'Liploの導入を検討しており、サービスについて詳しく聞きたい',
+      'すぐにサービスを導入したい',
+      'その他'
     ],
     content: '',
     contentRules: [
@@ -609,17 +609,19 @@ export default {
   methods: {
     sendButtonClicked() {
       let type
-      if (this.type == '資料請求') {
+      if (this.type == '資料請求したい') {
         type = 0
-      } else if (this.type == '詳しく聞きたい') {
+      } else if (this.type == 'Liploの導入を検討しており、サービスについて詳しく聞きたい') {
         type = 1
       } else if (this.type == 'すぐにサービスを導入したい') {
         type = 2
+      } else if (this.type == 'その他') {
+        type = 3
       }
 
       this.addInquiry({
         companyName: this.companyName,
-        companyEmail: this.companyEmail,
+        department: this.department,
         userName: this.lastName + ' ' + this.firstName,
         email: this.email,
         position: this.position,

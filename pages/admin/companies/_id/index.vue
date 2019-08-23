@@ -84,13 +84,7 @@
         </div>
         <!-- email -->
         <div class="pt-4">
-          <div>
-            <span class="text-color font-weight-bold">
-              email:
-            </span>
-            <span class="light-text-color pl-3">{{ email }}</span>
-          </div>
-          <div v-if="email != invoiceEmail">
+          <div v-if="invoiceEmail">
             <span class="text-color font-weight-bold">
               invoiceEmail:
             </span>
@@ -297,7 +291,6 @@ export default {
       imageUrl: state => state.companyInfo.companyImageUrl,
       companyId: state => state.companyInfo.companyId,
       companyName: state => state.companyInfo.companyName,
-      email: state => state.companyInfo.email,
       invoiceEmail: state => state.companyInfo.invoiceEmail,
     }),
   },

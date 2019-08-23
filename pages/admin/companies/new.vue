@@ -18,15 +18,6 @@
           placeholder="企業名を入力してください。"
           required
         ></v-text-field>
-        <!-- companyEmail -->
-        <v-text-field
-          class="pt-4"
-          v-model="companyEmail"
-          :rules="emailRules"
-          label="企業メールアドレス"
-          placeholder="企業メールアドレスを入力してください。"
-          required
-        ></v-text-field>
         <!-- userName -->
         <v-text-field
           class="pt-4"
@@ -94,7 +85,6 @@ export default {
     rules: [
       v => !!v || '入力してください',
     ],
-    companyEmail: '',
     email: '',
     emailRules: [
       v => !!v || 'メールアドレスを入力してください',
@@ -131,7 +121,6 @@ export default {
       this.addCompany({
         router: this.$router,
         companyName: this.companyName,
-        companyEmail: this.companyEmail,
         userName: this.userName,
         email: this.email,
         position: this.position,

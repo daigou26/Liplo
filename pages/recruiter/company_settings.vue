@@ -43,21 +43,6 @@
           }"
         >
           <v-flex md10 sm8 xs10 offset-md1 offset-sm2 offset-xs1 class="text-color">
-            <!-- メアド変更 -->
-            <div class="pt-5">
-              <div
-                class="title font-weight-bold">
-                企業メールアドレスを変更する
-              </div>
-              <div class="pt-3">
-                現在のメールアドレス： {{ email }}
-              </div>
-              <div class="text-xs-right pt-4">
-                <v-btn @click="changeEmailDialog = true">
-                  メールアドレスを変更する
-                </v-btn>
-              </div>
-            </div>
             <!-- 請求書を送るメアド変更 -->
             <div class="py-5">
               <div
@@ -111,61 +96,6 @@
             </div>
           </v-flex>
         </v-flex>
-        <!-- changeEmailDialog -->
-        <v-dialog
-          v-model="changeEmailDialog"
-          :fullscreen="$vuetify.breakpoint.xsOnly"
-          width="500"
-        >
-          <v-card>
-            <v-toolbar flat>
-              <span class="text-color font-weight-bold subheading">メールアドレス変更</span>
-            </v-toolbar>
-            <div class="pa-4">
-              <div class="pb-4 text-color">
-                新しいメールアドレスを入力してください。
-                <div class="pt-2">
-                  ※ 変更後、新しいメールアドレスに確認メールが届きますのでご確認をお願い致します。
-                  届かない場合は、指定したメールアドレスが正しいかご確認ください。
-                  （確認メールが届くのに少々時間がかかる場合がございます）
-                </div>
-              </div>
-              <v-form v-model="emailValid" @submit.prevent="">
-                <v-container>
-                  <v-layout
-                    column
-                    justify-center
-                  >
-                    <v-flex xs12>
-                      <!-- メールアドレス -->
-                      <v-text-field
-                        v-model="newEmail"
-                        :rules="emailRules"
-                        label="新しいメールアドレス"
-                        append-icon="mail_outline"
-                        solo
-                        required
-                      ></v-text-field>
-                    </v-flex>
-                    <!-- 変更ボタン -->
-                    <v-btn
-                      :disabled="!emailValid"
-                      class="teal lighten-1"
-                      @click="changeEmailButtonClicked"
-                    >
-                      <span
-                        class="font-weight-bold body-1"
-                        style="color: #ffffff;"
-                      >
-                        メールアドレス変更
-                      </span>
-                    </v-btn>
-                  </v-layout>
-                </v-container>
-              </v-form>
-            </div>
-          </v-card>
-        </v-dialog>
         <!-- changeInvoiceEmailDialog -->
         <v-dialog
           v-model="changeInvoiceEmailDialog"
@@ -243,7 +173,6 @@ export default {
     isQueried: false,
     snackbar: false,
     snackbarText: '',
-    changeEmailDialog: false,
     changeInvoiceEmailDialog: false,
     emailValid: true,
     newEmail: '',
@@ -278,7 +207,6 @@ export default {
       type: state => state.profile.type,
       companyId: state => state.profile.companyId,
       companyName: state => state.companyInfo.companyName,
-      email: state => state.companyInfo.email,
       plan: state => state.companyInfo.plan,
       invoiceEmail: state => state.companyInfo.invoiceEmail,
     }),
@@ -297,10 +225,7 @@ export default {
   },
   methods: {
     changeEmailButtonClicked() {
-      if (this.changeEmailDialog) {
-        this.updateCompanyEmail({companyId: this.companyId, companyName: this.companyName, email: this.newEmail})
-        this.changeEmailDialog = false
-      } else if (this.changeInvoiceEmailDialog) {
+      if (this.changeInvoiceEmailDialog) {
         this.updateInvoiceEmail({companyId: this.companyId, companyName: this.companyName, email: this.newEmail})
         this.changeInvoiceEmailDialog = false
       }
@@ -310,7 +235,6 @@ export default {
     },
     ...mapActions({
       queryCompanyInfo: 'companyInfo/queryCompanyInfo',
-      updateCompanyEmail: 'companyInfo/updateCompanyEmail',
       updateInvoiceEmail: 'companyInfo/updateCompanyInvoiceEmail',
     }),
   }
