@@ -596,117 +596,119 @@ export const actions = {
             }
           } else {
             // 管理者かどうか
-            if (doc.data()['type'] == 'user') {
+            if (doc.data()['type'] == 'admin') {
               firestore.collection('adminUsers')
                 .doc(user.uid)
                 .get()
                 .then(userDoc => {
                   if (userDoc.exists) {
+                    commit('updateIsRefreshing', false)
                     dispatch('profile/updateIsAdmin', true)
                   } else {
                     dispatch('profile/updateIsAdmin', false)
                   }
                 })
-            }
-            // 契約しているか(recruiter)
-            if (doc.data()['type'] == 'recruiter' && doc.data()['companyId']) {
-              dispatch('profile/setCompaniesListener', doc.data()['companyId'])
-            }
+            } else {
+              // 契約しているか(recruiter)
+              if (doc.data()['type'] == 'recruiter' && doc.data()['companyId']) {
+                dispatch('profile/setCompaniesListener', doc.data()['companyId'])
+              }
 
-            dispatch('profile/setFirstName', doc.data()['firstName'])
-            dispatch('profile/setLastName', doc.data()['lastName'])
-            dispatch('profile/setType', doc.data()['type'])
-            dispatch('profile/setCompanyId', doc.data()['companyId'])
-            dispatch('settings/setNotificationsSetting', doc.data()['notificationsSetting'])
-            dispatch('settings/setAcceptScout', doc.data()['acceptScout'])
+              dispatch('profile/setFirstName', doc.data()['firstName'])
+              dispatch('profile/setLastName', doc.data()['lastName'])
+              dispatch('profile/setType', doc.data()['type'])
+              dispatch('profile/setCompanyId', doc.data()['companyId'])
+              dispatch('settings/setNotificationsSetting', doc.data()['notificationsSetting'])
+              dispatch('settings/setAcceptScout', doc.data()['acceptScout'])
 
-            // email を変更した後、リセットした場合、user.email と db がずれるため、更新
-            if (user.email != doc.data()['email']) {
-              const batch = firestore.batch()
-              const userRef = firestore.collection('users').doc(user.uid)
-              batch.update(userRef, {
-                email: user.email,
-              })
-              const profileRef = firestore.collection('users').doc(user.uid)
-                .collection('profile').doc(user.uid)
-              batch.update(profileRef, {
-                email: user.email,
-              })
-              if (doc.data()['type'] == 'user') {
-                const userDetailRef = firestore.collection('users').doc(user.uid)
-                  .collection('detail').doc(user.uid)
-                batch.update(userDetailRef, {
+              // email を変更した後、リセットした場合、user.email と db がずれるため、更新
+              if (user.email != doc.data()['email']) {
+                const batch = firestore.batch()
+                const userRef = firestore.collection('users').doc(user.uid)
+                batch.update(userRef, {
                   email: user.email,
                 })
-              }
-              batch.commit()
-                .then(() => {
-                  dispatch('profile/setEmail', user.email)
+                const profileRef = firestore.collection('users').doc(user.uid)
+                  .collection('profile').doc(user.uid)
+                batch.update(profileRef, {
+                  email: user.email,
                 })
-                .catch((error) => {
-                  console.error("Error", error)
-                })
-            } else {
-              dispatch('profile/setEmail', doc.data()['email'])
-            }
-
-            if (doc.data()['imageUrl'] != null) {
-              dispatch('profile/setImageUrl', doc.data()['imageUrl'])
-            }
-
-            commit('updateIsRefreshing', false)
-            if (doc.data()['type'] == 'recruiter') {
-              // メッセージのリスナー
-              dispatch('chats/setCompanyMessagesListener', doc.data()['companyId'])
-
-              if (route.path.includes('/user') && !route.path.includes('users') && !route.path.includes('settings')) {
-                router.replace('/recruiter/dashboard')
-              } else if (route.path.includes('/messages') && !route.path.includes('recruiter/messages')) {
-                router.replace('/recruiter/dashboard')
-              }
-            } else {
-              dispatch('profile/setPoints', doc.data()['points'])
-
-              // emailVerified が false
-              if (!user.emailVerified) {
-                commit('updateIsVerified',  false)
-              }
-              // emailVerifiedを true に
-              if (user.emailVerified && !doc.data()['isEmailVerified']) {
-                commit('updateIsVerified',  true)
-                firestore.collection('users')
-                  .doc(user.uid)
-                  .update({
-                    isEmailVerified: true,
+                if (doc.data()['type'] == 'user') {
+                  const userDetailRef = firestore.collection('users').doc(user.uid)
+                    .collection('detail').doc(user.uid)
+                  batch.update(userDetailRef, {
+                    email: user.email,
+                  })
+                }
+                batch.commit()
+                  .then(() => {
+                    dispatch('profile/setEmail', user.email)
                   })
                   .catch((error) => {
-                    console.error("Error updating document: ", error)
+                    console.error("Error", error)
                   })
-              }
-              // メールアドレスの確認が済んでいない場合はメール送信
-              if (!doc.data()['isEmailVerified'] && !user.emailVerified && !state.sentVerifyEmail) {
-                if (route.path !== '/' && route.name !== 'jobs-id' && route.name !== 'user-settings-account') {
-                  router.push('/')
-                }
-                commit('updateSentVerifyEmail', true)
-                var actionCodeSettings = {
-                  url: url,
-                  handleCodeInApp: true,
-                }
-                user.sendEmailVerification(actionCodeSettings)
-                  .then(function() {
-                    console.log('sent verify email')
-                  })
-                  .catch(function(error) {
-                    console.error("Error adding document: ", error)
-                  })
+              } else {
+                dispatch('profile/setEmail', doc.data()['email'])
               }
 
-              // メッセージのリスナー
-              dispatch('chats/setUserMessagesListener', user.uid)
+              if (doc.data()['imageUrl'] != null) {
+                dispatch('profile/setImageUrl', doc.data()['imageUrl'])
+              }
 
-              if (route.path.includes('/recruiter') || route.path.includes('/users')) {
-                router.replace('/')
+              commit('updateIsRefreshing', false)
+              if (doc.data()['type'] == 'recruiter') {
+                // メッセージのリスナー
+                dispatch('chats/setCompanyMessagesListener', doc.data()['companyId'])
+
+                if (route.path.includes('/user') && !route.path.includes('users') && !route.path.includes('settings')) {
+                  router.replace('/recruiter/dashboard')
+                } else if (route.path.includes('/messages') && !route.path.includes('recruiter/messages')) {
+                  router.replace('/recruiter/dashboard')
+                }
+              } else {
+                dispatch('profile/setPoints', doc.data()['points'])
+
+                // emailVerified が false
+                if (!user.emailVerified) {
+                  commit('updateIsVerified',  false)
+                }
+                // emailVerifiedを true に
+                if (user.emailVerified && !doc.data()['isEmailVerified']) {
+                  commit('updateIsVerified',  true)
+                  firestore.collection('users')
+                    .doc(user.uid)
+                    .update({
+                      isEmailVerified: true,
+                    })
+                    .catch((error) => {
+                      console.error("Error updating document: ", error)
+                    })
+                }
+                // メールアドレスの確認が済んでいない場合はメール送信
+                if (!doc.data()['isEmailVerified'] && !user.emailVerified && !state.sentVerifyEmail) {
+                  if (route.path !== '/' && route.name !== 'jobs-id' && route.name !== 'user-settings-account') {
+                    router.push('/')
+                  }
+                  commit('updateSentVerifyEmail', true)
+                  var actionCodeSettings = {
+                    url: url,
+                    handleCodeInApp: true,
+                  }
+                  user.sendEmailVerification(actionCodeSettings)
+                    .then(function() {
+                      console.log('sent verify email')
+                    })
+                    .catch(function(error) {
+                      console.error("Error adding document: ", error)
+                    })
+                }
+
+                // メッセージのリスナー
+                dispatch('chats/setUserMessagesListener', user.uid)
+
+                if (route.path.includes('/recruiter') || route.path.includes('/users')) {
+                  router.replace('/')
+                }
               }
             }
           }

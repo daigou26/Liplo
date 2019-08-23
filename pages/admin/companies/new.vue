@@ -104,7 +104,6 @@ export default {
     },
     ...mapState({
       uid: state => state.uid,
-      companyId: state => state.profile.companyId,
     }),
   },
   methods: {

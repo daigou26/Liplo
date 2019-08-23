@@ -1,6 +1,55 @@
 <template>
+  <!-- admin -->
+  <v-toolbar v-if="uid && uid != '' && isAdmin" flat fixed app color="white" id="toolbar">
+    <v-toolbar-title class="font-weight-bold ml-0">
+      <no-ssr>
+        <nuxt-link to='' @click.native="homeButtonClicked" class="toolbar-title hidden-xs-only">
+          <v-card-actions>
+            <img class="mr-2" src="/icon.png" width="34" height="34"/>
+            <span style="color: #FF5A5F">Liplo</span>
+          </v-card-actions>
+        </nuxt-link>
+        <nuxt-link v-if="uid && uid != '' && (path == '/' || path.includes('/admin'))" to='' @click.native="homeButtonClicked" class="toolbar-title hidden-sm-and-up">
+          <v-card-actions class="px-0">
+            <span style="color: #FF5A5F">Liplo</span>
+          </v-card-actions>
+        </nuxt-link>
+      </no-ssr>
+    </v-toolbar-title>
+    <v-spacer></v-spacer>
+    <v-toolbar-items>
+      <!-- Profile画像 -->
+      <v-layout v-if="uid && uid != ''" row wrap align-center ml-3>
+        <v-flex class="text-xs-center">
+          <!-- ログイン中に表示される -->
+          <div class="align-center">
+            <div class="text-xs-left">
+              <v-menu offset-y offset-x min-width="250">
+                <v-avatar
+                  class="clickable"
+                  slot="activator"
+                  :size="avatarSize"
+                >
+                  <v-icon>person</v-icon>
+                </v-avatar>
+                <v-list>
+                  <v-list-tile v-if="isAdmin" to="/admin/companies">
+                    <v-list-tile-title class="text-color">Admin</v-list-tile-title>
+                  </v-list-tile>
+                  <v-divider></v-divider>
+                  <v-list-tile @click="signOut">
+                    <v-list-tile-title class="text-color">ログアウト</v-list-tile-title>
+                  </v-list-tile>
+                </v-list>
+              </v-menu>
+            </div>
+          </div>
+        </v-flex>
+      </v-layout>
+    </v-toolbar-items>
+  </v-toolbar>
   <!-- メールアドレスの確認が済んでいない場合は確認してもらう -->
-  <v-toolbar v-if="uid && uid != '' && !isVerified && type == 'user'" flat fixed app color="white" id="toolbar">
+  <v-toolbar v-else-if="uid && uid != '' && !isVerified && type == 'user'" flat fixed app color="white" id="toolbar">
     <v-toolbar-title v-if="(!path.includes('/recruiter') && !path.includes('/users'))">
       <span style="color: #FF5A5F">Liplo</span>
     </v-toolbar-title>
