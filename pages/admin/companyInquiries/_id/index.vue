@@ -34,9 +34,9 @@
           </div>
           <div>
             <span class="text-color font-weight-bold">
-              企業メールアドレス:
+              部署:
             </span>
-            <span class="light-text-color pl-3">{{ companyEmail }}</span>
+            <span class="light-text-color pl-3">{{ department }}</span>
           </div>
         </div>
         <!-- recruiter -->
@@ -65,9 +65,10 @@
           <span class="text-color font-weight-bold pr-3">
             問い合わせ:
           </span>
-          <span v-if="type == 0" class="teal--text font-weight-bold">資料請求</span>
-          <span v-else-if="type == 1" class="green--text font-weight-bold">質問がしたい</span>
+          <span v-if="type == 0" class="teal--text font-weight-bold">資料請求したい</span>
+          <span v-else-if="type == 1" class="green--text font-weight-bold">詳しく聞きたい</span>
           <span v-else-if="type == 2" class="orange--text font-weight-bold">すぐに導入したい</span>
+          <span v-else-if="type == 3" class="orange--text font-weight-bold">その他</span>
           <div v-if="content" class="pt-3 font-weight-bold text-color">内容：</div>
           <div v-if="content" class="return light-text-color">{{ content }}</div>
         </div>
@@ -171,7 +172,7 @@ export default {
       isRefreshing: state => state.isRefreshing,
       isLoading: state => state.companyInquiry.isLoading,
       companyName: state => state.companyInquiry.companyName,
-      companyEmail: state => state.companyInquiry.companyEmail,
+      department: state => state.companyInquiry.department,
       userName: state => state.companyInquiry.userName,
       email: state => state.companyInquiry.email,
       position: state => state.companyInquiry.position,
@@ -211,7 +212,6 @@ export default {
       this.addCompany({
         router: this.$router,
         companyName: this.companyName,
-        companyEmail: this.companyEmail,
         userName: this.userName,
         email: this.email,
         position: this.position,

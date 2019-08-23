@@ -54,7 +54,6 @@ export const actions = {
 
             const inquiry = {
               inquiryId: doc.id,
-              companyEmail: doc.data()['companyEmail'],
               companyName: doc.data()['companyName'],
               userName: doc.data()['userName'],
               email: doc.data()['email'],
@@ -100,7 +99,6 @@ export const actions = {
 
             const inquiry = {
               inquiryId: doc.id,
-              companyEmail: doc.data()['companyEmail'],
               companyName: doc.data()['companyName'],
               userName: doc.data()['userName'],
               email: doc.data()['email'],
@@ -148,7 +146,6 @@ export const actions = {
 
             const inquiry = {
               inquiryId: doc.id,
-              companyEmail: doc.data()['companyEmail'],
               companyName: doc.data()['companyName'],
               userName: doc.data()['userName'],
               email: doc.data()['email'],

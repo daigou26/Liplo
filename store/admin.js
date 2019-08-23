@@ -4,7 +4,7 @@ import { event } from 'vue-analytics'
 
 export const actions = {
   // 企業を追加
-  addCompany({commit}, {router, companyName, companyEmail, userName, email, position, plan}) {
+  addCompany({commit}, {router, companyName, userName, email, position, plan}) {
     const companyId = firestore.collection('companies').doc().id
     const member = {
       name: userName,
@@ -42,8 +42,7 @@ export const actions = {
     batch.set(companyInfoRef, {
       plan: plan,
       companyName: companyName,
-      email: companyEmail,
-      invoiceEmail: companyEmail,
+      invoiceEmail: email,
       members: [member],
       isDeleted: false,
       hiringPassCount: 0,

@@ -11,7 +11,6 @@ export const state = () => ({
   candidatesChartData: null,
   allCandidates: null,
   feedback: null,
-  email: '',
   members: null,
   invoiceEmail: null,
   reviews: null,
@@ -48,9 +47,6 @@ export const mutations = {
   },
   setFeedback(state, feedback) {
     state.feedback = feedback
-  },
-  setEmail(state, email) {
-    state.email = email
   },
   setMembers(state, members) {
     state.members = members
@@ -229,7 +225,6 @@ export const actions = {
           commit('setCompanyImageUrl', doc.data()['imageUrl'])
           commit('setCompanyId', doc.id)
           commit('setCompanyName', doc.data()['companyName'])
-          commit('setEmail', doc.data()['email'])
           commit('setPlan', doc.data()['plan'])
           commit('setInvoiceEmail', doc.data()['invoiceEmail'])
           commit('setIsDeleted', doc.data()['isDeleted'])
@@ -255,33 +250,12 @@ export const actions = {
       .then(function(doc) {
         if (doc.exists) {
           commit('setCompanyName', doc.data()['companyName'])
-          commit('setEmail', doc.data()['email'])
           commit('setPlan', doc.data()['plan'])
           commit('setInvoiceEmail', doc.data()['invoiceEmail'])
         }
       })
       .catch(function(error) {
         console.log("Error getting document:", error)
-      })
-  },
-  updateCompanyEmail({commit}, {companyId, companyName, email}) {
-    firestore.collection('companies')
-      .doc(companyId)
-      .collection('info')
-      .doc(companyId)
-      .update({
-        email: email
-      })
-      .then(() => {
-        commit('setEmail', email)
-        var sendChangeEmailConfirmation = functions.httpsCallable("sendChangeEmailConfirmation")
-        sendChangeEmailConfirmation({
-          companyName: companyName,
-          newEmail: email
-        })
-      })
-      .catch((error) => {
-        console.log("Error updating document:", error)
       })
   },
   updateCompanyInvoiceEmail({commit}, {companyId, companyName, email}) {
@@ -317,7 +291,6 @@ export const actions = {
     commit('setCompanyId', '')
     commit('setCompanyName', '')
     commit('setCompanyImageUrl', '')
-    commit('setEmail', '')
     commit('setMembers', null)
     commit('setInvoiceEmail', null)
     commit('setReviews', null)

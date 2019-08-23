@@ -3366,26 +3366,35 @@ exports.sendMessage = functions.region('asia-northeast1')
 exports.sendCompanyInquiryMail = functions
   .https
   .onCall((data, context) => {
+    var inquiryData = {
+      companyName: data.companyName,
+      userName: data.userName,
+      email: data.email,
+      position: data.position,
+      type: data.type,
+      createdAt: new Date()
+    }
+    if (data.department) {
+      contactData.department = data.department
+    }
+    if (data.content) {
+      contactData.content = data.content
+    }
+
     return admin.firestore().collection('companyInquiries')
-      .add({
-        companyName: data.companyName,
-        companyEmail: data.companyEmail,
-        userName: data.userName,
-        email: data.email,
-        position: data.position,
-        type: data.type,
-        content: data.content,
-        createdAt: new Date()
-      })
+      .add(inquiryData)
       .then(() => {
         var type
         if (data.type == 0) {
-          type = '資料請求'
+          type = '資料請求したい'
         } else if (data.type == 1) {
-          type = '詳しく聞きたい'
+          type = 'Liploの導入を検討しており、サービスについて詳しく聞きたい'
         } else if (data.type == 2) {
           type = 'すぐに導入したい'
+        } else if (data.type == 3) {
+          type = 'その他'
         }
+
         const mailOptions = {
           from: `Liplo <noreply@liplo.jp>`,
           to: 'go26dev@gmail.com',
@@ -3445,30 +3454,6 @@ exports.sendContact = functions
       .catch((error) => {
         console.error("Error", error)
       })
-  })
-
-// 企業メアドが変更された時
-exports.sendChangeEmailConfirmation = functions
-  .https
-  .onCall((data, context) => {
-    const mailOptions = {
-      from: `Liplo <noreply@liplo.jp>`,
-      to: data.newEmail,
-    }
-    mailOptions.subject = `[ご確認] 企業メールアドレス変更のお知らせ`
-    mailOptions.html = `
-      <p>${data.companyName} 様</p>
-      <p>日頃から Liplo をご利用いただき、ありがとうございます。</p>
-      <p>企業メールアドレスの変更が正常に行われたことをお知らせいたします。</p>
-      <p>引き続き、Liploをよろしくお願い致します。</p>
-      <p style="margin-top: 40px">このメールに心当たりがない方は、お手数をおかけしますがこのメールを破棄してください。</p>
-    `
-    mailTransport.sendMail(mailOptions, (err, info) => {
-      if (err) {
-        console.log(err)
-      }
-      console.log('completed.')
-    })
   })
 
 // 請求書の送信先が変更された時
