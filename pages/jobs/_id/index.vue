@@ -1386,6 +1386,8 @@ export default {
   },
   async fetch(context) {
     const store = context.store
+    await store.dispatch('reviews/resetCompanyReviewsState')
+    await store.dispatch('reviews/resetUserReviewsState')
     await store.dispatch('job/resetState')
     await store.dispatch('job/updateIsLoading', true)
     // query job
@@ -1393,13 +1395,13 @@ export default {
   },
   watch: {
     uid(uid) {
+      this.resetReviewsState()
+      this.resetUserReviewsState()
+      this.resetJobState()
+      this.updateIsLoading(true)
       if (uid && uid != '') {
-        this.resetJobState()
-        this.updateIsLoading(true)
         this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: uid})
-      } else if (uid == null) {
-        this.resetJobState()
-        this.updateIsLoading(true)
+      } else {
         this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: null})
       }
     },
