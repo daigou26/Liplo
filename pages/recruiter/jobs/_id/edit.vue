@@ -736,6 +736,7 @@ export default {
         params: this.$route.params,
         router: this.$router,
         companyId: this.companyId,
+        previousImageUrl: this.imageUrl,
         imageFile: this.imageFile,
         title: this.tempTitle,
         content: this.tempContent,

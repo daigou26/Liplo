@@ -30,13 +30,27 @@
       <v-list-tile
         v-for="item in items"
         :key="item.title"
-        :to="'/recruiter/' + item.url"
+        @click="drawerButtonClicked(item.url)"
       >
         <v-list-tile-action>
-          <v-icon>{{ item.icon }}</v-icon>
+          <v-icon
+            :class="{
+              'teal--text': ('/recruiter/' + item.url) == $route.path,
+            }"
+          >
+            {{ item.icon }}
+          </v-icon>
         </v-list-tile-action>
         <v-list-tile-content>
-          <v-list-tile-title class="font-weight-medium text-color" style="font-size: 15px">{{ item.title }}</v-list-tile-title>
+          <v-list-tile-title
+            class="font-weight-medium text-color"
+            :class="{
+              'teal--text': ('/recruiter/' + item.url) == $route.path,
+            }"
+            style="font-size: 15px"
+          >
+            {{ item.title }}
+          </v-list-tile-title>
         </v-list-tile-content>
       </v-list-tile>
     </v-list>
@@ -81,8 +95,16 @@ export default {
         this.$router.push('/')
       }
     },
+    drawerButtonClicked(url) {
+      if (url == 'jobs' && this.$route.name != 'recruiter-jobs') {
+        this.resetCompanyJobsState()
+      }
+
+      this.$router.push('/recruiter/' + url)
+    },
     ...mapActions({
       resetJobsState: 'jobs/resetState',
+      resetCompanyJobsState: 'companyJobs/resetState',
     }),
   }
 }
