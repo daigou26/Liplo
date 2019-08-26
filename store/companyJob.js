@@ -1,5 +1,6 @@
 export const strict = false
 import { firestore, storageRef } from '@/plugins/firebase'
+import { event } from 'vue-analytics'
 
 export const state = () => ({
   imageUrl: '',
@@ -266,6 +267,7 @@ export const actions = {
     occupation,
     features,
     industry,
+    industryText,
     nearestStation,
     environment,
     status
@@ -334,6 +336,12 @@ export const actions = {
 
         batch.commit()
           .then(() => {
+            // analytics
+            event({
+              eventCategory: 'job',
+              eventAction: 'posted',
+              eventLabel: industryText
+            })
             router.push('/recruiter/jobs')
           })
           .catch((error) => {

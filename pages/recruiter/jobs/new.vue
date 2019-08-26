@@ -207,10 +207,12 @@
               class="pt-4"
               v-model="status"
               :items="statusItems"
-              label="status"
+              label="ステータス"
             ></v-select>
           </v-flex>
           <v-btn
+            class="mt-5"
+            style="width: 150px;"
             :loading="uploading"
             :disabled="postButtonDisabled || plan == null"
             @click="postButtonClicked"
@@ -560,6 +562,7 @@ export default {
         occupation: occupation,
         features: features,
         industry: industry,
+        industryText: this.industry,
         nearestStation: this.nearestStation,
         environment: this.environment,
         status: status,
