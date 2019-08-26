@@ -77,6 +77,15 @@
           >
             サインアップメール送信
           </v-btn>
+          <!-- 最初のメンバー追加 -->
+          <v-btn
+            outline
+            color="pink"
+            class="ma-0 ml-3"
+            @click="addFirstMemberDialog = true"
+          >
+            最初のメンバー追加
+          </v-btn>
         </div>
         <!-- 削除済み -->
         <div v-if="isDeleted" class="pt-4">
@@ -196,6 +205,78 @@
         </v-flex>
       </v-card>
     </v-dialog>
+    <!-- 最初のメンバー追加 dialog -->
+    <v-dialog
+      v-model="addFirstMemberDialog"
+      :fullscreen="$vuetify.breakpoint.xsOnly"
+      width="500"
+    >
+      <v-card>
+        <v-toolbar flat color="white">
+          <v-btn icon @click="addFirstMemberDialog=false">
+            <v-icon>close</v-icon>
+          </v-btn>
+          <span
+            class="pl-3 text-color font-weight-bold"
+            :class="{
+              'title': $vuetify.breakpoint.smAndUp,
+              'subheading': $vuetify.breakpoint.xsOnly
+            }"
+          >
+            最初のメンバー追加
+          </span>
+        </v-toolbar>
+        <v-flex
+          xs12
+          py-3
+          class="light-text-color"
+          :class="{'px-4': $vuetify.breakpoint.smAndUp, 'px-4 mt-4': $vuetify.breakpoint.xsOnly}"
+        >
+          <v-form v-model="addFirstMemberValid" @submit.prevent="">
+            <v-container>
+              <v-layout
+                column
+                justify-center
+              >
+                <v-flex xs12>
+                  <v-text-field
+                    label="メールアドレス"
+                    v-model="tempEmail"
+                    :rules="emailRules"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    label="名前"
+                    v-model="tempName"
+                    :rules="nameRules"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    label="役職"
+                    v-model="tempPosition"
+                    :rules="positionRules"
+                    required
+                  ></v-text-field>
+                </v-flex>
+                <!-- 送信ボタン -->
+                <v-btn
+                  :disabled="!addFirstMemberValid"
+                  class="teal"
+                  @click="addFirstMemberButtonClicked"
+                >
+                  <span
+                    class="font-weight-bold body-1"
+                    style="color: #ffffff;"
+                  >
+                    追加
+                  </span>
+                </v-btn>
+              </v-layout>
+            </v-container>
+          </v-form>
+        </v-flex>
+      </v-card>
+    </v-dialog>
   </v-layout>
 </template>
 
@@ -219,11 +300,14 @@ export default {
     isEditingPlan: false,
     tempPlan: null,
     valid: true,
+    addFirstMemberValid: true,
     snackbar: false,
     snackbarText: '',
     signUpEmailDialog: false,
+    addFirstMemberDialog: false,
     tempEmail: '',
     tempName: '',
+    tempPosition: '',
     nameRules: [
       v => !!v || '名前を入力してください',
       v => (v && v.length <= 30) || '30文字を超えています'
@@ -231,6 +315,9 @@ export default {
     emailRules: [
       v => !!v || 'メールアドレスを入力してください',
       v => /.+@.+/.test(v) || '無効なメールアドレスです'
+    ],
+    positionRules: [
+      v => (v.length <= 30) || '30文字を超えています'
     ],
   }),
   computed: {
@@ -347,8 +434,15 @@ export default {
         email: this.tempEmail
       })
       this.signUpEmailDialog = false
-      this.snackbar = true
-      this.snackbarText = `お問い合わせありがとうございます。こちらからメールをお送りしますので、少々お待ちください。`
+    },
+    addFirstMemberButtonClicked() {
+      this.addFirstMember({
+        companyId: this.params.id,
+        name: this.tempName,
+        email: this.tempEmail,
+        position: this.tempPosition
+      })
+      this.addFirstMemberDialog = false
     },
     ...mapActions({
       queryCompanyFromAdmin: 'companyInfo/queryCompanyFromAdmin',
@@ -356,6 +450,7 @@ export default {
       resetState: 'companyInfo/resetState',
       updatePlan: 'admin/updatePlan',
       sendSignUpEmail: 'sendSignUpEmail',
+      addFirstMember: 'admin/addFirstMember'
     }),
   }
 }

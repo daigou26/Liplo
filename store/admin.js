@@ -10,7 +10,7 @@ export const actions = {
       name: userName,
       position: position,
       email: email,
-      isInitialMember: true,
+      isFirstMember: true,
     }
     const batch = firestore.batch()
     const companyRef = firestore.collection('companies').doc(companyId)
@@ -27,6 +27,7 @@ export const actions = {
       .doc(companyId)
     batch.set(companyDetailRef, {
       companyName: companyName,
+      isDeleted: false,
       members: [member],
       points: 100,
       feedback: {
@@ -58,6 +59,47 @@ export const actions = {
         router.push('/admin/companies')
         // analytics
         event('company', 'signup')
+      })
+      .catch((error) => {
+        console.error("Error", error)
+      })
+  },
+  // 企業のメンバーが０人の場合にメンバーを追加する（一度解約した場合）
+  addFirstMember({commit}, {companyId, name, email, position}) {
+    let member = {
+      name: name,
+      email: email,
+      isFirstMember: true,
+    }
+    if (position) {
+      member.position = position
+    }
+    const batch = firestore.batch()
+    const companyRef = firestore.collection('companies').doc(companyId)
+    batch.update(companyRef, {
+      isDeleted: false,
+    })
+
+    const companyDetailRef = firestore.collection('companies')
+      .doc(companyId)
+      .collection('detail')
+      .doc(companyId)
+    batch.update(companyDetailRef, {
+      isDeleted: false,
+      members: [member],
+    })
+
+    const companyInfoRef = firestore.collection('companies')
+      .doc(companyId)
+      .collection('info')
+      .doc(companyId)
+    batch.update(companyInfoRef, {
+      isDeleted: false,
+      members: [member],
+    })
+
+    batch.commit()
+      .then(() => {
       })
       .catch((error) => {
         console.error("Error", error)
