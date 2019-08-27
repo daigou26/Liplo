@@ -100,6 +100,8 @@ export default {
         this.resetCompanyJobsState()
       } else if (url == 'candidates' && this.$route.name != 'recruiter-candidates') {
         this.resetCandidatesState()
+      } else if (url == 'reviews' && this.$route.name != 'recruiter-reviews') {
+        this.resetCompanyReviewsState()
       }
 
       this.$router.push('/recruiter/' + url)
@@ -108,6 +110,7 @@ export default {
       resetJobsState: 'jobs/resetState',
       resetCompanyJobsState: 'companyJobs/resetState',
       resetCandidatesState: 'candidates/resetState',
+      resetCompanyReviewsState: 'reviews/resetCompanyReviewsState',
     }),
   }
 }
