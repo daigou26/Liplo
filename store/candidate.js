@@ -373,6 +373,7 @@ export const actions = {
                   commit('setStatus', newStatus)
                   // candidates reset
                   dispatch('candidates/resetState', {}, { root: true })
+                  dispatch('companyPasses/resetPassesState', {}, { root: true })
 
                   // analytics
                   if (state.pass && state.pass.occupation) {
@@ -493,6 +494,7 @@ export const actions = {
           commit('setError', null)
           // candidates reset
           dispatch('candidates/resetState', {}, { root: true })
+          dispatch('companyPasses/resetPassesState', {}, { root: true })
 
           if (newStatus.intern) {
             commit('setCareerId', careerId)

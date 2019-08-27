@@ -58,7 +58,8 @@
                 'elevation-2': !hover,
                 'mb-4 mt-3': $vuetify.breakpoint.smAndUp,
               }"
-              :to="'/recruiter/passes/hiring'"
+              @click="passesButtonClicked('/recruiter/passes/hiring')"
+
             >
               <div class="font-weight-bold text-color">
                 入社パス
@@ -126,7 +127,7 @@
                           'elevation-6': hover && !$vuetify.breakpoint.xsOnly,
                           'elevation-2': !hover,
                         }"
-                        :to="'/recruiter/passes/' + yearPass.year + '?passType=hiring'"
+                        @click="passesButtonClicked('/recruiter/passes/' + yearPass.year + '?passType=hiring')"
                       >
                         <div class="font-weight-bold text-color">
                           入社パス
@@ -156,7 +157,7 @@
                           'elevation-6': hover && !$vuetify.breakpoint.xsOnly,
                           'elevation-2': !hover,
                         }"
-                        :to="'/recruiter/passes/' + yearPass.year + '?passType=offer'"
+                        @click="passesButtonClicked('/recruiter/passes/' + yearPass.year + '?passType=offer')"
                       >
                         <div class="font-weight-bold text-color">
                           内定パス
@@ -186,7 +187,7 @@
                           'elevation-6': hover && !$vuetify.breakpoint.xsOnly,
                           'elevation-2': !hover,
                         }"
-                        :to="'/recruiter/passes/' + yearPass.year + '?passType=limited'"
+                        @click="passesButtonClicked('/recruiter/passes/' + yearPass.year + '?passType=limited')"
                       >
                         <div class="font-weight-bold text-color">
                           先着パス
@@ -547,7 +548,7 @@ export default {
     this.showInfiniteLoading = true
 
     if (this.companyId != null && !this.isQueried) {
-      this.resetState()
+      this.resetYearPassesState()
       this.updateIsInitialLoading(true)
       this.updateIsLoading(true)
       this.queryHiringPassCount(this.companyId)
@@ -557,7 +558,7 @@ export default {
   watch: {
     companyId(companyId) {
       if (companyId != null && companyId != '') {
-        this.resetState()
+        this.resetYearPassesState()
         this.isQueried = true
         this.updateIsInitialLoading(true)
         this.updateIsLoading(true)
@@ -649,6 +650,11 @@ export default {
         this.updatePassLimitError = null
       }
     },
+    // 発行したパス一覧へ
+    passesButtonClicked(url) {
+      this.resetPassesState()
+      this.$router.push(url)
+    },
     ...mapActions({
       queryHiringPassCount: 'companyPasses/queryHiringPassCount',
       queryYearPasses: 'companyPasses/queryYearPasses',
@@ -656,7 +662,8 @@ export default {
       updateIsLoading: 'companyPasses/updateIsLoading',
       addYear: 'companyPass/addYear',
       updatePassLimit: 'companyPass/updatePassLimit',
-      resetState: 'companyPasses/resetState',
+      resetYearPassesState: 'companyPasses/resetYearPassesState',
+      resetPassesState: 'companyPasses/resetPassesState',
       resetAddYearError: 'companyPass/resetAddYearError',
     }),
   }

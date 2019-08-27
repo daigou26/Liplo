@@ -51,6 +51,7 @@ export const mutations = {
 }
 
 export const actions = {
+  // 発行したパス
   queryPasses({commit, state}, {companyId, type, year}) {
     const passes = state.passes
 
@@ -291,6 +292,7 @@ export const actions = {
       }
     }
   },
+  // 入社パスの発行数
   queryHiringPassCount({commit}, companyId) {
     firestore.collection('companies')
       .doc(companyId)
@@ -308,6 +310,7 @@ export const actions = {
         console.log("Error getting document:", error);
       })
   },
+  // 年度別のパスの発行数
   queryYearPasses({commit, state}, companyId) {
     const yearPasses = state.yearPasses
     if (yearPasses.length == 0) {
@@ -423,10 +426,14 @@ export const actions = {
   updateIsLoading({commit}, isLoading) {
     commit('updateIsLoading', isLoading)
   },
-  resetState({commit}) {
-    commit('setHiringPassCount', null)
+  resetPassesState({commit}) {
     commit('resetPasses')
     commit('resetAllPassesQueried')
+    commit('updateIsInitialLoading', false)
+    commit('updateIsLoading', false)
+  },
+  resetYearPassesState({commit}) {
+    commit('setHiringPassCount', null)
     commit('resetYearPasses')
     commit('updateIsInitialLoading', false)
     commit('updateIsLoading', false)

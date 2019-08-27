@@ -849,12 +849,11 @@
                       <v-textarea
                         label="メッセージ"
                         v-model="passMessage"
-                        :rules="messageRules"
+                        :rules="passMessageRules"
                         required
                       ></v-textarea>
                       <div class="caption-2 font-weight-bold light-text-color py-2">
                         ※ 入社時の労働条件などは、候補者とのメッセージにてお伝えください。
-                        （パス使用前に候補者から確認が来る場合があります）
                       </div>
                     </v-form>
                   </div>
@@ -1255,8 +1254,8 @@ export default {
     feedbackValid: true,
     tempStatus: '',
     passMessage: '',
-    messageRules: [
-      v => !!v || '入力されていません',
+    passMessageRules: [
+      v => !!v || '候補者に対してのメッセージを入力してください（労働条件など）',
       v => (v && v.length <= 2000) || '2000字以内で入力してください'
     ],
     passType: '',
