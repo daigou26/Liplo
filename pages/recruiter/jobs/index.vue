@@ -137,7 +137,11 @@ export default {
     this.windowHeight = window.innerHeight - toolbarHeight - 30
     this.showInfiniteLoading = true
 
-    if (this.companyId != null && !this.isQueried && (!this.jobs || this.jobs != null && this.jobs.length == 0)) {
+    if (
+      this.companyId != null &&
+      !this.isQueried &&
+      (!this.jobs || this.jobs != null && this.jobs.length == 0)
+    ) {
       this.resetState()
       this.updateIsInitialLoading(true)
       this.updateIsLoading(true)

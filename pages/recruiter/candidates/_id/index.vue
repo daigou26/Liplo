@@ -948,7 +948,7 @@
                     label="コメント"
                     v-model="review"
                     rows="3"
-                    :rules="messageRules"
+                    :rules="reviewRules"
                     required
                     :disabled="plan == null"
                   ></v-textarea>
@@ -990,7 +990,7 @@
                           </v-list-tile-content>
                         </v-list-tile>
                       </v-list>
-                      <div class="pb-3 text-color" style="padding-left: 72px">
+                      <div v-if="comment.content" class="pb-3 text-color" style="padding-left: 72px">
                         {{ comment.content }}
                       </div>
                     </v-card>
@@ -1295,6 +1295,9 @@ export default {
     reviewValid: true,
     rating: 0,
     review: '',
+    reviewRules: [
+      v => (v.length <= 500) || '500字以内で入力してください'
+    ],
     sendReviewButtonText: 'レビュー送信',
     message: '',
     isShowMessage: false,
@@ -1551,8 +1554,10 @@ export default {
         for (const comment of reviews.comments) {
           if (comment.pic.uid == this.uid) {
             this.rating = comment.rating
-            this.review = comment.content
             this.sendReviewButtonText = 'レビューを編集'
+            if (comment.content) {
+              this.review = comment.content
+            }
           }
         }
       }
