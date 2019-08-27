@@ -176,7 +176,12 @@ export default {
     }
     this.windowHeight = window.innerHeight - toolbarHeight - 30
 
-    if (this.companyId != null && !this.isQueried) {
+    if (
+      this.companyId != null &&
+      !this.isQueried &&
+      (!this.feedbacks || (this.feedbacks != null && this.feedbacks.length == 0)) &&
+      (!this.unwrittenFeedbacks || (this.unwrittenFeedbacks != null && this.unwrittenFeedbacks.length == 0))
+    ) {
       this.resetState()
       this.updateIsInitialLoading(true)
       this.updateIsLoading(true)

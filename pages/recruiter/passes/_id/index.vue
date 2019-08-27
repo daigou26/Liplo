@@ -165,7 +165,7 @@ export default {
     if (
       this.companyId != null &&
       !this.isQueried &&
-      (!this.passes || this.passes != null && this.passes.length == 0)
+      (!this.passes || (this.passes != null && this.passes.length == 0))
     ) {
       if (this.$route.query.passType && this.$route.params.id) {
         this.resetState()

@@ -140,7 +140,7 @@ export default {
     if (
       this.companyId != null &&
       !this.isQueried &&
-      (!this.jobs || this.jobs != null && this.jobs.length == 0)
+      (!this.jobs || (this.jobs != null && this.jobs.length == 0))
     ) {
       this.resetState()
       this.updateIsInitialLoading(true)

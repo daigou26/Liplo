@@ -151,7 +151,7 @@ export default {
     if (
       this.companyId != null &&
       !this.isQueried &&
-      (!this.candidates || this.candidates != null && this.candidates.length == 0)
+      (!this.candidates || (this.candidates != null && this.candidates.length == 0))
     ) {
       this.resetState()
       this.updateIsInitialLoading(true)
