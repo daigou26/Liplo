@@ -24,6 +24,21 @@ export const mutations = {
   setCareer(state, career) {
     state.career = career
   },
+  // キャリアを編集した時に更新する
+  updateCareer(state, {careerId, newData}) {
+    state.career = state.career.map(career => {
+      if (career.careerId == careerId) {
+        career.jobDescription = newData.jobDescription
+        if (newData.endedAt) {
+          career.endedAt = newData.endedAt
+        }
+        if (newData.end) {
+          career.end = newData.end
+        }
+      }
+      return career
+    })
+  },
   setNotReviewedLists(state, lists) {
     state.notReviewedLists = lists
   },
@@ -231,14 +246,21 @@ export const actions = {
         commit('updateIsLoading', false)
       })
   },
-  updateCareer({commit}, {router, uid, careerId, newData}) {
+  updateCareer({commit}, {uid, careerId, newData}) {
     firestore.collection('users')
       .doc(uid)
       .collection('career')
       .doc(careerId)
       .update(newData)
       .then(() => {
-        router.push('/user/career')
+        let endedAt = newData.endedAt
+        if (endedAt) {
+          let year  = endedAt.getFullYear()
+          let month = endedAt.getMonth() + 1
+          let day  = endedAt.getDate()
+          newData.endedAt = `${year}/${month}/${day}`
+        }
+        commit('updateCareer', {careerId: careerId, newData: newData})
       })
       .catch(error => {
         console.log("Error updating document", error)
@@ -248,11 +270,7 @@ export const actions = {
     commit('setNotReviewedCompany', null)
     commit('updateIsNotReviewedCompanyLoading', false)
   },
-  resetState({commit}) {
-    commit('setCareer', [])
-    commit('setNotReviewedLists', null)
-    commit('updateIsLoading', false)
-    commit('updateIsNotReviewedListsLoading', false)
+  resetCareerInfoState({commit}) {
     commit('setOccupation', '')
     commit('setJobDescription', '')
     commit('setCompanyName', '')
@@ -262,5 +280,11 @@ export const actions = {
     commit('setEndedAt', null)
     commit('setIsInternExtended', null)
     commit('setExtendedInternEnd', null)
+  },
+  resetState({commit}) {
+    commit('setCareer', [])
+    commit('setNotReviewedLists', null)
+    commit('updateIsLoading', false)
+    commit('updateIsNotReviewedListsLoading', false)
   },
 }

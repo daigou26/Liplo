@@ -25,6 +25,24 @@
         'px-4': $vuetify.breakpoint.smAndDown,
       }"
     >
+      <!-- snackbar -->
+      <v-snackbar
+        v-model="snackbar"
+        color="teal lighten-1"
+        :multi-line="true"
+        :timeout="6000"
+        :left="true"
+        :bottom="true"
+      >
+        {{ snackbarText }}
+        <v-btn
+          color="white"
+          flat
+          @click="snackbar = false"
+        >
+          Close
+        </v-btn>
+      </v-snackbar>
       <v-layout
         row
         wrap
@@ -146,6 +164,8 @@ export default {
   data: () => ({
     isQueried: false,
     windowHeight: 0,
+    snackbar: false,
+    snackbarText: '',
     valid: true,
     endedAtMenu: false,
     tempEndedAt: '',
@@ -227,17 +247,19 @@ export default {
       }
 
       this.updateCareer({
-        router: this.$router,
         uid: this.uid,
         careerId: this.$route.params.id,
         newData: newData
       })
+
+      this.snackbarText = 'キャリアを更新しました！'
+      this.snackbar = true
     },
     ...mapActions({
       queryCareerDetail: 'career/queryCareerDetail',
       updateCareer: 'career/updateCareer',
       updateIsLoading: 'career/updateIsLoading',
-      resetState: 'career/resetState',
+      resetState: 'career/resetCareerInfoState',
     }),
   }
 }

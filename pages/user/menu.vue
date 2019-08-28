@@ -145,6 +145,8 @@ export default {
       } else if (url == '/user/reviews' && this.$route.name != 'user-reviews') {
         this.resetReviewsState()
         this.resetCareerState()
+      } else if (url == '/user/career' && this.$route.name != 'user-career') {
+        this.resetCareerState()
       }
 
       this.$router.push(url)
