@@ -958,8 +958,8 @@
           width="500"
         >
           <!-- レビュー -->
-          <v-card v-show="!userReviewsDialog" class="py-3 px-3">
-            <v-toolbar flat color="white">
+          <v-card v-show="!userReviewsDialog">
+            <v-toolbar class="dialog-toolbar" flat color="white">
               <v-toolbar-side-icon
                 @click="reviewsDialog=false"
                 class="ma-0"
@@ -979,7 +979,7 @@
               xs12
               :class="{'px-2': $vuetify.breakpoint.smAndUp, 'mt-3': $vuetify.breakpoint.xsOnly}"
             >
-              <v-container>
+              <v-container py-0>
                 <v-layout
                   column
                   justify-center
@@ -1047,8 +1047,8 @@
               </v-container>
             </v-flex>
           </v-card>
-          <v-card v-show="userReviewsDialog" class="py-3 px-3">
-            <v-toolbar flat color="white">
+          <v-card v-show="userReviewsDialog">
+            <v-toolbar class="dialog-toolbar" flat color="white">
               <v-toolbar-side-icon
                 @click="userReviewsDialog=false"
                 class="ma-0"
@@ -1056,20 +1056,15 @@
                 <v-icon v-show="reviewsDialog" style="font-size: 20px">arrow_back</v-icon>
                 <v-icon v-show="!reviewsDialog" style="font-size: 20px">close</v-icon>
               </v-toolbar-side-icon>
-              <v-toolbar-title class="font-weight-bold ml-0">
-                <span
-                  :class="{
-                    'toolbar-title': $vuetify.breakpoint.smAndUp,
-                    'toolbar-title-small': $vuetify.breakpoint.xsOnly
-                  }"
-                >このユーザーが記入したレビュー</span>
+              <v-toolbar-title class="font-weight-bold ml-0 toolbar-title-small">
+                このユーザーが記入したレビュー
               </v-toolbar-title>
             </v-toolbar>
             <v-flex
               xs12
               :class="{'px-2': $vuetify.breakpoint.smAndUp, 'mt-3': $vuetify.breakpoint.xsOnly}"
             >
-              <v-container>
+              <v-container py-0>
                 <v-layout
                   column
                   justify-center
@@ -1126,7 +1121,6 @@
         </v-dialog>
       </div>
     </v-flex>
-
   </v-layout>
 </template>
 
@@ -1448,7 +1442,7 @@ export default {
     },
     reviewsButtonClicked() {
       this.reviewsDialog = true
-      if (this.allReviews.length == 0) {
+      if (!this.allReviews || this.allReviews.length == 0) {
         this.resetReviewsState()
         this.updateIsReviewsLoading(true)
         this.queryJobReviews(this.companyId)
@@ -1499,6 +1493,12 @@ export default {
 }
 </script>
 <style>
+.dialog-toolbar {
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
 #company-info-footer div.v-list__tile {
   padding: 0px
 }
