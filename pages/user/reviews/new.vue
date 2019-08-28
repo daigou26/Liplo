@@ -302,7 +302,7 @@ export default {
       postReview: 'review/postReview',
       queryNotReviewedCompany: 'career/queryNotReviewedCompany',
       updateIsNotReviewedCompanyLoading: 'career/updateIsNotReviewedCompanyLoading',
-      resetState: 'career/resetState',
+      resetState: 'career/resetNotReviewedCompanyState',
     }),
   }
 }

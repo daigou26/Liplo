@@ -142,12 +142,17 @@ export default {
     menuButtonClicked(url) {
       if (url == '/user/feedbacks' && this.$route.name != 'user-feedbacks') {
         this.resetFeedbacksState()
+      } else if (url == '/user/reviews' && this.$route.name != 'user-reviews') {
+        this.resetReviewsState()
+        this.resetCareerState()
       }
 
       this.$router.push(url)
     },
     ...mapActions({
       resetFeedbacksState: 'feedbacks/resetState',
+      resetReviewsState: 'reviews/resetUserReviewsState',
+      resetCareerState: 'career/resetState',
       signOut: 'signOut',
     }),
   }

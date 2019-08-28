@@ -57,7 +57,7 @@ export const mutations = {
 }
 
 export const actions = {
-  postReview({commit}, {router, careerId, review}) {
+  postReview({commit, dispatch}, {router, careerId, review}) {
     const batch = firestore.batch()
     const careerRef = firestore.collection('users')
       .doc(review.uid).collection('career').doc(careerId)
@@ -68,6 +68,8 @@ export const actions = {
     batch.set(reviewRef, review)
     batch.commit()
       .then(() => {
+        dispatch('reviews/resetUserReviewsState', {}, { root: true })
+        dispatch('career/resetState', {}, { root: true })
         // analytics
         event({
           eventCategory: 'user',

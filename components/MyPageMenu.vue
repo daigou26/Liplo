@@ -116,12 +116,17 @@ export default {
     menuButtonClicked(url) {
       if (url == 'feedbacks' && this.$route.name != 'user-feedbacks') {
         this.resetFeedbacksState()
+      } else if (url == 'reviews' && this.$route.name != 'user-reviews') {
+        this.resetReviewsState()
+        this.resetCareerState()
       }
 
       this.$router.push('/user/' + url)
     },
     ...mapActions({
       resetFeedbacksState: 'feedbacks/resetState',
+      resetReviewsState: 'reviews/resetUserReviewsState',
+      resetCareerState: 'career/resetState',
     }),
   }
 }

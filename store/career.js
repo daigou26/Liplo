@@ -244,13 +244,15 @@ export const actions = {
         console.log("Error updating document", error)
       })
   },
+  resetNotReviewedCompanyState({commit}) {
+    commit('setNotReviewedCompany', null)
+    commit('updateIsNotReviewedCompanyLoading', false)
+  },
   resetState({commit}) {
     commit('setCareer', [])
     commit('setNotReviewedLists', null)
-    commit('setNotReviewedCompany', null)
     commit('updateIsLoading', false)
     commit('updateIsNotReviewedListsLoading', false)
-    commit('updateIsNotReviewedCompanyLoading', false)
     commit('setOccupation', '')
     commit('setJobDescription', '')
     commit('setCompanyName', '')
