@@ -17,9 +17,6 @@ export const mutations = {
   addLatestNotification(state, notification) {
     state.latestNotifications.push(notification)
   },
-  setLatestNotifications(state, notifications) {
-    state.latestNotifications = notifications
-  },
   resetLatestNotifications(state) {
     state.latestNotifications = []
   },
@@ -28,9 +25,6 @@ export const mutations = {
   },
   addNotification(state, notification) {
     state.notifications.push(notification)
-  },
-  setNotifications(state, notifications) {
-    state.notifications = notifications
   },
   resetNotifications(state) {
     state.notifications = []
@@ -43,6 +37,34 @@ export const mutations = {
   },
   setAllNotificationsQueried(state, allNotificationsQueried) {
     state.allNotificationsQueried = allNotificationsQueried
+  },
+  // 通知をクリックした時に isUnread を false に
+  updateNotificationIsUnread(state, notificationId) {
+    state.latestNotifications = state.latestNotifications.map(notification => {
+      if (notification.notificationId == notificationId) {
+        notification.isUnread = false
+      }
+      return notification
+    })
+
+    state.notifications = state.notifications.map(notification => {
+      if (notification.notificationId == notificationId) {
+        notification.isUnread = false
+      }
+      return notification
+    })
+  },
+  // 全ての通知の isUnread を false に
+  updateAllNotificationsIsUnread(state) {
+    state.latestNotifications = state.latestNotifications.map(notification => {
+      notification.isUnread = false
+      return notification
+    })
+
+    state.notifications = state.notifications.map(notification => {
+      notification.isUnread = false
+      return notification
+    })
   },
   updateCanReadAll(state, canReadAll) {
     state.canReadAll = canReadAll
@@ -225,23 +247,10 @@ export const actions = {
         isUnread: false
       })
       .then(() => {
-        var latestNotifications = state.latestNotifications
-        var notifications = state.notifications
-
-        latestNotifications.forEach((notification, index) => {
-          if (notification.notificationId == notificationId) {
-            latestNotifications[index].isUnread = false
-          }
-        })
-
-        notifications.forEach((notification, index) => {
-          if (notification.notificationId == notificationId) {
-            notifications[index].isUnread = false
-          }
-        })
+        commit('updateNotificationIsUnread', notificationId)
       })
       .catch((error) => {
-        console.error("Error adding document: ", error)
+        console.error("Error updating document: ", error)
       })
   },
   // 全ての通知を既読にする
@@ -263,19 +272,10 @@ export const actions = {
         })
         batch.commit()
           .then(() => {
-            var latestNotifications = state.latestNotifications
-            var notifications = state.notifications
-
-            latestNotifications.forEach((notification, index) => {
-              latestNotifications[index].isUnread = false
-            })
-
-            notifications.forEach((notification, index) => {
-              notifications[index].isUnread = false
-            })
+            commit('updateAllNotificationsIsUnread')
           })
           .catch((error) => {
-            console.error("Error adding document: ", error)
+            console.error("Error", error)
           })
       })
       .catch(function(error) {

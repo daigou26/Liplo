@@ -261,7 +261,7 @@
           </div>
           <v-divider v-if="notifications && notifications.length >= 1"></v-divider>
           <div v-if="notifications && notifications.length >= 1" class="text-xs-center py-2">
-            <v-btn flat small to="/recruiter/notifications" style="color: #00897B">
+            <v-btn flat small @click="allNotificationsButtonClicked('/recruiter/notifications')" style="color: #00897B">
               すべて表示する
             </v-btn>
           </div>
@@ -1450,10 +1450,15 @@ export default {
         this.notificationsMenu = false
       } else {
         this.notificationsMenu = true
-        this.resetNotificationsState()
+        this.resetLatestNotificationsState()
         this.updateIsNotificationsLoading(true)
         this.queryLatestNotifications(this.uid)
       }
+    },
+    // 全て表示するボタン
+    allNotificationsButtonClicked(url) {
+      this.resetNotificationsState()
+      this.$router.push(url)
     },
     resetData() {
       this.dialog = false
@@ -1493,7 +1498,8 @@ export default {
       updateAllIsUnread: 'notifications/updateAllIsUnread',
       queryLatestNotifications: 'notifications/queryLatestNotifications',
       updateIsNotificationsLoading: 'notifications/updateIsLatestNotificationsLoading',
-      resetNotificationsState: 'notifications/resetLatestNotificationsState',
+      resetNotificationsState: 'notifications/resetState',
+      resetLatestNotificationsState: 'notifications/resetLatestNotificationsState',
       setAuthInfo: 'setAuthInfo',
       updateIsRefreshed: 'updateIsRefreshed',
       resetState: 'resetState',
