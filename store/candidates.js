@@ -12,8 +12,20 @@ export const mutations = {
   addCandidate(state, candidate) {
     state.candidates.push(candidate)
   },
-  setCandidates(state, candidates) {
-    state.candidates = candidates
+  updateCandidate(state, updatedCandidate) {
+    // candidate を更新
+    state.candidates = state.candidates.map(candidate => {
+      if (candidate.candidateId == updatedCandidate.candidateId) {
+        if (updatedCandidate.tags) {
+          // tags 更新
+          candidate.tags = updatedCandidate.tags
+        } else if (updatedCandidate.reviews) {
+          // reviews 更新
+          candidate.reviews = updatedCandidate.reviews
+        }
+      }
+      return candidate
+    })
   },
   resetCandidates(state) {
     state.candidates = []
@@ -141,22 +153,7 @@ export const actions = {
     commit('updateIsLoading', isLoading)
   },
   updateCandidate({commit, state}, updatedCandidate) {
-    // candidate を更新
-    let updatedCandidates = state.candidates.map(candidate => {
-      if (candidate.candidateId == updatedCandidate.candidateId) {
-        if (updatedCandidate.tags) {
-          // tags 更新
-          candidate.tags = updatedCandidate.tags
-        } else if (updatedCandidate.reviews) {
-          // reviews 更新
-          candidate.reviews = updatedCandidate.reviews
-        }
-      }
-
-      return candidate
-    })
-
-    commit('setCandidates', updatedCandidates)
+    commit('updateCandidate', updatedCandidate)
   },
   resetState({commit}) {
     commit('resetCandidates')

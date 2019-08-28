@@ -15,8 +15,11 @@ export const mutations = {
   addNewJob(state, job) {
     state.jobs.unshift(job)
   },
-  setJobs(state, jobs) {
-    state.jobs = jobs
+  updateJob(state, updatedJob) {
+    // 更新前の募集を除外
+    state.jobs = state.jobs.filter(job => job.jobId != updatedJob.jobId)
+    // 先頭に更新した募集を追加
+    state.jobs.unshift(updatedJob)
   },
   resetJobs(state) {
     state.jobs = []
@@ -125,12 +128,7 @@ export const actions = {
     commit('addNewJob', job)
   },
   updateJob({commit, state}, updatedJob) {
-    // 更新前の募集を除外
-    let updatedJobs = state.jobs.filter(job => job.jobId != updatedJob.jobId)
-    // 先頭に更新した募集を追加
-    updatedJobs.unshift(updatedJob)
-    
-    commit('setJobs', updatedJobs)
+    commit('updateJob', updatedJob)
   },
   updateIsInitialLoading({commit}, isLoading) {
     commit('updateIsInitialLoading', isLoading)
