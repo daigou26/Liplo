@@ -963,9 +963,9 @@ export default {
       reviewsChartData: state => state.company.reviewsChartData,
       jobs: state => state.company.jobs,
       isLoading: state => state.company.isLoading,
-      allReviews: state => state.reviews.companyReviews,
-      isReviewsLoading: state => state.reviews.isCompanyReviewsLoading,
-      allReviewsQueried: state => state.reviews.allCompanyReviewsQueried,
+      allReviews: state => state.reviews.jobReviews,
+      isReviewsLoading: state => state.reviews.isJobReviewsLoading,
+      allReviewsQueried: state => state.reviews.allJobReviewsQueried,
       userReviews: state => state.reviews.userReviews,
       isUserReviewsLoading: state => state.reviews.isUserReviewsLoading,
       allUserReviewsQueried: state => state.reviews.allUserReviewsQueried,
@@ -984,6 +984,8 @@ export default {
     this.showChart = true
     this.showInfiniteLoading = true
 
+    this.resetReviewsState()
+    this.resetUserReviewsState()
     this.resetCompanyState()
     this.updateIsLoading(true)
     this.queryCompanyDetail({nuxt: this.$nuxt, params: this.$route.params})
@@ -1002,7 +1004,7 @@ export default {
         if (!this.isReviewsLoading) {
           this.reviewsQueryCount += 1
           this.updateIsReviewsLoading(true)
-          this.queryCompanyReviews(this.companyId)
+          this.queryJobReviews(this.companyId)
           if (this.reviewsQueryCount > 50) {
             $state.complete()
           } else {
@@ -1035,7 +1037,7 @@ export default {
       if (this.allReviews.length == 0) {
         this.resetReviewsState()
         this.updateIsReviewsLoading(true)
-        this.queryCompanyReviews(this.companyId)
+        this.queryJobReviews(this.companyId)
       }
     },
     userReviewsButtonClicked(uid) {
@@ -1053,9 +1055,9 @@ export default {
       queryCompanyDetail: 'company/queryCompanyDetail',
       updateIsLoading: 'company/updateIsLoading',
       resetCompanyState: 'company/resetState',
-      queryCompanyReviews: 'reviews/queryCompanyReviews',
-      updateIsReviewsLoading: 'reviews/updateIsCompanyReviewsLoading',
-      resetReviewsState: 'reviews/resetCompanyReviewsState',
+      queryJobReviews: 'reviews/queryJobReviews',
+      updateIsReviewsLoading: 'reviews/updateIsJobReviewsLoading',
+      resetReviewsState: 'reviews/resetJobReviewsState',
       queryUserReviews: 'reviews/queryUserReviews',
       updateIsUserReviewsLoading: 'reviews/updateIsUserReviewsLoading',
       resetUserReviewsState: 'reviews/resetUserReviewsState',

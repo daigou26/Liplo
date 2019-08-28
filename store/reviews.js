@@ -2,6 +2,12 @@ export const strict = false
 import { firestore } from '@/plugins/firebase'
 
 export const state = () => ({
+  // 募集で表示するレビュー
+  jobReviews: [],
+  isInitialJobReviewsLoading: false,
+  isJobReviewsLoading: false,
+  allJobReviewsQueried: false,
+  // 企業に対するレビュー
   companyReviews: [],
   isInitialCompanyReviewsLoading: false,
   isCompanyReviewsLoading: false,
@@ -14,6 +20,21 @@ export const state = () => ({
 })
 
 export const mutations = {
+  addJobReview(state, review) {
+    state.jobReviews.push(review)
+  },
+  resetJobReviews(state) {
+    state.jobReviews = []
+  },
+  updateIsInitialJobReviewsLoading(state, isLoading) {
+    state.isInitialJobReviewsLoading = isLoading
+  },
+  updateIsJobReviewsLoading(state, isLoading) {
+    state.isJobReviewsLoading = isLoading
+  },
+  setAllJobReviewsQueried(state, allJobReviewsQueried) {
+    state.allJobReviewsQueried = allJobReviewsQueried
+  },
   addCompanyReview(state, review) {
     state.companyReviews.push(review)
   },
@@ -47,6 +68,113 @@ export const mutations = {
 }
 
 export const actions = {
+  // 募集に表示するレビューをクエリ
+  queryJobReviews({commit, state}, companyId) {
+    const reviews = state.jobReviews
+    if (reviews.length == 0) {
+      firestore.collection('reviews')
+        .where('companyId', '==', companyId)
+        .orderBy('createdAt', 'desc')
+        .limit(20)
+        .get()
+        .then(function(snapshot) {
+          var docCount = 0
+          snapshot.forEach(function(doc) {
+            docCount += 1
+
+            var timestamp = doc.data()['createdAt']
+            if (timestamp) {
+              let date = new Date( timestamp.seconds * 1000 )
+              let year  = date.getFullYear()
+              let month = date.getMonth() + 1
+              let day  = date.getDate()
+              timestamp = `${year}/${month}/${day}`
+            }
+
+            const review = {
+              reviewId: doc.id,
+              uid: doc.data()['uid'],
+              all: doc.data()['all'],
+              content: doc.data()['content'],
+              occupation: doc.data()['occupation'],
+              atmosphere: doc.data()['atmosphere'],
+              job: doc.data()['job'],
+              discretion: doc.data()['discretion'],
+              workingHours: doc.data()['workingHours'],
+              environment: doc.data()['environment'],
+              createdAt: doc.data()['createdAt'],
+              timestamp: timestamp,
+            }
+            commit('addJobReview', review)
+          })
+          if (docCount == 0) {
+            commit('setAllJobReviewsQueried', true)
+          }
+          commit('updateIsInitialJobReviewsLoading', false)
+          commit('updateIsJobReviewsLoading', false)
+        })
+        .catch(function(error) {
+          commit('updateIsInitialJobReviewsLoading', false)
+          commit('updateIsJobReviewsLoading', false)
+          console.log("Error getting document:", error);
+        })
+    } else if (reviews.length != 0) {
+      const lastIndex = reviews.length - 1
+      const lastDate = reviews[lastIndex].createdAt
+      firestore.collection('reviews')
+        .where('companyId', '==', companyId)
+        .orderBy('createdAt', 'desc')
+        .startAfter(lastDate)
+        .limit(20)
+        .get()
+        .then(function(snapshot) {
+          var docCount = 0
+          snapshot.forEach(function(doc) {
+            docCount += 1
+
+            var timestamp = doc.data()['createdAt']
+            if (timestamp) {
+              let date = new Date( timestamp.seconds * 1000 )
+              let year  = date.getFullYear()
+              let month = date.getMonth() + 1
+              let day  = date.getDate()
+              timestamp = `${year}/${month}/${day}`
+            }
+
+            const review = {
+              reviewId: doc.id,
+              uid: doc.data()['uid'],
+              all: doc.data()['all'],
+              content: doc.data()['content'],
+              occupation: doc.data()['occupation'],
+              atmosphere: doc.data()['atmosphere'],
+              job: doc.data()['job'],
+              discretion: doc.data()['discretion'],
+              workingHours: doc.data()['workingHours'],
+              environment: doc.data()['environment'],
+              createdAt: doc.data()['createdAt'],
+              timestamp: timestamp,
+            }
+            commit('addJobReview', review)
+          })
+          if (docCount == 0) {
+            commit('setAllJobReviewsQueried', true)
+          }
+          commit('updateIsJobReviewsLoading', false)
+        })
+        .catch(function(error) {
+          commit('updateIsJobReviewsLoading', false)
+          console.log("Error getting document:", error);
+        })
+    }
+  },
+  updateIsInitialJobReviewsLoading({commit}, isLoading) {
+    commit('updateIsInitialJobReviewsLoading', isLoading)
+  },
+  updateIsJobReviewsLoading({commit}, isLoading) {
+    commit('updateIsJobReviewsLoading', isLoading)
+  },
+  // 企業に対するレビューをクエリ
   queryCompanyReviews({commit, state}, companyId) {
     const reviews = state.companyReviews
     if (reviews.length == 0) {
@@ -152,6 +280,7 @@ export const actions = {
   updateIsCompanyReviewsLoading({commit}, isLoading) {
     commit('updateIsCompanyReviewsLoading', isLoading)
   },
+  // ユーザーが記入したレビュー
   queryUserReviews({commit, state}, uid) {
     const reviews = state.userReviews
 
@@ -249,6 +378,12 @@ export const actions = {
   },
   updateIsUserReviewsLoading({commit}, isLoading) {
     commit('updateIsUserReviewsLoading', isLoading)
+  },
+  resetJobReviewsState({commit}) {
+    commit('resetJobReviews')
+    commit('updateIsInitialJobReviewsLoading', false)
+    commit('updateIsJobReviewsLoading', false)
+    commit('setAllJobReviewsQueried', false)
   },
   resetCompanyReviewsState({commit}) {
     commit('resetCompanyReviews')
