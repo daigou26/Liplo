@@ -56,7 +56,7 @@
           <v-card
             v-else
             flat
-            :to='item.url'
+            @click="menuButtonClicked(item.url)"
             class="clickable py-2"
           >
             <v-list-tile>
@@ -139,7 +139,15 @@ export default {
     this.windowHeight = window.innerHeight - toolbarHeight - 48 - 30
   },
   methods: {
+    menuButtonClicked(url) {
+      if (url == '/user/feedbacks' && this.$route.name != 'user-feedbacks') {
+        this.resetFeedbacksState()
+      }
+
+      this.$router.push(url)
+    },
     ...mapActions({
+      resetFeedbacksState: 'feedbacks/resetState',
       signOut: 'signOut',
     }),
   }
