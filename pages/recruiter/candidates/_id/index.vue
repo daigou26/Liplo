@@ -849,12 +849,11 @@
                       <v-textarea
                         label="メッセージ"
                         v-model="passMessage"
-                        :rules="messageRules"
+                        :rules="passMessageRules"
                         required
                       ></v-textarea>
                       <div class="caption-2 font-weight-bold light-text-color py-2">
                         ※ 入社時の労働条件などは、候補者とのメッセージにてお伝えください。
-                        （パス使用前に候補者から確認が来る場合があります）
                       </div>
                     </v-form>
                   </div>
@@ -948,7 +947,7 @@
                     label="コメント"
                     v-model="review"
                     rows="3"
-                    :rules="messageRules"
+                    :rules="reviewRules"
                     required
                     :disabled="plan == null"
                   ></v-textarea>
@@ -990,7 +989,7 @@
                           </v-list-tile-content>
                         </v-list-tile>
                       </v-list>
-                      <div class="pb-3 text-color" style="padding-left: 72px">
+                      <div v-if="comment.content" class="pb-3 text-color" style="padding-left: 72px">
                         {{ comment.content }}
                       </div>
                     </v-card>
@@ -1255,8 +1254,8 @@ export default {
     feedbackValid: true,
     tempStatus: '',
     passMessage: '',
-    messageRules: [
-      v => !!v || '入力されていません',
+    passMessageRules: [
+      v => !!v || '候補者に対してのメッセージを入力してください（労働条件など）',
       v => (v && v.length <= 2000) || '2000字以内で入力してください'
     ],
     passType: '',
@@ -1295,6 +1294,9 @@ export default {
     reviewValid: true,
     rating: 0,
     review: '',
+    reviewRules: [
+      v => (v.length <= 500) || '500字以内で入力してください'
+    ],
     sendReviewButtonText: 'レビュー送信',
     message: '',
     isShowMessage: false,
@@ -1551,8 +1553,10 @@ export default {
         for (const comment of reviews.comments) {
           if (comment.pic.uid == this.uid) {
             this.rating = comment.rating
-            this.review = comment.content
             this.sendReviewButtonText = 'レビューを編集'
+            if (comment.content) {
+              this.review = comment.content
+            }
           }
         }
       }

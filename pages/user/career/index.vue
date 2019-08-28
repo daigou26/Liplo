@@ -198,7 +198,12 @@ export default {
     }
     this.windowHeight = window.innerHeight - toolbarHeight - 30
 
-    if (this.uid != null && this.uid != '' && !this.isQueried) {
+    if (
+      this.uid != null &&
+      this.uid != '' &&
+      !this.isQueried &&
+      (!this.career || (this.career != null && this.career.length == 0))
+    ) {
       this.resetState()
       this.updateIsLoading(true)
       this.queryCareer(this.uid)

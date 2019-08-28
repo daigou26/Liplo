@@ -12,6 +12,15 @@ export const mutations = {
   addJob(state, job) {
     state.jobs.push(job)
   },
+  addNewJob(state, job) {
+    state.jobs.unshift(job)
+  },
+  updateJob(state, updatedJob) {
+    // 更新前の募集を除外
+    state.jobs = state.jobs.filter(job => job.jobId != updatedJob.jobId)
+    // 先頭に更新した募集を追加
+    state.jobs.unshift(updatedJob)
+  },
   resetJobs(state) {
     state.jobs = []
   },
@@ -114,6 +123,12 @@ export const actions = {
           console.log("Error getting document:", error);
         })
     }
+  },
+  addJob({commit}, job) {
+    commit('addNewJob', job)
+  },
+  updateJob({commit, state}, updatedJob) {
+    commit('updateJob', updatedJob)
   },
   updateIsInitialLoading({commit}, isLoading) {
     commit('updateIsInitialLoading', isLoading)

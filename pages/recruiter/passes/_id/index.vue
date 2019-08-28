@@ -162,7 +162,11 @@ export default {
     this.windowHeight = window.innerHeight - toolbarHeight - 30
     this.showInfiniteLoading = true
 
-    if (this.companyId != null && !this.isQueried) {
+    if (
+      this.companyId != null &&
+      !this.isQueried &&
+      (!this.passes || (this.passes != null && this.passes.length == 0))
+    ) {
       if (this.$route.query.passType && this.$route.params.id) {
         this.resetState()
         this.updateIsInitialLoading(true)
@@ -235,7 +239,7 @@ export default {
       queryPasses: 'companyPasses/queryPasses',
       updateIsInitialLoading: 'companyPasses/updateIsInitialLoading',
       updateIsLoading: 'companyPasses/updateIsLoading',
-      resetState: 'companyPasses/resetState',
+      resetState: 'companyPasses/resetPassesState',
     }),
   }
 }

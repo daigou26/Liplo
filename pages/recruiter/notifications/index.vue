@@ -48,8 +48,7 @@
           <template v-for="(notification, index) in notifications">
             <v-card
               flat
-              :to="notification.url ? notification.url : ''"
-              @click="updateIsUnread({uid: uid, notificationId: notification.notificationId})"
+              @click="notificationClicked({url: notification.url, notificationId: notification.notificationId})"
             >
               <div class="text-color text-xs-right caption pr-2 pt-2">
                 {{ notification.isUnread ? '未読' : '既読' }}
@@ -141,7 +140,12 @@ export default {
     }
     this.windowHeight = window.innerHeight - toolbarHeight
 
-    if (this.uid != null && this.uid != '' && !this.isQueried) {
+    if (
+      this.uid != null &&
+      this.uid != '' &&
+      !this.isQueried &&
+      (!this.notifications || (this.notifications != null && this.notifications.length == 0))
+    ) {
       this.resetState()
       this.updateIsInitialLoading(true)
       this.updateIsLoading(true)
@@ -160,6 +164,10 @@ export default {
     }
   },
   methods: {
+    notificationClicked({url, notificationId}) {
+      this.updateIsUnread({uid: this.uid, notificationId: notificationId})
+      this.$router.push(url)
+    },
     infiniteHandler($state) {
       if (!this.allNotificationsQueried) {
         if (!this.isLoading && this.uid != null && this.uid != '') {

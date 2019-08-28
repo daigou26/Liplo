@@ -157,7 +157,7 @@ export const actions = {
   updateIsEditingTags({commit}, isEditing) {
     commit('updateIsEditingTags', isEditing)
   },
-  updateTags({commit}, {params, companyId, tags}) {
+  updateTags({commit, dispatch}, {params, companyId, tags}) {
     const candidateId = params.id
     firestore.collection('companies').doc(companyId)
       .collection('candidates').doc(candidateId)
@@ -167,6 +167,13 @@ export const actions = {
       .then(() => {
         commit('setTags', tags)
         commit('updateIsEditingTags', false)
+
+        // candidates 更新
+        const candidate = {
+          candidateId: candidateId,
+          tags: tags
+        }
+        dispatch('candidates/updateCandidate', candidate, { root: true })
       })
       .catch((error) => {
         console.error("Error adding document: ", error)
@@ -293,7 +300,7 @@ export const actions = {
         console.error("Error adding document: ", error)
       })
   },
-  updateStatus({commit, state}, {
+  updateStatus({commit, state, dispatch}, {
     router,
     params,
     companyId,
@@ -364,6 +371,10 @@ export const actions = {
               batch.commit()
                 .then(() => {
                   commit('setStatus', newStatus)
+                  // candidates reset
+                  dispatch('candidates/resetState', {}, { root: true })
+                  dispatch('companyPasses/resetPassesState', {}, { root: true })
+
                   // analytics
                   if (state.pass && state.pass.occupation) {
                     event({
@@ -481,6 +492,10 @@ export const actions = {
       batch.commit()
         .then(() => {
           commit('setError', null)
+          // candidates reset
+          dispatch('candidates/resetState', {}, { root: true })
+          dispatch('companyPasses/resetPassesState', {}, { root: true })
+
           if (newStatus.intern) {
             commit('setCareerId', careerId)
             // analytics
@@ -491,7 +506,8 @@ export const actions = {
                 eventLabel: occupation
               })
             }
-          } else if (newStatus.hired) {
+          }
+          if (newStatus.hired) {
             // analytics
             if (state.pass && state.pass.occupation) {
               event({
@@ -522,21 +538,22 @@ export const actions = {
         })
     }
   },
-  sendReview({commit, state}, {params, companyId, type, pic, rating, content}) {
+  sendReview({commit, state, dispatch}, {params, companyId, type, pic, rating, content}) {
     const candidateId = params.id
     var reviews = state.reviews
 
-    const comment = {
+    let comment = {
       pic: pic,
-      content: content,
       rating: rating,
       createdAt: new Date()
+    }
+    if (content) {
+      comment.content = content
     }
 
     if (reviews) {
       // 新規レビュー or 編集
       if (type == 'new') {
-        console.log('new');
         reviews.count += 1
         reviews.comments.push(comment)
       } else if (type == 'edit') {
@@ -570,6 +587,13 @@ export const actions = {
       })
       .then(() => {
         commit('setReviews', reviews)
+
+        // candidates 更新
+        const candidate = {
+          candidateId: candidateId,
+          reviews: reviews
+        }
+        dispatch('candidates/updateCandidate', candidate, { root: true })
       })
       .catch((error) => {
         console.error("Error adding document: ", error)

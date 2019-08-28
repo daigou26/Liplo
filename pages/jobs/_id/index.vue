@@ -958,8 +958,8 @@
           width="500"
         >
           <!-- レビュー -->
-          <v-card v-show="!userReviewsDialog" class="py-3 px-3">
-            <v-toolbar flat color="white">
+          <v-card v-show="!userReviewsDialog">
+            <v-toolbar class="dialog-toolbar" flat color="white">
               <v-toolbar-side-icon
                 @click="reviewsDialog=false"
                 class="ma-0"
@@ -979,7 +979,7 @@
               xs12
               :class="{'px-2': $vuetify.breakpoint.smAndUp, 'mt-3': $vuetify.breakpoint.xsOnly}"
             >
-              <v-container>
+              <v-container py-0>
                 <v-layout
                   column
                   justify-center
@@ -1047,8 +1047,8 @@
               </v-container>
             </v-flex>
           </v-card>
-          <v-card v-show="userReviewsDialog" class="py-3 px-3">
-            <v-toolbar flat color="white">
+          <v-card v-show="userReviewsDialog">
+            <v-toolbar class="dialog-toolbar" flat color="white">
               <v-toolbar-side-icon
                 @click="userReviewsDialog=false"
                 class="ma-0"
@@ -1056,20 +1056,15 @@
                 <v-icon v-show="reviewsDialog" style="font-size: 20px">arrow_back</v-icon>
                 <v-icon v-show="!reviewsDialog" style="font-size: 20px">close</v-icon>
               </v-toolbar-side-icon>
-              <v-toolbar-title class="font-weight-bold ml-0">
-                <span
-                  :class="{
-                    'toolbar-title': $vuetify.breakpoint.smAndUp,
-                    'toolbar-title-small': $vuetify.breakpoint.xsOnly
-                  }"
-                >このユーザーが記入したレビュー</span>
+              <v-toolbar-title class="font-weight-bold ml-0 toolbar-title-small">
+                このユーザーが記入したレビュー
               </v-toolbar-title>
             </v-toolbar>
             <v-flex
               xs12
               :class="{'px-2': $vuetify.breakpoint.smAndUp, 'mt-3': $vuetify.breakpoint.xsOnly}"
             >
-              <v-container>
+              <v-container py-0>
                 <v-layout
                   column
                   justify-center
@@ -1126,7 +1121,6 @@
         </v-dialog>
       </div>
     </v-flex>
-
   </v-layout>
 </template>
 
@@ -1363,9 +1357,9 @@ export default {
       reviewsChartData: state => state.job.reviewsChartData,
       isLoading: state => state.job.isLoading,
       isCandidate: state => state.job.isCandidate,
-      allReviews: state => state.reviews.companyReviews,
-      isReviewsLoading: state => state.reviews.isCompanyReviewsLoading,
-      allReviewsQueried: state => state.reviews.allCompanyReviewsQueried,
+      allReviews: state => state.reviews.jobReviews,
+      isReviewsLoading: state => state.reviews.isJobReviewsLoading,
+      allReviewsQueried: state => state.reviews.allJobReviewsQueried,
       userReviews: state => state.reviews.userReviews,
       isUserReviewsLoading: state => state.reviews.isUserReviewsLoading,
       allUserReviewsQueried: state => state.reviews.allUserReviewsQueried,
@@ -1386,6 +1380,8 @@ export default {
   },
   async fetch(context) {
     const store = context.store
+    await store.dispatch('reviews/resetJobReviewsState')
+    await store.dispatch('reviews/resetUserReviewsState')
     await store.dispatch('job/resetState')
     await store.dispatch('job/updateIsLoading', true)
     // query job
@@ -1393,13 +1389,13 @@ export default {
   },
   watch: {
     uid(uid) {
+      this.resetReviewsState()
+      this.resetUserReviewsState()
+      this.resetJobState()
+      this.updateIsLoading(true)
       if (uid && uid != '') {
-        this.resetJobState()
-        this.updateIsLoading(true)
         this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: uid})
-      } else if (uid == null) {
-        this.resetJobState()
-        this.updateIsLoading(true)
+      } else {
         this.queryJobDetail({nuxt: this.$nuxt, params: this.$route.params, uid: null})
       }
     },
@@ -1416,7 +1412,7 @@ export default {
         if (!this.isReviewsLoading) {
           this.reviewsQueryCount += 1
           this.updateIsReviewsLoading(true)
-          this.queryCompanyReviews(this.companyId)
+          this.queryJobReviews(this.companyId)
           if (this.reviewsQueryCount > 50) {
             $state.complete()
           } else {
@@ -1446,10 +1442,10 @@ export default {
     },
     reviewsButtonClicked() {
       this.reviewsDialog = true
-      if (this.allReviews.length == 0) {
+      if (!this.allReviews || this.allReviews.length == 0) {
         this.resetReviewsState()
         this.updateIsReviewsLoading(true)
-        this.queryCompanyReviews(this.companyId)
+        this.queryJobReviews(this.companyId)
       }
     },
     userReviewsButtonClicked(uid) {
@@ -1486,9 +1482,9 @@ export default {
       apply: 'job/apply',
       updateIsLoading: 'job/updateIsLoading',
       resetJobState: 'job/resetState',
-      queryCompanyReviews: 'reviews/queryCompanyReviews',
-      updateIsReviewsLoading: 'reviews/updateIsCompanyReviewsLoading',
-      resetReviewsState: 'reviews/resetCompanyReviewsState',
+      queryJobReviews: 'reviews/queryJobReviews',
+      updateIsReviewsLoading: 'reviews/updateIsJobReviewsLoading',
+      resetReviewsState: 'reviews/resetJobReviewsState',
       queryUserReviews: 'reviews/queryUserReviews',
       updateIsUserReviewsLoading: 'reviews/updateIsUserReviewsLoading',
       resetUserReviewsState: 'reviews/resetUserReviewsState',
@@ -1497,6 +1493,12 @@ export default {
 }
 </script>
 <style>
+.dialog-toolbar {
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
 #company-info-footer div.v-list__tile {
   padding: 0px
 }

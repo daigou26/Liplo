@@ -6,6 +6,11 @@ export const state = () => ({
   isInitialLoading: false,
   isLoading: false,
   allJobsQueried: false,
+  // 企業の募集一覧
+  companyJobs: [],
+  isInitialCompanyJobsLoading: false,
+  isCompanyJobsLoading: false,
+  allCompanyJobsQueried: false,
   engineer: false,
   designer: false,
   sales: false,
@@ -42,6 +47,21 @@ export const mutations = {
   },
   setAllJobsQueried(state, allJobsQueried) {
     state.allJobsQueried = allJobsQueried
+  },
+  addCompanyJob(state, job) {
+    state.companyJobs.push(job)
+  },
+  resetCompanyJobs(state) {
+    state.companyJobs = []
+  },
+  updateIsInitialCompanyJobsLoading(state, isLoading) {
+    state.isInitialCompanyJobsLoading = isLoading
+  },
+  updateIsCompanyJobsLoading(state, isLoading) {
+    state.isCompanyJobsLoading = isLoading
+  },
+  setAllCompanyJobsQueried(state, allJobsQueried) {
+    state.allCompanyJobsQueried = allJobsQueried
   },
   // occupation
   updateEngineer(state, isActive) {
@@ -338,7 +358,7 @@ export const actions = {
     }
   },
   queryCompanyJobs({commit, state}, companyId) {
-    const jobs = state.jobs
+    const jobs = state.companyJobs
 
     if (jobs == null || jobs.length == 0) {
       firestore.collection('jobs')
@@ -392,17 +412,17 @@ export const actions = {
               createdAt: doc.data()['createdAt'],
               timestamp: timestamp
             }
-            commit('addJob', job)
+            commit('addCompanyJob', job)
           })
           if (docCount == 0) {
-            commit('setAllJobsQueried', true)
+            commit('setAllCompanyJobsQueried', true)
           }
-          commit('updateIsInitialLoading', false)
-          commit('updateIsLoading', false)
+          commit('updateIsInitialCompanyJobsLoading', false)
+          commit('updateIsCompanyJobsLoading', false)
         })
         .catch(function(error) {
-          commit('updateIsInitialLoading', false)
-          commit('updateIsLoading', false)
+          commit('updateIsInitialCompanyJobsLoading', false)
+          commit('updateIsCompanyJobsLoading', false)
           console.log("Error getting document:", error);
         })
     } else if (jobs.length != 0) {
@@ -461,15 +481,15 @@ export const actions = {
               createdAt: doc.data()['createdAt'],
               timestamp: timestamp,
             }
-            commit('addJob', job)
+            commit('addCompanyJob', job)
           })
           if (docCount == 0) {
-            commit('setAllJobsQueried', true)
+            commit('setAllCompanyJobsQueried', true)
           }
-          commit('updateIsLoading', false)
+          commit('updateIsCompanyJobsLoading', false)
         })
         .catch(function(error) {
-          commit('updateIsLoading', false)
+          commit('updateIsCompanyJobsLoading', false)
           console.log("Error getting document:", error);
         })
     }
@@ -545,6 +565,12 @@ export const actions = {
   updateIsLoading({commit}, isLoading) {
     commit('updateIsLoading', isLoading)
   },
+  updateIsInitialCompanyJobsLoading({commit}, isLoading) {
+    commit('updateIsInitialCompanyJobsLoading', isLoading)
+  },
+  updateIsCompanyJobsLoading({commit}, isLoading) {
+    commit('updateIsCompanyJobsLoading', isLoading)
+  },
   resetFilterState({commit}) {
     commit('updateEngineer', false)
     commit('updateDesigner', false)
@@ -570,5 +596,11 @@ export const actions = {
     commit('updateIsInitialLoading', false)
     commit('updateIsLoading', false)
     commit('setAllJobsQueried', false)
+  },
+  resetCompanyJobsState({commit}) {
+    commit('resetCompanyJobs')
+    commit('updateIsInitialCompanyJobsLoading', false)
+    commit('updateIsCompanyJobsLoading', false)
+    commit('setAllCompanyJobsQueried', false)
   },
 }

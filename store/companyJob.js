@@ -1,5 +1,6 @@
 export const strict = false
 import { firestore, storageRef } from '@/plugins/firebase'
+import { event } from 'vue-analytics'
 
 export const state = () => ({
   imageUrl: '',
@@ -135,6 +136,7 @@ export const actions = {
     params,
     router,
     companyId,
+    previousImageUrl,
     imageFile,
     title,
     content,
@@ -155,7 +157,7 @@ export const actions = {
     status
   }) {
     const jobId = params.id
-    const updatedAt = new Date()
+    let updatedAt = new Date()
     let jobData = {
       title: title,
       content: content,
@@ -225,6 +227,22 @@ export const actions = {
           batch.update(jobDetailRef, jobDetailData)
           batch.commit()
             .then(() => {
+              // companyJobs 更新
+              let date = updatedAt
+              let year  = date.getFullYear()
+              let month = date.getMonth() + 1
+              let day  = date.getDate()
+              updatedAt = `${year}/${month}/${day}`
+
+              const job = {
+                jobId: jobId,
+                title: title,
+                imageUrl: downloadURL,
+                status: status,
+                timestamp: updatedAt,
+              }
+              dispatch('companyJobs/updateJob', job, { root: true })
+
               router.push('/recruiter/jobs')
             })
             .catch((error) => {
@@ -241,6 +259,22 @@ export const actions = {
       batch.update(jobDetailRef, jobDetailData)
       batch.commit()
         .then(() => {
+          // companyJobs 更新
+          let date = updatedAt
+          let year  = date.getFullYear()
+          let month = date.getMonth() + 1
+          let day  = date.getDate()
+          updatedAt = `${year}/${month}/${day}`
+
+          const job = {
+            jobId: jobId,
+            title: title,
+            imageUrl: previousImageUrl,
+            status: status,
+            timestamp: updatedAt,
+          }
+          dispatch('companyJobs/updateJob', job, { root: true })
+
           router.push('/recruiter/jobs')
         })
         .catch((error) => {
@@ -248,7 +282,7 @@ export const actions = {
         })
     }
   },
-  postJob({commit}, {
+  postJob({commit, dispatch}, {
     router,
     companyId,
     imageFile,
@@ -266,11 +300,12 @@ export const actions = {
     occupation,
     features,
     industry,
+    industryText,
     nearestStation,
     environment,
     status
   }) {
-    const createdAt = new Date()
+    let createdAt = new Date()
     const timestamp = Math.floor( createdAt.getTime() / 1000 )
     // image アップロード
     const uploadTask = storageRef.child(`companies/${companyId}/jobs/${timestamp}.jpg`).put(imageFile)
@@ -334,6 +369,28 @@ export const actions = {
 
         batch.commit()
           .then(() => {
+            // analytics
+            event({
+              eventCategory: 'job',
+              eventAction: 'posted',
+              eventLabel: industryText
+            })
+            // companyJobs に追加
+            let date = createdAt
+            let year  = date.getFullYear()
+            let month = date.getMonth() + 1
+            let day  = date.getDate()
+            createdAt = `${year}/${month}/${day}`
+
+            const job = {
+              jobId: jobId,
+              title: title,
+              imageUrl: downloadURL,
+              status: 'creating',
+              timestamp: createdAt,
+            }
+            dispatch('companyJobs/addJob', job, { root: true })
+
             router.push('/recruiter/jobs')
           })
           .catch((error) => {

@@ -474,7 +474,8 @@
               <nuxt-link
                 v-if="jobs && jobs.length > 1"
                 class="pl-2 teal--text font-weight-bold link-text"
-                :to="'/companies/' + companyId + '/jobs'"
+                to=""
+                @click.native="companyJobsButtonClicked('/companies/' + companyId + '/jobs')"
               >
                 募集をすべて見る
               </nuxt-link>
@@ -667,8 +668,8 @@
           width="500"
         >
           <!-- レビュー -->
-          <v-card v-show="!userReviewsDialog" class="py-3 px-3">
-            <v-toolbar flat color="white">
+          <v-card v-show="!userReviewsDialog">
+            <v-toolbar class="dialog-toolbar" flat color="white">
               <v-toolbar-side-icon
                 @click="reviewsDialog=false"
                 class="ma-0"
@@ -681,14 +682,16 @@
                     'toolbar-title': $vuetify.breakpoint.smAndUp,
                     'toolbar-title-small': $vuetify.breakpoint.xsOnly
                   }"
-                >レビュー{{ reviews.rating.count }}件</span>
+                >
+                  レビュー{{ reviews.rating.count }}件
+                </span>
               </v-toolbar-title>
             </v-toolbar>
             <v-flex
               xs12
               :class="{'px-2': $vuetify.breakpoint.smAndUp, 'mt-3': $vuetify.breakpoint.xsOnly}"
             >
-              <v-container>
+              <v-container py-0>
                 <v-layout
                   column
                   justify-center
@@ -756,8 +759,8 @@
               </v-container>
             </v-flex>
           </v-card>
-          <v-card v-show="userReviewsDialog" class="py-3 px-3">
-            <v-toolbar flat color="white">
+          <v-card v-show="userReviewsDialog">
+            <v-toolbar class="dialog-toolbar" flat color="white">
               <v-toolbar-side-icon
                 @click="userReviewsDialog=false"
                 class="ma-0"
@@ -765,20 +768,15 @@
                 <v-icon v-show="reviewsDialog" style="font-size: 20px">arrow_back</v-icon>
                 <v-icon v-show="!reviewsDialog" style="font-size: 20px">close</v-icon>
               </v-toolbar-side-icon>
-              <v-toolbar-title class="font-weight-bold ml-0">
-                <span
-                  :class="{
-                    'toolbar-title': $vuetify.breakpoint.smAndUp,
-                    'toolbar-title-small': $vuetify.breakpoint.xsOnly
-                  }"
-                >このユーザーが記入したレビュー</span>
+              <v-toolbar-title class="font-weight-bold ml-0 toolbar-title-small">
+                このユーザーが記入したレビュー
               </v-toolbar-title>
             </v-toolbar>
             <v-flex
               xs12
               :class="{'px-2': $vuetify.breakpoint.smAndUp, 'mt-3': $vuetify.breakpoint.xsOnly}"
             >
-              <v-container>
+              <v-container py-0>
                 <v-layout
                   column
                   justify-center
@@ -963,9 +961,9 @@ export default {
       reviewsChartData: state => state.company.reviewsChartData,
       jobs: state => state.company.jobs,
       isLoading: state => state.company.isLoading,
-      allReviews: state => state.reviews.companyReviews,
-      isReviewsLoading: state => state.reviews.isCompanyReviewsLoading,
-      allReviewsQueried: state => state.reviews.allCompanyReviewsQueried,
+      allReviews: state => state.reviews.jobReviews,
+      isReviewsLoading: state => state.reviews.isJobReviewsLoading,
+      allReviewsQueried: state => state.reviews.allJobReviewsQueried,
       userReviews: state => state.reviews.userReviews,
       isUserReviewsLoading: state => state.reviews.isUserReviewsLoading,
       allUserReviewsQueried: state => state.reviews.allUserReviewsQueried,
@@ -984,6 +982,8 @@ export default {
     this.showChart = true
     this.showInfiniteLoading = true
 
+    this.resetReviewsState()
+    this.resetUserReviewsState()
     this.resetCompanyState()
     this.updateIsLoading(true)
     this.queryCompanyDetail({nuxt: this.$nuxt, params: this.$route.params})
@@ -1002,7 +1002,7 @@ export default {
         if (!this.isReviewsLoading) {
           this.reviewsQueryCount += 1
           this.updateIsReviewsLoading(true)
-          this.queryCompanyReviews(this.companyId)
+          this.queryJobReviews(this.companyId)
           if (this.reviewsQueryCount > 50) {
             $state.complete()
           } else {
@@ -1032,10 +1032,10 @@ export default {
     },
     reviewsButtonClicked() {
       this.reviewsDialog = true
-      if (this.allReviews.length == 0) {
+      if (!this.allReviews || this.allReviews.length == 0) {
         this.resetReviewsState()
         this.updateIsReviewsLoading(true)
-        this.queryCompanyReviews(this.companyId)
+        this.queryJobReviews(this.companyId)
       }
     },
     userReviewsButtonClicked(uid) {
@@ -1049,17 +1049,30 @@ export default {
         }
       }
     },
+    companyJobsButtonClicked(url) {
+      this.resetCompanyJobsState()
+      this.$router.push(url)
+    },
     ...mapActions({
       queryCompanyDetail: 'company/queryCompanyDetail',
       updateIsLoading: 'company/updateIsLoading',
       resetCompanyState: 'company/resetState',
-      queryCompanyReviews: 'reviews/queryCompanyReviews',
-      updateIsReviewsLoading: 'reviews/updateIsCompanyReviewsLoading',
-      resetReviewsState: 'reviews/resetCompanyReviewsState',
+      queryJobReviews: 'reviews/queryJobReviews',
+      updateIsReviewsLoading: 'reviews/updateIsJobReviewsLoading',
+      resetReviewsState: 'reviews/resetJobReviewsState',
       queryUserReviews: 'reviews/queryUserReviews',
       updateIsUserReviewsLoading: 'reviews/updateIsUserReviewsLoading',
       resetUserReviewsState: 'reviews/resetUserReviewsState',
+      resetCompanyJobsState: 'jobs/resetCompanyJobsState',
     }),
   }
 }
 </script>
+<style>
+.dialog-toolbar {
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+</style>

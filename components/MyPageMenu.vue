@@ -29,16 +29,23 @@
         <v-list class="hidden-xs-only py-0" id="my-page-menu">
           <template v-for="(item, index) in mypageItems">
             <v-list-tile
-              :class="{ 'teal lighten-5': path.includes('user/' + item.value) }"
-              :to="'/user/' + item.value"
+              :class="{ 'teal lighten-5': path.includes('user/' + item.url) }"
+              @click="menuButtonClicked(item.url)"
             >
               <v-list-tile-action>
-                <v-icon>{{ item.icon }}</v-icon>
+                <v-icon
+                  :class="{
+                    'teal--text': $route.path.includes('/user/' + item.url),
+                  }"
+                >
+                  {{ item.icon }}
+                </v-icon>
               </v-list-tile-action>
               <v-list-tile-content>
                 <v-list-tile-title
                   :class="{
                     'body-2': $vuetify.breakpoint.smOnly,
+                    'teal--text': $route.path.includes('/user/' + item.url),
                   }"
                 >
                   {{ item.title }}
@@ -56,28 +63,29 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex'
 export default {
   data: () => ({
     dropdownText: '',
     mypageItems: [
       {
         title: 'パス',
-        value: 'passes',
+        url: 'passes',
         icon: 'card_giftcard'
       },
       {
         title: 'キャリア',
-        value: 'career',
+        url: 'career',
         icon: 'work_outline'
       },
       {
         title: 'フィードバック',
-        value: 'feedbacks',
+        url: 'feedbacks',
         icon: 'chat_bubble_outline'
       },
       {
         title: 'レビュー',
-        value: 'reviews',
+        url: 'reviews',
         icon: 'bar_chart'
       },
     ],
@@ -104,6 +112,25 @@ export default {
       this.dropdownText = 'パス'
     }
   },
+  methods: {
+    menuButtonClicked(url) {
+      if (url == 'feedbacks' && this.$route.name != 'user-feedbacks') {
+        this.resetFeedbacksState()
+      } else if (url == 'reviews' && this.$route.name != 'user-reviews') {
+        this.resetReviewsState()
+        this.resetCareerState()
+      } else if (url == 'career' && this.$route.name != 'user-career') {
+        this.resetCareerState()
+      }
+
+      this.$router.push('/user/' + url)
+    },
+    ...mapActions({
+      resetFeedbacksState: 'feedbacks/resetState',
+      resetReviewsState: 'reviews/resetUserReviewsState',
+      resetCareerState: 'career/resetState',
+    }),
+  }
 }
 </script>
 <style>

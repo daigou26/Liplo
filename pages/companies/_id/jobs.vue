@@ -224,10 +224,10 @@ export default {
     ...mapState({
       isRefreshing: state => state.isRefreshing,
       uid: state => state.uid,
-      jobs: state => state.jobs.jobs,
-      isInitialLoading: state => state.jobs.isInitialLoading,
-      isLoading: state => state.jobs.isLoading,
-      allJobsQueried: state => state.jobs.allJobsQueried,
+      jobs: state => state.jobs.companyJobs,
+      isInitialLoading: state => state.jobs.isInitialCompanyJobsLoading,
+      isLoading: state => state.jobs.isCompanyJobsLoading,
+      allJobsQueried: state => state.jobs.allCompanyJobsQueried,
     })
   },
   mounted() {
@@ -241,11 +241,13 @@ export default {
     }
     this.windowHeight = window.innerHeight - toolbarHeight - 48 - 30
 
-    this.resetState()
-    this.updateIsInitialLoading(true)
-    this.updateIsLoading(true)
-    // query jobs
-    this.queryCompanyJobs(this.$route.params.id)
+    if (!this.jobs || (this.jobs != null && this.jobs.length == 0)) {
+      this.resetState()
+      this.updateIsInitialLoading(true)
+      this.updateIsLoading(true)
+      // query jobs
+      this.queryCompanyJobs(this.$route.params.id)
+    }
   },
   methods: {
     infiniteHandler($state) {
@@ -266,9 +268,9 @@ export default {
     },
     ...mapActions({
       queryCompanyJobs: 'jobs/queryCompanyJobs',
-      updateIsInitialLoading: 'jobs/updateIsInitialLoading',
-      updateIsLoading: 'jobs/updateIsLoading',
-      resetState: 'jobs/resetState',
+      updateIsInitialLoading: 'jobs/updateIsInitialCompanyJobsLoading',
+      updateIsLoading: 'jobs/updateIsCompanyJobsLoading',
+      resetState: 'jobs/resetCompanyJobsState',
     }),
   }
 }

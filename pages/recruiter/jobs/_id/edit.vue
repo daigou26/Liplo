@@ -213,10 +213,12 @@
                 class="pt-4"
                 v-model="tempStatus"
                 :items="statusItems"
-                label="status"
+                label="ステータス"
               ></v-select>
             </v-flex>
             <v-btn
+              class="mt-5"
+              style="width: 150px;"
               :loading="uploading"
               :disabled="!valid || !imageFileSizeValid || plan == null"
               @click="updateButtonClicked"
@@ -734,6 +736,7 @@ export default {
         params: this.$route.params,
         router: this.$router,
         companyId: this.companyId,
+        previousImageUrl: this.imageUrl,
         imageFile: this.imageFile,
         title: this.tempTitle,
         content: this.tempContent,

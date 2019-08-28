@@ -59,8 +59,7 @@ service cloud.firestore {
       allow write: if request.auth.uid == uid;
     }
     match /users/{uid}/notifications/{notificationId} {
-      allow read;
-      allow update: if request.auth.uid == uid;
+      allow read, update: if request.auth.uid == uid;
       allow create: if request.auth != null;
     }
     match /users/{uid}/career/{careerId} {
@@ -70,9 +69,8 @@ service cloud.firestore {
     }
     // chats
     match /chats/{chatId} {
-      allow update: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      allow read, update: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
       	== resource.data.companyId || request.auth.uid == resource.data.uid;
-      allow read;
     }
     // messages
     match /chats/{chatId}/messages/{messageId} {

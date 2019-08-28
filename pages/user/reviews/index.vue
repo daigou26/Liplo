@@ -185,7 +185,13 @@ export default {
     }
     this.windowHeight = window.innerHeight - toolbarHeight - 30
 
-    if (this.uid != null && this.uid != '' && !this.isQueried) {
+    if (
+      this.uid != null &&
+      this.uid != '' &&
+      !this.isQueried &&
+      (!this.notReviewedLists || (this.notReviewedLists != null && this.notReviewedLists.length == 0)) &&
+      (!this.userReviews || (this.userReviews != null && this.userReviews.length == 0))
+    ) {
       this.resetReviewsState()
       this.resetCareerState()
       this.updateIsInitialUserReviewsLoading(true)

@@ -123,12 +123,12 @@ export const actions = {
         nuxt.error({ statusCode: 404, message: 'not found' })
       })
   },
-  sendFeedback({commit, state}, {router, params, goodPoint, advice}) {
+  sendFeedback({commit, state, dispatch}, {router, params, goodPoint, advice}) {
     const feedbackId = params.id
 
     // encrypt
     var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
-    
+
     const feedbackData = {
       goodPoint: simpleCrypto.encrypt(goodPoint),
       advice: simpleCrypto.encrypt(advice),
@@ -140,6 +140,7 @@ export const actions = {
       .doc(feedbackId)
       .update(feedbackData)
       .then(() => {
+        dispatch('feedbacks/resetState', {}, { root: true })
         router.replace({path: '/recruiter/feedbacks'})
         // analytics
         event('user', 'feedback')

@@ -56,7 +56,7 @@
           <v-card
             v-else
             flat
-            :to='item.url'
+            @click="menuButtonClicked(item.url)"
             class="clickable py-2"
           >
             <v-list-tile>
@@ -139,7 +139,22 @@ export default {
     this.windowHeight = window.innerHeight - toolbarHeight - 48 - 30
   },
   methods: {
+    menuButtonClicked(url) {
+      if (url == '/user/feedbacks' && this.$route.name != 'user-feedbacks') {
+        this.resetFeedbacksState()
+      } else if (url == '/user/reviews' && this.$route.name != 'user-reviews') {
+        this.resetReviewsState()
+        this.resetCareerState()
+      } else if (url == '/user/career' && this.$route.name != 'user-career') {
+        this.resetCareerState()
+      }
+
+      this.$router.push(url)
+    },
     ...mapActions({
+      resetFeedbacksState: 'feedbacks/resetState',
+      resetReviewsState: 'reviews/resetUserReviewsState',
+      resetCareerState: 'career/resetState',
       signOut: 'signOut',
     }),
   }
