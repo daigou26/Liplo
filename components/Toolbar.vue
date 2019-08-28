@@ -296,7 +296,7 @@
                   <v-list-tile-title class="text-color">ダッシュボード</v-list-tile-title>
                 </v-list-tile>
                 <v-divider></v-divider>
-                <v-list-tile to="/recruiter/notifications" class="hidden-sm-and-up">
+                <v-list-tile @click="allNotificationsButtonClicked('/recruiter/notifications')" class="hidden-sm-and-up">
                   <v-list-tile-title class="text-color">通知</v-list-tile-title>
                 </v-list-tile>
                 <v-divider class="hidden-sm-and-up"></v-divider>
@@ -599,7 +599,7 @@
           </div>
           <v-divider v-if="notifications && canReadAll"></v-divider>
           <div v-if="notifications && canReadAll" class="text-xs-center py-3">
-            <v-btn flat small to="/user/notifications" style="color: #00897B">
+            <v-btn flat small @click="allNotificationsButtonClicked('/user/notifications')" style="color: #00897B">
               すべて表示する
             </v-btn>
           </div>
@@ -1455,7 +1455,6 @@ export default {
         this.queryLatestNotifications(this.uid)
       }
     },
-    // 全て表示するボタン
     allNotificationsButtonClicked(url) {
       this.resetNotificationsState()
       this.$router.push(url)

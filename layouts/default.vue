@@ -66,7 +66,7 @@
             color="teal"
             class="font-weight-bold"
             flat
-            to="/user/notifications"
+            @click="allNotificationsButtonClicked('/user/notifications')"
           >
             <span v-if="!hasNewNotification" style="font-size: 10px;">通知</span>
             <v-icon v-if="!hasNewNotification">notifications_none</v-icon>
@@ -170,6 +170,10 @@ export default {
     })
   },
   methods: {
+    allNotificationsButtonClicked(url) {
+      this.resetNotificationsState()
+      this.$router.push(url)
+    },
     homeButtonClicked() {
       if (this.$route.name != 'index') {
         this.resetJobsState()
@@ -178,6 +182,7 @@ export default {
     },
     ...mapActions({
       resetJobsState: 'jobs/resetState',
+      resetNotificationsState: 'notifications/resetState',
     }),
   }
 }
