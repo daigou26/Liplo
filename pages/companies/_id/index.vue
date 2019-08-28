@@ -474,7 +474,8 @@
               <nuxt-link
                 v-if="jobs && jobs.length > 1"
                 class="pl-2 teal--text font-weight-bold link-text"
-                :to="'/companies/' + companyId + '/jobs'"
+                to=""
+                @click.native="companyJobsButtonClicked('/companies/' + companyId + '/jobs')"
               >
                 募集をすべて見る
               </nuxt-link>
@@ -1051,6 +1052,10 @@ export default {
         }
       }
     },
+    companyJobsButtonClicked(url) {
+      this.resetCompanyJobsState()
+      this.$router.push(url)
+    },
     ...mapActions({
       queryCompanyDetail: 'company/queryCompanyDetail',
       updateIsLoading: 'company/updateIsLoading',
@@ -1061,6 +1066,7 @@ export default {
       queryUserReviews: 'reviews/queryUserReviews',
       updateIsUserReviewsLoading: 'reviews/updateIsUserReviewsLoading',
       resetUserReviewsState: 'reviews/resetUserReviewsState',
+      resetCompanyJobsState: 'jobs/resetCompanyJobsState',
     }),
   }
 }
