@@ -270,7 +270,8 @@ export const actions = {
     commit('setNotReviewedCompany', null)
     commit('updateIsNotReviewedCompanyLoading', false)
   },
-  resetCareerInfoState({commit}) {
+  resetCareerDetailState({commit}) {
+    commit('updateIsLoading', false)
     commit('setOccupation', '')
     commit('setJobDescription', '')
     commit('setCompanyName', '')

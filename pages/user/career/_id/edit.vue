@@ -259,7 +259,7 @@ export default {
       queryCareerDetail: 'career/queryCareerDetail',
       updateCareer: 'career/updateCareer',
       updateIsLoading: 'career/updateIsLoading',
-      resetState: 'career/resetCareerInfoState',
+      resetState: 'career/resetCareerDetailState',
     }),
   }
 }
