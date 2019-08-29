@@ -191,12 +191,18 @@
             label="特徴"
             chips
             multiple
+            hint="複数選択可"
+            persistent-hint
           ></v-select>
           <v-select
             class="pt-5"
-            v-model="tempIndustry"
+            v-model="tempIndustries"
             :items="industryItems"
             label="業界（必須）"
+            multiple
+            chips
+            hint="複数選択可"
+            persistent-hint
           ></v-select>
           <v-text-field
             class="pt-5"
@@ -220,7 +226,7 @@
               class="mt-5"
               style="width: 150px;"
               :loading="uploading"
-              :disabled="!valid || !imageFileSizeValid || plan == null"
+              :disabled="postButtonDisabled || plan == null"
               @click="updateButtonClicked"
             >
               更新
@@ -344,8 +350,9 @@ export default {
       '平均年齢が20代',
       '19時以降勤務可能'
     ],
-    tempIndustry: '',
+    tempIndustries: [],
     industryItems: [
+      'IT',
       '教育',
       '人材',
       '金融',
@@ -371,6 +378,15 @@ export default {
     tempStatus: null,
   }),
   computed: {
+    postButtonDisabled() {
+      return (!this.valid ||
+        !this.imageFileSizeValid ||
+        this.tempOccupation == null ||
+        this.tempWorkday == null ||
+        this.tempIndustries == null ||
+        this.tempIndustries.length == 0
+      )
+    },
     statusItems() {
       return this.status == 'draft'
         ? [
@@ -415,7 +431,7 @@ export default {
       idealCandidate: state => state.companyJob.idealCandidate,
       occupation: state => state.companyJob.occupation,
       features: state => state.companyJob.features,
-      industry: state => state.companyJob.industry,
+      industries: state => state.companyJob.industries,
       nearestStation: state => state.companyJob.nearestStation,
       status: state => state.companyJob.status,
       isLoading: state => state.companyJob.isLoading,
@@ -546,33 +562,48 @@ export default {
         this.tempFeatures.push('19時以降勤務可能')
       }
     },
-    industry(industry) {
-      if (industry.education == true) {
-        this.tempIndustry = '教育'
-      } else if (industry.hr == true) {
-        this.tempIndustry = '人材'
-      } else if (industry.finance == true) {
-        this.tempIndustry = '金融'
-      } else if (industry.healthcare == true) {
-        this.tempIndustry = '医療・福祉'
-      } else if (industry.entertainment == true) {
-        this.tempIndustry = 'エンタメ'
-      } else if (industry.travel == true) {
-        this.tempIndustry = '旅行'
-      } else if (industry.game == true) {
-        this.tempIndustry = 'ゲーム'
-      } else if (industry.ad == true) {
-        this.tempIndustry = '広告'
-      } else if (industry.media == true) {
-        this.tempIndustry = 'メディア'
-      } else if (industry.maker == true) {
-        this.tempIndustry = 'メーカー'
-      } else if (industry.food == true) {
-        this.tempIndustry = '飲食'
-      } else if (industry.fashion == true) {
-        this.tempIndustry = 'ファッション'
-      } else if (industry.others == true) {
-        this.tempIndustry = 'その他'
+    industries(industries) {
+      if (industries.it == true) {
+        this.tempIndustries.push('IT')
+      }
+      if (industries.education == true) {
+        this.tempIndustries.push('教育')
+      }
+      if (industries.hr == true) {
+        this.tempIndustries.push('人材')
+      }
+      if (industries.finance == true) {
+        this.tempIndustries.push('金融')
+      }
+      if (industries.healthcare == true) {
+        this.tempIndustries.push('医療・福祉')
+      }
+      if (industries.entertainment == true) {
+        this.tempIndustries.push('エンタメ')
+      }
+      if (industries.travel == true) {
+        this.tempIndustries.push('旅行')
+      }
+      if (industries.game == true) {
+        this.tempIndustries.push('ゲーム')
+      }
+      if (industries.ad == true) {
+        this.tempIndustries.push('広告')
+      }
+      if (industries.media == true) {
+        this.tempIndustries.push('メディア')
+      }
+      if (industries.maker == true) {
+        this.tempIndustries.push('メーカー')
+      }
+      if (industries.food == true) {
+        this.tempIndustries.push('飲食')
+      }
+      if (industries.fashion == true) {
+        this.tempIndustries.push('ファッション')
+      }
+      if (industries.others == true) {
+        this.tempIndustries.push('その他')
       }
     },
     status(status) {
@@ -674,7 +705,8 @@ export default {
         features.worktime = true
       }
 
-      let industry = {
+      let industries = {
+        it: false,
         education: false,
         hr: false,
         finance: false,
@@ -689,20 +721,50 @@ export default {
         fashion: false,
         others: false,
       }
-      switch (this.tempIndustry) {
-        case '教育': industry.education = true; break
-        case '人材': industry.hr = true; break
-        case '金融': industry.finance = true; break
-        case '医療・福祉': industry.healthcare = true; break
-        case 'エンタメ': industry.entertainment = true; break
-        case '旅行': industry.travel = true; break
-        case 'ゲーム': industry.game = true; break
-        case '広告': industry.ad = true; break
-        case 'メディア': industry.media = true; break
-        case 'メーカー': industry.maker = true; break
-        case '飲食': industry.food = true; break
-        case 'ファッション': industry.fashion = true; break
-        case 'その他': industry.others = true; break
+
+      if (this.tempIndustries) {
+        if (this.tempIndustries.includes('IT')) {
+          industries.it = true
+        }
+        if (this.tempIndustries.includes('教育')) {
+          industries.education = true
+        }
+        if (this.tempIndustries.includes('人材')) {
+          industries.hr = true
+        }
+        if (this.tempIndustries.includes('金融')) {
+          industries.finance = true
+        }
+        if (this.tempIndustries.includes('医療・福祉')) {
+          industries.healthcare = true
+        }
+        if (this.tempIndustries.includes('エンタメ')) {
+          industries.entertainment = true
+        }
+        if (this.tempIndustries.includes('旅行')) {
+          industries.travel = true
+        }
+        if (this.tempIndustries.includes('ゲーム')) {
+          industries.game = true
+        }
+        if (this.tempIndustries.includes('広告')) {
+          industries.ad = true
+        }
+        if (this.tempIndustries.includes('メディア')) {
+          industries.media = true
+        }
+        if (this.tempIndustries.includes('メーカー')) {
+          industries.maker = true
+        }
+        if (this.tempIndustries.includes('飲食')) {
+          industries.food = true
+        }
+        if (this.tempIndustries.includes('ファッション')) {
+          industries.fashion = true
+        }
+        if (this.tempIndustries.includes('その他')) {
+          industries.others = true
+        }
       }
 
       let workweekDays = {
@@ -751,7 +813,7 @@ export default {
         idealCandidate: this.tempIdealCandidate,
         occupation: occupation,
         features: features,
-        industry: industry,
+        industries: industries,
         nearestStation: this.tempNearestStation,
         environment: this.tempEnvironment,
         status: status,
