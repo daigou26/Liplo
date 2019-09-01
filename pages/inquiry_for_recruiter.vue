@@ -583,7 +583,7 @@ export default {
     ],
     content: '',
     contentRules: [
-      v => (v.length <= 300) || '300文字以内でお願いします'
+      v => (v.length <= 3000) || '3000文字以内でお願いします'
     ],
   }),
   computed: {

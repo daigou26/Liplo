@@ -1270,7 +1270,7 @@ export default {
     goodPoint: '',
     advice: '',
     feedbackRules: [
-      v => (v.length <= 2000) || '2000字以内で入力してください'
+      v => (v.length <= 1000) || '1000字以内で入力してください'
     ],
     tempTags: [],
     tagRules: [

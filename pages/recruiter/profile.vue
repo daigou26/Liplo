@@ -227,7 +227,7 @@
                 'title': $vuetify.breakpoint.smAndUp,
               }"
             >
-              紹介文
+              自己紹介
             </v-card-title>
             <div v-show="!isEditingSelfIntro">
               <v-btn
@@ -311,7 +311,7 @@ export default {
     editUserNameValid: true,
     tempSelfIntro: '',
     selfIntroRules: [
-      v => (v.length <= 1000) || '300字以内で入力してください'
+      v => (v.length <= 1000) || '1000字以内で入力してください'
     ],
     editSelfIntroValid: true,
     tempPosition: '',
