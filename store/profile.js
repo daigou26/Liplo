@@ -40,6 +40,7 @@ export const state = () => ({
   laboratory: '',
   grade: '',
   graduationYear: '',
+  address: '',
   birthDate: '',
   isEditingUserInfo: false,
   acceptedOffers: [],
@@ -159,6 +160,9 @@ export const mutations = {
   setGraduationYear(state, graduationYear) {
     state.graduationYear = graduationYear
   },
+  setAddress(state, address) {
+    state.address = address
+  },
   setBirthDate(state, birthDate) {
     state.birthDate = birthDate
   },
@@ -224,7 +228,8 @@ export const actions = {
           commit('setDepartment', doc.data()['department'] != null ? doc.data()['department'] : '')
           commit('setLaboratory', doc.data()['laboratory'] != null ? doc.data()['laboratory'] : '')
           commit('setGrade', grade)
-          commit('setGraduationYear', doc.data()['graduationYear'])
+          commit('setGraduationYear', doc.data()['graduationYear'] != null ? doc.data()['graduationYear'] : '')
+          commit('setAddress', doc.data()['address'] != null ? doc.data()['address'] : '')
           commit('setBirthDate', doc.data()['birthDate'])
           commit('setAcceptedOffers', doc.data()['acceptedOffers'])
         }
@@ -726,13 +731,14 @@ export const actions = {
   updateIsEditingUserInfo({commit}, isEditing) {
     commit('updateIsEditingUserInfo', isEditing)
   },
-  updateUserInfo({commit}, {uid, university, faculty, department, laboratory, grade, graduationYear}) {
+  updateUserInfo({commit}, {uid, university, faculty, department, laboratory, grade, graduationYear, address}) {
     let userData = {
       university: university,
       faculty: faculty,
       department: department,
       laboratory: laboratory,
-      graduationYear: Number(graduationYear)
+      graduationYear: Number(graduationYear),
+      address: address
     }
 
     // 学年
@@ -780,6 +786,7 @@ export const actions = {
         commit('setLaboratory', laboratory)
         commit('setGrade', grade)
         commit('setGraduationYear', graduationYear)
+        commit('setAddress', address)
         commit('updateIsEditingUserInfo', false)
       })
       .catch((error) => {
@@ -832,6 +839,7 @@ export const actions = {
     commit('setLaboratory')
     commit('setGrade', '')
     commit('setGraduationYear', '')
+    commit('setAddress', '')
     commit('setBirthDate', '')
     commit('updateIsEditingUserInfo', null)
     commit('setAcceptedOffers', [])

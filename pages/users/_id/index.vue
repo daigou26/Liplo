@@ -329,7 +329,7 @@
             </v-flex>
           </div>
           <!-- 基本情報 -->
-          <div v-if="university || faculty || department || graduationYear">
+          <div v-if="university || faculty || department || laboratory || grade || graduationYear || address">
             <v-layout
               align-center
               justify-space-between
@@ -369,6 +369,10 @@
                 <div v-if="graduationYear" class="pb-2">
                   <span>卒業年度:</span>
                   <span class="pl-2">{{ graduationYear }}年</span>
+                </div>
+                <div v-if="address" class="pb-2">
+                  <span>住所:</span>
+                  <span class="pl-2">{{ address }}</span>
                 </div>
               </v-list>
             </v-flex>
@@ -531,6 +535,7 @@ export default {
       laboratory: state => state.user.laboratory,
       grade: state => state.user.grade,
       graduationYear: state => state.user.graduationYear,
+      address: state => state.user.address,
       birthDate: state => state.user.birthDate,
       desiredOccupations: state => state.user.desiredOccupations,
       isCandidate: state => state.user.isCandidate,

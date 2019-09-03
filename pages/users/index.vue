@@ -107,20 +107,27 @@
                         {{ user.selfIntro.length > 100 ? '...' : '' }}
                       </div>
                     </v-flex>
-                    <!-- 所属 -->
+                    <!-- 住所 -->
                     <v-flex v-if="user.university" sm2 xs3 pt-4>
+                      <div class="text-color">住所</div>
+                    </v-flex>
+                    <v-flex v-if="user.address" class="text-color" xs8 offset-xs1 px-2 pt-4>
+                      {{ user.address }}
+                    </v-flex>
+                    <!-- 所属 -->
+                    <v-flex v-if="user.university" sm2 xs3 pt-2>
                       <div class="text-color">所属</div>
                     </v-flex>
-                    <v-flex v-if="user.university" class="text-color" xs8 offset-xs1 px-2 pt-4>
+                    <v-flex v-if="user.university" class="text-color" xs8 offset-xs1 px-2 pt-2>
                       {{ user.university }}
                       <span v-if="user.faculty" class="pl-2">{{ user.faculty}}</span>
                       <span v-if="user.department" class="pl-2">{{ user.department}}</span>
                     </v-flex>
                     <!-- 学年 -->
-                    <v-flex v-if="user.grade && user.grade != 'others'" sm2 xs3 pt-4>
+                    <v-flex v-if="user.grade && user.grade != 'others'" sm2 xs3 pt-2>
                       <div class="text-color">学年</div>
                     </v-flex>
-                    <v-flex v-if="user.grade && user.grade != 'others'" class="text-color" xs8 offset-xs1 px-2 pt-4>
+                    <v-flex v-if="user.grade && user.grade != 'others'" class="text-color" xs8 offset-xs1 px-2 pt-2>
                       <span v-if="user.grade == 'B1'">大学１年</span>
                       <span v-else-if="user.grade == 'B2'">大学２年</span>
                       <span v-else-if="user.grade == 'B3'">大学３年</span>
@@ -129,17 +136,17 @@
                       <span v-else-if="user.grade == 'M2'">修士２年</span>
                     </v-flex>
                     <!-- 卒業年度 -->
-                    <v-flex v-if="user.graduationYear" sm2 xs3 pt-4>
+                    <v-flex v-if="user.graduationYear" sm2 xs3 pt-2>
                       <div class="text-color">卒業年度</div>
                     </v-flex>
-                    <v-flex v-if="user.graduationYear" class="text-color" xs8 offset-xs1 px-2 pt-4>
+                    <v-flex v-if="user.graduationYear" class="text-color" xs8 offset-xs1 px-2 pt-2>
                       {{ user.graduationYear }}年
                     </v-flex>
                     <!-- スキル -->
-                    <v-flex v-if="user.skills" sm2 xs3 pt-4>
+                    <v-flex v-if="user.skills" sm2 xs3 pt-3>
                       <div class="text-color">スキル</div>
                     </v-flex>
-                    <v-flex v-if="user.skills" xs8 offset-xs1 px-2 pt-4>
+                    <v-flex v-if="user.skills" xs8 offset-xs1 px-2 pt-3>
                       <template v-if="index < 5" v-for="(skill, index) in user.skills">
                         <v-chip color="#FF5A5F" outline><strong>{{ skill }}</strong></v-chip>
                       </template>

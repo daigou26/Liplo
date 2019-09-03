@@ -129,6 +129,7 @@ export const actions = {
               department: doc.data()['department'],
               grade: doc.data()['grade'],
               graduationYear: doc.data()['graduationYear'],
+              address: doc.data()['address'],
               completionPercentage: doc.data()['completionPercentage']
             }
             commit('addUser', user)
@@ -176,6 +177,7 @@ export const actions = {
               department: doc.data()['department'],
               grade: doc.data()['grade'],
               graduationYear: doc.data()['graduationYear'],
+              address: doc.data()['address'],
               completionPercentage: doc.data()['completionPercentage']
             }
             commit('addUser', user)

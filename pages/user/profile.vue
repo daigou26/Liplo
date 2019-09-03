@@ -963,20 +963,22 @@
                         </div>
                       </template>
                     </v-list>
+                    <div v-if="!isEditingLinks && (links == null || links.length == 0)" class="light-text-color pl-4">
+                      GitHub、ポートフォリオ、メディア掲載記事などのURLがあれば入力しましょう！
+                    </div>
                     <!-- 関連リンクの編集画面 -->
                     <div v-show="isEditingLinks">
                       <v-form v-model="editLinksValid" @submit.prevent="">
                         <div class="d-flex pb-3">
                           <v-flex xs12 class="px-4 break text-xs-right">
                             <v-text-field
-                              solo
                               label="タイトル"
+                              placeholder="例) Github"
                               v-model="tempLinkTitle"
                               :rules="linkTitleRules"
                               required
                             ></v-text-field>
                             <v-text-field
-                              solo
                               label="URL"
                               v-model="tempLinkUrl"
                               :rules="linkUrlRules"
@@ -1113,6 +1115,10 @@
                         <span class="pl-2">{{ graduationYear }}<span v-if="graduationYear">年</span></span>
                       </div>
                       <div class="pb-2">
+                        <span>住所:</span>
+                        <span class="pl-2">{{ address }}</span>
+                      </div>
+                      <div class="pb-2">
                         <span>生年月日:</span>
                         <span class="pl-2">{{ birthDateText }}</span>
                       </div>
@@ -1121,7 +1127,8 @@
                       v-show="!isEditingUserInfo"
                       class="pl-4 caption light-text-color"
                     >
-                      ※ 卒業年度は、採用担当者がパスの有効期間を決める際に必要になるため、入力をお願いします。
+                      ※ 卒業年度は、採用担当者がパスの有効期間を決める際に必要になります。
+                        また、住所などの情報は入力されている方がスカウトされやすくなります。
                     </div>
                     <!-- 基本情報の編集画面 -->
                     <div v-show="isEditingUserInfo" class="text-xs-right">
@@ -1168,6 +1175,14 @@
                           type="number"
                           required
                         ></v-text-field>
+                        <!-- 住所 -->
+                        <v-text-field
+                          label="住所（都道府県）"
+                          placeholder="例）東京都"
+                          v-model="tempAddress"
+                          :rules="userInfoRules"
+                          required
+                        ></v-text-field>
                         <div class="hidden-xs-only">
                           <v-btn
                             @click="updateIsEditingUserInfo(false)"
@@ -1184,6 +1199,7 @@
                               laboratory: tempLaboratory,
                               grade: tempGrade,
                               graduationYear: tempGraduationYear,
+                              address: tempAddress,
                             })"
                           >
                             更新
@@ -1201,6 +1217,7 @@
                               laboratory: tempLaboratory,
                               grade: tempGrade,
                               graduationYear: tempGraduationYear,
+                              address: tempAddress,
                             })"
                           >
                             更新
@@ -1362,6 +1379,7 @@ export default {
       v => (String(v).length <= 4) || '卒業年度を入力してください',
       v => (Number(v) >= 2019) || '2019年以降を入力してください'
     ],
+    tempAddress: '',
     userInfoRules: [
       v => (v.length <= 50) || '50字以内で記入してください'
     ],
@@ -1404,11 +1422,13 @@ export default {
       percentage += (this.whatWantToDo && this.whatWantToDo != '') ? 12 : 0
       percentage += (this.portfolio && this.portfolio.length > 0) ? 12 : 0
       percentage += (this.skills && this.skills.length > 0) ? 12 : 0
-      percentage += (this.links && this.links.length > 0) ? 12 : 0
+      percentage += (this.links && this.links.length > 0) ? 4 : 0
       percentage += (this.university && this.university != '') ? 4 : 0
       percentage += (this.faculty && this.faculty != '') ? 4 : 0
       percentage += (this.department && this.department != '') ? 4 : 0
+      percentage += (this.grade && this.grade != '') ? 4 : 0
       percentage += (this.graduationYear && this.graduationYear != '') ? 4 : 0
+      percentage += (this.address && this.address != '') ? 4 : 0
       return percentage
     },
     avatarSize() {
@@ -1465,6 +1485,7 @@ export default {
       grade: state => state.profile.grade,
       laboratory: state => state.profile.laboratory,
       graduationYear: state => state.profile.graduationYear,
+      address: state => state.profile.address,
       birthDate: state => state.profile.birthDate,
       isEditingUserInfo: state => state.profile.isEditingUserInfo,
     }),
@@ -1626,6 +1647,7 @@ export default {
       this.tempDepartment = this.department
       this.tempLaboratory = this.laboratory
       this.tempGraduationYear = this.graduationYear
+      this.tempAddress = this.address
 
       if (this.grade) {
         this.tempGrade = this.grade
