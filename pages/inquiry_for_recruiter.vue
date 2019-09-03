@@ -65,23 +65,21 @@
                 採用に変化を
               </div>
             </h1>
-            Liplo は長期インターンを通して、 求人者と求職者をマッチングする 採用プラットフォームです。 企業の雰囲気や文化、求職者の働き方や性格など 実際に働いてみないと分からないことをお互いが知ることで、 ミスマッチを減らし、より良い採用が出来るようサポートします。
+            Liplo は長期インターンを通して、 求人者と求職者をマッチングする 採用プラットフォームです。
+            企業の雰囲気や文化、求職者の働き方や性格など実際に働いてみないと分からないことをお互いが知ることで、
+            ミスマッチを減らし、より良い採用が出来るようサポートします。
           </v-flex>
           <v-flex xs10 sm4 class="pt-4 hidden-sm-and-up img-shadow">
-            <v-card
-              elevation="3"
-            >
-              <v-img
-                max-height="400"
-                v-bind:src="require('@/assets/images/inquiry/job_view.png')"
-              ></v-img>
-            </v-card>
+            <v-img
+              max-height="500"
+              v-bind:src="require('@/assets/images/inquiry/liplo_desktop.png')"
+            ></v-img>
           </v-flex>
           <v-img
             class="mr-5 hidden-xs-only img-shadow"
-            max-height="400"
-            max-width="400"
-            v-bind:src="require('@/assets/images/inquiry/job_view.png')"
+            max-height="500"
+            max-width="500"
+            v-bind:src="require('@/assets/images/inquiry/liplo_desktop.png')"
           ></v-img>
           <v-flex white--text sm6 md4 hidden-xs-only class="pt-4 pl-5">
               <h1
