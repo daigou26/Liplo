@@ -2997,7 +2997,7 @@ exports.editProfile = functions.region('asia-northeast1')
     const portfolio = newValue.portfolio
     const skills = newValue.skills
     const links = newValue.links
-    const graduationDate = newValue.graduationDate
+    const graduationYear = newValue.graduationYear
     const university = newValue.university
     const faculty = newValue.faculty
     const department = newValue.department
@@ -3043,7 +3043,7 @@ exports.editProfile = functions.region('asia-northeast1')
       percentage += (university && university != '') ? 4 : 0
       percentage += (faculty && faculty != '') ? 4 : 0
       percentage += (department && department != '') ? 4 : 0
-      percentage += (graduationDate && graduationDate != '') ? 4 : 0
+      percentage += (graduationYear && graduationYear != '') ? 4 : 0
 
       // プロフィール完成度が 50% を超えていたら検索に表示される
       if (percentage > 50) {

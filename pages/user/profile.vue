@@ -1109,8 +1109,8 @@
                         <span class="pl-2">{{ grade }}</span>
                       </div>
                       <div class="pb-2">
-                        <span>卒業予定日:</span>
-                        <span class="pl-2">{{ graduationDateText }}</span>
+                        <span>卒業年度:</span>
+                        <span class="pl-2">{{ graduationYear }}<span v-if="graduationYear">年</span></span>
                       </div>
                       <div class="pb-2">
                         <span>生年月日:</span>
@@ -1121,7 +1121,7 @@
                       v-show="!isEditingUserInfo"
                       class="pl-4 caption light-text-color"
                     >
-                      ※ 卒業予定日は、採用担当者がパスの有効期間を決める際に必要になるため、入力をお願いします。
+                      ※ 卒業年度は、採用担当者がパスの有効期間を決める際に必要になるため、入力をお願いします。
                     </div>
                     <!-- 基本情報の編集画面 -->
                     <div v-show="isEditingUserInfo" class="text-xs-right">
@@ -1159,33 +1159,15 @@
                           hide-details
                           label="学年"
                         ></v-select>
-                        <!-- 卒業予定日 -->
-                        <v-menu
-                          v-model="graduationDateMenu"
-                          :close-on-content-click="false"
-                          lazy
-                          transition="scale-transition"
-                          offset-y
-                          full-width
-                          min-width="290px"
-                        >
-                          <template v-slot:activator="{ on }">
-                            <v-text-field
-                              v-model="tempGraduationDate"
-                              label="卒業予定日"
-                              append-icon="event"
-                              readonly
-                              required
-                              v-on="on"
-                            ></v-text-field>
-                          </template>
-                          <v-date-picker
-                            v-model="tempGraduationDate"
-                            color="teal"
-                            locale="ja"
-                            @input="graduationDateMenu = false"
-                          ></v-date-picker>
-                        </v-menu>
+                        <!-- 卒業年度 -->
+                        <v-text-field
+                          label="卒業年度"
+                          v-model="tempGraduationYear"
+                          :rules="graduationYearRules"
+                          suffix="年"
+                          type="number"
+                          required
+                        ></v-text-field>
                         <div class="hidden-xs-only">
                           <v-btn
                             @click="updateIsEditingUserInfo(false)"
@@ -1201,7 +1183,7 @@
                               department: tempDepartment,
                               laboratory: tempLaboratory,
                               grade: tempGrade,
-                              graduationDate: tempGraduationDate,
+                              graduationYear: tempGraduationYear,
                             })"
                           >
                             更新
@@ -1218,7 +1200,7 @@
                               department: tempDepartment,
                               laboratory: tempLaboratory,
                               grade: tempGrade,
-                              graduationDate: tempGraduationDate,
+                              graduationYear: tempGraduationYear,
                             })"
                           >
                             更新
@@ -1375,8 +1357,11 @@ export default {
       '修士２年',
       'その他'
     ],
-    graduationDateMenu: false,
-    tempGraduationDate: '',
+    tempGraduationYear: '',
+    graduationYearRules: [
+      v => (String(v).length <= 4) || '卒業年度を入力してください',
+      v => (Number(v) >= 2019) || '2019年以降を入力してください'
+    ],
     userInfoRules: [
       v => (v.length <= 50) || '50字以内で記入してください'
     ],
@@ -1423,7 +1408,7 @@ export default {
       percentage += (this.university && this.university != '') ? 4 : 0
       percentage += (this.faculty && this.faculty != '') ? 4 : 0
       percentage += (this.department && this.department != '') ? 4 : 0
-      percentage += (this.graduationDate && this.graduationDate != '') ? 4 : 0
+      percentage += (this.graduationYear && this.graduationYear != '') ? 4 : 0
       return percentage
     },
     avatarSize() {
@@ -1435,16 +1420,6 @@ export default {
     },
     name: function() {
       return this.lastName + ' ' + this.firstName
-    },
-    graduationDateText: function() {
-      let date = this.graduationDate
-      if (date) {
-        let year  = date.getFullYear()
-        let month = date.getMonth() + 1
-        let day  = date.getDate()
-        date = `${year}/${month}/${day}`
-        return date
-      }
     },
     birthDateText: function() {
       if (this.birthDate) {
@@ -1489,7 +1464,7 @@ export default {
       department: state => state.profile.department,
       grade: state => state.profile.grade,
       laboratory: state => state.profile.laboratory,
-      graduationDate: state => state.profile.graduationDate,
+      graduationYear: state => state.profile.graduationYear,
       birthDate: state => state.profile.birthDate,
       isEditingUserInfo: state => state.profile.isEditingUserInfo,
     }),
@@ -1650,14 +1625,12 @@ export default {
       this.tempFaculty = this.faculty
       this.tempDepartment = this.department
       this.tempLaboratory = this.laboratory
-      this.tempGrade = this.grade
+      this.tempGraduationYear = this.graduationYear
 
-      if (this.graduationDate) {
-        let date = this.graduationDate
-        this.tempGraduationDate =
-          String(date.getFullYear()) + '-' +
-          String(date.getMonth() + 1) + '-' +
-          String(date.getDate())
+      if (this.grade) {
+        this.tempGrade = this.grade
+      } else {
+        this.tempGrade = '大学１年'
       }
 
       this.updateIsEditingUserInfo(true)

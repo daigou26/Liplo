@@ -128,12 +128,12 @@
                       <span v-else-if="user.grade == 'M1'">修士１年</span>
                       <span v-else-if="user.grade == 'M2'">修士２年</span>
                     </v-flex>
-                    <!-- 卒業予定日 -->
-                    <v-flex v-if="user.graduationDate" sm2 xs3 pt-4>
-                      <div class="text-color">卒業予定日</div>
+                    <!-- 卒業年度 -->
+                    <v-flex v-if="user.graduationYear" sm2 xs3 pt-4>
+                      <div class="text-color">卒業年度</div>
                     </v-flex>
-                    <v-flex v-if="user.graduationDate" class="text-color" xs8 offset-xs1 px-2 pt-4>
-                      {{ user.graduationDate }}
+                    <v-flex v-if="user.graduationYear" class="text-color" xs8 offset-xs1 px-2 pt-4>
+                      {{ user.graduationYear }}年
                     </v-flex>
                     <!-- スキル -->
                     <v-flex v-if="user.skills" sm2 xs3 pt-4>
