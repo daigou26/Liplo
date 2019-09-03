@@ -186,12 +186,18 @@
           label="特徴"
           chips
           multiple
+          hint="複数選択可"
+          persistent-hint
         ></v-select>
         <v-select
           class="pt-5"
-          v-model="industry"
+          v-model="industries"
           :items="industryItems"
           label="業界（必須）"
+          multiple
+          chips
+          hint="複数選択可"
+          persistent-hint
         ></v-select>
         <v-text-field
           class="pt-5"
@@ -349,8 +355,9 @@ export default {
       '平均年齢が20代',
       '19時以降勤務可能'
     ],
-    industry: null,
+    industries: null,
     industryItems: [
+      'IT',
       '教育',
       '人材',
       '金融',
@@ -378,7 +385,7 @@ export default {
         !this.imageFileSizeValid ||
         this.occupation == null ||
         this.workday == null ||
-        this.industry == null
+        this.industries == null
       )
     },
     imageRatio() {
@@ -487,7 +494,9 @@ export default {
         }
       }
 
-      let industry = {
+
+      let industries = {
+        it: false,
         education: false,
         hr: false,
         finance: false,
@@ -502,20 +511,66 @@ export default {
         fashion: false,
         others: false,
       }
-      switch (this.industry) {
-        case '教育': industry.education = true; break
-        case '人材': industry.hr = true; break
-        case '金融': industry.finance = true; break
-        case '医療・福祉': industry.healthcare = true; break
-        case 'エンタメ': industry.entertainment = true; break
-        case '旅行': industry.travel = true; break
-        case 'ゲーム': industry.game = true; break
-        case '広告': industry.ad = true; break
-        case 'メディア': industry.media = true; break
-        case 'メーカー': industry.maker = true; break
-        case '飲食': industry.food = true; break
-        case 'ファッション': industry.fashion = true; break
-        case 'その他': industry.others = true; break
+      // analytics用
+      let industriesText = ''
+
+      if (this.industries) {
+        if (this.industries.includes('IT')) {
+          industries.it = true
+          industriesText += 'it'
+        }
+        if (this.industries.includes('教育')) {
+          industries.education = true
+          industriesText += (industriesText == '') ? 'education' : ',education'
+        }
+        if (this.industries.includes('人材')) {
+          industries.hr = true
+          industriesText += (industriesText == '') ? 'hr' : ',hr'
+        }
+        if (this.industries.includes('金融')) {
+          industries.finance = true
+          industriesText += (industriesText == '') ? 'finance' : ',finance'
+        }
+        if (this.industries.includes('医療・福祉')) {
+          industries.healthcare = true
+          industriesText += (industriesText == '') ? 'healthcare' : ',healthcare'
+        }
+        if (this.industries.includes('エンタメ')) {
+          industries.entertainment = true
+          industriesText += (industriesText == '') ? 'entertainment' : ',entertainment'
+        }
+        if (this.industries.includes('旅行')) {
+          industries.travel = true
+          industriesText += (industriesText == '') ? 'travel' : ',travel'
+        }
+        if (this.industries.includes('ゲーム')) {
+          industries.game = true
+          industriesText += (industriesText == '') ? 'game' : ',game'
+        }
+        if (this.industries.includes('広告')) {
+          industries.ad = true
+          industriesText += (industriesText == '') ? 'ad' : ',ad'
+        }
+        if (this.industries.includes('メディア')) {
+          industries.media = true
+          industriesText += (industriesText == '') ? 'media' : ',media'
+        }
+        if (this.industries.includes('メーカー')) {
+          industries.maker = true
+          industriesText += (industriesText == '') ? 'maker' : ',maker'
+        }
+        if (this.industries.includes('飲食')) {
+          industries.food = true
+          industriesText += (industriesText == '') ? 'food' : ',food'
+        }
+        if (this.industries.includes('ファッション')) {
+          industries.fashion = true
+          industriesText += (industriesText == '') ? 'fashion' : ',fashion'
+        }
+        if (this.industries.includes('その他')) {
+          industries.others = true
+          industriesText += (industriesText == '') ? 'others' : ',others'
+        }
       }
 
       let workweekDays = {
@@ -561,8 +616,8 @@ export default {
         idealCandidate: this.idealCandidate,
         occupation: occupation,
         features: features,
-        industry: industry,
-        industryText: this.industry,
+        industries: industries,
+        industriesText: industriesText,
         nearestStation: this.nearestStation,
         environment: this.environment,
         status: status,

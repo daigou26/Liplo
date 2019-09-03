@@ -1,4 +1,4 @@
-自己紹介<template>
+<template>
   <v-container grid-list-md pa-0>
     <v-layout
       row

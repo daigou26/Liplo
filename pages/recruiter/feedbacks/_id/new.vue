@@ -98,7 +98,7 @@ export default {
     advice: '',
     feedbackRules: [
       v => !!v || '入力されていません',
-      v => (v.length <= 200) || '200字以内で入力してください'
+      v => (v.length <= 1000) || '1000字以内で入力してください'
     ],
   }),
   computed: {

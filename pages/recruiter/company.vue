@@ -1529,7 +1529,7 @@ export default {
     foundedDateMenu: false,
     tempUrl: '',
     urlRules: [
-      v => (v.length <= 100) || '100字以内で入力してください',
+      v => (v.length <= 200) || '200字以内で入力してください',
       v => (v.includes('http://') || v.includes('https://')) || '無効なURLです'
     ],
     tempEmployeesCount: null,

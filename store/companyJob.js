@@ -18,7 +18,7 @@ export const state = () => ({
   idealCandidate: '',
   occupation: '',
   features: '',
-  industry: '',
+  industries: '',
   nearestStation: '',
   field: '',
   createdAt: '',
@@ -73,8 +73,8 @@ export const mutations = {
   setFeatures(state, features) {
     state.features = features
   },
-  setIndustry(state, industry) {
-    state.industry = industry
+  setIndustries(state, industries) {
+    state.industries = industries
   },
   setNearestStation(state, nearestStation) {
     state.nearestStation = nearestStation
@@ -119,7 +119,7 @@ export const actions = {
           commit('setIdealCandidate', doc.data()['idealCandidate'] ? doc.data()['idealCandidate'] : '')
           commit('setOccupation', doc.data()['occupation'])
           commit('setFeatures', doc.data()['features'])
-          commit('setIndustry', doc.data()['industry'])
+          commit('setIndustries', doc.data()['industries'])
           commit('setNearestStation', doc.data()['nearestStation'] ? doc.data()['nearestStation'] : '')
           commit('setStatus', doc.data()['status'])
           commit('setCreatedAt', doc.data()['createdAt'])
@@ -151,7 +151,7 @@ export const actions = {
     idealCandidate,
     occupation,
     features,
-    industry,
+    industries,
     nearestStation,
     environment,
     status
@@ -168,7 +168,7 @@ export const actions = {
       worktime: worktime,
       occupation: occupation,
       features: features,
-      industry: industry,
+      industries: industries,
       nearestStation: nearestStation,
       environment: environment,
       status: status,
@@ -188,7 +188,7 @@ export const actions = {
       idealCandidate: idealCandidate,
       occupation: occupation,
       features: features,
-      industry: industry,
+      industries: industries,
       nearestStation: nearestStation,
       environment: environment,
       status: status,
@@ -299,8 +299,8 @@ export const actions = {
     idealCandidate,
     occupation,
     features,
-    industry,
-    industryText,
+    industries,
+    industriesText,
     nearestStation,
     environment,
     status
@@ -329,7 +329,7 @@ export const actions = {
           worktime: worktime,
           occupation: occupation,
           features: features,
-          industry: industry,
+          industries: industries,
           nearestStation: nearestStation,
           createdAt: createdAt,
           timestamp: timestamp,
@@ -351,7 +351,7 @@ export const actions = {
           idealCandidate: idealCandidate,
           occupation: occupation,
           features: features,
-          industry: industry,
+          industries: industries,
           nearestStation: nearestStation,
           environment: environment,
           createdAt: createdAt,
@@ -373,7 +373,7 @@ export const actions = {
             event({
               eventCategory: 'job',
               eventAction: 'posted',
-              eventLabel: industryText
+              eventLabel: industriesText
             })
             // companyJobs に追加
             let date = createdAt
@@ -418,7 +418,7 @@ export const actions = {
     commit('setIdealCandidate', '')
     commit('setOccupation', '')
     commit('setFeatures', '')
-    commit('setIndustry', '')
+    commit('setIndustries', '')
     commit('setNearestStation', '')
     commit('setStatus', '')
     commit('updateIsLoading', false)

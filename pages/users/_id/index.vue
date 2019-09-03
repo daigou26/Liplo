@@ -483,7 +483,7 @@ export default {
     message: '',
     messageRules: [
       v => !!v || 'メッセージを入力してください',
-      v => (v.length <= 300) || '300字以内で入力してください'
+      v => (v.length <= 3000) || '3000字以内で入力してください'
     ],
   }),
   computed: {
