@@ -3382,7 +3382,7 @@ exports.sendCompanyInquiryMail = functions
 
         const mailOptions = {
           from: `Liplo <noreply@liplo.jp>`,
-          to: 'daigo_uenuma@liplo.jp',
+          to: 'contact@liplo.jp',
         }
         mailOptions.subject = `${data.companyName}の${data.userName}様からのお問い合わせ`
         mailOptions.html = `
@@ -3420,7 +3420,7 @@ exports.sendContact = functions
       .then(() => {
         const mailOptions = {
           from: `Liplo <noreply@liplo.jp>`,
-          to: 'daigo_uenuma@liplo.jp',
+          to: 'contact@liplo.jp',
         }
         mailOptions.subject = `お問い合わせ`
         mailOptions.html = `
