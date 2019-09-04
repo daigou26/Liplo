@@ -14,6 +14,7 @@
               v-if="profileImageUrl"
               :src="profileImageUrl"
             ></v-img>
+            <v-icon v-else class="avatar-border">person</v-icon>
           </v-list-tile-avatar>
           <v-list-tile-content>
             <v-list-tile-title

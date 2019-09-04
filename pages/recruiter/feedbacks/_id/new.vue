@@ -31,6 +31,7 @@
                 :src="profileImageUrl"
                 class="avatar-border"
               ></v-img>
+              <v-icon v-else class="avatar-border">person</v-icon>
             </v-list-tile-avatar>
             <v-list-tile-content>
               <v-list-tile-title class="text-color font-weight-bold return">{{ userName }}</v-list-tile-title>

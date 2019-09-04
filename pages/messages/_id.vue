@@ -164,6 +164,7 @@
                           :size="40"
                         >
                           <img v-if="message.pic.imageUrl" :src="message.pic.imageUrl">
+                          <v-icon v-else>person</v-icon>
                         </v-avatar>
                       </div>
                       <!-- message -->
@@ -340,6 +341,7 @@
                           :size="40"
                         >
                           <img v-if="message.pic.imageUrl" :src="message.pic.imageUrl">
+                          <v-icon v-else>person</v-icon>
                         </v-avatar>
                       </div>
                       <!-- message -->

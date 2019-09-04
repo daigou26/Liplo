@@ -74,6 +74,7 @@
                           :size="40"
                         >
                           <img v-if="profileImageUrl" :src="profileImageUrl">
+                          <v-icon v-else>person</v-icon>
                         </v-avatar>
                       </div>
                       <!-- message -->
