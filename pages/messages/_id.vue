@@ -75,7 +75,7 @@
                 >
                   <v-list-tile-avatar>
                     <v-avatar
-                      class="grey lighten-3"
+                      class="avatar-border"
                       :size="40"
                     >
                       <img v-if="chat.companyImageUrl" :src="chat.companyImageUrl">
@@ -160,7 +160,7 @@
                       <div>
                         <v-avatar
                           v-if="message.pic != null"
-                          class="grey lighten-3 mx-2"
+                          class="mx-2 avatar-border"
                           :size="40"
                         >
                           <img v-if="message.pic.imageUrl" :src="message.pic.imageUrl">
@@ -251,7 +251,7 @@
                 >
                   <v-list-tile-avatar>
                     <v-avatar
-                      class="grey lighten-3"
+                      class="avatar-border"
                       :size="40"
                     >
                       <img v-if="chat.companyImageUrl" :src="chat.companyImageUrl">
@@ -336,7 +336,7 @@
                       <div>
                         <v-avatar
                           v-if="message.pic != null"
-                          class="grey lighten-3 mx-2"
+                          class="mx-2 avatar-border"
                           :size="40"
                         >
                           <img v-if="message.pic.imageUrl" :src="message.pic.imageUrl">

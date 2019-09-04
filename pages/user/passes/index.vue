@@ -82,9 +82,7 @@
                     </div>
                     <v-avatar
                       :size="avatarSize"
-                      :class="{
-                        'grey lighten-3': !pass.companyImageUrl,
-                      }"
+                      class="avatar-border"
                     >
                       <img v-if="pass.companyImageUrl" :src="pass.companyImageUrl" alt="avatar">
                     </v-avatar>
@@ -137,9 +135,7 @@
                     </div>
                     <v-avatar
                       :size="avatarSize"
-                      :class="{
-                        'grey lighten-3': !pass.companyImageUrl,
-                      }"
+                      class="avatar-border"
                     >
                       <img v-if="pass.companyImageUrl" :src="pass.companyImageUrl" alt="avatar">
                     </v-avatar>

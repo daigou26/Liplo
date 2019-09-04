@@ -34,9 +34,10 @@
         <v-card v-if="uid && uid != ''" flat :to="'/users/' + uid">
           <v-card-actions class="px-0 pb-4">
             <v-list-tile>
-              <v-list-tile-avatar color="grey darken-3">
+              <v-list-tile-avatar>
                 <v-img
                   :src="profileImageUrl"
+                  class="avatar-border"
                 ></v-img>
               </v-list-tile-avatar>
               <v-list-tile-content>

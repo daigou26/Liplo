@@ -42,6 +42,7 @@
                   <v-img
                     v-if="user.imageUrl"
                     :src="user.imageUrl"
+                    class="avatar-border"
                   ></v-img>
                   <v-icon v-else :size="40">person</v-icon>
                 </v-list-tile-avatar>

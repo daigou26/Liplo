@@ -44,10 +44,10 @@
             >
               <v-avatar
                 :size="avatarSize"
-                class="grey lighten-3"
+                class="avatar-border"
               >
                 <img v-if="userImageUrl" :src="userImageUrl" alt="avatar">
-                <v-icon v-else :size="60">person</v-icon>
+                <v-icon v-else :size="avatarSize">person</v-icon>
               </v-avatar>
               <div class="title text-color font-weight-bold break pl-4 ">
                 {{ name }}

@@ -64,9 +64,10 @@
         >
           <v-card v-if="companyId" flat :to="'/companies/' + companyId">
             <v-card-actions class="px-0 mb-4">
-              <v-list-tile-avatar color="grey darken-3">
+              <v-list-tile-avatar>
                 <v-img
                   :src="companyImageUrl"
+                  class="avatar-border"
                 ></v-img>
               </v-list-tile-avatar>
               <v-list-tile-content>

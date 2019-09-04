@@ -3360,10 +3360,10 @@ exports.sendCompanyInquiryMail = functions
       createdAt: new Date()
     }
     if (data.department) {
-      contactData.department = data.department
+      inquiryData.department = data.department
     }
     if (data.content) {
-      contactData.content = data.content
+      inquiryData.content = data.content
     }
 
     return admin.firestore().collection('companyInquiries')

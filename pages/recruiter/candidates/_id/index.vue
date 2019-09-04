@@ -41,10 +41,11 @@
           <v-card v-if="user" flat>
             <v-list two-line class="py-0">
               <v-list-tile :to="'/users/' + user.uid">
-                <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
+                <v-list-tile-avatar class="hidden-xs-only">
                   <v-img
                     v-if="user"
                     :src="user.imageUrl"
+                    class="avatar-border"
                   ></v-img>
                 </v-list-tile-avatar>
                 <v-list-tile-content>
@@ -81,10 +82,11 @@
           <v-card v-if="user" flat>
             <v-list two-line>
               <v-list-tile :to="'/users/' + user.uid">
-                <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
+                <v-list-tile-avatar class="hidden-xs-only">
                   <v-img
                     v-if="user"
                     :src="user.imageUrl"
+                    class="avatar-border"
                   ></v-img>
                 </v-list-tile-avatar>
                 <v-list-tile-content>
@@ -965,10 +967,11 @@
                     <v-card flat class="grey lighten-4">
                       <v-list two-line class="grey lighten-4">
                         <v-list-tile>
-                          <v-list-tile-avatar color="grey darken-3">
+                          <v-list-tile-avatar>
                             <v-img
                               v-if="comment.pic.imageUrl"
                               :src="comment.pic.imageUrl"
+                              class="avatar-border"
                             ></v-img>
                           </v-list-tile-avatar>
                           <v-list-tile-content>
@@ -1033,7 +1036,7 @@
                               <div>
                                 <v-avatar
                                   v-if="message.user != null"
-                                  class="grey lighten-3 mx-2"
+                                  class="avatar-border mx-2"
                                   :size="40"
                                 >
                                   <img v-if="user.imageUrl" :src="user.imageUrl">

@@ -51,9 +51,10 @@
               <v-list v-if="notReviewedLists && notReviewedLists.length > 0" two-line>
                 <template v-for="(item, index) in notReviewedLists">
                   <v-list-tile :to="'/user/reviews/new?id=' + item.careerId" >
-                    <v-list-tile-avatar color="grey darken-3">
+                    <v-list-tile-avatar>
                       <v-img
                         :src="item.companyImageUrl"
+                        class="avatar-border"
                       ></v-img>
                     </v-list-tile-avatar>
                     <v-list-tile-content>
@@ -85,9 +86,10 @@
               <v-list v-if="userReviews && userReviews.length > 0" two-line>
                 <template v-for="(review, index) in userReviews">
                   <v-list-tile :to="'/user/reviews/' + review.reviewId" >
-                    <v-list-tile-avatar color="grey darken-3">
+                    <v-list-tile-avatar>
                       <v-img
                         :src="review.companyImageUrl"
+                        class="avatar-border"
                       ></v-img>
                     </v-list-tile-avatar>
                     <v-list-tile-content>

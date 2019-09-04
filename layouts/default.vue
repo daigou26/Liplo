@@ -189,6 +189,10 @@ export default {
 </script>
 
 <style>
+.avatar-border {
+  border-radius: 50%;
+  border: solid 1px #EEEEEE;
+}
 #footer a{
   text-decoration: none;
 }

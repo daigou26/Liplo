@@ -117,10 +117,11 @@
             >
               <v-avatar
                 :size="avatarSize"
-                class="grey lighten-3 clickable"
+                class="clickable avatar-border"
                 @click="companyImageClicked"
               >
                 <img v-if="companyImageUrl" :src="companyImageUrl">
+                <v-icon v-else>camera_alt</v-icon>
               </v-avatar>
               <div class="pt-2">
                 <div class="title text-color font-weight-bold break pl-4">
@@ -158,7 +159,7 @@
                   <div class="py-4">
                     <v-avatar
                       :size="selectedCompanyImageSize"
-                      class="grey lighten-3"
+                      class="avatar-border"
                     >
                       <v-img v-if="selectedCompanyImage" :src="selectedCompanyImage" />
                       <v-img v-else-if="companyImageUrl" :src="companyImageUrl" />
@@ -259,7 +260,7 @@
                     <div class="text-xs-center" style="max-width: 150px;">
                       <v-avatar
                         :size="avatarSize"
-                        class="grey lighten-3"
+                        class="avatar-border"
                       >
                         <img v-if="member.imageUrl" :src="member.imageUrl">
                       </v-avatar>
@@ -1530,7 +1531,7 @@ export default {
     tempUrl: '',
     urlRules: [
       v => (v.length <= 200) || '200字以内で入力してください',
-      v => (v.includes('http://') || v.includes('https://')) || '無効なURLです'
+      v => (!v || v.includes('http://') || v.includes('https://')) || '無効なURLです'
     ],
     tempEmployeesCount: null,
     editCompanyInfoValid: true,

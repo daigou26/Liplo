@@ -25,7 +25,7 @@
           >
             <v-avatar
               :size="avatarSize"
-              class="grey lighten-3 clickable"
+              class="avatar-border clickable"
               @click="profileImageClicked"
             >
               <img v-if="imageUrl" :src="imageUrl">
@@ -67,7 +67,7 @@
                 <div class="py-4">
                   <v-avatar
                     :size="selectedImageSize"
-                    class="grey lighten-3"
+                    class="avatar-border"
                   >
                     <v-img v-if="selectedImage" :src="selectedImage" />
                     <v-img v-else-if="imageUrl" :src="imageUrl" />
