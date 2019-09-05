@@ -277,7 +277,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
         return transaction.get(companyInfoRef).then(function(companyInfoDoc) {
           if (companyInfoDoc.exists) {
             const companyName = companyInfoDoc.data().companyName
-            const companyImageUrl = companyInfoDoc.data().imageUrl
+            const companyImageUrl = companyInfoDoc.data().companyImageUrl
             let currentCandidates = companyInfoDoc.data().currentCandidates
             let allCandidates = companyInfoDoc.data().allCandidates
             let hiringPassCount = companyInfoDoc.data().hiringPassCount
@@ -606,7 +606,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
 
           if (companyInfoDoc.exists) {
             const companyName = companyInfoDoc.data().companyName
-            const companyImageUrl = companyInfoDoc.data().imageUrl
+            const companyImageUrl = companyInfoDoc.data().companyImageUrl
             let currentCandidates = companyInfoDoc.data().currentCandidates
             let allCandidates = companyInfoDoc.data().allCandidates
             let hiringPassCount = companyInfoDoc.data().hiringPassCount
@@ -1451,7 +1451,7 @@ exports.scoutUser = functions.region('asia-northeast1')
       return transaction.get(companyInfoRef).then(function(companyInfoDoc) {
         if (companyInfoDoc.exists) {
           const companyName = companyInfoDoc.data().companyName
-          const companyImageUrl = companyInfoDoc.data().imageUrl
+          const companyImageUrl = companyInfoDoc.data().companyImageUrl
           const members = companyInfoDoc.data().members
           var currentCandidates = companyInfoDoc.data().currentCandidates
           var allCandidates = companyInfoDoc.data().allCandidates
@@ -1504,7 +1504,7 @@ exports.scoutUser = functions.region('asia-northeast1')
       console.log('update candidates count completed.')
 
       const companyName = companyInfoDoc.data().companyName
-      const companyImageUrl = companyInfoDoc.data().imageUrl
+      const companyImageUrl = companyInfoDoc.data().companyImageUrl
       const members = companyInfoDoc.data().members
 
       // scoutedUsersに追加
@@ -1863,7 +1863,7 @@ exports.applyForJob = functions.region('asia-northeast1')
       return transaction.get(companyInfoRef).then(function(companyInfoDoc) {
         if (companyInfoDoc.exists) {
           const companyName = companyInfoDoc.data().companyName
-          const companyImageUrl = companyInfoDoc.data().imageUrl
+          const companyImageUrl = companyInfoDoc.data().companyImageUrl
           const members = companyInfoDoc.data().members
           var currentCandidates = companyInfoDoc.data().currentCandidates
           var allCandidates = companyInfoDoc.data().allCandidates
@@ -1915,7 +1915,7 @@ exports.applyForJob = functions.region('asia-northeast1')
       console.log('update candidates count completed.')
 
       const companyName = companyInfoDoc.data().companyName
-      const companyImageUrl = companyInfoDoc.data().imageUrl
+      const companyImageUrl = companyInfoDoc.data().companyImageUrl
       const members = companyInfoDoc.data().members
 
       const batch = admin.firestore().batch()
