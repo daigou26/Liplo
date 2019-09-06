@@ -286,9 +286,9 @@ export default {
       switch (this.$vuetify.breakpoint.name) {
         case 'xs': return '2'
         case 'sm': return '2.5'
-        case 'md': return '3'
-        case 'lg': return '3'
-        case 'xl': return '3'
+        case 'md': return '2.5'
+        case 'lg': return '2.5'
+        case 'xl': return '2.5'
       }
     },
     breakpoint() {
@@ -461,6 +461,6 @@ export default {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  z-index: 1
+  z-index: 10
 }
 </style>

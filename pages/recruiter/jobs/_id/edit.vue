@@ -403,9 +403,9 @@ export default {
       switch (this.breakpoint) {
         case 'xs': return '2'
         case 'sm': return '2.5'
-        case 'md': return '3'
-        case 'lg': return '3'
-        case 'xl': return '3'
+        case 'md': return '2.8'
+        case 'lg': return '2.8'
+        case 'xl': return '2.8'
       }
     },
     breakpoint() {
