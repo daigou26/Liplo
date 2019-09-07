@@ -291,6 +291,8 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
               currentCandidates.inbox -= 1
             } else if (beforeStatus.inProcess) {
               currentCandidates.inProcess -= 1
+            } else if (beforeStatus.intern) {
+              currentCandidates.intern -= 1
             } else if (beforeStatus.pass) {
               currentCandidates.pass -= 1
             } else if (beforeStatus.contracted) {
