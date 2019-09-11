@@ -91,8 +91,9 @@
                 <v-btn
                   color="primary"
                   flat
+                  :loading="uploading"
                   :disabled ="selectedImage == null || plan == null"
-                  @click="updateProfileImage({uid: uid, imageFile: imageFile})"
+                  @click="updateProfileImage({uid: uid, imageFile: imageFile});uploading = true"
                 >
                   変更
                 </v-btn>
@@ -294,7 +295,9 @@ export default {
   data: () => ({
     isQueried: false,
     windowHeight: 0,
-    imageFileSizeWarning: '5MB以下の画像を選択してください',
+    uploading: false,
+    imageFileSizeValid: true,
+    imageFileSizeWarning: '画像を選択してください（3MB以下）',
     selectedImageSize: 200,
     selectedImage: null,
     imageFile: null,
@@ -336,7 +339,6 @@ export default {
       isLoading: state => state.profile.isLoading,
       plan: state => state.profile.plan,
       imageUrl: state => state.profile.imageUrl,
-      imageFileSizeValid: state => state.profile.imageFileSizeValid,
       isEditingProfileImage: state => state.profile.isEditingProfileImage,
       position: state => state.profile.position,
       isEditingPosition: state => state.profile.isEditingPosition,
@@ -374,34 +376,30 @@ export default {
   },
   methods: {
     profileImageClicked() {
-      this.updateImageFileSizeValid(true)
+      this.uploading = false
+      this.imageFileSizeValid = true
       this.updateIsEditingProfileImage(true)
       this.selectedImage = null
       this.imageFile = null
     },
     onFileChange(e) {
-      this.updateImageFileSizeValid(true)
       let files = e.target.files || e.dataTransfer.files
-      // 画像サイズは5MB以下のみ
-      if (files[0] != null && files[0].size/1024/1024 <= 5) {
-        if (this.isEditingProfileImage) {
-          this.imageFile = files[0]
-        }
-      } else {
-        this.updateImageFileSizeValid(false)
-      }
-
-      if (this.imageFileSizeValid) {
+      // 画像サイズは3MB以下のみ
+      if (files[0] != null && files[0].size/1024/1024 <= 3) {
+        this.imageFileSizeValid = true
+        this.imageFile = files[0]
         this.createImage(files[0])
+      } else {
+        this.imageFileSizeValid = false
+        this.selectedImage = null
+        this.imageFile = null
       }
     },
     createImage(file) {
       // アップロードした画像を表示
       let reader = new FileReader()
       reader.onload = (e) => {
-        if (this.isEditingProfileImage) {
-          this.selectedImage = e.target.result
-        }
+        this.selectedImage = e.target.result
       }
       reader.readAsDataURL(file)
     },
@@ -421,7 +419,6 @@ export default {
     ...mapActions({
       queryProfile: 'profile/queryProfile',
       updateIsLoading: 'profile/updateIsLoading',
-      updateImageFileSizeValid: 'profile/updateImageFileSizeValid',
       updateIsEditingProfileImage: 'profile/updateIsEditingProfileImage',
       updateProfileImage: 'profile/updateProfileImage',
       updateIsEditingUserName: 'profile/updateIsEditingUserName',

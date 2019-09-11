@@ -13,7 +13,6 @@ export const state = () => ({
   isEditingPosition: false,
   companyId: null,
   imageUrl: '',
-  imageFileSizeValid: true,
   isEditingProfileImage: false,
   firstName: '',
   lastName: '',
@@ -78,9 +77,6 @@ export const mutations = {
   },
   setImageUrl(state, imageUrl) {
     state.imageUrl = imageUrl
-  },
-  updateImageFileSizeValid(state, valid) {
-    state.imageFileSizeValid = valid
   },
   updateIsEditingProfileImage(state, isEditing) {
     state.isEditingProfileImage = isEditing
@@ -292,9 +288,6 @@ export const actions = {
   },
   setLastName({commit}, lastName) {
     commit('setLastName', lastName)
-  },
-  updateImageFileSizeValid({commit}, valid) {
-    commit('updateImageFileSizeValid', valid)
   },
   updateIsEditingProfileImage({commit}, isEditing) {
     commit('updateIsEditingProfileImage', isEditing)
@@ -813,7 +806,6 @@ export const actions = {
     commit('setUnsubscribe', null)
   },
   resetProfileState({commit}) {
-    commit('updateImageFileSizeValid', true)
     commit('updateIsEditingProfileImage', false)
     commit('setFirstName', '')
     commit('setLastName', '')

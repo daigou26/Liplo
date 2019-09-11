@@ -78,13 +78,13 @@
                             :size="selectedImageSize"
                             class="avatar-border"
                           >
-                            <v-img v-if="selectedImage" :src="selectedImage" />
+                            <v-img v-if="selectedProfileImage" :src="selectedProfileImage" />
                             <v-img v-else-if="imageUrl" :src="imageUrl" />
                             <v-icon v-else style="font-size: 150px">person</v-icon>
                           </v-avatar>
                         </div>
-                        <input type="file" v-on:change="onFileChange" accept='image/*'>
-                        <p v-show="!imageFileSizeValid" class="warning-text-color">
+                        <input type="file" v-on:change="onProfileImageFileChange" accept='image/*'>
+                        <p v-show="!profileImageFileSizeValid" class="warning-text-color">
                           {{ imageFileSizeWarning }}
                         </p>
                       </v-flex>
@@ -100,8 +100,9 @@
                         <v-btn
                           color="teal lighten-1"
                           flat
-                          :disabled ="selectedImage == null || !imageFileSizeValid"
-                          @click="updateProfileImage({uid: uid, imageFile: imageFile})"
+                          :loading="uploading"
+                          :disabled ="selectedProfileImage == null || !profileImageFileSizeValid"
+                          @click="updateProfileImage({uid: uid, imageFile: profileImageFile});uploading = true"
                         >
                           変更
                         </v-btn>
@@ -109,8 +110,9 @@
                       <div class="hidden-sm-and-up mx-4">
                         <v-btn
                           block
-                          :disabled ="selectedImage == null || !imageFileSizeValid"
-                          @click="updateProfileImage({uid: uid, imageFile: imageFile})"
+                          :loading="uploading"
+                          :disabled ="selectedProfileImage == null || !profileImageFileSizeValid"
+                          @click="updateProfileImage({uid: uid, imageFile: profileImageFile});uploading = true"
                         >
                           変更
                         </v-btn>
@@ -676,8 +678,8 @@
                           <v-flex xs12 class="px-4 break text-xs-right">
                             <div class="py-3">
                               <v-img :src="tempPortfolioItemImageUrl" height="200" class="grey lighten-3"/>
-                              <input type="file" v-on:change="onFileChange" accept='image/*'>
-                              <p v-if="!imageFileSizeValid" class="warning-text-color">
+                              <input type="file" v-on:change="onPortfolioImageFileChange" accept='image/*'>
+                              <p v-if="!portfolioImageFileSizeValid" class="warning-text-color">
                                 {{ imageFileSizeWarning }}
                               </p>
                             </div>
@@ -720,11 +722,12 @@
                                 削除
                               </v-btn>
                               <v-btn
+                                :loading="uploading"
                                 :disabled="
                                   !editPortfolioValid ||
                                   tempPortfolioItemImageUrl == null ||
                                   tempPortfolioItemImageUrl == '' ||
-                                  !imageFileSizeValid
+                                  !portfolioImageFileSizeValid
                                 "
                                 @click="updatePortfolio({
                                   uid: uid,
@@ -737,19 +740,20 @@
                                   title: tempPortfolioItemTitle,
                                   content: tempPortfolioItemContent,
                                   url: tempPortfolioItemUrl
-                                })"
+                                });uploading = true"
                               >
                                 更新
                               </v-btn>
                             </div>
                             <div class="hidden-sm-and-up">
                               <v-btn
+                                :loading="uploading"
                                 block
                                 :disabled="
                                   !editPortfolioValid ||
                                   tempPortfolioItemImageUrl == null ||
                                   tempPortfolioItemImageUrl == '' ||
-                                  !imageFileSizeValid
+                                  !portfolioImageFileSizeValid
                                 "
                                 @click="updatePortfolio({
                                   uid: uid,
@@ -762,7 +766,7 @@
                                   title: tempPortfolioItemTitle,
                                   content: tempPortfolioItemContent,
                                   url: tempPortfolioItemUrl
-                                })"
+                                });uploading = true"
                               >
                                 更新
                               </v-btn>
@@ -1287,10 +1291,13 @@ export default {
     windowHeight: 0,
     windowWidth: 0,
     xsWidth: false,
-    imageFileSizeWarning: '5MB以下の画像を選択してください',
+    uploading: false,
+    profileImageFileSizeValid: true,
+    portfolioImageFileSizeValid: true,
+    imageFileSizeWarning: '画像を選択してください（3MB以下）',
     selectedImageSize: 200,
-    selectedImage: null,
-    imageFile: null,
+    selectedProfileImage: null,
+    profileImageFile: null,
     tempFirstName: '',
     tempLastName: '',
     firstNameRules: [
@@ -1523,39 +1530,52 @@ export default {
   },
   methods: {
     profileImageClicked() {
-      this.updateImageFileSizeValid(true)
+      this.uploading = false
+      this.profileImageFileSizeValid = true
       this.updateIsEditingProfileImage(true)
-      this.selectedImage = null
-      this.imageFile = null
+      this.selectedProfileImage = null
+      this.profileImageFile = null
     },
-    onFileChange(e) {
-      this.updateImageFileSizeValid(true)
+    onProfileImageFileChange(e) {
       let files = e.target.files || e.dataTransfer.files
-      // 画像サイズは5MB以下のみ
-      if (files[0] != null && files[0].size/1024/1024 <= 5) {
-        if (this.isEditingProfileImage) {
-          this.imageFile = files[0]
-        } else if (this.isEditingPortfolio) {
-          this.updateIsPortfolioImageChanged(true)
-          this.tempPortfolioImageFile = files[0]
-        }
+      // 画像サイズは3MB以下のみ
+      if (files[0] != null && files[0].size/1024/1024 <= 3) {
+        this.profileImageFileSizeValid = true
+        this.profileImageFile = files[0]
+        this.createProfileImage(files[0])
       } else {
-        this.updateImageFileSizeValid(false)
-      }
-
-      if (this.imageFileSizeValid) {
-        this.createImage(files[0])
+        this.profileImageFileSizeValid = false
+        this.selectedProfileImage = null
+        this.profileImageFile = null
       }
     },
-    createImage(file) {
+    onPortfolioImageFileChange(e) {
+      let files = e.target.files || e.dataTransfer.files
+      // 画像サイズは3MB以下のみ
+      if (files[0] != null && files[0].size/1024/1024 <= 3) {
+        this.portfolioImageFileSizeValid = true
+        this.updateIsPortfolioImageChanged(true)
+        this.tempPortfolioImageFile = files[0]
+        this.createPortfolioImage(files[0])
+      } else {
+        this.portfolioImageFileSizeValid = false
+        this.tempPortfolioItemImageUrl = null
+        this.tempPortfolioImageFile = null
+      }
+    },
+    createProfileImage(file) {
       // アップロードした画像を表示
       let reader = new FileReader()
       reader.onload = (e) => {
-        if (this.isEditingProfileImage) {
-          this.selectedImage = e.target.result
-        } else if (this.isEditingPortfolio) {
-          this.tempPortfolioItemImageUrl = e.target.result
-        }
+        this.selectedProfileImage = e.target.result
+      }
+      reader.readAsDataURL(file)
+    },
+    createPortfolioImage(file) {
+      // アップロードした画像を表示
+      let reader = new FileReader()
+      reader.onload = (e) => {
+        this.tempPortfolioItemImageUrl = e.target.result
       }
       reader.readAsDataURL(file)
     },
@@ -1602,7 +1622,8 @@ export default {
     },
     portfolioEditButtonClicked(index) {
       // 初期化
-      this.updateImageFileSizeValid(true)
+      this.uploading = false
+      this.portfolioImageFileSizeValid = true
       this.updateIsPortfolioImageChanged(false)
       this.tempPortfolioImageFile = null
       this.setSelectedPortfolioItemIndex(index)
@@ -1619,6 +1640,9 @@ export default {
         this.tempPortfolioItemUrl = ''
       }
       this.updateIsEditingPortfolio(true)
+    },
+    updatePortfolioButtonClicked() {
+      this.uploading = true
     },
     skillsEditButtonClicked(index) {
       this.tempSkills = this.skills
@@ -1660,7 +1684,6 @@ export default {
     ...mapActions({
       queryProfile: 'profile/queryProfile',
       updateIsLoading: 'profile/updateIsLoading',
-      updateImageFileSizeValid: 'profile/updateImageFileSizeValid',
       updateIsEditingProfileImage: 'profile/updateIsEditingProfileImage',
       updateProfileImage: 'profile/updateProfileImage',
       updateIsEditingUserName: 'profile/updateIsEditingUserName',

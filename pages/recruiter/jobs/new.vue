@@ -248,7 +248,7 @@ export default {
     valid: true,
     uploading: false,
     imageFileSizeValid: true,
-    imageFileSizeWarning: '5MB以下の画像を選択してください',
+    imageFileSizeWarning: '画像を選択してください（3MB以下）',
     selectedImageSize: 200,
     selectedImage: null,
     imageFile: null,
@@ -409,12 +409,15 @@ export default {
   methods: {
     onFileChange(e) {
       let files = e.target.files || e.dataTransfer.files
-      // 画像サイズは5MB以下のみ
-      if (files[0] != null && files[0].size/1024/1024 <= 5) {
+      // 画像サイズは3MB以下のみ
+      if (files[0] != null && files[0].size/1024/1024 <= 3) {
+        this.imageFileSizeValid = true
         this.imageFile = files[0]
         this.createImage(files[0])
       } else {
         this.imageFileSizeValid = false
+        this.imageFile = null
+        this.selectedImage = null
       }
     },
     createImage(file) {
