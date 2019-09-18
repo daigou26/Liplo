@@ -36,10 +36,13 @@
         <v-list v-if="unwrittenFeedbacks && unwrittenFeedbacks.length > 0" two-line>
           <template v-for="(feedback, index) in unwrittenFeedbacks">
             <v-list-tile :to="'/recruiter/feedbacks/' + feedback.feedbackId + '/new'" >
-              <v-list-tile-avatar color="grey darken-3">
+              <v-list-tile-avatar>
                 <v-img
+                  v-if="feedback.profileImageUrl"
                   :src="feedback.profileImageUrl"
+                  class="avatar-border"
                 ></v-img>
+                <v-icon v-else class="avatar-border">person</v-icon>
               </v-list-tile-avatar>
               <v-list-tile-content>
                 <v-list-tile-title class="text-color font-weight-bold">{{ feedback.userName }}</v-list-tile-title>
@@ -74,10 +77,13 @@
         <v-list v-if="feedbacks && feedbacks.length > 0" two-line>
           <template v-for="(feedback, index) in feedbacks">
             <v-list-tile :to="'/recruiter/feedbacks/' + feedback.feedbackId" >
-              <v-list-tile-avatar color="grey darken-3">
+              <v-list-tile-avatar>
                 <v-img
+                  v-if="feedback.profileImageUrl"
                   :src="feedback.profileImageUrl"
+                  class="avatar-border"
                 ></v-img>
+                <v-icon v-else class="avatar-border">person</v-icon>
               </v-list-tile-avatar>
               <v-list-tile-content>
                 <v-list-tile-title class="text-color font-weight-bold">{{ feedback.userName }}</v-list-tile-title>

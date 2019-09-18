@@ -75,7 +75,7 @@
                 >
                   <v-list-tile-avatar>
                     <v-avatar
-                      class="grey lighten-3"
+                      class="avatar-border"
                       :size="40"
                     >
                       <img v-if="chat.companyImageUrl" :src="chat.companyImageUrl">
@@ -115,10 +115,8 @@
         </v-flex>
         <!-- messages (lg, md) -->
         <v-flex
-          v-if="params.id"
           md8
           hidden-sm-and-down
-
         >
           <v-layout
             row
@@ -160,10 +158,11 @@
                       <div>
                         <v-avatar
                           v-if="message.pic != null"
-                          class="grey lighten-3 mx-2"
+                          class="mx-2 avatar-border"
                           :size="40"
                         >
                           <img v-if="message.pic.imageUrl" :src="message.pic.imageUrl">
+                          <v-icon v-else>person</v-icon>
                         </v-avatar>
                       </div>
                       <!-- message -->
@@ -204,92 +203,8 @@
             </v-flex>
           </v-layout>
         </v-flex>
-        <!-- /chats の場合 -->
+        <!-- (sm, xs) -->
         <v-flex
-          v-else
-          md8
-          hidden-sm-and-down
-          class="text-xs-center"
-          style="background-color: #F5F5F5"
-          :class="{
-            'border-side': $vuetify.breakpoint.lgAndUp,
-          }"
-          :style="{ height: windowHeight + 'px' }"
-        >
-          <div class="pt-4">
-            左からチャットを選択してください
-          </div>
-
-        </v-flex>
-        <!-- urlが /messages の場合: chat lists (sm, xs)-->
-        <v-flex
-          v-if="params.id == null"
-          xs12
-          sm10
-          offset-sm1
-          hidden-md-and-up
-          :class="{
-            'pa-3': $vuetify.breakpoint.smOnly,
-          }"
-        >
-          <v-flex
-            class="scroll-y"
-            :class="{
-              'border': $vuetify.breakpoint.smOnly,
-            }"
-            :style="{ height: windowHeight + 'px' }"
-          >
-            <v-list
-              v-if="chats != null && chats.length != 0"
-              two-line
-              class="pa-2"
-            >
-              <template v-for="(chat, index) in chats">
-                <v-list-tile
-                  avatar
-                  :to="'/messages/' + chat.chatId"
-                >
-                  <v-list-tile-avatar>
-                    <v-avatar
-                      class="grey lighten-3"
-                      :size="40"
-                    >
-                      <img v-if="chat.companyImageUrl" :src="chat.companyImageUrl">
-                    </v-avatar>
-                  </v-list-tile-avatar>
-                  <v-list-tile-content>
-                    <v-list-tile-title>{{ chat.companyName }}</v-list-tile-title>
-                    <v-list-tile-sub-title >{{ chat.lastMessage }}</v-list-tile-sub-title>
-                  </v-list-tile-content>
-                  <v-list-tile-action class="pt-3" style="padding-bottom: 12px;">
-                    <v-list-tile-action-text>{{ chat.timestamp }}</v-list-tile-action-text>
-                    <v-avatar
-                      v-show="chat.userUnreadCount && chat.userUnreadCount != 0"
-                      size="22"
-                      color="#FF5A5F"
-                    >
-                      <span class="white--text" style="font-size: 12px">{{ chat.userUnreadCount > 99 ? '99+' : chat.userUnreadCount }}</span>
-                    </v-avatar>
-                  </v-list-tile-action>
-                </v-list-tile>
-                <v-divider
-                  v-if="chats.length != index + 1"
-                  :inset="true"
-                ></v-divider>
-              </template>
-            </v-list>
-            <infinite-loading
-              v-if="showInfiniteLoading && chats.length >= 20 && !isChatsLoading"
-              :distance="50"
-              spinner="waveDots"
-              @infinite="chatsInfiniteHandler">
-              <div slot="no-results"></div>
-            </infinite-loading>
-          </v-flex>
-        </v-flex>
-        <!-- urlが /messages/:id の場合: messages (sm, xs) -->
-        <v-flex
-          v-if="params.id != null"
           xs12
           sm10
           offset-sm1
@@ -336,10 +251,11 @@
                       <div>
                         <v-avatar
                           v-if="message.pic != null"
-                          class="grey lighten-3 mx-2"
+                          class="mx-2 avatar-border"
                           :size="40"
                         >
                           <img v-if="message.pic.imageUrl" :src="message.pic.imageUrl">
+                          <v-icon v-else>person</v-icon>
                         </v-avatar>
                       </div>
                       <!-- message -->
@@ -486,31 +402,25 @@ export default {
     this.showInfiniteLoading = true
 
     if (this.uid != null && this.uid != '' && !this.isQueried) {
-      if (this.params.id == null) {
-        this.resetChatsState()
-        this.updateIsInitialChatsLoading(true)
-        this.updateIsChatsLoading(true)
-        this.queryChats({uid: this.uid, companyId: null, chats: this.chats})
-      } else {
-        this.resetMessagesState()
-        this.updateIsInitialMessagesLoading(true)
-        this.updateIsMessagesLoading(true)
-        this.queryMessages({params: this.params, type: 'user'})
+      this.resetMessagesState()
+      this.updateIsInitialMessagesLoading(true)
+      this.updateIsMessagesLoading(true)
+      this.queryMessages({nuxt: this.$nuxt, params: this.params, type: 'user'})
 
-        if (this.breakpoint == 'md' || this.breakpoint == 'lg' || this.breakpoint == 'xl') {
-          // すでにchatsがある場合はクエリしない
-          if (this.chats == null || this.chats.length == 0) {
-            // urlに直接アクセスした場合
-            this.updateIsInitialChatsLoading(true)
-            this.updateIsChatsLoading(true)
-            this.queryChats({uid: this.uid, companyId: null, chats: this.chats})
-          } else {
-            // unreadCount 更新(local)
-            this.updateUnreadCount(this.params)
-          }
-        } else {
+      if (this.breakpoint == 'md' || this.breakpoint == 'lg' || this.breakpoint == 'xl') {
+        // すでにchatsがある場合はクエリしない
+        if (this.chats == null || this.chats.length == 0) {
+          // urlに直接アクセスした場合
+          this.updateIsInitialChatsLoading(true)
+          this.updateIsChatsLoading(true)
+          this.queryChats({uid: this.uid, companyId: null, chats: this.chats})
           this.queryChat({nuxt: this.$nuxt, params: this.params})
+        } else {
+          // unreadCount 更新(local)
+          this.updateUnreadCount(this.params)
         }
+      } else {
+        this.queryChat({nuxt: this.$nuxt, params: this.params})
       }
     }
   },
@@ -525,31 +435,25 @@ export default {
     uid(uid) {
       if (uid != null && uid != '') {
         this.isQueried = true
-        if (this.params.id == null) {
-          this.resetChatsState()
-          this.updateIsInitialChatsLoading(true)
-          this.updateIsChatsLoading(true)
-          this.queryChats({uid: uid, companyId: null, chats: this.chats})
-        } else {
-          this.resetMessagesState()
-          this.updateIsInitialMessagesLoading(true)
-          this.updateIsMessagesLoading(true)
-          this.queryMessages({params: this.params, type: 'user'})
+        this.resetMessagesState()
+        this.updateIsInitialMessagesLoading(true)
+        this.updateIsMessagesLoading(true)
+        this.queryMessages({nuxt: this.$nuxt, params: this.params, type: 'user'})
 
-          if (this.breakpoint == 'md' || this.breakpoint == 'lg' || this.breakpoint == 'xl') {
-            // すでにchatsがある場合はクエリしない
-            if (this.chats == null || this.chats.length == 0) {
-              // urlに直接アクセスした場合
-              // this.updateIsInitialChatsLoading(true)
-              this.updateIsChatsLoading(true)
-              this.queryChats({uid: uid, companyId: null, chats: this.chats})
-            } else {
-              // unreadCount 更新(local)
-              this.updateUnreadCount(this.params)
-            }
-          } else {
+        if (this.breakpoint == 'md' || this.breakpoint == 'lg' || this.breakpoint == 'xl') {
+          // すでにchatsがある場合はクエリしない
+          if (this.chats == null || this.chats.length == 0) {
+            // urlに直接アクセスした場合
+            this.updateIsInitialChatsLoading(true)
+            this.updateIsChatsLoading(true)
+            this.queryChats({uid: uid, companyId: null, chats: this.chats})
             this.queryChat({nuxt: this.$nuxt, params: this.params})
+          } else {
+            // unreadCount 更新(local)
+            this.updateUnreadCount(this.params)
           }
+        } else {
+          this.queryChat({nuxt: this.$nuxt, params: this.params})
         }
       }
     },

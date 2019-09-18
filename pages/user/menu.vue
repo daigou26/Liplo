@@ -8,12 +8,13 @@
       <!-- user name, image -->
       <v-card flat class="pb-4 pt-5">
         <v-list-tile to="/user/profile">
-          <v-list-tile-avatar color="grey darken-3">
+          <v-list-tile-avatar>
             <v-img
-              color="grey darken-3"
+              class="avatar-border"
               v-if="profileImageUrl"
               :src="profileImageUrl"
             ></v-img>
+            <v-icon v-else class="avatar-border">person</v-icon>
           </v-list-tile-avatar>
           <v-list-tile-content>
             <v-list-tile-title

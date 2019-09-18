@@ -2,7 +2,6 @@ export const strict = false
 import { firestore, storageRef, auth } from '@/plugins/firebase'
 
 export const state = () => ({
-  imageFileSizeValid: true,
   topImageUrl: '',
   isEditingTopImage: false,
   companyId: '',
@@ -59,9 +58,6 @@ export const state = () => ({
 })
 
 export const mutations = {
-  updateImageFileSizeValid(state, valid) {
-    state.imageFileSizeValid = valid
-  },
   setTopImageUrl(state, imageUrl) {
     state.topImageUrl = imageUrl
   },
@@ -278,9 +274,6 @@ export const actions = {
         commit('updateIsLoading', false)
         console.log("Error getting document:", error)
       })
-  },
-  updateImageFileSizeValid({commit}, valid) {
-    commit('updateImageFileSizeValid', valid)
   },
   updateIsEditingTopImage({commit}, isEditing) {
     commit('updateIsEditingTopImage', isEditing)
@@ -800,7 +793,6 @@ export const actions = {
     commit('updateIsLoading', isLoading)
   },
   resetState({commit}) {
-    commit('updateImageFileSizeValid', false)
     commit('setTopImageUrl', '')
     commit('updateIsEditingTopImage', false)
     commit('setCompanyId', '')

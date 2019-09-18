@@ -26,7 +26,7 @@
             <div class="text-xs-left">
               <v-menu offset-y offset-x min-width="250">
                 <v-avatar
-                  class="clickable"
+                  class="clickable avatar-border"
                   slot="activator"
                   :size="avatarSize"
                 >
@@ -63,6 +63,7 @@
                 <v-avatar
                   slot="activator"
                   :size="avatarSize"
+                  class="avatar-border"
                 >
                   <v-icon>person</v-icon>
                 </v-avatar>
@@ -279,6 +280,7 @@
               <v-avatar
                 slot="activator"
                 :size="avatarSize"
+                class="avatar-border"
               >
                 <img v-if="imageUrl" :src="imageUrl" alt="avatar">
                 <v-icon v-else>person</v-icon>
@@ -775,7 +777,7 @@
             <div class="text-xs-left">
               <v-menu offset-y offset-x min-width="250">
                 <v-avatar
-                  class="clickable"
+                  class="clickable avatar-border"
                   slot="activator"
                   :size="avatarSize"
                 >

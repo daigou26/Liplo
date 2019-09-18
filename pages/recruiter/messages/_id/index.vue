@@ -70,10 +70,11 @@
                       <div>
                         <v-avatar
                           v-if="message.user != null"
-                          class="grey lighten-3 mx-2"
+                          class="avatar-border mx-2"
                           :size="40"
                         >
                           <img v-if="profileImageUrl" :src="profileImageUrl">
+                          <v-icon v-else>person</v-icon>
                         </v-avatar>
                       </div>
                       <!-- message -->

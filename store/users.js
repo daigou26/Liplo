@@ -114,15 +114,6 @@ export const actions = {
           snapshot.forEach(function(doc) {
             docCount += 1
 
-            var graduationDate = doc.data()['graduationDate']
-            if (graduationDate) {
-              let date = new Date( graduationDate.seconds * 1000 )
-              let year  = date.getFullYear()
-              let month = date.getMonth() + 1
-              let day  = date.getDate()
-              graduationDate = `${year}/${month}/${day}`
-            }
-
             const user = {
               uid: doc.id,
               imageUrl: doc.data()['imageUrl'],
@@ -137,7 +128,8 @@ export const actions = {
               faculty: doc.data()['faculty'],
               department: doc.data()['department'],
               grade: doc.data()['grade'],
-              graduationDate: graduationDate,
+              graduationYear: doc.data()['graduationYear'],
+              address: doc.data()['address'],
               completionPercentage: doc.data()['completionPercentage']
             }
             commit('addUser', user)
@@ -170,15 +162,6 @@ export const actions = {
           snapshot.forEach(function(doc) {
             docCount += 1
 
-            var graduationDate = doc.data()['graduationDate']
-            if (graduationDate) {
-              let date = new Date( graduationDate.seconds * 1000 )
-              let year  = date.getFullYear()
-              let month = date.getMonth() + 1
-              let day  = date.getDate()
-              graduationDate = `${year}/${month}/${day}`
-            }
-
             const user = {
               uid: doc.id,
               imageUrl: doc.data()['imageUrl'],
@@ -193,7 +176,8 @@ export const actions = {
               faculty: doc.data()['faculty'],
               department: doc.data()['department'],
               grade: doc.data()['grade'],
-              graduationDate: graduationDate,
+              graduationYear: doc.data()['graduationYear'],
+              address: doc.data()['address'],
               completionPercentage: doc.data()['completionPercentage']
             }
             commit('addUser', user)

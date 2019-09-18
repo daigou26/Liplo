@@ -81,8 +81,8 @@
                   <v-img v-else-if="topImageUrl" :src="topImageUrl" height="200" />
                   <div v-else class="grey lighten-3" style="height: 200px;"></div>
                 </div>
-                <input type="file" v-on:change="onFileChange" accept='image/*'>
-                <p v-if="!imageFileSizeValid" class="warning-text-color">
+                <input type="file" v-on:change="onTopImageFileChange" accept='image/*'>
+                <p v-if="!topImageFileSizeValid" class="warning-text-color">
                   {{ imageFileSizeWarning }}
                 </p>
               </v-flex>
@@ -98,8 +98,9 @@
                 <v-btn
                   color="primary"
                   flat
-                  :disabled ="selectedTopImage == null || !imageFileSizeValid || plan == null"
-                  @click="updateTopImage({companyId: companyId, imageFile: topImageFile})"
+                  :loading="uploading"
+                  :disabled ="selectedTopImage == null || !topImageFileSizeValid || plan == null"
+                  @click="updateTopImage({companyId: companyId, imageFile: topImageFile});uploading = true"
                 >
                   変更
                 </v-btn>
@@ -117,10 +118,11 @@
             >
               <v-avatar
                 :size="avatarSize"
-                class="grey lighten-3 clickable"
+                class="clickable avatar-border"
                 @click="companyImageClicked"
               >
                 <img v-if="companyImageUrl" :src="companyImageUrl">
+                <v-icon v-else>camera_alt</v-icon>
               </v-avatar>
               <div class="pt-2">
                 <div class="title text-color font-weight-bold break pl-4">
@@ -158,15 +160,15 @@
                   <div class="py-4">
                     <v-avatar
                       :size="selectedCompanyImageSize"
-                      class="grey lighten-3"
+                      class="avatar-border"
                     >
                       <v-img v-if="selectedCompanyImage" :src="selectedCompanyImage" />
                       <v-img v-else-if="companyImageUrl" :src="companyImageUrl" />
                       <v-icon v-else >camera_alt</v-icon>
                     </v-avatar>
                   </div>
-                  <input type="file" v-on:change="onFileChange" accept='image/*'>
-                  <p v-if="!imageFileSizeValid" class="warning-text-color">
+                  <input type="file" v-on:change="onCompanyImageFileChange" accept='image/*'>
+                  <p v-if="!companyImageFileSizeValid" class="warning-text-color">
                     {{ imageFileSizeWarning }}
                   </p>
                 </v-flex>
@@ -182,8 +184,9 @@
                   <v-btn
                     color="primary"
                     flat
-                    :disabled ="selectedCompanyImage == null || !imageFileSizeValid || plan == null"
-                    @click="updateCompanyImage({companyId: companyId, imageFile: companyImageFile})"
+                    :loading="uploading"
+                    :disabled ="selectedCompanyImage == null || !companyImageFileSizeValid || plan == null"
+                    @click="updateCompanyImage({companyId: companyId, imageFile: companyImageFile});uploading = true"
                   >
                     変更
                   </v-btn>
@@ -259,7 +262,7 @@
                     <div class="text-xs-center" style="max-width: 150px;">
                       <v-avatar
                         :size="avatarSize"
-                        class="grey lighten-3"
+                        class="avatar-border"
                       >
                         <img v-if="member.imageUrl" :src="member.imageUrl">
                       </v-avatar>
@@ -844,8 +847,8 @@
                   <v-flex xs12 sm10 class="px-4 break">
                     <div class="py-3">
                       <v-img :src="tempServiceImageUrl" aspect-ratio="3" class="grey lighten-3"/>
-                      <input type="file" v-on:change="onFileChange" accept='image/*'>
-                      <p v-if="!imageFileSizeValid" class="warning-text-color">
+                      <input type="file" v-on:change="onServiceImageFileChange" accept='image/*'>
+                      <p v-if="!serviceImageFileSizeValid" class="warning-text-color">
                         {{ imageFileSizeWarning }}
                       </p>
                     </div>
@@ -888,11 +891,12 @@
                       削除
                     </v-btn>
                     <v-btn
+                      :loading="uploading"
                       :disabled="
                         !editServicesValid ||
                         tempServiceImageUrl == null ||
                         tempServiceImageUrl == '' ||
-                        !imageFileSizeValid ||
+                        !serviceImageFileSizeValid ||
                         plan == null
                       "
                       @click="updateServices({
@@ -908,7 +912,7 @@
                         title: tempServiceTitle,
                         content: tempServiceContent,
                         url: tempServiceUrl
-                      })"
+                      });uploading = true"
                     >
                       更新
                     </v-btn>
@@ -1443,7 +1447,11 @@ export default {
     windowHeight: 0,
     windowWidth: 0,
     xsWidth: false,
-    imageFileSizeWarning: '5MB以下の画像を選択してください',
+    uploading: false,
+    topImageFileSizeValid: true,
+    companyImageFileSizeValid: true,
+    serviceImageFileSizeValid: true,
+    imageFileSizeWarning: '画像を選択してください（3MB以下）',
     selectedTopImageSize: 200,
     selectedTopImage: null,
     topImageFile: null,
@@ -1530,7 +1538,7 @@ export default {
     tempUrl: '',
     urlRules: [
       v => (v.length <= 200) || '200字以内で入力してください',
-      v => (v.includes('http://') || v.includes('https://')) || '無効なURLです'
+      v => (!v || v.includes('http://') || v.includes('https://')) || '無効なURLです'
     ],
     tempEmployeesCount: null,
     editCompanyInfoValid: true,
@@ -1593,9 +1601,9 @@ export default {
       switch (this.breakpoint) {
         case 'xs': return '2'
         case 'sm': return '2.5'
-        case 'md': return '3'
-        case 'lg': return '3'
-        case 'xl': return '3'
+        case 'md': return '3.5'
+        case 'lg': return '3.5'
+        case 'xl': return '3.5'
       }
     },
     breakpoint() {
@@ -1618,7 +1626,6 @@ export default {
       firstName: state => state.profile.firstName,
       lastName: state => state.profile.lastName,
       companyId: state => state.profile.companyId,
-      imageFileSizeValid: state => state.companyProfile.imageFileSizeValid,
       topImageUrl: state => state.companyProfile.topImageUrl,
       isEditingTopImage: state => state.companyProfile.isEditingTopImage,
       companyImageUrl: state => state.companyProfile.companyImageUrl,
@@ -1703,49 +1710,80 @@ export default {
   },
   methods: {
     topImageClicked() {
-      this.updateImageFileSizeValid(true)
+      this.uploading = false
+      this.topImageFileSizeValid = true
       this.updateIsEditingTopImage(true)
       this.selectedTopImage = null
       this.topImageFile = null
     },
     companyImageClicked() {
-      this.updateImageFileSizeValid(true)
+      this.uploading = false
+      this.companyImageFileSizeValid = true
       this.updateIsEditingCompanyImage(true)
       this.selectedCompanyImage = null
       this.companyImageFile = null
     },
-    onFileChange(e) {
-      this.updateImageFileSizeValid(true)
+    onTopImageFileChange(e) {
       let files = e.target.files || e.dataTransfer.files
-      // 画像サイズは5MB以下のみ
-      if (files[0] != null && files[0].size/1024/1024 <= 5) {
-        if (this.isEditingTopImage) {
-          this.topImageFile = files[0]
-        } else if (this.isEditingCompanyImage) {
-          this.companyImageFile = files[0]
-        } else if (this.isEditingServices) {
-          this.updateIsServiceImageChanged(true)
-          this.tempServiceImageFile = files[0]
-        }
+      // 画像サイズは3MB以下のみ
+      if (files[0] != null && files[0].size/1024/1024 <= 3) {
+        this.topImageFileSizeValid = true
+        this.topImageFile = files[0]
+        this.createTopImage(files[0])
       } else {
-        this.updateImageFileSizeValid(false)
-      }
-
-      if (this.imageFileSizeValid) {
-        this.createImage(files[0])
+        this.topImageFileSizeValid = false
+        this.selectedTopImage = null
+        this.topImageFile = null
       }
     },
-    createImage(file) {
+    onCompanyImageFileChange(e) {
+      let files = e.target.files || e.dataTransfer.files
+      // 画像サイズは3MB以下のみ
+      if (files[0] != null && files[0].size/1024/1024 <= 3) {
+        this.companyImageFileSizeValid = true
+        this.companyImageFile = files[0]
+        this.createCompanyImage(files[0])
+      } else {
+        this.companyImageFileSizeValid = false
+        this.selectedCompanyImage = null
+        this.companyImageFile = null
+      }
+    },
+    onServiceImageFileChange(e) {
+      let files = e.target.files || e.dataTransfer.files
+      // 画像サイズは3MB以下のみ
+      if (files[0] != null && files[0].size/1024/1024 <= 3) {
+        this.serviceImageFileSizeValid = true
+        this.updateIsServiceImageChanged(true)
+        this.tempServiceImageFile = files[0]
+        this.createServiceImage(files[0])
+      } else {
+        this.serviceImageFileSizeValid = false
+        this.tempServiceImageUrl = ''
+        this.tempServiceImageFile = null
+      }
+    },
+    createTopImage(file) {
       // アップロードした画像を表示
       let reader = new FileReader()
       reader.onload = (e) => {
-        if (this.isEditingTopImage) {
-          this.selectedTopImage = e.target.result
-        } else if (this.isEditingCompanyImage) {
-          this.selectedCompanyImage = e.target.result
-        } else if (this.isEditingServices) {
-          this.tempServiceImageUrl = e.target.result
-        }
+        this.selectedTopImage = e.target.result
+      }
+      reader.readAsDataURL(file)
+    },
+    createCompanyImage(file) {
+      // アップロードした画像を表示
+      let reader = new FileReader()
+      reader.onload = (e) => {
+        this.selectedCompanyImage = e.target.result
+      }
+      reader.readAsDataURL(file)
+    },
+    createServiceImage(file) {
+      // アップロードした画像を表示
+      let reader = new FileReader()
+      reader.onload = (e) => {
+        this.tempServiceImageUrl = e.target.result
       }
       reader.readAsDataURL(file)
     },
@@ -1798,7 +1836,8 @@ export default {
     },
     editServicesButtonClicked(index) {
       // 初期化
-      this.updateImageFileSizeValid(true)
+      this.uploading = false
+      this.serviceImageFileSizeValid = true
       this.updateIsServiceImageChanged(false)
       this.tempServiceImageFile = null
       this.setSelectedServiceIndex(index)
@@ -1941,7 +1980,6 @@ export default {
       queryCompanyDetail: 'companyProfile/queryCompanyDetail',
       updateIsLoading: 'companyProfile/updateIsLoading',
       resetState: 'companyProfile/resetState',
-      updateImageFileSizeValid: 'companyProfile/updateImageFileSizeValid',
       updateIsEditingTopImage: 'companyProfile/updateIsEditingTopImage',
       updateTopImage: 'companyProfile/updateTopImage',
       updateIsEditingCompanyImage: 'companyProfile/updateIsEditingCompanyImage',

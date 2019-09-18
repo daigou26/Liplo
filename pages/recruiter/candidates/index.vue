@@ -28,7 +28,7 @@
             <td class="py-1">
               <v-avatar
                 size="50"
-                class="grey lighten-3"
+                class="avatar-border"
               >
                 <v-img
                   v-if="props.item.user.imageUrl"

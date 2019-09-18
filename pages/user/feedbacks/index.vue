@@ -45,9 +45,10 @@
             <v-list v-if="feedbacks && feedbacks.length > 0" two-line>
               <template v-for="(feedback, index) in feedbacks">
                 <v-list-tile :to="'/user/feedbacks/' + feedback.feedbackId" >
-                  <v-list-tile-avatar color="grey darken-3">
+                  <v-list-tile-avatar>
                     <v-img
                       :src="feedback.companyImageUrl"
+                      class="avatar-border"
                     ></v-img>
                   </v-list-tile-avatar>
                   <v-list-tile-content>

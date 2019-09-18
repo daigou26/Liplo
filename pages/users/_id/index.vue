@@ -44,10 +44,10 @@
             >
               <v-avatar
                 :size="avatarSize"
-                class="grey lighten-3"
+                class="avatar-border"
               >
                 <img v-if="userImageUrl" :src="userImageUrl" alt="avatar">
-                <v-icon v-else :size="60">person</v-icon>
+                <v-icon v-else :size="avatarSize">person</v-icon>
               </v-avatar>
               <div class="title text-color font-weight-bold break pl-4 ">
                 {{ name }}
@@ -329,7 +329,7 @@
             </v-flex>
           </div>
           <!-- 基本情報 -->
-          <div v-if="university || faculty || department || graduationDateText">
+          <div v-if="university || faculty || department || laboratory || grade || graduationYear || address">
             <v-layout
               align-center
               justify-space-between
@@ -366,9 +366,13 @@
                   <span>学年:</span>
                   <span class="pl-2">{{ grade }}</span>
                 </div>
-                <div v-if="graduationDateText" class="pb-2">
-                  <span>卒業予定日:</span>
-                  <span class="pl-2">{{ graduationDateText }}</span>
+                <div v-if="graduationYear" class="pb-2">
+                  <span>卒業年度:</span>
+                  <span class="pl-2">{{ graduationYear }}年度</span>
+                </div>
+                <div v-if="address" class="pb-2">
+                  <span>住所:</span>
+                  <span class="pl-2">{{ address }}</span>
                 </div>
               </v-list>
             </v-flex>
@@ -492,17 +496,6 @@ export default {
         return this.userLastName + ' ' + this.userFirstName
       }
     },
-    graduationDateText: function() {
-      if (this.graduationDate) {
-        const date = new Date( this.graduationDate.seconds * 1000 )
-        const year  = date.getFullYear()
-        const month = date.getMonth() + 1
-        const day  = date.getDate()
-        if (year != null && month != null && day!= null) {
-          return `${year}/${month}/${day}`
-        }
-      }
-    },
     birthDateText: function() {
       if (this.birthDate) {
         const date = new Date( this.birthDate.seconds * 1000 )
@@ -541,7 +534,8 @@ export default {
       department: state => state.user.department,
       laboratory: state => state.user.laboratory,
       grade: state => state.user.grade,
-      graduationDate: state => state.user.graduationDate,
+      graduationYear: state => state.user.graduationYear,
+      address: state => state.user.address,
       birthDate: state => state.user.birthDate,
       desiredOccupations: state => state.user.desiredOccupations,
       isCandidate: state => state.user.isCandidate,

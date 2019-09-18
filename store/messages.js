@@ -51,7 +51,7 @@ export const actions = {
   updateIsNewMessage({commit}, isNew) {
     commit('updateIsNewMessage', isNew)
   },
-  queryMessages({commit, state}, {params, infiniteState, type}) {
+  queryMessages({commit, state}, {nuxt, params, infiniteState, type}) {
     const messages = state.messages
     const chatId = params.id
     // すでにクエリしているか
@@ -179,6 +179,7 @@ export const actions = {
         .catch(function(error) {
           commit('updateIsInitialLoading', false)
           commit('updateIsLoading', false)
+          nuxt.error({ statusCode: 404, message: 'not found' })
           console.log("Error getting document:", error)
         })
     } else {
@@ -235,6 +236,7 @@ export const actions = {
         })
         .catch(function(error) {
           commit('updateIsLoading', false)
+          nuxt.error({ statusCode: 404, message: 'not found' })
           console.log("Error getting document:", error)
         })
     }

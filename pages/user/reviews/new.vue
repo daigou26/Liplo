@@ -69,9 +69,10 @@
               <v-card v-if="notReviewedCompany.companyId" flat :to="'/companies/' + notReviewedCompany.companyId">
                 <v-card-actions class="px-0 pb-4">
                   <v-list-tile>
-                    <v-list-tile-avatar color="grey darken-3">
+                    <v-list-tile-avatar>
                       <v-img
                         :src="notReviewedCompany.companyImageUrl"
+                        class="avatar-border"
                       ></v-img>
                     </v-list-tile-avatar>
                     <v-list-tile-content>
@@ -148,8 +149,8 @@
               >
                 <v-form v-model="reviewValid" @submit.prevent="">
                   <v-textarea
-                    solo
-                    placeholder="インターンで感じた企業の良い点、改善すべき点などを自由にお書きください。"
+                    label="コメント"
+                    placeholder="インターンを通して感じたことを自由にお書きください。（社内の雰囲気や仕事環境、仕事内容などについて）"
                     v-model="content"
                     :rules="contentRules"
                     required

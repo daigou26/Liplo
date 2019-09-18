@@ -277,7 +277,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
         return transaction.get(companyInfoRef).then(function(companyInfoDoc) {
           if (companyInfoDoc.exists) {
             const companyName = companyInfoDoc.data().companyName
-            const companyImageUrl = companyInfoDoc.data().imageUrl
+            const companyImageUrl = companyInfoDoc.data().companyImageUrl
             let currentCandidates = companyInfoDoc.data().currentCandidates
             let allCandidates = companyInfoDoc.data().allCandidates
             let hiringPassCount = companyInfoDoc.data().hiringPassCount
@@ -291,6 +291,8 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
               currentCandidates.inbox -= 1
             } else if (beforeStatus.inProcess) {
               currentCandidates.inProcess -= 1
+            } else if (beforeStatus.intern) {
+              currentCandidates.intern -= 1
             } else if (beforeStatus.pass) {
               currentCandidates.pass -= 1
             } else if (beforeStatus.contracted) {
@@ -606,7 +608,7 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
 
           if (companyInfoDoc.exists) {
             const companyName = companyInfoDoc.data().companyName
-            const companyImageUrl = companyInfoDoc.data().imageUrl
+            const companyImageUrl = companyInfoDoc.data().companyImageUrl
             let currentCandidates = companyInfoDoc.data().currentCandidates
             let allCandidates = companyInfoDoc.data().allCandidates
             let hiringPassCount = companyInfoDoc.data().hiringPassCount
@@ -1451,7 +1453,7 @@ exports.scoutUser = functions.region('asia-northeast1')
       return transaction.get(companyInfoRef).then(function(companyInfoDoc) {
         if (companyInfoDoc.exists) {
           const companyName = companyInfoDoc.data().companyName
-          const companyImageUrl = companyInfoDoc.data().imageUrl
+          const companyImageUrl = companyInfoDoc.data().companyImageUrl
           const members = companyInfoDoc.data().members
           var currentCandidates = companyInfoDoc.data().currentCandidates
           var allCandidates = companyInfoDoc.data().allCandidates
@@ -1504,7 +1506,7 @@ exports.scoutUser = functions.region('asia-northeast1')
       console.log('update candidates count completed.')
 
       const companyName = companyInfoDoc.data().companyName
-      const companyImageUrl = companyInfoDoc.data().imageUrl
+      const companyImageUrl = companyInfoDoc.data().companyImageUrl
       const members = companyInfoDoc.data().members
 
       // scoutedUsersに追加
@@ -1863,7 +1865,7 @@ exports.applyForJob = functions.region('asia-northeast1')
       return transaction.get(companyInfoRef).then(function(companyInfoDoc) {
         if (companyInfoDoc.exists) {
           const companyName = companyInfoDoc.data().companyName
-          const companyImageUrl = companyInfoDoc.data().imageUrl
+          const companyImageUrl = companyInfoDoc.data().companyImageUrl
           const members = companyInfoDoc.data().members
           var currentCandidates = companyInfoDoc.data().currentCandidates
           var allCandidates = companyInfoDoc.data().allCandidates
@@ -1915,7 +1917,7 @@ exports.applyForJob = functions.region('asia-northeast1')
       console.log('update candidates count completed.')
 
       const companyName = companyInfoDoc.data().companyName
-      const companyImageUrl = companyInfoDoc.data().imageUrl
+      const companyImageUrl = companyInfoDoc.data().companyImageUrl
       const members = companyInfoDoc.data().members
 
       const batch = admin.firestore().batch()
@@ -2425,8 +2427,12 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
       var isChanged = false
       // foundedDate比較
       if (foundedDate) {
-        if (foundedDate.seconds != previousValue.foundedDate.seconds) {
+        if (previousValue.foundedDate == null) {
           isChanged = true
+        } else {
+          if (foundedDate.seconds != previousValue.foundedDate.seconds) {
+            isChanged = true
+          }
         }
       }
       // service比較
@@ -2467,81 +2473,85 @@ exports.editCompanyProfile = functions.region('asia-northeast1')
       }
       // employmentInfo比較
       if (employmentInfo) {
-        if (employmentInfo.newGrad != previousValue.employmentInfo.newGrad) {
+        if (previousValue.employmentInfo == null) {
           isChanged = true
-        }
-        if (employmentInfo.newGradResignee != previousValue.employmentInfo.newGradResignee) {
-          isChanged = true
-        }
-        if (employmentInfo.averageYearsOfService != previousValue.employmentInfo.averageYearsOfService) {
-          isChanged = true
-        }
-        if (employmentInfo.averageAge != previousValue.employmentInfo.averageAge) {
-          isChanged = true
-        }
-        if (
-          employmentInfo.training &&
-          (employmentInfo.training.exists != previousValue.employmentInfo.training.exists ||
-            employmentInfo.training.content != previousValue.employmentInfo.training.content)
-        ) {
-          isChanged = true
-        }
-        if (
-          employmentInfo.selfDevSupport &&
-          (employmentInfo.selfDevSupport.exists != previousValue.employmentInfo.selfDevSupport.exists ||
-            employmentInfo.selfDevSupport.content != previousValue.employmentInfo.selfDevSupport.content)
-        ) {
-          isChanged = true
-        }
-        if (
-          employmentInfo.mentor &&
-          employmentInfo.mentor.exists != previousValue.employmentInfo.mentor.exists
-        ) {
-          isChanged = true
-        }
-        if (
-          employmentInfo.careerSupport &&
-          (employmentInfo.careerSupport.exists != previousValue.employmentInfo.careerSupport.exists ||
-            employmentInfo.careerSupport.content != previousValue.employmentInfo.careerSupport.content)
-        ) {
-          isChanged = true
-        }
-        if (
-          employmentInfo.testSystem &&
-          (employmentInfo.testSystem.exists != previousValue.employmentInfo.testSystem.exists ||
-            employmentInfo.testSystem.content != previousValue.employmentInfo.testSystem.content)
-        ) {
-          isChanged = true
-        }
-        if (employmentInfo.overtimeWork != previousValue.employmentInfo.overtimeWork) {
-          isChanged = true
-        }
-        if (employmentInfo.paidHolidays != previousValue.employmentInfo.paidHolidays) {
-          isChanged = true
-        }
-        if (
-          employmentInfo.childcareLeave &&
-          (
+        } else {
+          if (employmentInfo.newGrad != previousValue.employmentInfo.newGrad) {
+            isChanged = true
+          }
+          if (employmentInfo.newGradResignee != previousValue.employmentInfo.newGradResignee) {
+            isChanged = true
+          }
+          if (employmentInfo.averageYearsOfService != previousValue.employmentInfo.averageYearsOfService) {
+            isChanged = true
+          }
+          if (employmentInfo.averageAge != previousValue.employmentInfo.averageAge) {
+            isChanged = true
+          }
+          if (
+            employmentInfo.training &&
+            (employmentInfo.training.exists != previousValue.employmentInfo.training.exists ||
+              employmentInfo.training.content != previousValue.employmentInfo.training.content)
+          ) {
+            isChanged = true
+          }
+          if (
+            employmentInfo.selfDevSupport &&
+            (employmentInfo.selfDevSupport.exists != previousValue.employmentInfo.selfDevSupport.exists ||
+              employmentInfo.selfDevSupport.content != previousValue.employmentInfo.selfDevSupport.content)
+          ) {
+            isChanged = true
+          }
+          if (
+            employmentInfo.mentor &&
+            employmentInfo.mentor.exists != previousValue.employmentInfo.mentor.exists
+          ) {
+            isChanged = true
+          }
+          if (
+            employmentInfo.careerSupport &&
+            (employmentInfo.careerSupport.exists != previousValue.employmentInfo.careerSupport.exists ||
+              employmentInfo.careerSupport.content != previousValue.employmentInfo.careerSupport.content)
+          ) {
+            isChanged = true
+          }
+          if (
+            employmentInfo.testSystem &&
+            (employmentInfo.testSystem.exists != previousValue.employmentInfo.testSystem.exists ||
+              employmentInfo.testSystem.content != previousValue.employmentInfo.testSystem.content)
+          ) {
+            isChanged = true
+          }
+          if (employmentInfo.overtimeWork != previousValue.employmentInfo.overtimeWork) {
+            isChanged = true
+          }
+          if (employmentInfo.paidHolidays != previousValue.employmentInfo.paidHolidays) {
+            isChanged = true
+          }
+          if (
+            employmentInfo.childcareLeave &&
             (
-              employmentInfo.childcareLeave.man &&
               (
-                employmentInfo.childcareLeave.man.taken != previousValue.employmentInfo.childcareLeave.man.taken ||
-                employmentInfo.childcareLeave.man.all != previousValue.employmentInfo.childcareLeave.man.all
-              )
-            ) ||
-            (
-              employmentInfo.childcareLeave.woman &&
+                employmentInfo.childcareLeave.man &&
+                (
+                  employmentInfo.childcareLeave.man.taken != previousValue.employmentInfo.childcareLeave.man.taken ||
+                  employmentInfo.childcareLeave.man.all != previousValue.employmentInfo.childcareLeave.man.all
+                )
+              ) ||
               (
-                employmentInfo.childcareLeave.woman.taken != previousValue.employmentInfo.childcareLeave.woman.taken ||
-                employmentInfo.childcareLeave.woman.all != previousValue.employmentInfo.childcareLeave.woman.all
+                employmentInfo.childcareLeave.woman &&
+                (
+                  employmentInfo.childcareLeave.woman.taken != previousValue.employmentInfo.childcareLeave.woman.taken ||
+                  employmentInfo.childcareLeave.woman.all != previousValue.employmentInfo.childcareLeave.woman.all
+                )
               )
             )
-          )
-        ) {
-          isChanged = true
-        }
-        if (employmentInfo.femaleExecutives != previousValue.employmentInfo.femaleExecutives) {
-          isChanged = true
+          ) {
+            isChanged = true
+          }
+          if (employmentInfo.femaleExecutives != previousValue.employmentInfo.femaleExecutives) {
+            isChanged = true
+          }
         }
       }
 
@@ -2997,7 +3007,9 @@ exports.editProfile = functions.region('asia-northeast1')
     const portfolio = newValue.portfolio
     const skills = newValue.skills
     const links = newValue.links
-    const graduationDate = newValue.graduationDate
+    const grade = newValue.grade
+    const graduationYear = newValue.graduationYear
+    const address = newValue.address
     const university = newValue.university
     const faculty = newValue.faculty
     const department = newValue.department
@@ -3039,11 +3051,13 @@ exports.editProfile = functions.region('asia-northeast1')
       percentage += (whatWantToDo && whatWantToDo != '') ? 12 : 0
       percentage += (portfolio && portfolio.length > 0) ? 12 : 0
       percentage += (skills && skills.length > 0) ? 12 : 0
-      percentage += (links && links.length > 0) ? 12 : 0
+      percentage += (links && links.length > 0) ? 4 : 0
       percentage += (university && university != '') ? 4 : 0
       percentage += (faculty && faculty != '') ? 4 : 0
       percentage += (department && department != '') ? 4 : 0
-      percentage += (graduationDate && graduationDate != '') ? 4 : 0
+      percentage += (grade && grade != '') ? 4 : 0
+      percentage += (graduationYear && graduationYear != '') ? 4 : 0
+      percentage += (address && address != '') ? 4 : 0
 
       // プロフィール完成度が 50% を超えていたら検索に表示される
       if (percentage > 50) {
@@ -3356,10 +3370,10 @@ exports.sendCompanyInquiryMail = functions
       createdAt: new Date()
     }
     if (data.department) {
-      contactData.department = data.department
+      inquiryData.department = data.department
     }
     if (data.content) {
-      contactData.content = data.content
+      inquiryData.content = data.content
     }
 
     return admin.firestore().collection('companyInquiries')
@@ -3378,7 +3392,7 @@ exports.sendCompanyInquiryMail = functions
 
         const mailOptions = {
           from: `Liplo <noreply@liplo.jp>`,
-          to: 'daigo_uenuma@liplo.jp',
+          to: 'contact@liplo.jp',
         }
         mailOptions.subject = `${data.companyName}の${data.userName}様からのお問い合わせ`
         mailOptions.html = `
@@ -3416,7 +3430,7 @@ exports.sendContact = functions
       .then(() => {
         const mailOptions = {
           from: `Liplo <noreply@liplo.jp>`,
-          to: 'daigo_uenuma@liplo.jp',
+          to: 'contact@liplo.jp',
         }
         mailOptions.subject = `お問い合わせ`
         mailOptions.html = `

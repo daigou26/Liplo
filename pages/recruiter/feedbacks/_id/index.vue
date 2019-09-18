@@ -34,10 +34,13 @@
         <v-card v-if="uid && uid != ''" flat :to="'/users/' + uid">
           <v-card-actions class="px-0 pb-4">
             <v-list-tile>
-              <v-list-tile-avatar color="grey darken-3">
+              <v-list-tile-avatar>
                 <v-img
+                  v-if="profileImageUrl"
                   :src="profileImageUrl"
+                  class="avatar-border"
                 ></v-img>
+                <v-icon v-else class="avatar-border">person</v-icon>
               </v-list-tile-avatar>
               <v-list-tile-content>
                 <v-list-tile-title class="text-color font-weight-bold return">{{ userName }}</v-list-tile-title>

@@ -50,7 +50,7 @@
           >
             <div class="text-xs-left light-text-color pb-5">
               キャリアは、このサービスを通して行ったインターンや入社した企業が表示されます。
-              <div>
+              <div v-if="career && career.length > 0">
                 企業の方に公開されるため、仕事内容などを出来るだけ詳しく入力しましょう。
                 （雇用契約に機密保持の項目がある場合は、注意してお書きください）
               </div>
@@ -64,7 +64,7 @@
                 class="py-4"
               >
                 <template v-slot:icon>
-                  <v-avatar>
+                  <v-avatar class="avatar-border">
                     <v-img :src="item.companyImageUrl"/>
                   </v-avatar>
                 </template>

@@ -39,7 +39,7 @@
             <div class="mb-5">
               <v-card-actions>
                 <v-avatar
-                  class="grey lighten-3"
+                  class="avatar-border"
                 >
                   <v-img :src="companyImageUrl" :size="40"></v-img>
                 </v-avatar>
@@ -71,7 +71,7 @@
                         <div class="text-xs-center" style="max-width: 150px;">
                           <v-avatar
                             :size="avatarSize"
-                            class="grey lighten-3"
+                            class="avatar-border"
                           >
                             <img v-if="member.imageUrl" :src="member.imageUrl">
                           </v-avatar>
@@ -791,7 +791,7 @@
                             :to="'/companies/' + item.companyId"
                           >
                             <v-avatar
-                              :class="{'grey lighten-3': !item.companyImageUrl || item.companyImageUrl == ''}"
+                              class="avatar-border"
                               :size="25"
                             >
                               <v-img

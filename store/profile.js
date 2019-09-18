@@ -13,7 +13,6 @@ export const state = () => ({
   isEditingPosition: false,
   companyId: null,
   imageUrl: '',
-  imageFileSizeValid: true,
   isEditingProfileImage: false,
   firstName: '',
   lastName: '',
@@ -39,7 +38,8 @@ export const state = () => ({
   department: '',
   laboratory: '',
   grade: '',
-  graduationDate: '',
+  graduationYear: '',
+  address: '',
   birthDate: '',
   isEditingUserInfo: false,
   acceptedOffers: [],
@@ -77,9 +77,6 @@ export const mutations = {
   },
   setImageUrl(state, imageUrl) {
     state.imageUrl = imageUrl
-  },
-  updateImageFileSizeValid(state, valid) {
-    state.imageFileSizeValid = valid
   },
   updateIsEditingProfileImage(state, isEditing) {
     state.isEditingProfileImage = isEditing
@@ -156,8 +153,11 @@ export const mutations = {
   setGrade(state, grade) {
     state.grade = grade
   },
-  setGraduationDate(state, graduationDate) {
-    state.graduationDate = graduationDate
+  setGraduationYear(state, graduationYear) {
+    state.graduationYear = graduationYear
+  },
+  setAddress(state, address) {
+    state.address = address
   },
   setBirthDate(state, birthDate) {
     state.birthDate = birthDate
@@ -208,12 +208,6 @@ export const actions = {
               break
           }
 
-          let graduationDate = doc.data()['graduationDate']
-          if (graduationDate) {
-            let date = new Date( graduationDate.seconds * 1000 )
-            graduationDate = date
-          }
-
           commit('setPoints', doc.data()['points'])
           commit('setPosition', doc.data()['position'] ? doc.data()['position'] : '')
           commit('setFirstName', doc.data()['firstName'])
@@ -230,7 +224,8 @@ export const actions = {
           commit('setDepartment', doc.data()['department'] != null ? doc.data()['department'] : '')
           commit('setLaboratory', doc.data()['laboratory'] != null ? doc.data()['laboratory'] : '')
           commit('setGrade', grade)
-          commit('setGraduationDate', graduationDate)
+          commit('setGraduationYear', doc.data()['graduationYear'] != null ? doc.data()['graduationYear'] : '')
+          commit('setAddress', doc.data()['address'] != null ? doc.data()['address'] : '')
           commit('setBirthDate', doc.data()['birthDate'])
           commit('setAcceptedOffers', doc.data()['acceptedOffers'])
         }
@@ -293,9 +288,6 @@ export const actions = {
   },
   setLastName({commit}, lastName) {
     commit('setLastName', lastName)
-  },
-  updateImageFileSizeValid({commit}, valid) {
-    commit('updateImageFileSizeValid', valid)
   },
   updateIsEditingProfileImage({commit}, isEditing) {
     commit('updateIsEditingProfileImage', isEditing)
@@ -732,12 +724,14 @@ export const actions = {
   updateIsEditingUserInfo({commit}, isEditing) {
     commit('updateIsEditingUserInfo', isEditing)
   },
-  updateUserInfo({commit}, {uid, university, faculty, department, laboratory, grade, graduationDate}) {
+  updateUserInfo({commit}, {uid, university, faculty, department, laboratory, grade, graduationYear, address}) {
     let userData = {
       university: university,
       faculty: faculty,
       department: department,
       laboratory: laboratory,
+      graduationYear: Number(graduationYear),
+      address: address
     }
 
     // 学年
@@ -767,13 +761,6 @@ export const actions = {
     }
     userData.grade = gradeData
 
-
-    if (graduationDate) {
-      var graduationDateArr = graduationDate.split('-')
-      graduationDate = new Date(graduationDateArr[0], graduationDateArr[1] - 1, graduationDateArr[2])
-      userData.graduationDate = graduationDate
-    }
-
     const batch = firestore.batch()
     const userRef = firestore.collection('users').doc(uid)
     batch.update(userRef, userData)
@@ -791,9 +778,8 @@ export const actions = {
         commit('setDepartment', department)
         commit('setLaboratory', laboratory)
         commit('setGrade', grade)
-        if (graduationDate) {
-          commit('setGraduationDate', graduationDate)
-        }
+        commit('setGraduationYear', graduationYear)
+        commit('setAddress', address)
         commit('updateIsEditingUserInfo', false)
       })
       .catch((error) => {
@@ -820,7 +806,6 @@ export const actions = {
     commit('setUnsubscribe', null)
   },
   resetProfileState({commit}) {
-    commit('updateImageFileSizeValid', true)
     commit('updateIsEditingProfileImage', false)
     commit('setFirstName', '')
     commit('setLastName', '')
@@ -845,7 +830,8 @@ export const actions = {
     commit('setDepartment', '')
     commit('setLaboratory')
     commit('setGrade', '')
-    commit('setGraduationDate', '')
+    commit('setGraduationYear', '')
+    commit('setAddress', '')
     commit('setBirthDate', '')
     commit('updateIsEditingUserInfo', null)
     commit('setAcceptedOffers', [])

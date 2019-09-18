@@ -59,10 +59,11 @@
             >
               <v-list-tile-avatar>
                 <v-avatar
-                  class="grey lighten-3"
+                  class="avatar-border"
                   :size="40"
                 >
                   <img v-if="chat.profileImageUrl" :src="chat.profileImageUrl">
+                  <v-icon v-else>person</v-icon>
                 </v-avatar>
               </v-list-tile-avatar>
               <v-list-tile-content>

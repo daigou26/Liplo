@@ -31,7 +31,7 @@
                 >
                   <v-avatar
                     :size="avatarSize"
-                    class="grey lighten-3 clickable"
+                    class="avatar-border clickable"
                     @click="profileImageClicked"
                   >
                     <img v-if="imageUrl" :src="imageUrl" alt="avatar">
@@ -76,15 +76,15 @@
                         <div class="py-4">
                           <v-avatar
                             :size="selectedImageSize"
-                            class="grey lighten-3"
+                            class="avatar-border"
                           >
-                            <v-img v-if="selectedImage" :src="selectedImage" />
+                            <v-img v-if="selectedProfileImage" :src="selectedProfileImage" />
                             <v-img v-else-if="imageUrl" :src="imageUrl" />
                             <v-icon v-else style="font-size: 150px">person</v-icon>
                           </v-avatar>
                         </div>
-                        <input type="file" v-on:change="onFileChange" accept='image/*'>
-                        <p v-show="!imageFileSizeValid" class="warning-text-color">
+                        <input type="file" v-on:change="onProfileImageFileChange" accept='image/*'>
+                        <p v-show="!profileImageFileSizeValid" class="warning-text-color">
                           {{ imageFileSizeWarning }}
                         </p>
                       </v-flex>
@@ -100,8 +100,9 @@
                         <v-btn
                           color="teal lighten-1"
                           flat
-                          :disabled ="selectedImage == null || !imageFileSizeValid"
-                          @click="updateProfileImage({uid: uid, imageFile: imageFile})"
+                          :loading="uploading"
+                          :disabled ="selectedProfileImage == null || !profileImageFileSizeValid"
+                          @click="updateProfileImage({uid: uid, imageFile: profileImageFile});uploading = true"
                         >
                           変更
                         </v-btn>
@@ -109,8 +110,9 @@
                       <div class="hidden-sm-and-up mx-4">
                         <v-btn
                           block
-                          :disabled ="selectedImage == null || !imageFileSizeValid"
-                          @click="updateProfileImage({uid: uid, imageFile: imageFile})"
+                          :loading="uploading"
+                          :disabled ="selectedProfileImage == null || !profileImageFileSizeValid"
+                          @click="updateProfileImage({uid: uid, imageFile: profileImageFile});uploading = true"
                         >
                           変更
                         </v-btn>
@@ -676,8 +678,8 @@
                           <v-flex xs12 class="px-4 break text-xs-right">
                             <div class="py-3">
                               <v-img :src="tempPortfolioItemImageUrl" height="200" class="grey lighten-3"/>
-                              <input type="file" v-on:change="onFileChange" accept='image/*'>
-                              <p v-if="!imageFileSizeValid" class="warning-text-color">
+                              <input type="file" v-on:change="onPortfolioImageFileChange" accept='image/*'>
+                              <p v-if="!portfolioImageFileSizeValid" class="warning-text-color">
                                 {{ imageFileSizeWarning }}
                               </p>
                             </div>
@@ -720,11 +722,12 @@
                                 削除
                               </v-btn>
                               <v-btn
+                                :loading="uploading"
                                 :disabled="
                                   !editPortfolioValid ||
                                   tempPortfolioItemImageUrl == null ||
                                   tempPortfolioItemImageUrl == '' ||
-                                  !imageFileSizeValid
+                                  !portfolioImageFileSizeValid
                                 "
                                 @click="updatePortfolio({
                                   uid: uid,
@@ -737,19 +740,20 @@
                                   title: tempPortfolioItemTitle,
                                   content: tempPortfolioItemContent,
                                   url: tempPortfolioItemUrl
-                                })"
+                                });uploading = true"
                               >
                                 更新
                               </v-btn>
                             </div>
                             <div class="hidden-sm-and-up">
                               <v-btn
+                                :loading="uploading"
                                 block
                                 :disabled="
                                   !editPortfolioValid ||
                                   tempPortfolioItemImageUrl == null ||
                                   tempPortfolioItemImageUrl == '' ||
-                                  !imageFileSizeValid
+                                  !portfolioImageFileSizeValid
                                 "
                                 @click="updatePortfolio({
                                   uid: uid,
@@ -762,7 +766,7 @@
                                   title: tempPortfolioItemTitle,
                                   content: tempPortfolioItemContent,
                                   url: tempPortfolioItemUrl
-                                })"
+                                });uploading = true"
                               >
                                 更新
                               </v-btn>
@@ -963,20 +967,22 @@
                         </div>
                       </template>
                     </v-list>
+                    <div v-if="!isEditingLinks && (links == null || links.length == 0)" class="light-text-color pl-4">
+                      GitHub、ポートフォリオ、メディア掲載記事などのURLがあれば入力しましょう！
+                    </div>
                     <!-- 関連リンクの編集画面 -->
                     <div v-show="isEditingLinks">
                       <v-form v-model="editLinksValid" @submit.prevent="">
                         <div class="d-flex pb-3">
                           <v-flex xs12 class="px-4 break text-xs-right">
                             <v-text-field
-                              solo
                               label="タイトル"
+                              placeholder="例) Github"
                               v-model="tempLinkTitle"
                               :rules="linkTitleRules"
                               required
                             ></v-text-field>
                             <v-text-field
-                              solo
                               label="URL"
                               v-model="tempLinkUrl"
                               :rules="linkUrlRules"
@@ -1109,8 +1115,12 @@
                         <span class="pl-2">{{ grade }}</span>
                       </div>
                       <div class="pb-2">
-                        <span>卒業予定日:</span>
-                        <span class="pl-2">{{ graduationDateText }}</span>
+                        <span>卒業年度:</span>
+                        <span class="pl-2">{{ graduationYear }}<span v-if="graduationYear">年度</span></span>
+                      </div>
+                      <div class="pb-2">
+                        <span>住所:</span>
+                        <span class="pl-2">{{ address }}</span>
                       </div>
                       <div class="pb-2">
                         <span>生年月日:</span>
@@ -1121,7 +1131,8 @@
                       v-show="!isEditingUserInfo"
                       class="pl-4 caption light-text-color"
                     >
-                      ※ 卒業予定日は、採用担当者がパスの有効期間を決める際に必要になるため、入力をお願いします。
+                      ※ 卒業年度は、採用担当者がパスの有効期間を決める際に必要になります。
+                        また、住所などの情報は入力されている方がスカウトされやすくなります。
                     </div>
                     <!-- 基本情報の編集画面 -->
                     <div v-show="isEditingUserInfo" class="text-xs-right">
@@ -1159,33 +1170,24 @@
                           hide-details
                           label="学年"
                         ></v-select>
-                        <!-- 卒業予定日 -->
-                        <v-menu
-                          v-model="graduationDateMenu"
-                          :close-on-content-click="false"
-                          lazy
-                          transition="scale-transition"
-                          offset-y
-                          full-width
-                          min-width="290px"
-                        >
-                          <template v-slot:activator="{ on }">
-                            <v-text-field
-                              v-model="tempGraduationDate"
-                              label="卒業予定日"
-                              append-icon="event"
-                              readonly
-                              required
-                              v-on="on"
-                            ></v-text-field>
-                          </template>
-                          <v-date-picker
-                            v-model="tempGraduationDate"
-                            color="teal"
-                            locale="ja"
-                            @input="graduationDateMenu = false"
-                          ></v-date-picker>
-                        </v-menu>
+                        <!-- 卒業年度 -->
+                        <v-text-field
+                          label="卒業年度"
+                          v-model="tempGraduationYear"
+                          :rules="graduationYearRules"
+                          suffix="年度"
+                          type="number"
+                          required
+                          hint="卒業が2020年3月の場合、2019と入力してください"
+                        ></v-text-field>
+                        <!-- 住所 -->
+                        <v-text-field
+                          label="住所（都道府県）"
+                          placeholder="例）東京都"
+                          v-model="tempAddress"
+                          :rules="userInfoRules"
+                          required
+                        ></v-text-field>
                         <div class="hidden-xs-only">
                           <v-btn
                             @click="updateIsEditingUserInfo(false)"
@@ -1201,7 +1203,8 @@
                               department: tempDepartment,
                               laboratory: tempLaboratory,
                               grade: tempGrade,
-                              graduationDate: tempGraduationDate,
+                              graduationYear: tempGraduationYear,
+                              address: tempAddress,
                             })"
                           >
                             更新
@@ -1218,7 +1221,8 @@
                               department: tempDepartment,
                               laboratory: tempLaboratory,
                               grade: tempGrade,
-                              graduationDate: tempGraduationDate,
+                              graduationYear: tempGraduationYear,
+                              address: tempAddress,
                             })"
                           >
                             更新
@@ -1288,10 +1292,13 @@ export default {
     windowHeight: 0,
     windowWidth: 0,
     xsWidth: false,
-    imageFileSizeWarning: '5MB以下の画像を選択してください',
+    uploading: false,
+    profileImageFileSizeValid: true,
+    portfolioImageFileSizeValid: true,
+    imageFileSizeWarning: '画像を選択してください（3MB以下）',
     selectedImageSize: 200,
-    selectedImage: null,
-    imageFile: null,
+    selectedProfileImage: null,
+    profileImageFile: null,
     tempFirstName: '',
     tempLastName: '',
     firstNameRules: [
@@ -1375,8 +1382,12 @@ export default {
       '修士２年',
       'その他'
     ],
-    graduationDateMenu: false,
-    tempGraduationDate: '',
+    tempGraduationYear: '',
+    graduationYearRules: [
+      v => (String(v).length <= 4) || '卒業年度を入力してください',
+      v => (Number(v) >= 2019) || '2019年以降を入力してください'
+    ],
+    tempAddress: '',
     userInfoRules: [
       v => (v.length <= 50) || '50字以内で記入してください'
     ],
@@ -1419,11 +1430,13 @@ export default {
       percentage += (this.whatWantToDo && this.whatWantToDo != '') ? 12 : 0
       percentage += (this.portfolio && this.portfolio.length > 0) ? 12 : 0
       percentage += (this.skills && this.skills.length > 0) ? 12 : 0
-      percentage += (this.links && this.links.length > 0) ? 12 : 0
+      percentage += (this.links && this.links.length > 0) ? 4 : 0
       percentage += (this.university && this.university != '') ? 4 : 0
       percentage += (this.faculty && this.faculty != '') ? 4 : 0
       percentage += (this.department && this.department != '') ? 4 : 0
-      percentage += (this.graduationDate && this.graduationDate != '') ? 4 : 0
+      percentage += (this.grade && this.grade != '') ? 4 : 0
+      percentage += (this.graduationYear && this.graduationYear != '') ? 4 : 0
+      percentage += (this.address && this.address != '') ? 4 : 0
       return percentage
     },
     avatarSize() {
@@ -1435,16 +1448,6 @@ export default {
     },
     name: function() {
       return this.lastName + ' ' + this.firstName
-    },
-    graduationDateText: function() {
-      let date = this.graduationDate
-      if (date) {
-        let year  = date.getFullYear()
-        let month = date.getMonth() + 1
-        let day  = date.getDate()
-        date = `${year}/${month}/${day}`
-        return date
-      }
     },
     birthDateText: function() {
       if (this.birthDate) {
@@ -1489,7 +1492,8 @@ export default {
       department: state => state.profile.department,
       grade: state => state.profile.grade,
       laboratory: state => state.profile.laboratory,
-      graduationDate: state => state.profile.graduationDate,
+      graduationYear: state => state.profile.graduationYear,
+      address: state => state.profile.address,
       birthDate: state => state.profile.birthDate,
       isEditingUserInfo: state => state.profile.isEditingUserInfo,
     }),
@@ -1527,39 +1531,52 @@ export default {
   },
   methods: {
     profileImageClicked() {
-      this.updateImageFileSizeValid(true)
+      this.uploading = false
+      this.profileImageFileSizeValid = true
       this.updateIsEditingProfileImage(true)
-      this.selectedImage = null
-      this.imageFile = null
+      this.selectedProfileImage = null
+      this.profileImageFile = null
     },
-    onFileChange(e) {
-      this.updateImageFileSizeValid(true)
+    onProfileImageFileChange(e) {
       let files = e.target.files || e.dataTransfer.files
-      // 画像サイズは5MB以下のみ
-      if (files[0] != null && files[0].size/1024/1024 <= 5) {
-        if (this.isEditingProfileImage) {
-          this.imageFile = files[0]
-        } else if (this.isEditingPortfolio) {
-          this.updateIsPortfolioImageChanged(true)
-          this.tempPortfolioImageFile = files[0]
-        }
+      // 画像サイズは3MB以下のみ
+      if (files[0] != null && files[0].size/1024/1024 <= 3) {
+        this.profileImageFileSizeValid = true
+        this.profileImageFile = files[0]
+        this.createProfileImage(files[0])
       } else {
-        this.updateImageFileSizeValid(false)
-      }
-
-      if (this.imageFileSizeValid) {
-        this.createImage(files[0])
+        this.profileImageFileSizeValid = false
+        this.selectedProfileImage = null
+        this.profileImageFile = null
       }
     },
-    createImage(file) {
+    onPortfolioImageFileChange(e) {
+      let files = e.target.files || e.dataTransfer.files
+      // 画像サイズは3MB以下のみ
+      if (files[0] != null && files[0].size/1024/1024 <= 3) {
+        this.portfolioImageFileSizeValid = true
+        this.updateIsPortfolioImageChanged(true)
+        this.tempPortfolioImageFile = files[0]
+        this.createPortfolioImage(files[0])
+      } else {
+        this.portfolioImageFileSizeValid = false
+        this.tempPortfolioItemImageUrl = null
+        this.tempPortfolioImageFile = null
+      }
+    },
+    createProfileImage(file) {
       // アップロードした画像を表示
       let reader = new FileReader()
       reader.onload = (e) => {
-        if (this.isEditingProfileImage) {
-          this.selectedImage = e.target.result
-        } else if (this.isEditingPortfolio) {
-          this.tempPortfolioItemImageUrl = e.target.result
-        }
+        this.selectedProfileImage = e.target.result
+      }
+      reader.readAsDataURL(file)
+    },
+    createPortfolioImage(file) {
+      // アップロードした画像を表示
+      let reader = new FileReader()
+      reader.onload = (e) => {
+        this.tempPortfolioItemImageUrl = e.target.result
       }
       reader.readAsDataURL(file)
     },
@@ -1606,7 +1623,8 @@ export default {
     },
     portfolioEditButtonClicked(index) {
       // 初期化
-      this.updateImageFileSizeValid(true)
+      this.uploading = false
+      this.portfolioImageFileSizeValid = true
       this.updateIsPortfolioImageChanged(false)
       this.tempPortfolioImageFile = null
       this.setSelectedPortfolioItemIndex(index)
@@ -1650,14 +1668,13 @@ export default {
       this.tempFaculty = this.faculty
       this.tempDepartment = this.department
       this.tempLaboratory = this.laboratory
-      this.tempGrade = this.grade
+      this.tempGraduationYear = this.graduationYear
+      this.tempAddress = this.address
 
-      if (this.graduationDate) {
-        let date = this.graduationDate
-        this.tempGraduationDate =
-          String(date.getFullYear()) + '-' +
-          String(date.getMonth() + 1) + '-' +
-          String(date.getDate())
+      if (this.grade) {
+        this.tempGrade = this.grade
+      } else {
+        this.tempGrade = '大学１年'
       }
 
       this.updateIsEditingUserInfo(true)
@@ -1665,7 +1682,6 @@ export default {
     ...mapActions({
       queryProfile: 'profile/queryProfile',
       updateIsLoading: 'profile/updateIsLoading',
-      updateImageFileSizeValid: 'profile/updateImageFileSizeValid',
       updateIsEditingProfileImage: 'profile/updateIsEditingProfileImage',
       updateProfileImage: 'profile/updateProfileImage',
       updateIsEditingUserName: 'profile/updateIsEditingUserName',

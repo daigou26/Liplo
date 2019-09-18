@@ -878,10 +878,11 @@
             <v-card v-if="companyId" flat :to="'../companies/' + companyId" id="company-info-footer">
               <v-card-actions style="display: block;">
                 <v-list-tile class="px-0">
-                  <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
+                  <v-list-tile-avatar class="hidden-xs-only">
                     <v-img
                       v-if="companyImageUrl"
                       :src="companyImageUrl"
+                      class="avatar-border"
                     ></v-img>
                   </v-list-tile-avatar>
                   <v-list-tile-content>
@@ -991,6 +992,7 @@
                           <div slot-scope="{ hover }" ontouchstart="" class="pt-3">
                             <div class="font-weight-bold body-text">
                               <v-avatar
+                                class="grey lighten-3"
                                 :size="25"
                               >
                                 <v-icon style="font-size: 18px">person</v-icon>
@@ -1079,7 +1081,7 @@
                             :to="'/companies/' + item.companyId"
                           >
                             <v-avatar
-                              :class="{'grey lighten-3': !item.companyImageUrl || item.companyImageUrl == ''}"
+                              class="avatar-border"
                               :size="25"
                             >
                               <v-img
@@ -1290,9 +1292,9 @@ export default {
       switch (this.$vuetify.breakpoint.name) {
         case 'xs': return '2'
         case 'sm': return '2.5'
-        case 'md': return '3'
-        case 'lg': return '3'
-        case 'xl': return '3'
+        case 'md': return '2.8'
+        case 'lg': return '2.8'
+        case 'xl': return '2.8'
       }
     },
     breakpoint() {

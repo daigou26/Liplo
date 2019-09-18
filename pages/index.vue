@@ -124,9 +124,10 @@
                     <v-hover>
                       <v-card slot-scope="{ hover }" flat class="pb-3" :to="'companies/' + job.companyId">
                         <v-list-tile>
-                          <v-list-tile-avatar color="grey darken-3">
+                          <v-list-tile-avatar>
                             <v-img
                               :src="job.companyImageUrl"
+                              class="avatar-border"
                             ></v-img>
                           </v-list-tile-avatar>
                           <v-list-tile-content>
@@ -285,9 +286,9 @@ export default {
       switch (this.$vuetify.breakpoint.name) {
         case 'xs': return '2'
         case 'sm': return '2.5'
-        case 'md': return '3'
-        case 'lg': return '3'
-        case 'xl': return '3'
+        case 'md': return '2.5'
+        case 'lg': return '2.5'
+        case 'xl': return '2.5'
       }
     },
     breakpoint() {
@@ -460,6 +461,6 @@ export default {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  z-index: 1
+  z-index: 10
 }
 </style>

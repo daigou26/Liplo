@@ -41,11 +41,13 @@
           <v-card v-if="user" flat>
             <v-list two-line class="py-0">
               <v-list-tile :to="'/users/' + user.uid">
-                <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
+                <v-list-tile-avatar class="hidden-xs-only">
                   <v-img
                     v-if="user"
                     :src="user.imageUrl"
+                    class="avatar-border"
                   ></v-img>
+                  <v-icon v-else class="avatar-border">person</v-icon>
                 </v-list-tile-avatar>
                 <v-list-tile-content>
                   <v-list-tile-title class="text-color font-weight-bold">
@@ -81,11 +83,13 @@
           <v-card v-if="user" flat>
             <v-list two-line>
               <v-list-tile :to="'/users/' + user.uid">
-                <v-list-tile-avatar color="grey darken-3" class="hidden-xs-only">
+                <v-list-tile-avatar class="hidden-xs-only">
                   <v-img
                     v-if="user"
                     :src="user.imageUrl"
+                    class="avatar-border"
                   ></v-img>
+                  <v-icon v-else class="avatar-border">person</v-icon>
                 </v-list-tile-avatar>
                 <v-list-tile-content>
                   <v-list-tile-title class="text-color font-weight-bold">
@@ -276,14 +280,13 @@
                 class=" light-text-color pb-3"
                 style="font-size: 13px"
               >
-                先着パスおよび内定パスの有効期限は、学生の卒業予定日付近を推奨しています。
-                （期限を早くしすぎてしまうと、候補者を採用できる可能性が低くなります）
+                先着パスおよび内定パスの有効期限は、学生の卒業時期付近を推奨しています。
                 <div class="pt-2">
-                  卒業予定日は、学生のプロフィールから確認できます。プロフィールに卒業予定日が設定されていない場合は、学生とのメッセージにてご確認ください。
+                  卒業年度は、学生のプロフィールから確認できます。プロフィールに卒業年度が設定されていない場合は、学生とのメッセージにてご確認ください。
                 </div>
               </div>
               <div v-show="passType == '入社パス'" class="caption light-text-color pb-3">
-                有効期限は、最低でも卒業予定日以降である必要があり、卒業日から1,2年を推奨しています。
+                有効期限は、卒業から1,2年を推奨しています。
               </div>
               <div class="text-xs-right">
                 <v-btn
@@ -586,13 +589,13 @@
                       class=" light-text-color pb-3"
                       style="font-size: 13px"
                     >
-                      先着パスおよび内定パスの有効期限は、学生の卒業予定日付近を推奨しています。
+                      先着パスおよび内定パスの有効期限は、学生の卒業時期付近を推奨しています。
                       <div class="pt-2">
-                        卒業予定日は、学生のプロフィールから確認できます。プロフィールに卒業予定日が設定されていない場合は、学生とのメッセージにてご確認ください。
+                        卒業年度は、学生のプロフィールから確認できます。プロフィールに卒業年度が設定されていない場合は、学生とのメッセージにてご確認ください。
                       </div>
                     </div>
                     <div v-show="passType == '入社パス'" class="caption light-text-color pb-3">
-                      有効期限は、最低でも卒業予定日以降である必要があり、卒業日から1,2年を推奨しています。
+                      有効期限は、卒業から1,2年を推奨しています。
                     </div>
                     <div class="text-xs-right">
                       <v-btn
@@ -737,9 +740,6 @@
                   候補者と雇用契約を結んだ時点で、ステータスを
                   <span class="font-weight-bold orange--text text--darken-1">インターン</span>
                   に変更してください。
-                  <div class="pt-3">
-                    ステータスを切り替えた翌月に請求書をお送り致します。（無料枠を使い切っている場合）
-                  </div>
                   <div v-if="tempStatus == 'インターン'" class="py-3">
                     <v-form v-model="internValid" @submit.prevent="">
                       <!-- 職種 -->
@@ -833,17 +833,17 @@
                         ></v-date-picker>
                       </v-menu>
                       <div v-show="tempPassType == '内定パス' || tempPassType == '先着パス'" class=" light-text-color pb-3" style="font-size: 13px">
-                        先着パスおよび内定パスの有効期限は、学生の卒業予定日付近を推奨しています。
+                        先着パスおよび内定パスの有効期限は、学生の卒業時期付近を推奨しています。
                         （期限を早くしすぎてしまうと、候補者を採用できる可能性が低くなります）
                         <div class="pt-2">
-                          入社年度は、卒業の翌年度を指定してください。（卒業予定が2019年3月の場合、入社年度は2019年度）
+                          入社年度は、卒業の翌年度を指定してください。（卒業年度が2019年の場合、入社年度は2020年）
                         </div>
                         <div class="pt-2">
-                          卒業予定日は、学生のプロフィールから確認できます。プロフィールに卒業予定日が設定されていない場合は、学生とのメッセージにてご確認ください。
+                          卒業年度は、学生のプロフィールから確認できます。プロフィールに卒業年度が設定されていない場合は、学生とのメッセージにてご確認ください。
                         </div>
                       </div>
                       <div v-show="tempPassType == '入社パス'" class="caption light-text-color pb-3">
-                        有効期限は、最低でも卒業予定日以降である必要があり、卒業日から1,2年を推奨しています。
+                        有効期限は、卒業から1,2年を推奨しています。
                       </div>
                       <!-- メッセージ -->
                       <v-textarea
@@ -864,10 +864,11 @@
                     フィードバック
                   </div>
                   <v-form v-model="feedbackValid" @submit.prevent="">
-                    <!-- 良い点 -->
+                    <!-- 良かった点 -->
                     <v-textarea
-                      label="良い点"
+                      label="良かった点"
                       v-model="goodPoint"
+                      placeholder="候補者の良かったところ"
                       :rules="feedbackRules"
                       required
                     ></v-textarea>
@@ -875,7 +876,7 @@
                     <v-textarea
                       label="アドバイス"
                       v-model="advice"
-                      placeholder="改善点"
+                      placeholder="もっとこうした方が良くなるなど"
                       :rules="feedbackRules"
                       required
                     ></v-textarea>
@@ -889,7 +890,6 @@
                   <div>
                     契約が完了しましたら、ステータスを
                     <span class="font-weight-bold pink--text">入社予定</span>に変更してください。
-                    ステータスを切り替えた翌月に請求書をお送り致します。（無料枠を使い切っている場合）
                   </div>
                   <div class="pt-3 light-text-color">
                     <div>
@@ -966,11 +966,13 @@
                     <v-card flat class="grey lighten-4">
                       <v-list two-line class="grey lighten-4">
                         <v-list-tile>
-                          <v-list-tile-avatar color="grey darken-3">
+                          <v-list-tile-avatar>
                             <v-img
                               v-if="comment.pic.imageUrl"
                               :src="comment.pic.imageUrl"
+                              class="avatar-border"
                             ></v-img>
+                            <v-icon v-else class="avatar-border">person</v-icon>
                           </v-list-tile-avatar>
                           <v-list-tile-content>
                             <v-list-tile-title class="text-color font-weight-bold">
@@ -1034,10 +1036,11 @@
                               <div>
                                 <v-avatar
                                   v-if="message.user != null"
-                                  class="grey lighten-3 mx-2"
+                                  class="avatar-border mx-2"
                                   :size="40"
                                 >
                                   <img v-if="user.imageUrl" :src="user.imageUrl">
+                                  <v-icon v-else>person</v-icon>
                                 </v-avatar>
                               </div>
                               <!-- message -->
@@ -1159,10 +1162,10 @@
                   1. 入社パス
                 </div>
                 <div class="pt-2">
-                  入社する権利を与えるパスです。
-                  （候補者が卒業前に使用した場合は、原則、卒業後に入社という形になります）
+                  卒業後の一定期間、入社する権利を与えるパスです（候補者が卒業前に使用した場合は、原則、卒業後に入社という形になります）。
+                  卒業と同時に入社してもらいたい場合は内定パスを発行してください。
                   <div>
-                    有効期限は、最低でも卒業予定日以降である必要があり、卒業日から1,2年を推奨しています。
+                    有効期限は、卒業から1,2年を推奨しています。
                   </div>
                   <div>
                     入社パスでの入社月日は、候補者の希望を聞いていただき、すり合わせを行ってください。
@@ -1179,12 +1182,12 @@
                 <div class="pt-2">
                   内定を取得する権利を与えるパスです。
                   <div>
-                    有効期限は、候補者の卒業日付近を推奨しています。
+                    有効期限は、候補者の卒業時期付近を推奨しています。
                     （期限を早くしすぎてしまうと、候補者を採用できる可能性が低くなります）
                   </div>
                   <div>
                     内定パスでの入社時期は、候補者の卒業年度に合わせて企業が設定します。
-                    （例えば、2019年3月卒業であれば、2019年度と設定して下さい）
+                    （例えば、卒業年度が2019年であれば、2020年度と設定して下さい）
                   </div>
                   <div>
                     このパスも入社パス同様、発行しすぎると採用予定人数を上回ってしまう可能性があるため、

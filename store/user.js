@@ -18,7 +18,8 @@ export const state = () => ({
   department: '',
   laboratory: '',
   grade: '',
-  graduationDate: '',
+  graduationYear: '',
+  address: '',
   birthDate: '',
   desiredOccupations: null,
   interestingFields: null,
@@ -69,8 +70,11 @@ export const mutations = {
   setGrade(state, grade) {
     state.grade = grade
   },
-  setGraduationDate(state, graduationDate) {
-    state.graduationDate = graduationDate
+  setGraduationYear(state, graduationYear) {
+    state.graduationYear = graduationYear
+  },
+  setAddress(state, address) {
+    state.address = address
   },
   setBirthDate(state, birthDate) {
     state.birthDate = birthDate
@@ -111,7 +115,8 @@ export const actions = {
           commit('setFaculty', doc.data()['faculty'])
           commit('setDepartment', doc.data()['department'])
           commit('setLaboratory', doc.data()['laboratory'])
-          commit('setGraduationDate', doc.data()['graduationDate'])
+          commit('setGraduationYear', doc.data()['graduationYear'])
+          commit('setAddress', doc.data()['address'])
           commit('setBirthDate', doc.data()['birthDate'])
           commit('setDesiredOccupatins', doc.data()['desiredOccupations'])
 
@@ -245,7 +250,8 @@ export const actions = {
     commit('setDepartment', '')
     commit('setLaboratory')
     commit('setGrade', '')
-    commit('setGraduationDate', '')
+    commit('setGraduationYear', '')
+    commit('setAddress', '')
     commit('setBirthDate', '')
     commit('setDesiredOccupatins', null)
     commit('setInterstingFields', null)
