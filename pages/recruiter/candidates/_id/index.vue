@@ -740,9 +740,6 @@
                   候補者と雇用契約を結んだ時点で、ステータスを
                   <span class="font-weight-bold orange--text text--darken-1">インターン</span>
                   に変更してください。
-                  <div class="pt-3">
-                    ステータスを切り替えた翌月に請求書をお送り致します。（無料枠を使い切っている場合）
-                  </div>
                   <div v-if="tempStatus == 'インターン'" class="py-3">
                     <v-form v-model="internValid" @submit.prevent="">
                       <!-- 職種 -->
@@ -867,10 +864,11 @@
                     フィードバック
                   </div>
                   <v-form v-model="feedbackValid" @submit.prevent="">
-                    <!-- 良い点 -->
+                    <!-- 良かった点 -->
                     <v-textarea
-                      label="良い点"
+                      label="良かった点"
                       v-model="goodPoint"
+                      placeholder="候補者の良かったところ"
                       :rules="feedbackRules"
                       required
                     ></v-textarea>
@@ -878,7 +876,7 @@
                     <v-textarea
                       label="アドバイス"
                       v-model="advice"
-                      placeholder="改善点"
+                      placeholder="もっとこうした方が良くなるなど"
                       :rules="feedbackRules"
                       required
                     ></v-textarea>
@@ -892,7 +890,6 @@
                   <div>
                     契約が完了しましたら、ステータスを
                     <span class="font-weight-bold pink--text">入社予定</span>に変更してください。
-                    ステータスを切り替えた翌月に請求書をお送り致します。（無料枠を使い切っている場合）
                   </div>
                   <div class="pt-3 light-text-color">
                     <div>

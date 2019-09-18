@@ -1175,9 +1175,10 @@
                           label="卒業年度"
                           v-model="tempGraduationYear"
                           :rules="graduationYearRules"
-                          suffix="年"
+                          suffix="年度"
                           type="number"
                           required
+                          hint="卒業が2020年3月の場合、2019と入力してください"
                         ></v-text-field>
                         <!-- 住所 -->
                         <v-text-field

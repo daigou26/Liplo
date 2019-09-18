@@ -55,6 +55,7 @@
             label="良かった点"
             v-model="goodPoint"
             :rules="feedbackRules"
+            placeholder="候補者の良かったところ"
             required
           ></v-textarea>
           <!-- アドバイス -->
