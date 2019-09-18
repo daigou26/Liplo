@@ -306,7 +306,6 @@ export const actions = {
     }, function() {
       // dbにurl保存
       uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-        console.log('File available at', downloadURL)
         const batch = firestore.batch()
         const userRef = firestore.collection('users').doc(uid)
         batch.update(userRef, {
@@ -512,7 +511,6 @@ export const actions = {
       }, function() {
         // dbに保存
         uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-          console.log('File available at', downloadURL)
           // 新しいitem
           let tempPortfolioItem = {
             imageUrl: downloadURL,

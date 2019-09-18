@@ -461,7 +461,7 @@ export const actions = {
                     userData.position = position
                   }
                   batch.set(userRef, userData)
-                  
+
                   const profileRef = firestore.collection('users')
                     .doc(user.uid).collection('profile').doc(user.uid)
                   var profileData = {
@@ -616,6 +616,7 @@ export const actions = {
                     dispatch('profile/setEmail', user.email)
                     dispatch('settings/setNotificationsSetting', {scout: true, pass: true})
                     dispatch('settings/setAcceptScout', true)
+                    router.replace('/user/profile')
                   })
                   .catch((error) => {
                     commit('updateIsRefreshing', false)

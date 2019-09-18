@@ -129,11 +129,16 @@ export const actions = {
     // encrypt
     var simpleCrypto = new SimpleCrypto(process.env.SECRET_KEY)
 
-    const feedbackData = {
-      goodPoint: simpleCrypto.encrypt(goodPoint),
-      advice: simpleCrypto.encrypt(advice),
+    var feedbackData = {
       createdAt: new Date(),
       isWritten: true
+    }
+
+    if (goodPoint) {
+      feedbackData.goodPoint = simpleCrypto.encrypt(goodPoint)
+    }
+    if (advice) {
+      feedbackData.advice = simpleCrypto.encrypt(advice)
     }
 
     firestore.collection('feedbacks')

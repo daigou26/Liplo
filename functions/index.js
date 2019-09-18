@@ -482,8 +482,12 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
             feedbackData.isWritten = false
           } else {
             feedbackData.isWritten = true
-            feedbackData.goodPoint = feedback.goodPoint
-            feedbackData.advice = feedback.advice
+            if (feedback.goodPoint) {
+              feedbackData.goodPoint = feedback.goodPoint
+            }
+            if (feedback.advice) {
+              feedbackData.advice = feedback.advice
+            }
           }
           batch.set(feedbackRef, feedbackData)
 
@@ -749,8 +753,12 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
           feedbackData.isWritten = false
         } else {
           feedbackData.isWritten = true
-          feedbackData.goodPoint = feedback.goodPoint
-          feedbackData.advice = feedback.advice
+          if (feedback.goodPoint) {
+            feedbackData.goodPoint = feedback.goodPoint
+          }
+          if (feedback.advice) {
+            feedbackData.advice = feedback.advice
+          }
         }
 
         const feedbackId = admin.firestore().collection('feedbacks').doc().id

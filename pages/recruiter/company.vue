@@ -846,7 +846,7 @@
                 <div class="d-flex pb-3">
                   <v-flex xs12 sm10 class="px-4 break">
                     <div class="py-3">
-                      <v-img :src="tempServiceImageUrl" aspect-ratio="3" class="grey lighten-3"/>
+                      <v-img :src="tempServiceImageUrl" aspect-ratio="2" class="grey lighten-3"/>
                       <input type="file" v-on:change="onServiceImageFileChange" accept='image/*'>
                       <p v-if="!serviceImageFileSizeValid" class="warning-text-color">
                         {{ imageFileSizeWarning }}

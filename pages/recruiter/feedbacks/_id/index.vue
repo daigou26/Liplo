@@ -54,13 +54,13 @@
         <div class="pt-2 text-color">
           インターン終了時期：　{{ timestamp }}
         </div>
-        <div class="pt-5">
+        <div v-if="goodPoint" class="pt-5">
           <span class="font-weight-bold text-color">良かった点</span>
-          <p v-if="goodPoint" class="light-text-color body-text return">{{ goodPoint }}</p>
+          <p class="light-text-color body-text return">{{ goodPoint }}</p>
         </div>
-        <div class="py-3">
+        <div v-if="advice" class="py-3">
           <span class="font-weight-bold text-color">アドバイス</span>
-          <p v-if="advice" class="light-text-color body-text return">{{ advice }}</p>
+          <p class="light-text-color body-text return">{{ advice }}</p>
         </div>
       </div>
     </v-flex>

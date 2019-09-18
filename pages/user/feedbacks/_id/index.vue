@@ -63,13 +63,13 @@
                   </v-list-tile>
                 </v-card-actions>
               </v-card>
-              <div class="pt-3">
+              <div v-if="goodPoint" class="pt-3">
                 <span class="font-weight-bold text-color">良かった点</span>
-                <p v-if="goodPoint" class="light-text-color body-text return">{{ goodPoint }}</p>
+                <p class="light-text-color body-text return">{{ goodPoint }}</p>
               </div>
-              <div class="py-3">
+              <div v-if="advice" class="py-3">
                 <span class="font-weight-bold text-color">アドバイス</span>
-                <p v-if="advice" class="light-text-color body-text return">{{ advice }}</p>
+                <p class="light-text-color body-text return">{{ advice }}</p>
               </div>
             </div>
           </v-flex>

@@ -68,7 +68,7 @@
           ></v-textarea>
           <div class="text-xs-right py-3">
             <v-btn
-              :disabled="!feedbackValid || plan == null"
+              :disabled="!feedbackValid || (!goodPoint && !advice) || plan == null"
               @click="sendFeedbackButtonClicked"
             >
               送信
@@ -100,7 +100,6 @@ export default {
     goodPoint: '',
     advice: '',
     feedbackRules: [
-      v => !!v || '入力されていません',
       v => (v.length <= 1000) || '1000字以内で入力してください'
     ],
   }),
