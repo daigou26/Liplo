@@ -141,7 +141,7 @@
                       <div class="text-color">卒業年度</div>
                     </v-flex>
                     <v-flex v-if="user.graduationYear" class="text-color" xs8 offset-xs1 px-2 pt-2>
-                      {{ user.graduationYear }}年
+                      {{ user.graduationYear }}年度
                     </v-flex>
                     <!-- スキル -->
                     <v-flex v-if="user.skills" sm2 xs3 pt-3>

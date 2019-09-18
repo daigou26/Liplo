@@ -1116,7 +1116,7 @@
                       </div>
                       <div class="pb-2">
                         <span>卒業年度:</span>
-                        <span class="pl-2">{{ graduationYear }}<span v-if="graduationYear">年</span></span>
+                        <span class="pl-2">{{ graduationYear }}<span v-if="graduationYear">年度</span></span>
                       </div>
                       <div class="pb-2">
                         <span>住所:</span>
@@ -1641,9 +1641,6 @@ export default {
         this.tempPortfolioItemUrl = ''
       }
       this.updateIsEditingPortfolio(true)
-    },
-    updatePortfolioButtonClicked() {
-      this.uploading = true
     },
     skillsEditButtonClicked(index) {
       this.tempSkills = this.skills

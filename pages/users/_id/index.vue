@@ -368,7 +368,7 @@
                 </div>
                 <div v-if="graduationYear" class="pb-2">
                   <span>卒業年度:</span>
-                  <span class="pl-2">{{ graduationYear }}年</span>
+                  <span class="pl-2">{{ graduationYear }}年度</span>
                 </div>
                 <div v-if="address" class="pb-2">
                   <span>住所:</span>
