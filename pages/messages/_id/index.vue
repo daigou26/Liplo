@@ -414,6 +414,7 @@ export default {
           this.updateIsInitialChatsLoading(true)
           this.updateIsChatsLoading(true)
           this.queryChats({uid: this.uid, companyId: null, chats: this.chats})
+          this.queryChat({nuxt: this.$nuxt, params: this.params})
         } else {
           // unreadCount 更新(local)
           this.updateUnreadCount(this.params)
@@ -446,6 +447,7 @@ export default {
             this.updateIsInitialChatsLoading(true)
             this.updateIsChatsLoading(true)
             this.queryChats({uid: uid, companyId: null, chats: this.chats})
+            this.queryChat({nuxt: this.$nuxt, params: this.params})
           } else {
             // unreadCount 更新(local)
             this.updateUnreadCount(this.params)
