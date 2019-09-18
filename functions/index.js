@@ -2810,7 +2810,7 @@ exports.createRecruiter = functions.region('asia-northeast1')
 
           if (members.length == 1) {
             if (members[0].isFirstMember != null && members[0].isFirstMember) {
-              if (members[0].position) {
+              if (!member.position && members[0].position) {
                 member.position = members[0].position
               }
               members = [member]

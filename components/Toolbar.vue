@@ -1184,6 +1184,15 @@
                       solo
                       required
                     ></v-text-field>
+                    <!-- 役職 -->
+                    <v-text-field
+                      class="pt-4"
+                      v-model="position"
+                      :rules="positionRules"
+                      label="役職"
+                      placeholder="例) 採用担当"
+                      required
+                    ></v-text-field>
                     <!-- パスワード -->
                     <v-text-field
                       v-model="password"
@@ -1283,8 +1292,7 @@ export default {
     ],
     position: '',
     positionRules: [
-      v => !!v || '入力されていません',
-      v => (v && v.length <= 30) || '30文字を超えています'
+      v => (v.length <= 30) || '30文字を超えています'
     ],
     companyName: '',
     companyEmail: '',

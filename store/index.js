@@ -447,7 +447,7 @@ export const actions = {
                   const batch = firestore.batch()
 
                   const userRef = firestore.collection('users').doc(user.uid)
-                  batch.set(userRef, {
+                  var userData = {
                     companyId: companyId,
                     firstName: firstName,
                     lastName: lastName,
@@ -456,7 +456,12 @@ export const actions = {
                     isEmailVerified: user.emailVerified,
                     notificationsSetting: {application: true, acceptPass: true},
                     isDeleted: false,
-                  })
+                  }
+                  if (position) {
+                    userData.position = position
+                  }
+                  batch.set(userRef, userData)
+                  
                   const profileRef = firestore.collection('users')
                     .doc(user.uid).collection('profile').doc(user.uid)
                   var profileData = {

@@ -40,7 +40,6 @@
         <v-text-field
           class="pt-4"
           v-model="position"
-          :rules="rules"
           label="役職"
           placeholder="役職を入力してください。"
           required
