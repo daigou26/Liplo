@@ -45,6 +45,7 @@ export const state = () => ({
   acceptedOffers: [],
   isLoading: false,
   unsubscribe: null,
+  userUnsubscribe: null,
 })
 
 export const mutations = {
@@ -173,6 +174,9 @@ export const mutations = {
   },
   setUnsubscribe(state, unsubscribe) {
     state.unsubscribe = unsubscribe
+  },
+  setUserUnsubscribe(state, unsubscribe) {
+    state.userUnsubscribe = unsubscribe
   },
 }
 
@@ -802,6 +806,23 @@ export const actions = {
       state.unsubscribe()
     }
     commit('setUnsubscribe', null)
+  },
+  // プランの変更に対応
+  setUserListener({commit}, uid) {
+    if (!state.userUnsubscribe) {
+      const listener = firestore.collection('users')
+        .doc(uid)
+        .onSnapshot(function(doc) {
+          commit('setCompletionPercentage', doc.data()['completionPercentage'])
+        })
+      commit('setUserUnsubscribe', listener)
+    }
+  },
+  resetUserListener({commit, state}) {
+    if (state.userUnsubscribe) {
+      state.userUnsubscribe()
+    }
+    commit('setUserUnsubscribe', null)
   },
   resetProfileState({commit}) {
     commit('updateIsEditingProfileImage', false)

@@ -1466,8 +1466,10 @@ export default {
       }
     },
     allNotificationsButtonClicked(url) {
-      this.resetNotificationsState()
-      this.$router.push(url)
+      if (!this.$route.name.includes('notifications')) {
+        this.resetNotificationsState()
+        this.$router.push(url)
+      }
     },
     resetData() {
       this.dialog = false

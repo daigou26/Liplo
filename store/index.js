@@ -228,6 +228,7 @@ export const actions = {
     dispatch('profile/resetState')
     dispatch('profile/resetProfileState')
     dispatch('profile/resetCompaniesListener')
+    dispatch('profile/resetUserListener')
     dispatch('review/resetState')
     dispatch('reviews/resetJobReviewsState')
     dispatch('reviews/resetCompanyReviewsState')
@@ -356,6 +357,7 @@ export const actions = {
             dispatch('profile/resetState')
             dispatch('profile/resetProfileState')
             dispatch('profile/resetCompaniesListener')
+            dispatch('profile/resetUserListener')
             dispatch('review/resetState')
             dispatch('reviews/resetJobReviewsState')
             dispatch('reviews/resetCompanyReviewsState')
@@ -616,7 +618,6 @@ export const actions = {
                     dispatch('profile/setEmail', user.email)
                     dispatch('settings/setNotificationsSetting', {scout: true, pass: true})
                     dispatch('settings/setAcceptScout', true)
-                    router.replace('/user/profile')
                   })
                   .catch((error) => {
                     commit('updateIsRefreshing', false)
@@ -697,6 +698,7 @@ export const actions = {
                 }
               } else {
                 dispatch('profile/setPoints', doc.data()['points'])
+                dispatch('profile/setUserListener', user.uid)
 
                 // emailVerified が false
                 if (!user.emailVerified) {
