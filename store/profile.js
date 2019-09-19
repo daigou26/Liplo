@@ -8,7 +8,7 @@ export const state = () => ({
   plan: null,
   type: null,
   points: 0,
-  completionPercentage: 0,
+  completionPercentage: null,
   position: null,
   isEditingPosition: false,
   companyId: null,
@@ -865,6 +865,6 @@ export const actions = {
     commit('setCompanyId', '')
     commit('setEmail', '')
     commit('setPoints', 0)
-    commit('setCompletionPercentage', 0)
+    commit('setCompletionPercentage', null)
   }
 }

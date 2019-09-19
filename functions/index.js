@@ -135,12 +135,13 @@ exports.sendPaidActionMailToAdmin = functions.region('asia-northeast1')
       <p><b>plan: </b>${plan}</p>
       <p><b>Date: </b>${createdAt}</p>
     `
-    return mailTransport.sendMail(mailOptions, (err, info) => {
+    mailTransport.sendMail(mailOptions, (err, info) => {
       if (err) {
         console.log(err)
       }
       console.log('completed.')
     })
+    return 0
   })
 
 // 企業メンバーが招待された時の処理

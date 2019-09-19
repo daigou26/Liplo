@@ -24,7 +24,7 @@
         </v-btn>
       </div>
       <!-- プロフィール記入率が低い場合に表示 -->
-      <v-layout v-if="uid && uid != '' && type == 'user' && completionPercentage <= 50" row wrap>
+      <v-layout v-if="uid && uid != '' && type == 'user' && completionPercentage != null && completionPercentage <= 50" row wrap>
         <v-flex xs12 sm12 md8 offset-md2>
           <v-card
             class="ma-3 pa-3 subheading clickable"
