@@ -6,11 +6,13 @@ export const actions = {
   // 企業を追加
   addCompany({commit}, {router, companyName, userName, email, position, plan}) {
     const companyId = firestore.collection('companies').doc().id
-    const member = {
+    var member = {
       name: userName,
-      position: position,
       email: email,
       isFirstMember: true,
+    }
+    if (position) {
+      member.position = position
     }
     const batch = firestore.batch()
     const companyRef = firestore.collection('companies').doc(companyId)

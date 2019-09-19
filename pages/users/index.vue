@@ -109,7 +109,7 @@
                       </div>
                     </v-flex>
                     <!-- 住所 -->
-                    <v-flex v-if="user.university" sm2 xs3 pt-4>
+                    <v-flex v-if="user.address" sm2 xs3 pt-4>
                       <div class="text-color">住所</div>
                     </v-flex>
                     <v-flex v-if="user.address" class="text-color" xs8 offset-xs1 px-2 pt-4>
@@ -144,10 +144,10 @@
                       {{ user.graduationYear }}年度
                     </v-flex>
                     <!-- スキル -->
-                    <v-flex v-if="user.skills" sm2 xs3 pt-3>
+                    <v-flex v-if="user.skills && user.skills.length > 0" sm2 xs3 pt-3>
                       <div class="text-color">スキル</div>
                     </v-flex>
-                    <v-flex v-if="user.skills" xs8 offset-xs1 px-2 pt-3>
+                    <v-flex v-if="user.skills && user.skills.length > 0" xs8 offset-xs1 px-2 pt-3>
                       <template v-if="index < 5" v-for="(skill, index) in user.skills">
                         <v-chip color="#FF5A5F" outline><strong>{{ skill }}</strong></v-chip>
                       </template>
@@ -177,6 +177,9 @@
             }"
           >
             ユーザーが見つかりません
+          </div>
+          <div class="pt-3 light-text-color">
+            プロフィール記入率が 50% を超えている学生のみが表示されます
           </div>
           <div class="pt-3 light-text-color">
             絞り込みをしている場合は、条件を変えて検索してください

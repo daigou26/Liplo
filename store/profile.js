@@ -8,7 +8,7 @@ export const state = () => ({
   plan: null,
   type: null,
   points: 0,
-  completionPercentage: 0,
+  completionPercentage: null,
   position: null,
   isEditingPosition: false,
   companyId: null,
@@ -45,6 +45,7 @@ export const state = () => ({
   acceptedOffers: [],
   isLoading: false,
   unsubscribe: null,
+  userUnsubscribe: null,
 })
 
 export const mutations = {
@@ -173,6 +174,9 @@ export const mutations = {
   },
   setUnsubscribe(state, unsubscribe) {
     state.unsubscribe = unsubscribe
+  },
+  setUserUnsubscribe(state, unsubscribe) {
+    state.userUnsubscribe = unsubscribe
   },
 }
 
@@ -306,7 +310,6 @@ export const actions = {
     }, function() {
       // dbにurl保存
       uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-        console.log('File available at', downloadURL)
         const batch = firestore.batch()
         const userRef = firestore.collection('users').doc(uid)
         batch.update(userRef, {
@@ -512,7 +515,6 @@ export const actions = {
       }, function() {
         // dbに保存
         uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-          console.log('File available at', downloadURL)
           // 新しいitem
           let tempPortfolioItem = {
             imageUrl: downloadURL,
@@ -805,6 +807,23 @@ export const actions = {
     }
     commit('setUnsubscribe', null)
   },
+  // プランの変更に対応
+  setUserListener({commit}, uid) {
+    if (!state.userUnsubscribe) {
+      const listener = firestore.collection('users')
+        .doc(uid)
+        .onSnapshot(function(doc) {
+          commit('setCompletionPercentage', doc.data()['completionPercentage'])
+        })
+      commit('setUserUnsubscribe', listener)
+    }
+  },
+  resetUserListener({commit, state}) {
+    if (state.userUnsubscribe) {
+      state.userUnsubscribe()
+    }
+    commit('setUserUnsubscribe', null)
+  },
   resetProfileState({commit}) {
     commit('updateIsEditingProfileImage', false)
     commit('setFirstName', '')
@@ -846,6 +865,6 @@ export const actions = {
     commit('setCompanyId', '')
     commit('setEmail', '')
     commit('setPoints', 0)
-    commit('setCompletionPercentage', 0)
+    commit('setCompletionPercentage', null)
   }
 }

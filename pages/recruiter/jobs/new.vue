@@ -31,7 +31,8 @@
         :src="selectedImage"
         :aspect-ratio="imageRatio"
       ></v-img>
-      <div v-else class="grey lighten-2" style="height: 200px;"></div>
+      <v-responsive v-else class="grey lighten-2" :aspect-ratio="2.8">
+      </v-responsive>
       <input type="file" v-on:change="onFileChange" accept='image/*'>
       <p v-if="!imageFileSizeValid" class="warning-text-color">
         {{ imageFileSizeWarning }}

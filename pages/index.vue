@@ -23,6 +23,34 @@
           <span class="font-weight-bold text-color">企業情報、プライバシーなど</span>
         </v-btn>
       </div>
+      <!-- プロフィール記入率が低い場合に表示 -->
+      <v-layout v-if="uid && uid != '' && type == 'user' && completionPercentage != null && completionPercentage <= 50" row wrap>
+        <v-flex xs12 sm12 md8 offset-md2>
+          <v-card
+            class="ma-3 pa-3 subheading clickable"
+            :class="{'mt-4': $vuetify.breakpoint.xsOnly}"
+            to="/user/profile"
+            style="border-radius: 10px"
+          >
+            <div class="pb-3 font-weight-bold teal--text">
+              まずはプロフィールを記入しましょう！
+            </div>
+            <span class="light-text-color caption">現在のプロフィール完成度: </span>
+            <span class="font-weight-bold light-text-color">{{ completionPercentage }}%</span>
+            <div
+              v-if="completionPercentage != 100"
+              :class="{'mr-5': $vuetify.breakpoint.mdAndUp}"
+            >
+              <v-progress-linear
+                background-color="grey lighten-3"
+                color="teal lighten-3"
+                height="15"
+                :value="completionPercentage"
+              ></v-progress-linear>
+            </div>
+          </v-card>
+        </v-flex>
+      </v-layout>
       <!-- 並び替え -->
       <v-flex
         xs12
@@ -347,6 +375,8 @@ export default {
       isRefreshed: state => state.isRefreshed,
       isRefreshing: state => state.isRefreshing,
       uid: state => state.uid,
+      type: state => state.profile.type,
+      completionPercentage: state => state.profile.completionPercentage,
       jobs: state => state.jobs.jobs,
       order: state => state.jobs.order,
       isInitialLoading: state => state.jobs.isInitialLoading,

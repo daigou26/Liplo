@@ -62,6 +62,7 @@
                 :key="item.careerId"
                 large
                 class="py-4"
+                color="white"
               >
                 <template v-slot:icon>
                   <v-avatar class="avatar-border">

@@ -101,6 +101,49 @@ admin.initializeApp()
 //     });
 //   })
 
+// 採用をした時に管理者に通知
+exports.sendPaidActionMailToAdmin = functions.region('asia-northeast1')
+  .firestore
+  .document('paidActions/{paidActionId}')
+  .onCreate((snap, context) => {
+    const paidActionId = context.params.paidActionId
+    const companyId = snap.data().companyId
+    const type = snap.data().type
+    const isFree = snap.data().isFree
+    const companyName = snap.data().companyName
+    const invoiceEmail = snap.data().invoiceEmail
+    const plan = snap.data().plan
+    var createdAt = snap.data().createdAt
+    let date = new Date( createdAt.seconds * 1000 )
+    let year  = date.getFullYear()
+    let month = date.getMonth() + 1
+    let day  = date.getDate()
+    createdAt = `${year}/${month}/${day}`
+
+    const mailOptions = {
+      from: `Liplo <noreply@liplo.jp>`,
+      to: 'go26dev@gmail.com',
+    }
+    mailOptions.subject = `[Liplo] 採用あり`
+    mailOptions.html = `
+      <p><b>paidActionId: </b>${paidActionId}</p>
+      <p><b>type: </b>${type}</p>
+      <p><b>isFree: </b>${isFree}</p>
+      <p><b>companyId: </b>${companyId}</p>
+      <p><b>companyName: </b>${companyName}</p>
+      <p><b>invoiceEmail: </b>${invoiceEmail}</p>
+      <p><b>plan: </b>${plan}</p>
+      <p><b>Date: </b>${createdAt}</p>
+    `
+    mailTransport.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.log(err)
+      }
+      console.log('completed.')
+    })
+    return 0
+  })
+
 // 企業メンバーが招待された時の処理
 exports.sendMailToInvitedMember = functions.region('asia-northeast1')
   .firestore
@@ -482,8 +525,12 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
             feedbackData.isWritten = false
           } else {
             feedbackData.isWritten = true
-            feedbackData.goodPoint = feedback.goodPoint
-            feedbackData.advice = feedback.advice
+            if (feedback.goodPoint) {
+              feedbackData.goodPoint = feedback.goodPoint
+            }
+            if (feedback.advice) {
+              feedbackData.advice = feedback.advice
+            }
           }
           batch.set(feedbackRef, feedbackData)
 
@@ -749,8 +796,12 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
           feedbackData.isWritten = false
         } else {
           feedbackData.isWritten = true
-          feedbackData.goodPoint = feedback.goodPoint
-          feedbackData.advice = feedback.advice
+          if (feedback.goodPoint) {
+            feedbackData.goodPoint = feedback.goodPoint
+          }
+          if (feedback.advice) {
+            feedbackData.advice = feedback.advice
+          }
         }
 
         const feedbackId = admin.firestore().collection('feedbacks').doc().id
@@ -2810,7 +2861,7 @@ exports.createRecruiter = functions.region('asia-northeast1')
 
           if (members.length == 1) {
             if (members[0].isFirstMember != null && members[0].isFirstMember) {
-              if (members[0].position) {
+              if (!member.position && members[0].position) {
                 member.position = members[0].position
               }
               members = [member]

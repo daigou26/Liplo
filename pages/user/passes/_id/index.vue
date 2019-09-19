@@ -61,7 +61,7 @@
           <v-flex sm10 xs12 offset-sm1>
             <!-- 未使用 & 未契約 -->
             <v-alert
-              v-if="!isContracted && !isAccepted && isValid && !isExpired && !(type == 'limited' && limit && limit <= usedCount)"
+              v-if="!isContracted && !isAccepted && isValid && !isExpired && !(type == 'limited' && limit != null && limit <= usedCount)"
               :value="true"
               color="teal lighten-1"
               outline
@@ -101,7 +101,7 @@
             </v-alert>
             <!-- 未使用 & 未契約 & 先着パスの上限 -->
             <v-alert
-              v-if="!isContracted && !isAccepted && isValid && !isExpired && type == 'limited' && limit && limit <= usedCount"
+              v-if="!isContracted && !isAccepted && isValid && !isExpired && type == 'limited' && limit != null && limit <= usedCount"
               :value="true"
               color="blue-grey lighten-2"
               outline
@@ -175,7 +175,7 @@
                   !isAccepted &&
                   isValid &&
                   !isExpired &&
-                  !(type == 'limited' && limit && limit <= usedCount)
+                  !(type == 'limited' && limit != null && limit <= usedCount)
                 "
               >
                 <div
@@ -215,7 +215,7 @@
                 </v-form>
               </div>
               <div
-                v-if="!isContracted && !isAccepted && isValid && !isExpired && !(type == 'limited' && limit && limit <= usedCount)"
+                v-if="!isContracted && !isAccepted && isValid && !isExpired && !(type == 'limited' && limit != null && limit <= usedCount)"
                 class="py-4 light-text-color"
               >
                 ※ 事前に担当者とのメッセージにて労働条件（給料や労働時間、仕事内容、勤務開始日など）を確認し、同意の上、慎重に使用してください。

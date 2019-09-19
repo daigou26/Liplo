@@ -171,8 +171,10 @@ export default {
   },
   methods: {
     allNotificationsButtonClicked(url) {
-      this.resetNotificationsState()
-      this.$router.push(url)
+      if (this.$route.name != 'user-notifications') {
+        this.resetNotificationsState()
+        this.$router.push(url)
+      }
     },
     homeButtonClicked() {
       if (this.$route.name != 'index') {

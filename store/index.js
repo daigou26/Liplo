@@ -228,6 +228,7 @@ export const actions = {
     dispatch('profile/resetState')
     dispatch('profile/resetProfileState')
     dispatch('profile/resetCompaniesListener')
+    dispatch('profile/resetUserListener')
     dispatch('review/resetState')
     dispatch('reviews/resetJobReviewsState')
     dispatch('reviews/resetCompanyReviewsState')
@@ -356,6 +357,7 @@ export const actions = {
             dispatch('profile/resetState')
             dispatch('profile/resetProfileState')
             dispatch('profile/resetCompaniesListener')
+            dispatch('profile/resetUserListener')
             dispatch('review/resetState')
             dispatch('reviews/resetJobReviewsState')
             dispatch('reviews/resetCompanyReviewsState')
@@ -447,7 +449,7 @@ export const actions = {
                   const batch = firestore.batch()
 
                   const userRef = firestore.collection('users').doc(user.uid)
-                  batch.set(userRef, {
+                  var userData = {
                     companyId: companyId,
                     firstName: firstName,
                     lastName: lastName,
@@ -456,7 +458,12 @@ export const actions = {
                     isEmailVerified: user.emailVerified,
                     notificationsSetting: {application: true, acceptPass: true},
                     isDeleted: false,
-                  })
+                  }
+                  if (position) {
+                    userData.position = position
+                  }
+                  batch.set(userRef, userData)
+
                   const profileRef = firestore.collection('users')
                     .doc(user.uid).collection('profile').doc(user.uid)
                   var profileData = {
@@ -691,6 +698,7 @@ export const actions = {
                 }
               } else {
                 dispatch('profile/setPoints', doc.data()['points'])
+                dispatch('profile/setUserListener', user.uid)
 
                 // emailVerified が false
                 if (!user.emailVerified) {
