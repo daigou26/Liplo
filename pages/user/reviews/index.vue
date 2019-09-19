@@ -46,6 +46,9 @@
                 記入待ちのレビュー
                 <div class="pt-2 body-2 light-text-color">
                   レビューを書くことでスコアが上がり、スカウトされやすくなります。
+                  <div>
+                    ※ スコアに反映されるまでに時間がかかる場合があります
+                  </div>
                 </div>
               </div>
               <v-list v-if="notReviewedLists && notReviewedLists.length > 0" two-line>
