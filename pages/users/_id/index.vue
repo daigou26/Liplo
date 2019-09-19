@@ -232,7 +232,7 @@
             </v-flex>
           </div>
           <!-- ポートフォリオ -->
-          <div v-if="portfolio">
+          <div v-if="portfolio && portfolio.length > 0">
             <v-layout
               align-center
               justify-space-between
@@ -271,7 +271,7 @@
             </v-flex>
           </div>
           <!-- スキル -->
-          <div v-if="skills">
+          <div v-if="skills && skills.length > 0">
             <v-layout
               align-center
               justify-space-between
@@ -300,7 +300,7 @@
             </v-flex>
           </div>
           <!-- 関連リンク -->
-          <div v-if="links">
+          <div v-if="links && links.length > 0">
             <v-layout
               align-center
               justify-space-between
