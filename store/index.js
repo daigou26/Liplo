@@ -8,6 +8,8 @@ export const state = () => ({
   uid: '',
   isVerified: true,
   sentVerifyEmail: false,
+  signUpDialog: false,
+  signUpForm: false,
   authError: null,
   loading: false,
   isRefreshed: false,
@@ -24,6 +26,12 @@ export const mutations = {
   },
   updateSentVerifyEmail(state, sentVerifyEmail) {
     state.sentVerifyEmail = sentVerifyEmail
+  },
+  updateSignUpDialog(state, signUpDialog) {
+    state.signUpDialog = signUpDialog
+  },
+  updateSignUpForm(state, signUpForm) {
+    state.signUpForm = signUpForm
   },
   setAuthError(state, error) {
     state.authError = error
@@ -421,6 +429,12 @@ export const actions = {
   setLoading({commit}) {
     commit('setLoading')
   },
+  updateSignUpDialog({commit}, signUpDialog) {
+    commit('updateSignUpDialog', signUpDialog)
+  },
+  updateSignUpForm({commit}, signUpForm) {
+    commit('updateSignUpForm', signUpForm)
+  },
   setAuthInfo({dispatch, commit, state}, {
     url,
     route,
@@ -696,7 +710,7 @@ export const actions = {
                 } else if (route.path.includes('/messages') && !route.path.includes('recruiter/messages')) {
                   router.replace('/recruiter/dashboard')
                 }
-              } else {
+              } else if (doc.data()['type'] == 'user') {
                 dispatch('profile/setPoints', doc.data()['points'])
                 dispatch('profile/setUserListener', user.uid)
 
@@ -781,6 +795,10 @@ export const actions = {
   },
   updateIsRefreshing({commit}, isRefreshing) {
     commit('updateIsRefreshing', isRefreshing)
+  },
+  resetDialog({commit}) {
+    commit('updateSignUpDialog', false)
+    commit('updateSignUpForm', false)
   },
   resetState({commit}) {
     commit('setUid', '')

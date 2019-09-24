@@ -13,7 +13,7 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex v-else>
+    <v-flex v-else-if="uid && uid != ''">
       <!-- footer 表示ボタン -->
       <div class="hidden-xs-only" id="footer-button">
         <v-btn
@@ -274,7 +274,7 @@
             <v-divider></v-divider>
           </v-flex>
           <v-flex xs8 offset-xs2>
-            <span>&copy; 2019 All rights reserved.</span>
+            <span>&copy; 2019 Liplo Inc. All rights reserved.</span>
           </v-flex>
           <v-flex xs10 offset-xs1 text-xs-right>
             <v-btn color="white" small @click="footer = false">
@@ -284,6 +284,127 @@
           </v-flex>
         </v-layout>
       </v-footer>
+    </v-flex>
+    <v-flex xs12 v-else>
+      <!-- 見出し -->
+      <v-img :height="windowHeight + 78" v-bind:src="require('@/assets/images/top/background.jpg')">
+        <v-layout
+          class="top-bg white--text"
+          row
+          wrap
+          justify-center
+          align-center
+          :class="{
+            'main-padding-sm': $vuetify.breakpoint.smAndDown,
+            'main-padding-md': $vuetify.breakpoint.mdOnly,
+            'main-padding-lg': $vuetify.breakpoint.lgAndUp,
+          }"
+          :style="{ height: windowHeight + 78 + 'px' }"
+        >
+          <v-flex xs12 sm8 text-xs-center>
+            <h1
+              class="font-weight-bold"
+              :class="{
+                'heading-font-size-xs': $vuetify.breakpoint.xsOnly,
+                'heading-font-size-sm': $vuetify.breakpoint.smAndUp,
+              }"
+            >
+              生き生きと働こう
+            </h1>
+            <div class="py-5 title">
+              Liplo は長期インターンを通して、
+              <div>
+                求人者と求職者をマッチングする採用プラットフォームです。
+              </div>
+            </div>
+            <v-btn
+              class="mt-5 font-weight-bold"
+              large
+              outline
+              color="white"
+              @click="updateSignUpDialog(true)"
+            >Emailで登録</v-btn>
+          </v-flex>
+        </v-layout>
+      </v-img>
+      <!-- 特徴 -->
+      <div
+        :class="{
+          'main-padding-sm': $vuetify.breakpoint.smAndDown,
+          'main-padding-md': $vuetify.breakpoint.mdOnly,
+          'main-padding-lg': $vuetify.breakpoint.lgAndUp,
+        }"
+      >
+        <v-layout row wrap justify-center align-center>
+          <v-flex xs12 sm4 md3 text-xs-center px-4
+            :class="{
+              'px-5': $vuetify.breakpoint.xsOnly,
+            }"
+          >
+            <v-icon
+              class="material-icons-outlined"
+              style="font-size: 100px"
+              color="teal lighten-1"
+            >
+              style
+            </v-icon>
+            <div class="text-color title font-weight-bold py-3">
+              入社パス
+            </div>
+            <div class="text-color">
+              企業が採用したいと感じた学生には、インターン後にパス（内定や入社の権利）が渡されます
+            </div>
+          </v-flex>
+          <v-flex xs12 sm4 md3 text-xs-center px-4
+            :class="{
+              'pt-5 px-5': $vuetify.breakpoint.xsOnly,
+            }"
+          >
+            <v-icon
+              class="material-icons-outlined"
+              style="font-size: 100px"
+              color="teal lighten-1"
+            >
+              favorite_border
+            </v-icon>
+            <div class="text-color title font-weight-bold py-3">
+              自分にあった企業に入社
+            </div>
+            <div class="text-color">
+              色々な企業で長期インターンをした後、一番入りたいと思える企業のパスを使って入社しよう
+            </div>
+          </v-flex>
+          <v-flex xs12 sm4 md3 text-xs-center px-4
+            :class="{
+              'pt-5 px-5': $vuetify.breakpoint.xsOnly,
+            }"
+          >
+            <v-icon
+              class="material-icons-outlined"
+              style="font-size: 100px"
+              color="teal lighten-1"
+            >
+              trending_up
+            </v-icon>
+            <div class="text-color title font-weight-bold py-3">
+              スキルアップ
+            </div>
+            <div class="text-color">
+              長期インターンに行って、大学では身につかないスキルを身に付けよう
+            </div>
+          </v-flex>
+        </v-layout>
+        <div class="hidden-sm-and-up text-xs-center">
+          <v-btn
+            class="font-weight-bold"
+            style="margin-top: 80px"
+            large
+            outline
+            color="teal"
+            @click="updateSignUpDialog(true)"
+          >Emailで登録</v-btn>
+        </div>
+      </div>
     </v-flex>
   </v-layout>
 </template>
@@ -475,6 +596,7 @@ export default {
       setFilter: 'jobs/setFilter',
       setOrder: 'jobs/setOrder',
       resetState: 'jobs/resetState',
+      updateSignUpDialog: 'updateSignUpDialog',
     }),
   }
 }
@@ -492,5 +614,38 @@ export default {
   bottom: 20px;
   right: 20px;
   z-index: 10
+}
+.top-bg{
+  background-color:rgba(255, 90, 95, 0.95);
+}
+.img-shadow{
+  filter: drop-shadow(10px 10px 10px rgba(0,0,0,0.6));
+}
+.main-padding-sm{
+  padding:90px 0;
+}
+.main-padding-md{
+  padding:100px 0;
+}
+.main-padding-lg{
+  padding:180px 0;
+}
+.title-font-size-md {
+  font-size: 30px;
+}
+.padding-left-lg {
+  padding-left: 120px;
+}
+.padding-left-md {
+  padding-left: 100px;
+}
+.padding-left-sm {
+  padding-left: 80px;
+}
+.heading-font-size-sm {
+  font-size: 40px;
+}
+.heading-font-size-xs {
+  font-size: 30px;
 }
 </style>

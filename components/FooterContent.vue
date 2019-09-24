@@ -44,7 +44,7 @@
       </v-layout>
       <v-divider class="py-2"></v-divider>
       <div class="text-xs-right">
-        <span>&copy; 2019 Liplo,Inc. All rights reserved.</span>
+        <span>&copy; 2019 Liplo Inc. All rights reserved.</span>
       </div>
     </v-flex>
   </v-flex>
