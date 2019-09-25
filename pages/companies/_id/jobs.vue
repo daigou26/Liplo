@@ -136,6 +136,7 @@
 import { mapActions, mapState } from 'vuex'
 const baseUrl = process.env.BASE_URL || 'https://liplo.jp'
 export default {
+  middleware: 'auth',
   head () {
     return {
       title: this.companyName ? '募集一覧 - ' + this.companyName : '募集一覧',

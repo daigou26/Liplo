@@ -766,9 +766,6 @@ export const actions = {
         route.name !== 'how_to_use' &&
         route.name !== 'terms' &&
         route.name !== 'privacy_policy' &&
-        route.name !== 'jobs-id' &&
-        route.name !== 'companies-id' &&
-        route.name !== 'companies-id-jobs' &&
         route.name != null
       ) {
         router.replace('/')

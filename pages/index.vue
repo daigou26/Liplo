@@ -311,7 +311,13 @@
             >
               生き生きと働こう
             </h1>
-            <div class="py-5 title">
+            <div
+              class="py-5 px-3"
+              :class="{
+                'subheading': $vuetify.breakpoint.xsOnly,
+                'title': $vuetify.breakpoint.smAndUp,
+              }"
+            >
               Liplo は長期インターンを通して、
               <div>
                 求人者と求職者をマッチングする採用プラットフォームです。
