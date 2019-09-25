@@ -1178,11 +1178,10 @@
                     ></v-text-field>
                     <!-- 役職 -->
                     <v-text-field
-                      class="pt-4"
                       v-model="position"
                       :rules="positionRules"
                       label="役職"
-                      placeholder="例) 採用担当"
+                      solo
                       required
                     ></v-text-field>
                     <!-- パスワード -->
