@@ -1,4 +1,4 @@
-# lighthouse
+# Liplo
 
 Job boards for hiring interns.
 
