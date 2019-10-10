@@ -1,0 +1,149 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+		// all users can read
+    match /jobs/{jobId=**} {
+      allow read;
+      allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.type
+      	== 'recruiter'
+    }
+    match /projects/{projectId=**} {
+      allow read;
+      allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.type
+      	== 'recruiter'
+    }
+    match /companies/{companyId} {
+      allow read;
+      allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== companyId || exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid))
+    }
+    match /companies/{companyId}/info/{companyInfoId} {
+      allow read, write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== companyId || exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid))
+    }
+    match /companies/{companyId}/detail/{companyDetailId} {
+      allow read;
+      allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== companyId || exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid))
+    }
+    // admin
+    match /adminUsers/{uid} {
+      allow write: if exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid))
+      allow read: if request.auth.uid == uid;
+    }
+    match /paidActions/{paidActionId=**} {
+      allow read: if exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid))
+      allow write: if request.auth != null;
+    }
+    match /appFeedbacks/{appFeedbackId=**} {
+      allow read: if exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid))
+      allow write: if request.auth != null;
+    }
+    match /inquiries/{inquiriesId=**} {
+      allow read: if exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid))
+    }
+    match /companyInquiries/{inquiriesId=**} {
+      allow read: if exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid))
+    }
+    // users
+    match /users/{uid} {
+      allow read: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.type
+      	== 'recruiter' || request.auth.uid == uid;
+      allow write: if request.auth.uid == uid;
+    }
+    match /users/{uid}/profile/{profileId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth.uid == uid;
+    }
+    match /users/{uid}/detail/{detailId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth.uid == uid;
+    }
+    match /users/{uid}/notifications/{notificationId} {
+      allow read, update: if request.auth.uid == uid;
+      allow create: if request.auth != null;
+    }
+    match /users/{uid}/career/{careerId} {
+      allow read: if request.auth != null;
+      allow update: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== resource.data.companyId || request.auth.uid == uid;
+    }
+    // chats
+    match /chats/{chatId} {
+      allow read, update: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== resource.data.companyId || request.auth.uid == resource.data.uid;
+    }
+    // messages
+    match /chats/{chatId}/messages/{messageId} {
+      allow read,write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== get(/databases/$(database)/documents/chats/$(chatId)).data.companyId
+        || request.auth.uid == get(/databases/$(database)/documents/chats/$(chatId)).data.uid;
+    }
+    // reviews
+    match /reviews/{reviewId} {
+      allow create,read: if request.auth != null;
+    }
+    // feedbacks
+    match /feedbacks/{feedbackId} {
+      allow read: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== resource.data.companyId || request.auth.uid == resource.data.uid;
+      allow update: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== resource.data.companyId;
+    }
+    // passes
+    match /passes/{passId} {
+      allow read: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== resource.data.companyId || request.auth.uid == resource.data.uid;
+      allow update: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== resource.data.companyId || request.auth.uid == resource.data.uid;
+    }
+    // candidates
+    match /companies/{companyId}/candidates/{candidateId} {
+      allow read: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== companyId || request.auth.uid == resource.data.user.uid;
+      allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== companyId || request.auth != null;
+    }
+    // invitedMembers
+    match /companies/{companyId}/invitedMembers/{memberId} {
+      allow read;
+      allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== companyId
+    }
+    // yearPasses
+    match /companies/{companyId}/yearPasses/{year} {
+    	allow read: if request.auth != null;
+      allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== companyId
+    }
+    // scoutedUsers
+    match /companies/{companyId}/scoutedUsers/{scoutedUserId} {
+      allow read,write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== companyId
+    }
+    // applicants
+    match /companies/{companyId}/applicants/{applicantId} {
+      allow read,write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== companyId
+    }
+    // interns
+    match /companies/{companyId}/interns/{internId} {
+      allow read,write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== companyId
+    }
+    // passedUsers
+    match /companies/{companyId}/passedUsers/{passedUserId} {
+      allow read,write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== companyId
+    }
+    // contractedUsers
+    match /companies/{companyId}/contractedUsers/{contractedUserId} {
+      allow read,write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== companyId
+    }
+    // hiredUsers
+    match /companies/{companyId}/hiredUsers/{hiredUserId} {
+      allow read,write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+      	== companyId
+    }
+  }
+}

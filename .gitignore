@@ -92,4 +92,6 @@ out-tsc
 sw.*
 
 #firebase
+**/.firebase/
 **/.firebaserc
+/functions/node_modules
