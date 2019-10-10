@@ -1,8 +1,8 @@
 const functions = require('firebase-functions')
 const nodemailer = require('nodemailer')
-const sgMail = require('@sendgrid/mail')
-const sgApiKey = functions.config().sendgrid.api_key
-sgMail.setApiKey(sgApiKey)
+// const sgMail = require('@sendgrid/mail')
+// const sgApiKey = functions.config().sendgrid.api_key
+// sgMail.setApiKey(sgApiKey)
 
 const appUrl = functions.config().app.url
 const gmailEmail = functions.config().gmail.email
@@ -14,92 +14,10 @@ const mailTransport = nodemailer.createTransport({
         pass: gmailPassword
     }
 })
-// const slack_url = functions.config().slack.webhook_url
 const admin = require('firebase-admin')
 
 admin.initializeApp()
 
-// フィードバックをローカルにdownload
-// exports.downloadFeedbacks = functions.https..onCall((data, context) => {
-//   const json2csv = require("json2csv").parse
-//
-//   if (data.uid == null) {
-//     return 0
-//   }
-//
-//   return admin.firestore()
-//     .collection('adminUsers')
-//     .doc(data.uid)
-//     .get()
-//     .then(adminDoc => {
-//       if (adminDoc.exists) {
-//         admin.firestore()
-//           .collection('appFeedbacks')
-//           .get()
-//           .then(snapshot => {
-//             const feedbacks = []
-//             if (!snapshot.empty) {
-//
-//               snapshot.forEach(doc => {
-//                 var createdAt = doc.data().createdAt
-//                 if (createdAt) {
-//                   let date = new Date( createdAt.seconds * 1000 )
-//                   let year  = date.getFullYear()
-//                   let month = date.getMonth() + 1
-//                   let day  = date.getDate()
-//                   createdAt = `${year}/${month}/${day}`
-//                 }
-//
-//                 const feedback = {
-//                   createdAt: createdAt,
-//                   type: doc.data().type,
-//                   content: doc.data().content,
-//
-//                 }
-//                 feedbacks.push(feedback)
-//               })
-//               console.log('feedback ok');
-//               const csv = json2csv(feedbacks)
-//               response.setHeader(
-//                 "Content-disposition",
-//                 "attachment; filename=lighthouse-feedbacks.csv"
-//               );
-//               response.set("Content-Type", "text/csv");
-//               response.status(200).send(csv);
-//               console.log('download ok');
-//             } else {
-//               console.log('no feedbacks');
-//             }
-//           })
-//           .catch(error => {
-//             response.status(200).send("エラー： " + error);
-//           })
-//       }
-//     })
-//     .catch(error => {
-//       console.error("Error: ", error)
-//     })
-// })
-
-// サービスのフィードバックが送信された時の処理
-// exports.sendFeedbacksOfApp = functions.region('asia-northeast1')
-//   .firestore
-//   .document('appFeedbacks/{feedbackId}')
-//   .onCreate((snap, context) => {
-//     const feedbackId = context.params.feedbackId
-//     const createdAt = snap.data().createdAt
-//     const content = snap.data().content
-//     const type = snap.data().type
-//
-//     return rp({
-//       method: 'POST',
-//       uri: slack_url,
-//       body: {
-//         text: `${type}: ${content}`,
-//       },
-//       json: true,
-//     });
-//   })
 
 // 採用をした時に管理者に通知
 exports.sendPaidActionMailToAdmin = functions.region('asia-northeast1')
@@ -145,118 +63,118 @@ exports.sendPaidActionMailToAdmin = functions.region('asia-northeast1')
   })
 
 // 企業メンバーが招待された時の処理
-exports.sendMailToInvitedMember = functions.region('asia-northeast1')
-  .firestore
-  .document('companies/{companyId}/invitedMembers/{memberId}')
-  .onCreate((snap, context) => {
-    const companyId = context.params.companyId
-    const email = snap.data().email
-    const companyName = snap.data().companyName
-    const userName = snap.data().userName
-    const url = `${appUrl}/?type=invited&id=${companyId}`
-
-    // 招待されたユーザーにメール送信
-    const msg = {
-      to: email,
-      from: 'Liplo<noreply@liplo.jp>',
-      subject: `[招待] ${userName}さんが${companyName}にあなたを招待しました。`,
-      html: `
-        <body>
-          <table border="0" cellpadding="0" cellspacing="0" width="100%">
-            <tr>
-              <td align="center">
-                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-                  <tr>
-                    <td
-                      style="
-                        padding: 12px;
-                        font-size: 16px;
-                        line-height: 32px;
-                      "
-                    >
-                      <h1
-                        style="
-                          color: #555555;
-                          margin: 14px 12px 40px;
-                          font-size: 20px;
-                          font-weight: 400;
-                          line-height: 24px;
-                        "
-                      >
-                        ${userName}さんが${companyName}にあなたを招待しました。
-                      </h1>
-                      <div style="margin: 0 16px 60px; color: #555555">
-                        下のボタンからサインアップできます。
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td align="left" bgcolor="#ffffff">
-                      <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                        <tr>
-                          <td align="center" bgcolor="#ffffff" style="padding: 20px;">
-                            <table border="0" cellpadding="0" cellspacing="0">
-                              <tr>
-                                <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
-                                  <a
-                                    href="${url}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style="
-                                      display: inline-block;
-                                      padding: 10px 50px;
-                                      font-size: 16px;
-                                      color: #ffffff;
-                                      text-decoration: none;
-                                      border-radius: 6px;
-                                    "
-                                  >サインアップ</a>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      align="center"
-                      style="
-                        color: #777777;
-                        padding: 60px 12px 0px;
-                        font-size: 12px;
-                        line-height: 24px;
-                      "
-                    >
-                      <hr size=1 color="#dddddd">
-                      <p style="margin: 0; padding-top: 12px"> このメールに心当たりがない方は、お手数をおかけしますがこのメールを破棄してください。</p>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      align="center"
-                      style="
-                        color: #777777;
-                        padding: 20px;
-                        font-size: 14px;
-                        line-height: 24px;
-                      "
-                    >
-                      <p style="margin: 0;"> Liplo Inc.</p>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </body>
-      `,
-    }
-    return sgMail.send(msg).then(() => {
-      console.log('sendMailToInvitedMember completed. sent to:', email)
-    })
-  })
+// exports.sendMailToInvitedMember = functions.region('asia-northeast1')
+//   .firestore
+//   .document('companies/{companyId}/invitedMembers/{memberId}')
+//   .onCreate((snap, context) => {
+//     const companyId = context.params.companyId
+//     const email = snap.data().email
+//     const companyName = snap.data().companyName
+//     const userName = snap.data().userName
+//     const url = `${appUrl}/?type=invited&id=${companyId}`
+//
+//     // 招待されたユーザーにメール送信
+//     const msg = {
+//       to: email,
+//       from: 'Liplo<noreply@liplo.jp>',
+//       subject: `[招待] ${userName}さんが${companyName}にあなたを招待しました。`,
+//       html: `
+//         <body>
+//           <table border="0" cellpadding="0" cellspacing="0" width="100%">
+//             <tr>
+//               <td align="center">
+//                 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+//                   <tr>
+//                     <td
+//                       style="
+//                         padding: 12px;
+//                         font-size: 16px;
+//                         line-height: 32px;
+//                       "
+//                     >
+//                       <h1
+//                         style="
+//                           color: #555555;
+//                           margin: 14px 12px 40px;
+//                           font-size: 20px;
+//                           font-weight: 400;
+//                           line-height: 24px;
+//                         "
+//                       >
+//                         ${userName}さんが${companyName}にあなたを招待しました。
+//                       </h1>
+//                       <div style="margin: 0 16px 60px; color: #555555">
+//                         下のボタンからサインアップできます。
+//                       </div>
+//                     </td>
+//                   </tr>
+//                   <tr>
+//                     <td align="left" bgcolor="#ffffff">
+//                       <table border="0" cellpadding="0" cellspacing="0" width="100%">
+//                         <tr>
+//                           <td align="center" bgcolor="#ffffff" style="padding: 20px;">
+//                             <table border="0" cellpadding="0" cellspacing="0">
+//                               <tr>
+//                                 <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
+//                                   <a
+//                                     href="${url}"
+//                                     target="_blank"
+//                                     rel="noopener noreferrer"
+//                                     style="
+//                                       display: inline-block;
+//                                       padding: 10px 50px;
+//                                       font-size: 16px;
+//                                       color: #ffffff;
+//                                       text-decoration: none;
+//                                       border-radius: 6px;
+//                                     "
+//                                   >サインアップ</a>
+//                                 </td>
+//                               </tr>
+//                             </table>
+//                           </td>
+//                         </tr>
+//                       </table>
+//                     </td>
+//                   </tr>
+//                   <tr>
+//                     <td
+//                       align="center"
+//                       style="
+//                         color: #777777;
+//                         padding: 60px 12px 0px;
+//                         font-size: 12px;
+//                         line-height: 24px;
+//                       "
+//                     >
+//                       <hr size=1 color="#dddddd">
+//                       <p style="margin: 0; padding-top: 12px"> このメールに心当たりがない方は、お手数をおかけしますがこのメールを破棄してください。</p>
+//                     </td>
+//                   </tr>
+//                   <tr>
+//                     <td
+//                       align="center"
+//                       style="
+//                         color: #777777;
+//                         padding: 20px;
+//                         font-size: 14px;
+//                         line-height: 24px;
+//                       "
+//                     >
+//                       <p style="margin: 0;"> Liplo Inc.</p>
+//                     </td>
+//                   </tr>
+//                 </table>
+//               </td>
+//             </tr>
+//           </table>
+//         </body>
+//       `,
+//     }
+//     return sgMail.send(msg).then(() => {
+//       console.log('sendMailToInvitedMember completed. sent to:', email)
+//     })
+//   })
 
 // 採用したときに、paidActions に追加
 exports.candidateHasChanged = functions.region('asia-northeast1')
@@ -899,94 +817,94 @@ exports.candidateHasChanged = functions.region('asia-northeast1')
               .then(userDoc => {
                 if (userDoc.exists) {
                   if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.pass) {
-                    const msg = {
-                      to: userDoc.data().email,
-                      from: 'Liplo<noreply@liplo.jp>',
-                      subject: `[パス] ${companyName}から${passTypeText}が届きました！`,
-                      html: `
-                        <body>
-                          <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                            <tr>
-                              <td align="center">
-                                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-                                  <tr>
-                                    <td
-                                      style="
-                                        padding: 12px;
-                                        font-size: 16px;
-                                        line-height: 32px;
-                                      "
-                                    >
-                                      <h1
-                                        style="
-                                          color: #555555;
-                                          margin: 14px 12px 40px;
-                                          font-size: 20px;
-                                          font-weight: 400;
-                                          line-height: 24px;
-                                        "
-                                      >
-                                        <div>こんにちは ${user.name} さん</div>
-                                        <div style="padding-top: 6px">${companyName}から${passTypeText}が届いています！</div>
-                                      </h1>
-                                      <div style="margin: 0 16px 60px; color: #555555">
-                                        下のボタンからパスを確認できます。有効期限が設定されているので、早めにご確認ください。
-                                      </div>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td align="left" bgcolor="#ffffff">
-                                      <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                        <tr>
-                                          <td align="center" bgcolor="#ffffff" style="padding: 20px;">
-                                            <table border="0" cellpadding="0" cellspacing="0">
-                                              <tr>
-                                                <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
-                                                  <a
-                                                    href="${appUrl}${passUrl}"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    style="
-                                                      display: inline-block;
-                                                      padding: 10px 50px;
-                                                      font-size: 16px;
-                                                      color: #ffffff;
-                                                      text-decoration: none;
-                                                      border-radius: 6px;
-                                                    "
-                                                  >確認する</a>
-                                                </td>
-                                              </tr>
-                                            </table>
-                                          </td>
-                                        </tr>
-                                      </table>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td
-                                      align="center"
-                                      style="
-                                        color: #777777;
-                                        padding: 60px 12px 20px;
-                                        font-size: 14px;
-                                        line-height: 24px;
-                                      "
-                                    >
-                                      <hr size=1 color="#dddddd">
-                                      <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
-                                    </td>
-                                  </tr>
-                                </table>
-                              </td>
-                            </tr>
-                          </table>
-                        </body>
-                      `,
-                    }
-                    sgMail.send(msg).then(() => {
-                      console.log('New pass email sent to:', userDoc.data().email)
-                    })
+                    // const msg = {
+                    //   to: userDoc.data().email,
+                    //   from: 'Liplo<noreply@liplo.jp>',
+                    //   subject: `[パス] ${companyName}から${passTypeText}が届きました！`,
+                    //   html: `
+                    //     <body>
+                    //       <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    //         <tr>
+                    //           <td align="center">
+                    //             <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                    //               <tr>
+                    //                 <td
+                    //                   style="
+                    //                     padding: 12px;
+                    //                     font-size: 16px;
+                    //                     line-height: 32px;
+                    //                   "
+                    //                 >
+                    //                   <h1
+                    //                     style="
+                    //                       color: #555555;
+                    //                       margin: 14px 12px 40px;
+                    //                       font-size: 20px;
+                    //                       font-weight: 400;
+                    //                       line-height: 24px;
+                    //                     "
+                    //                   >
+                    //                     <div>こんにちは ${user.name} さん</div>
+                    //                     <div style="padding-top: 6px">${companyName}から${passTypeText}が届いています！</div>
+                    //                   </h1>
+                    //                   <div style="margin: 0 16px 60px; color: #555555">
+                    //                     下のボタンからパスを確認できます。有効期限が設定されているので、早めにご確認ください。
+                    //                   </div>
+                    //                 </td>
+                    //               </tr>
+                    //               <tr>
+                    //                 <td align="left" bgcolor="#ffffff">
+                    //                   <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    //                     <tr>
+                    //                       <td align="center" bgcolor="#ffffff" style="padding: 20px;">
+                    //                         <table border="0" cellpadding="0" cellspacing="0">
+                    //                           <tr>
+                    //                             <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
+                    //                               <a
+                    //                                 href="${appUrl}${passUrl}"
+                    //                                 target="_blank"
+                    //                                 rel="noopener noreferrer"
+                    //                                 style="
+                    //                                   display: inline-block;
+                    //                                   padding: 10px 50px;
+                    //                                   font-size: 16px;
+                    //                                   color: #ffffff;
+                    //                                   text-decoration: none;
+                    //                                   border-radius: 6px;
+                    //                                 "
+                    //                               >確認する</a>
+                    //                             </td>
+                    //                           </tr>
+                    //                         </table>
+                    //                       </td>
+                    //                     </tr>
+                    //                   </table>
+                    //                 </td>
+                    //               </tr>
+                    //               <tr>
+                    //                 <td
+                    //                   align="center"
+                    //                   style="
+                    //                     color: #777777;
+                    //                     padding: 60px 12px 20px;
+                    //                     font-size: 14px;
+                    //                     line-height: 24px;
+                    //                   "
+                    //                 >
+                    //                   <hr size=1 color="#dddddd">
+                    //                   <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
+                    //                 </td>
+                    //               </tr>
+                    //             </table>
+                    //           </td>
+                    //         </tr>
+                    //       </table>
+                    //     </body>
+                    //   `,
+                    // }
+                    // sgMail.send(msg).then(() => {
+                    //   console.log('New pass email sent to:', userDoc.data().email)
+                    // })
                   }
                 }
               })
@@ -1231,93 +1149,93 @@ exports.passHasChanged = functions.region('asia-northeast1')
             // パスが使用されたら担当者にメール送信
             members.forEach((member, i) => {
               if (member.notificationsSetting == null || member.notificationsSetting.acceptPass) {
-                const msg = {
-                  to: member.email,
-                  from: 'Liplo<noreply@liplo.jp>',
-                  subject: `[パス] ${userName}さんが${typeText}を使用しました。`,
-                  html: `
-                    <body>
-                      <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                        <tr>
-                          <td align="center">
-                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-                              <tr>
-                                <td
-                                  style="
-                                    padding: 12px;
-                                    font-size: 16px;
-                                    line-height: 32px;
-                                  "
-                                >
-                                  <h1
-                                    style="
-                                      color: #555555;
-                                      margin: 14px 12px 40px;
-                                      font-size: 20px;
-                                      font-weight: 400;
-                                      line-height: 24px;
-                                    "
-                                  >
-                                    ${userName}さんが${typeText}（${joiningYear}年度入社）を使用しました。
-                                  </h1>
-                                  <div style="margin: 0 16px 60px; color: #555555">
-                                    下のボタンから確認ができます。 契約が済みましたら、ステータスを採用予定に変更してください。
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td align="left" bgcolor="#ffffff">
-                                  <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                    <tr>
-                                      <td align="center" bgcolor="#ffffff" style="padding: 20px;">
-                                        <table border="0" cellpadding="0" cellspacing="0">
-                                          <tr>
-                                            <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
-                                              <a
-                                                href="${appUrl}${candidateUrl}"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                style="
-                                                  display: inline-block;
-                                                  padding: 10px 50px;
-                                                  font-size: 16px;
-                                                  color: #ffffff;
-                                                  text-decoration: none;
-                                                  border-radius: 6px;
-                                                "
-                                              >確認する</a>
-                                            </td>
-                                          </tr>
-                                        </table>
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td
-                                  align="center"
-                                  style="
-                                    color: #777777;
-                                    padding: 60px 12px 20px;
-                                    font-size: 14px;
-                                    line-height: 24px;
-                                  "
-                                >
-                                  <hr size=1 color="#dddddd">
-                                  <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                      </table>
-                    </body>
-                  `,
-                }
-                sgMail.send(msg).then(() => {
-                  console.log('New accept pass email sent to:', member.email)
-                })
+                // const msg = {
+                //   to: member.email,
+                //   from: 'Liplo<noreply@liplo.jp>',
+                //   subject: `[パス] ${userName}さんが${typeText}を使用しました。`,
+                //   html: `
+                //     <body>
+                //       <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                //         <tr>
+                //           <td align="center">
+                //             <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                //               <tr>
+                //                 <td
+                //                   style="
+                //                     padding: 12px;
+                //                     font-size: 16px;
+                //                     line-height: 32px;
+                //                   "
+                //                 >
+                //                   <h1
+                //                     style="
+                //                       color: #555555;
+                //                       margin: 14px 12px 40px;
+                //                       font-size: 20px;
+                //                       font-weight: 400;
+                //                       line-height: 24px;
+                //                     "
+                //                   >
+                //                     ${userName}さんが${typeText}（${joiningYear}年度入社）を使用しました。
+                //                   </h1>
+                //                   <div style="margin: 0 16px 60px; color: #555555">
+                //                     下のボタンから確認ができます。 契約が済みましたら、ステータスを採用予定に変更してください。
+                //                   </div>
+                //                 </td>
+                //               </tr>
+                //               <tr>
+                //                 <td align="left" bgcolor="#ffffff">
+                //                   <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                //                     <tr>
+                //                       <td align="center" bgcolor="#ffffff" style="padding: 20px;">
+                //                         <table border="0" cellpadding="0" cellspacing="0">
+                //                           <tr>
+                //                             <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
+                //                               <a
+                //                                 href="${appUrl}${candidateUrl}"
+                //                                 target="_blank"
+                //                                 rel="noopener noreferrer"
+                //                                 style="
+                //                                   display: inline-block;
+                //                                   padding: 10px 50px;
+                //                                   font-size: 16px;
+                //                                   color: #ffffff;
+                //                                   text-decoration: none;
+                //                                   border-radius: 6px;
+                //                                 "
+                //                               >確認する</a>
+                //                             </td>
+                //                           </tr>
+                //                         </table>
+                //                       </td>
+                //                     </tr>
+                //                   </table>
+                //                 </td>
+                //               </tr>
+                //               <tr>
+                //                 <td
+                //                   align="center"
+                //                   style="
+                //                     color: #777777;
+                //                     padding: 60px 12px 20px;
+                //                     font-size: 14px;
+                //                     line-height: 24px;
+                //                   "
+                //                 >
+                //                   <hr size=1 color="#dddddd">
+                //                   <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
+                //                 </td>
+                //               </tr>
+                //             </table>
+                //           </td>
+                //         </tr>
+                //       </table>
+                //     </body>
+                //   `,
+                // }
+                // sgMail.send(msg).then(() => {
+                //   console.log('New accept pass email sent to:', member.email)
+                // })
               }
             })
             console.log('send notification, mail to recruiter complete.')
@@ -1626,94 +1544,94 @@ exports.scoutUser = functions.region('asia-northeast1')
                         if (userDoc.exists) {
                           if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.scout) {
                             // スカウトされたユーザーにメール送信
-                            const msg = {
-                              to: userDoc.data().email,
-                              from: 'Liplo<noreply@liplo.jp>',
-                              subject: `[スカウト] ${companyName}にスカウトされました！ 返事をして話を聞きに行ってみましょう！`,
-                              html: `
-                                <body>
-                                  <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                    <tr>
-                                      <td align="center">
-                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-                                          <tr>
-                                            <td
-                                              style="
-                                                padding: 12px;
-                                                font-size: 16px;
-                                                line-height: 32px;
-                                              "
-                                            >
-                                              <h1
-                                                style="
-                                                  color: #555555;
-                                                  margin: 14px 12px 50px;
-                                                  font-size: 20px;
-                                                  font-weight: 400;
-                                                  line-height: 24px;
-                                                "
-                                              >
-                                                <div>こんにちは ${user.name} さん</div>
-                                                <div style="padding-top: 10px">${companyName}からスカウトが届いています！</div>
-                                              </h1>
-                                              <div style="margin: 0 16px 60px; color: #555555">
-                                                下のボタンからメッセージを確認できます。興味がある場合は、メッセージに返信をしましょう。
-                                              </div>
-                                            </td>
-                                          </tr>
-                                          <tr>
-                                            <td align="left" bgcolor="#ffffff">
-                                              <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                                <tr>
-                                                  <td align="center" bgcolor="#ffffff" style="padding: 20px;">
-                                                    <table border="0" cellpadding="0" cellspacing="0">
-                                                      <tr>
-                                                        <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
-                                                          <a
-                                                            href="${appUrl}${chatUrl}"
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            style="
-                                                              display: inline-block;
-                                                              padding: 10px 50px;
-                                                              font-size: 16px;
-                                                              color: #ffffff;
-                                                              text-decoration: none;
-                                                              border-radius: 6px;
-                                                            "
-                                                          >確認する</a>
-                                                        </td>
-                                                      </tr>
-                                                    </table>
-                                                  </td>
-                                                </tr>
-                                              </table>
-                                            </td>
-                                          </tr>
-                                          <tr>
-                                            <td
-                                              align="center"
-                                              style="
-                                                color: #777777;
-                                                padding: 60px 12px 20px;
-                                                font-size: 14px;
-                                                line-height: 24px;
-                                              "
-                                            >
-                                              <hr size=1 color="#dddddd">
-                                              <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
-                                            </td>
-                                          </tr>
-                                        </table>
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </body>
-                              `,
-                            }
-                            sgMail.send(msg).then(() => {
-                              console.log('New scout email sent to:', userDoc.data().email)
-                            })
+                            // const msg = {
+                            //   to: userDoc.data().email,
+                            //   from: 'Liplo<noreply@liplo.jp>',
+                            //   subject: `[スカウト] ${companyName}にスカウトされました！ 返事をして話を聞きに行ってみましょう！`,
+                            //   html: `
+                            //     <body>
+                            //       <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            //         <tr>
+                            //           <td align="center">
+                            //             <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                            //               <tr>
+                            //                 <td
+                            //                   style="
+                            //                     padding: 12px;
+                            //                     font-size: 16px;
+                            //                     line-height: 32px;
+                            //                   "
+                            //                 >
+                            //                   <h1
+                            //                     style="
+                            //                       color: #555555;
+                            //                       margin: 14px 12px 50px;
+                            //                       font-size: 20px;
+                            //                       font-weight: 400;
+                            //                       line-height: 24px;
+                            //                     "
+                            //                   >
+                            //                     <div>こんにちは ${user.name} さん</div>
+                            //                     <div style="padding-top: 10px">${companyName}からスカウトが届いています！</div>
+                            //                   </h1>
+                            //                   <div style="margin: 0 16px 60px; color: #555555">
+                            //                     下のボタンからメッセージを確認できます。興味がある場合は、メッセージに返信をしましょう。
+                            //                   </div>
+                            //                 </td>
+                            //               </tr>
+                            //               <tr>
+                            //                 <td align="left" bgcolor="#ffffff">
+                            //                   <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            //                     <tr>
+                            //                       <td align="center" bgcolor="#ffffff" style="padding: 20px;">
+                            //                         <table border="0" cellpadding="0" cellspacing="0">
+                            //                           <tr>
+                            //                             <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
+                            //                               <a
+                            //                                 href="${appUrl}${chatUrl}"
+                            //                                 target="_blank"
+                            //                                 rel="noopener noreferrer"
+                            //                                 style="
+                            //                                   display: inline-block;
+                            //                                   padding: 10px 50px;
+                            //                                   font-size: 16px;
+                            //                                   color: #ffffff;
+                            //                                   text-decoration: none;
+                            //                                   border-radius: 6px;
+                            //                                 "
+                            //                               >確認する</a>
+                            //                             </td>
+                            //                           </tr>
+                            //                         </table>
+                            //                       </td>
+                            //                     </tr>
+                            //                   </table>
+                            //                 </td>
+                            //               </tr>
+                            //               <tr>
+                            //                 <td
+                            //                   align="center"
+                            //                   style="
+                            //                     color: #777777;
+                            //                     padding: 60px 12px 20px;
+                            //                     font-size: 14px;
+                            //                     line-height: 24px;
+                            //                   "
+                            //                 >
+                            //                   <hr size=1 color="#dddddd">
+                            //                   <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
+                            //                 </td>
+                            //               </tr>
+                            //             </table>
+                            //           </td>
+                            //         </tr>
+                            //       </table>
+                            //     </body>
+                            //   `,
+                            // }
+                            // sgMail.send(msg).then(() => {
+                            //   console.log('New scout email sent to:', userDoc.data().email)
+                            // })
                           }
                         }
                       })
@@ -1785,94 +1703,94 @@ exports.scoutUser = functions.region('asia-northeast1')
                     if (userDoc.exists) {
                       if (userDoc.data().notificationsSetting == null || userDoc.data().notificationsSetting.scout) {
                         // スカウトされたユーザーにメール送信
-                        const msg = {
-                          to: userDoc.data().email,
-                          from: 'Liplo<noreply@liplo.jp>',
-                          subject: `[スカウト] ${companyName}にスカウトされました！ 返事をして話を聞きに行ってみましょう！`,
-                          html: `
-                            <body>
-                              <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                <tr>
-                                  <td align="center">
-                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-                                      <tr>
-                                        <td
-                                          style="
-                                            padding: 12px;
-                                            font-size: 16px;
-                                            line-height: 32px;
-                                          "
-                                        >
-                                          <h1
-                                            style="
-                                              color: #555555;
-                                              margin: 14px 12px 50px;
-                                              font-size: 20px;
-                                              font-weight: 400;
-                                              line-height: 24px;
-                                            "
-                                          >
-                                            <div>こんにちは ${user.name} さん</div>
-                                            <div style="padding-top: 10px">${companyName}からスカウトが届いています！</div>
-                                          </h1>
-                                          <div style="margin: 0 16px 60px; color: #555555">
-                                            下のボタンからメッセージを確認できます。興味がある場合は、メッセージに返信をしましょう。
-                                          </div>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td align="left" bgcolor="#ffffff">
-                                          <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                            <tr>
-                                              <td align="center" bgcolor="#ffffff" style="padding: 20px;">
-                                                <table border="0" cellpadding="0" cellspacing="0">
-                                                  <tr>
-                                                    <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
-                                                      <a
-                                                        href="${appUrl}${chatUrl}"
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        style="
-                                                          display: inline-block;
-                                                          padding: 10px 50px;
-                                                          font-size: 16px;
-                                                          color: #ffffff;
-                                                          text-decoration: none;
-                                                          border-radius: 6px;
-                                                        "
-                                                      >確認する</a>
-                                                    </td>
-                                                  </tr>
-                                                </table>
-                                              </td>
-                                            </tr>
-                                          </table>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td
-                                          align="center"
-                                          style="
-                                            color: #777777;
-                                            padding: 60px 12px 20px;
-                                            font-size: 14px;
-                                            line-height: 24px;
-                                          "
-                                        >
-                                          <hr size=1 color="#dddddd">
-                                          <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
-                                        </td>
-                                      </tr>
-                                    </table>
-                                  </td>
-                                </tr>
-                              </table>
-                            </body>
-                          `,
-                        }
-                        sgMail.send(msg).then(() => {
-                          console.log('New scout email sent to:', userDoc.data().email)
-                        })
+                        // const msg = {
+                        //   to: userDoc.data().email,
+                        //   from: 'Liplo<noreply@liplo.jp>',
+                        //   subject: `[スカウト] ${companyName}にスカウトされました！ 返事をして話を聞きに行ってみましょう！`,
+                        //   html: `
+                        //     <body>
+                        //       <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                        //         <tr>
+                        //           <td align="center">
+                        //             <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                        //               <tr>
+                        //                 <td
+                        //                   style="
+                        //                     padding: 12px;
+                        //                     font-size: 16px;
+                        //                     line-height: 32px;
+                        //                   "
+                        //                 >
+                        //                   <h1
+                        //                     style="
+                        //                       color: #555555;
+                        //                       margin: 14px 12px 50px;
+                        //                       font-size: 20px;
+                        //                       font-weight: 400;
+                        //                       line-height: 24px;
+                        //                     "
+                        //                   >
+                        //                     <div>こんにちは ${user.name} さん</div>
+                        //                     <div style="padding-top: 10px">${companyName}からスカウトが届いています！</div>
+                        //                   </h1>
+                        //                   <div style="margin: 0 16px 60px; color: #555555">
+                        //                     下のボタンからメッセージを確認できます。興味がある場合は、メッセージに返信をしましょう。
+                        //                   </div>
+                        //                 </td>
+                        //               </tr>
+                        //               <tr>
+                        //                 <td align="left" bgcolor="#ffffff">
+                        //                   <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                        //                     <tr>
+                        //                       <td align="center" bgcolor="#ffffff" style="padding: 20px;">
+                        //                         <table border="0" cellpadding="0" cellspacing="0">
+                        //                           <tr>
+                        //                             <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
+                        //                               <a
+                        //                                 href="${appUrl}${chatUrl}"
+                        //                                 target="_blank"
+                        //                                 rel="noopener noreferrer"
+                        //                                 style="
+                        //                                   display: inline-block;
+                        //                                   padding: 10px 50px;
+                        //                                   font-size: 16px;
+                        //                                   color: #ffffff;
+                        //                                   text-decoration: none;
+                        //                                   border-radius: 6px;
+                        //                                 "
+                        //                               >確認する</a>
+                        //                             </td>
+                        //                           </tr>
+                        //                         </table>
+                        //                       </td>
+                        //                     </tr>
+                        //                   </table>
+                        //                 </td>
+                        //               </tr>
+                        //               <tr>
+                        //                 <td
+                        //                   align="center"
+                        //                   style="
+                        //                     color: #777777;
+                        //                     padding: 60px 12px 20px;
+                        //                     font-size: 14px;
+                        //                     line-height: 24px;
+                        //                   "
+                        //                 >
+                        //                   <hr size=1 color="#dddddd">
+                        //                   <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
+                        //                 </td>
+                        //               </tr>
+                        //             </table>
+                        //           </td>
+                        //         </tr>
+                        //       </table>
+                        //     </body>
+                        //   `,
+                        // }
+                        // sgMail.send(msg).then(() => {
+                        //   console.log('New scout email sent to:', userDoc.data().email)
+                        // })
                       }
                     }
                   })
@@ -2026,94 +1944,94 @@ exports.applyForJob = functions.region('asia-northeast1')
                     // 応募が来たら担当者にメール送信
                     members.forEach((member, i) => {
                       if (member.notificationsSetting == null || member.notificationsSetting.application) {
-                        const msg = {
-                          to: member.email,
-                          from: 'Liplo<noreply@liplo.jp>',
-                          subject: `[応募] ${user.name}さんから応募が来ました。`,
-                          html: `
-                            <body>
-                              <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                <tr>
-                                  <td align="center">
-                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;>
-                                      <tr>
-                                        <td
-                                          style="
-                                            padding: 12px;
-                                            font-size: 16px;
-                                            line-height: 32px;
-                                          "
-                                        >
-                                          <h1
-                                            style="
-                                              color: #555555;
-                                              margin: 14px 12px 50px;
-                                              font-size: 20px;
-                                              font-weight: 400;
-                                              line-height: 24px;
-                                            "
-                                          >
-                                            ${user.name}さんから応募が届いています。
-                                          </h1>
-                                          <div style="margin: 0 16px 60px; color: #555555">
-                                            下のボタンから確認ができます。選考する場合は、候補者のステータスを選考中に変え、
-                                            メッセージにて候補者の方とご連絡をお取りください。
-                                          </div>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td align="left" bgcolor="#ffffff">
-                                          <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                            <tr>
-                                              <td align="center" bgcolor="#ffffff" style="padding: 20px;">
-                                                <table border="0" cellpadding="0" cellspacing="0">
-                                                  <tr>
-                                                    <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
-                                                      <a
-                                                        href="${appUrl}${candidateUrl}"
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        style="
-                                                          display: inline-block;
-                                                          padding: 10px 50px;
-                                                          font-size: 16px;
-                                                          color: #ffffff;
-                                                          text-decoration: none;
-                                                          border-radius: 6px;
-                                                        "
-                                                      >確認する</a>
-                                                    </td>
-                                                  </tr>
-                                                </table>
-                                              </td>
-                                            </tr>
-                                          </table>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td
-                                          align="center"
-                                          style="
-                                            color: #777777;
-                                            padding: 60px 12px 20px;
-                                            font-size: 14px;
-                                            line-height: 24px;
-                                          "
-                                        >
-                                          <hr size=1 color="#dddddd">
-                                          <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
-                                        </td>
-                                      </tr>
-                                    </table>
-                                  </td>
-                                </tr>
-                              </table>
-                            </body>
-                          `,
-                        }
-                        sgMail.send(msg).then(() => {
-                          console.log('New apply email sent to:', member.email)
-                        })
+                        // const msg = {
+                        //   to: member.email,
+                        //   from: 'Liplo<noreply@liplo.jp>',
+                        //   subject: `[応募] ${user.name}さんから応募が来ました。`,
+                        //   html: `
+                        //     <body>
+                        //       <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                        //         <tr>
+                        //           <td align="center">
+                        //             <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;>
+                        //               <tr>
+                        //                 <td
+                        //                   style="
+                        //                     padding: 12px;
+                        //                     font-size: 16px;
+                        //                     line-height: 32px;
+                        //                   "
+                        //                 >
+                        //                   <h1
+                        //                     style="
+                        //                       color: #555555;
+                        //                       margin: 14px 12px 50px;
+                        //                       font-size: 20px;
+                        //                       font-weight: 400;
+                        //                       line-height: 24px;
+                        //                     "
+                        //                   >
+                        //                     ${user.name}さんから応募が届いています。
+                        //                   </h1>
+                        //                   <div style="margin: 0 16px 60px; color: #555555">
+                        //                     下のボタンから確認ができます。選考する場合は、候補者のステータスを選考中に変え、
+                        //                     メッセージにて候補者の方とご連絡をお取りください。
+                        //                   </div>
+                        //                 </td>
+                        //               </tr>
+                        //               <tr>
+                        //                 <td align="left" bgcolor="#ffffff">
+                        //                   <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                        //                     <tr>
+                        //                       <td align="center" bgcolor="#ffffff" style="padding: 20px;">
+                        //                         <table border="0" cellpadding="0" cellspacing="0">
+                        //                           <tr>
+                        //                             <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
+                        //                               <a
+                        //                                 href="${appUrl}${candidateUrl}"
+                        //                                 target="_blank"
+                        //                                 rel="noopener noreferrer"
+                        //                                 style="
+                        //                                   display: inline-block;
+                        //                                   padding: 10px 50px;
+                        //                                   font-size: 16px;
+                        //                                   color: #ffffff;
+                        //                                   text-decoration: none;
+                        //                                   border-radius: 6px;
+                        //                                 "
+                        //                               >確認する</a>
+                        //                             </td>
+                        //                           </tr>
+                        //                         </table>
+                        //                       </td>
+                        //                     </tr>
+                        //                   </table>
+                        //                 </td>
+                        //               </tr>
+                        //               <tr>
+                        //                 <td
+                        //                   align="center"
+                        //                   style="
+                        //                     color: #777777;
+                        //                     padding: 60px 12px 20px;
+                        //                     font-size: 14px;
+                        //                     line-height: 24px;
+                        //                   "
+                        //                 >
+                        //                   <hr size=1 color="#dddddd">
+                        //                   <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
+                        //                 </td>
+                        //               </tr>
+                        //             </table>
+                        //           </td>
+                        //         </tr>
+                        //       </table>
+                        //     </body>
+                        //   `,
+                        // }
+                        // sgMail.send(msg).then(() => {
+                        //   console.log('New apply email sent to:', member.email)
+                        // })
                       }
                     })
                     console.log('update candidate completed.')
@@ -2153,94 +2071,94 @@ exports.applyForJob = functions.region('asia-northeast1')
                 // 応募が来たら担当者にメール送信
                 members.forEach((member, i) => {
                   if (member.notificationsSetting == null || member.notificationsSetting.application) {
-                    const msg = {
-                      to: member.email,
-                      from: 'Liplo<noreply@liplo.jp>',
-                      subject: `[応募] ${user.name}さんから応募が来ました。`,
-                      html: `
-                        <body>
-                          <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                            <tr>
-                              <td align="center">
-                                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;>
-                                  <tr>
-                                    <td
-                                      style="
-                                        padding: 12px;
-                                        font-size: 16px;
-                                        line-height: 32px;
-                                      "
-                                    >
-                                      <h1
-                                        style="
-                                          color: #555555;
-                                          margin: 14px 12px 50px;
-                                          font-size: 20px;
-                                          font-weight: 400;
-                                          line-height: 24px;
-                                        "
-                                      >
-                                        ${user.name}さんから応募が届いています。
-                                      </h1>
-                                      <div style="margin: 0 16px 60px; color: #555555">
-                                        下のボタンから確認ができます。選考する場合は、候補者のステータスを選考中に変え、
-                                        メッセージにて候補者の方とご連絡をお取りください。
-                                      </div>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td align="left" bgcolor="#ffffff">
-                                      <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                        <tr>
-                                          <td align="center" bgcolor="#ffffff" style="padding: 20px;">
-                                            <table border="0" cellpadding="0" cellspacing="0">
-                                              <tr>
-                                                <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
-                                                  <a
-                                                    href="${appUrl}${candidateUrl}"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    style="
-                                                      display: inline-block;
-                                                      padding: 10px 50px;
-                                                      font-size: 16px;
-                                                      color: #ffffff;
-                                                      text-decoration: none;
-                                                      border-radius: 6px;
-                                                    "
-                                                  >確認する</a>
-                                                </td>
-                                              </tr>
-                                            </table>
-                                          </td>
-                                        </tr>
-                                      </table>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td
-                                      align="center"
-                                      style="
-                                        color: #777777;
-                                        padding: 60px 12px 20px;
-                                        font-size: 14px;
-                                        line-height: 24px;
-                                      "
-                                    >
-                                      <hr size=1 color="#dddddd">
-                                      <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
-                                    </td>
-                                  </tr>
-                                </table>
-                              </td>
-                            </tr>
-                          </table>
-                        </body>
-                      `,
-                    }
-                    sgMail.send(msg).then(() => {
-                      console.log('New apply email sent to:', member.email)
-                    })
+                    // const msg = {
+                    //   to: member.email,
+                    //   from: 'Liplo<noreply@liplo.jp>',
+                    //   subject: `[応募] ${user.name}さんから応募が来ました。`,
+                    //   html: `
+                    //     <body>
+                    //       <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    //         <tr>
+                    //           <td align="center">
+                    //             <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;>
+                    //               <tr>
+                    //                 <td
+                    //                   style="
+                    //                     padding: 12px;
+                    //                     font-size: 16px;
+                    //                     line-height: 32px;
+                    //                   "
+                    //                 >
+                    //                   <h1
+                    //                     style="
+                    //                       color: #555555;
+                    //                       margin: 14px 12px 50px;
+                    //                       font-size: 20px;
+                    //                       font-weight: 400;
+                    //                       line-height: 24px;
+                    //                     "
+                    //                   >
+                    //                     ${user.name}さんから応募が届いています。
+                    //                   </h1>
+                    //                   <div style="margin: 0 16px 60px; color: #555555">
+                    //                     下のボタンから確認ができます。選考する場合は、候補者のステータスを選考中に変え、
+                    //                     メッセージにて候補者の方とご連絡をお取りください。
+                    //                   </div>
+                    //                 </td>
+                    //               </tr>
+                    //               <tr>
+                    //                 <td align="left" bgcolor="#ffffff">
+                    //                   <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    //                     <tr>
+                    //                       <td align="center" bgcolor="#ffffff" style="padding: 20px;">
+                    //                         <table border="0" cellpadding="0" cellspacing="0">
+                    //                           <tr>
+                    //                             <td align="center" bgcolor="#26A69A" style="border-radius: 6px;">
+                    //                               <a
+                    //                                 href="${appUrl}${candidateUrl}"
+                    //                                 target="_blank"
+                    //                                 rel="noopener noreferrer"
+                    //                                 style="
+                    //                                   display: inline-block;
+                    //                                   padding: 10px 50px;
+                    //                                   font-size: 16px;
+                    //                                   color: #ffffff;
+                    //                                   text-decoration: none;
+                    //                                   border-radius: 6px;
+                    //                                 "
+                    //                               >確認する</a>
+                    //                             </td>
+                    //                           </tr>
+                    //                         </table>
+                    //                       </td>
+                    //                     </tr>
+                    //                   </table>
+                    //                 </td>
+                    //               </tr>
+                    //               <tr>
+                    //                 <td
+                    //                   align="center"
+                    //                   style="
+                    //                     color: #777777;
+                    //                     padding: 60px 12px 20px;
+                    //                     font-size: 14px;
+                    //                     line-height: 24px;
+                    //                   "
+                    //                 >
+                    //                   <hr size=1 color="#dddddd">
+                    //                   <p style="margin: 0; padding-top: 12px"> Liplo Inc.</p>
+                    //                 </td>
+                    //               </tr>
+                    //             </table>
+                    //           </td>
+                    //         </tr>
+                    //       </table>
+                    //     </body>
+                    //   `,
+                    // }
+                    // sgMail.send(msg).then(() => {
+                    //   console.log('New apply email sent to:', member.email)
+                    // })
                   }
                 })
                 console.log('update candidate completed.')
@@ -3503,43 +3421,43 @@ exports.sendContact = functions
   })
 
 // 請求書の送信先が変更された時
-exports.sendChangeInvoiceEmailConfirmation = functions
-  .https
-  .onCall((data, context) => {
-    const msg = {
-      to: data.newEmail,
-      from: 'Liplo<noreply@liplo.jp>',
-      subject: '[ご確認] 請求書の送信先変更のお知らせ',
-      html: `
-        <p>${data.companyName} 様</p>
-        <p>日頃から Liplo をご利用いただき、ありがとうございます。</p>
-        <p>請求書の送信先の変更が正常に行われたことをお知らせいたします。</p>
-        <p>引き続き、Liploをよろしくお願い致します。</p>
-        <p style="margin-top: 40px">このメールに心当たりがない方は、お手数をおかけしますがこのメールを破棄してください。</p>
-      `,
-    }
-    return sgMail.send(msg).then(() => {
-      console.log('completed.')
-    })
-  })
+// exports.sendChangeInvoiceEmailConfirmation = functions
+//   .https
+//   .onCall((data, context) => {
+//     const msg = {
+//       to: data.newEmail,
+//       from: 'Liplo<noreply@liplo.jp>',
+//       subject: '[ご確認] 請求書の送信先変更のお知らせ',
+//       html: `
+//         <p>${data.companyName} 様</p>
+//         <p>日頃から Liplo をご利用いただき、ありがとうございます。</p>
+//         <p>請求書の送信先の変更が正常に行われたことをお知らせいたします。</p>
+//         <p>引き続き、Liploをよろしくお願い致します。</p>
+//         <p style="margin-top: 40px">このメールに心当たりがない方は、お手数をおかけしますがこのメールを破棄してください。</p>
+//       `,
+//     }
+//     return sgMail.send(msg).then(() => {
+//       console.log('completed.')
+//     })
+//   })
 
 // 担当者向けのサインアップメール送信
-exports.sendSignUpEmail = functions
-  .https
-  .onCall((data, context) => {
-    const msg = {
-      to: data.email,
-      from: 'Liplo<noreply@liplo.jp>',
-      subject: 'サインアップのご案内',
-      html: `
-        <p>${data.name} 様</p>
-        <p>Liplo をご利用いただき、誠にありがとうございます。</p>
-        <p>サインアップは以下のリンクから行えます。</p>
-        <a href="${data.url}">${data.url}</a><br>
-        <p style="margin-top: 40px">引き続き、Liploをよろしくお願い致します。</p>
-      `,
-    }
-    return sgMail.send(msg).then(() => {
-      console.log('completed.')
-    })
-  })
+// exports.sendSignUpEmail = functions
+//   .https
+//   .onCall((data, context) => {
+//     const msg = {
+//       to: data.email,
+//       from: 'Liplo<noreply@liplo.jp>',
+//       subject: 'サインアップのご案内',
+//       html: `
+//         <p>${data.name} 様</p>
+//         <p>Liplo をご利用いただき、誠にありがとうございます。</p>
+//         <p>サインアップは以下のリンクから行えます。</p>
+//         <a href="${data.url}">${data.url}</a><br>
+//         <p style="margin-top: 40px">引き続き、Liploをよろしくお願い致します。</p>
+//       `,
+//     }
+//     return sgMail.send(msg).then(() => {
+//       console.log('completed.')
+//     })
+//   })

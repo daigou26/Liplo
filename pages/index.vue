@@ -15,12 +15,12 @@
     </v-flex>
     <v-flex v-else>
       <!-- footer 表示ボタン -->
-      <div class="hidden-xs-only" id="footer-button">
+      <div v-show="!footer" class="hidden-xs-only" id="footer-button">
         <v-btn
           color="white"
           @click="footer = true"
         >
-          <span class="font-weight-bold text-color">企業情報、プライバシーなど</span>
+          <span class="font-weight-bold text-color">プライバシーなど</span>
         </v-btn>
       </div>
       <!-- プロフィール記入率が低い場合に表示 -->
@@ -253,14 +253,8 @@
                 <div class="pb-2">
                   <nuxt-link to="/feedback" class="font-weight-bold text-color">フィードバックを送る</nuxt-link>
                 </div>
-                <div class="pb-2">
-                  <a href="https://hp.liplo.jp" target="_blank" class="font-weight-bold text-color">運営会社</a>
-                </div>
               </v-flex>
               <v-flex xs5>
-                <div class="pb-3 text-color">
-                  <a href="https://twitter.com/liplo_jp" target="_blank"><v-icon color="grey">fab fa-twitter</v-icon></a>
-                </div>
                 <div class="pb-2">
                   <nuxt-link to="/terms" class="font-weight-bold text-color">利用規約</nuxt-link>
                 </div>
@@ -274,7 +268,7 @@
             <v-divider></v-divider>
           </v-flex>
           <v-flex xs8 offset-xs2>
-            <span>&copy; 2019 All rights reserved.</span>
+            <span>&copy; 2019 Liplo Inc. All rights reserved.</span>
           </v-flex>
           <v-flex xs10 offset-xs1 text-xs-right>
             <v-btn color="white" small @click="footer = false">
@@ -475,6 +469,7 @@ export default {
       setFilter: 'jobs/setFilter',
       setOrder: 'jobs/setOrder',
       resetState: 'jobs/resetState',
+      updateSignUpDialog: 'updateSignUpDialog',
     }),
   }
 }
@@ -492,5 +487,38 @@ export default {
   bottom: 20px;
   right: 20px;
   z-index: 10
+}
+.top-bg{
+  background-color:rgba(255, 90, 95, 0.95);
+}
+.img-shadow{
+  filter: drop-shadow(10px 10px 10px rgba(0,0,0,0.6));
+}
+.main-padding-sm{
+  padding:90px 0;
+}
+.main-padding-md{
+  padding:100px 0;
+}
+.main-padding-lg{
+  padding:180px 0;
+}
+.title-font-size-md {
+  font-size: 30px;
+}
+.padding-left-lg {
+  padding-left: 120px;
+}
+.padding-left-md {
+  padding-left: 100px;
+}
+.padding-left-sm {
+  padding-left: 80px;
+}
+.heading-font-size-sm {
+  font-size: 40px;
+}
+.heading-font-size-xs {
+  font-size: 30px;
 }
 </style>

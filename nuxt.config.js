@@ -1,6 +1,6 @@
 const pkg = require('./package')
 const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
-const baseUrl = process.env.BASE_URL || 'https://liplo.jp'
+const baseUrl = 'https://lighthouse-7c1a8.firebaseapp.com'
 
 require('dotenv').config()
 
@@ -109,11 +109,6 @@ module.exports = {
     id: 'UA-127466651-3',
     dev: false,
   },
-  // prod
-  // googleAnalytics: {
-  //   id: 'UA-127466651-4',
-  //   dev: false,
-  // },
 
   /*
   ** Build configuration
