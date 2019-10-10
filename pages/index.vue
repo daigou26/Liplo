@@ -13,14 +13,14 @@
         Now Loading...
       </v-layout>
     </v-flex>
-    <v-flex v-else-if="uid && uid != ''">
+    <v-flex v-else>
       <!-- footer 表示ボタン -->
-      <div class="hidden-xs-only" id="footer-button">
+      <div v-show="!footer" class="hidden-xs-only" id="footer-button">
         <v-btn
           color="white"
           @click="footer = true"
         >
-          <span class="font-weight-bold text-color">企業情報、プライバシーなど</span>
+          <span class="font-weight-bold text-color">プライバシーなど</span>
         </v-btn>
       </div>
       <!-- プロフィール記入率が低い場合に表示 -->
@@ -253,14 +253,8 @@
                 <div class="pb-2">
                   <nuxt-link to="/feedback" class="font-weight-bold text-color">フィードバックを送る</nuxt-link>
                 </div>
-                <div class="pb-2">
-                  <a href="https://hp.liplo.jp" target="_blank" class="font-weight-bold text-color">運営会社</a>
-                </div>
               </v-flex>
               <v-flex xs5>
-                <div class="pb-3 text-color">
-                  <a href="https://twitter.com/liplo_jp" target="_blank"><v-icon color="grey">fab fa-twitter</v-icon></a>
-                </div>
                 <div class="pb-2">
                   <nuxt-link to="/terms" class="font-weight-bold text-color">利用規約</nuxt-link>
                 </div>
@@ -284,133 +278,6 @@
           </v-flex>
         </v-layout>
       </v-footer>
-    </v-flex>
-    <v-flex xs12 v-else>
-      <!-- 見出し -->
-      <v-img :height="windowHeight + 78" v-bind:src="require('@/assets/images/top/background.jpg')">
-        <v-layout
-          class="top-bg white--text"
-          row
-          wrap
-          justify-center
-          align-center
-          :class="{
-            'main-padding-sm': $vuetify.breakpoint.smAndDown,
-            'main-padding-md': $vuetify.breakpoint.mdOnly,
-            'main-padding-lg': $vuetify.breakpoint.lgAndUp,
-          }"
-          :style="{ height: windowHeight + 78 + 'px' }"
-        >
-          <v-flex xs12 sm8 text-xs-center>
-            <h1
-              class="font-weight-bold"
-              :class="{
-                'heading-font-size-xs': $vuetify.breakpoint.xsOnly,
-                'heading-font-size-sm': $vuetify.breakpoint.smAndUp,
-              }"
-            >
-              生き生きと働こう
-            </h1>
-            <div
-              class="py-5 px-3"
-              :class="{
-                'subheading': $vuetify.breakpoint.xsOnly,
-                'title': $vuetify.breakpoint.smAndUp,
-              }"
-            >
-              Liplo は長期インターンを通して、
-              <div>
-                求人者と求職者をマッチングする採用プラットフォームです。
-              </div>
-            </div>
-            <v-btn
-              class="mt-5 font-weight-bold"
-              large
-              outline
-              color="white"
-              @click="updateSignUpDialog(true)"
-            >Emailで登録</v-btn>
-          </v-flex>
-        </v-layout>
-      </v-img>
-      <!-- 特徴 -->
-      <div
-        :class="{
-          'main-padding-sm': $vuetify.breakpoint.smAndDown,
-          'main-padding-md': $vuetify.breakpoint.mdOnly,
-          'main-padding-lg': $vuetify.breakpoint.lgAndUp,
-        }"
-      >
-        <v-layout row wrap justify-center align-center>
-          <v-flex xs12 sm4 md3 text-xs-center px-4
-            :class="{
-              'px-5': $vuetify.breakpoint.xsOnly,
-            }"
-          >
-            <v-icon
-              class="material-icons-outlined"
-              style="font-size: 100px"
-              color="teal lighten-1"
-            >
-              style
-            </v-icon>
-            <div class="text-color title font-weight-bold py-3">
-              入社パス
-            </div>
-            <div class="text-color">
-              企業が採用したいと感じた学生には、インターン後にパス（内定や入社の権利）が渡されます
-            </div>
-          </v-flex>
-          <v-flex xs12 sm4 md3 text-xs-center px-4
-            :class="{
-              'pt-5 px-5': $vuetify.breakpoint.xsOnly,
-            }"
-          >
-            <v-icon
-              class="material-icons-outlined"
-              style="font-size: 100px"
-              color="teal lighten-1"
-            >
-              favorite_border
-            </v-icon>
-            <div class="text-color title font-weight-bold py-3">
-              自分にあった企業に入社
-            </div>
-            <div class="text-color">
-              気になる企業で長期インターンをした後、一番入りたいと思える企業のパスを使って入社しよう
-            </div>
-          </v-flex>
-          <v-flex xs12 sm4 md3 text-xs-center px-4
-            :class="{
-              'pt-5 px-5': $vuetify.breakpoint.xsOnly,
-            }"
-          >
-            <v-icon
-              class="material-icons-outlined"
-              style="font-size: 100px"
-              color="teal lighten-1"
-            >
-              trending_up
-            </v-icon>
-            <div class="text-color title font-weight-bold py-3">
-              スキルアップ
-            </div>
-            <div class="text-color">
-              長期インターンで、大学では身につかないスキルを身に付けよう
-            </div>
-          </v-flex>
-        </v-layout>
-        <div class="hidden-sm-and-up text-xs-center">
-          <v-btn
-            class="font-weight-bold"
-            style="margin-top: 80px"
-            large
-            outline
-            color="teal"
-            @click="updateSignUpDialog(true)"
-          >Emailで登録</v-btn>
-        </div>
-      </div>
     </v-flex>
   </v-layout>
 </template>

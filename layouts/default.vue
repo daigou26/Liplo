@@ -12,7 +12,6 @@
       <no-ssr>
         <footer-content
           v-if="
-            (!uid && routeName == 'index') ||
             routeName == 'jobs-id' ||
             routeName == 'companies-id' ||
             routeName == 'inquiry_for_recruiter' ||

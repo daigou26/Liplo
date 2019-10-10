@@ -477,7 +477,7 @@
       </v-dialog>
     </div>
     <!-- filter extension -->
-    <v-flex xs12 slot="extension" v-if="uid && uid != '' && jobsToolbarExtension && !isJobsLoading && path == '/'">
+    <v-flex xs12 slot="extension" v-if="jobsToolbarExtension && !isJobsLoading && path == '/'">
       <filter-extension></filter-extension>
     </v-flex>
     <v-toolbar-title class="font-weight-bold ml-0">

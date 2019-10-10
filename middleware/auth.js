@@ -8,6 +8,9 @@ export default function ({ store, route, redirect }) {
       route.name !== 'terms' &&
       route.name !== 'contact' &&
       route.name !== 'feedback' &&
+      route.name !== 'jobs-id' &&
+      route.name !== 'companies-id' &&
+      route.name !== 'companies-id-jobs' &&
       route.name != null
     ) {
       return redirect('/')
