@@ -429,17 +429,6 @@
                     <v-list-tile-title class="text-color">プライバシー</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
-                <!-- 運営会社 -->
-                <v-list-tile
-                  class="px-3"
-                  href="https://hp.liplo.jp"
-                  target="_blank"
-                  @click="dropdownMenu=false"
-                >
-                  <v-list-tile-content>
-                    <v-list-tile-title class="text-color">運営会社</v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
                 <!-- 採用担当者向けお問い合わせ -->
                 <v-list-tile
                   class="px-3"
